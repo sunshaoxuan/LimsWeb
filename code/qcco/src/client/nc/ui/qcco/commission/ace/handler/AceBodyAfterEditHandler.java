@@ -1,30 +1,26 @@
 package nc.ui.qcco.commission.ace.handler;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Vector;
 
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.itf.uap.IUAPQueryBS;
-import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.beans.constenum.DefaultConstEnum;
 import nc.ui.pub.beans.constenum.IConstEnum;
+import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pub.bill.BillCellEditor;
+import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
-import nc.ui.qcco.commission.refmodel.EntTypeRefModel;
-import nc.ui.qcco.commission.refmodel.ProductContactRefModel;
 import nc.vo.pub.BusinessException;
-import nc.vo.pub.SuperVO;
 import nc.vo.pub.lang.UFBoolean;
 import nc.vo.qcco.commission.CommissionBVO;
 
@@ -36,110 +32,37 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 	@Override
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
 		if ("productserial".equals(e.getKey())) {
-			if ((e.getOldValue() != null && !e.getOldValue().equals(e.getValue()))
-					&& (e.getValue() != null && !e.getValue().equals(e.getOldValue()))) {
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_enterprisestandard");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "enterprisestandard");
-
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_productspec");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "productspec");
-
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_structuretype");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "structuretype");
-
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_contacttype");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "contacttype");
-
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_productstage");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "productstage");
-
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "typeno");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_contactbrand");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "contactbrand");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "manufacturer");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "contactmodel");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_samplegroup");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "samplegroup");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "analysisref");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "quantity");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "otherinfo");
-
-				for (int row = this.getGrandCard().getBillCardPanel().getRowCount() - 1; row >= 0; row--) {
-					this.getGrandCard().getBillCardPanel().getBodyPanel().delLine(new int[] { row });
-				}
-			}
-
-			if (e.getSource() instanceof BillCellEditor) {
-				BillCellEditor bitem = (BillCellEditor) e.getSource();
-				UIRefPane refPane = (UIRefPane) bitem.getComponent();
-				if (!StringUtils.isEmpty(refPane.getRefPK())) {
-					CommissionBVO bodyVO = new CommissionBVO();
-					Vector values = (Vector) refPane.getRefModel().getSelectedData().get(0);
-					e.getBillCardPanel().setBodyValueAt(values.get(15), e.getRow(), "pk_enterprisestandard");
-					bodyVO.setAttributeValue("enterprisestandard", values.get(15));
-					((EntTypeRefModel) ((UIRefPane) e.getBillCardPanel().getBodyItem("enterprisestandard")
-							.getComponent()).getRefModel()).setPk_basprod_type((String) e.getValue());
-					UserDefineRefUtils.refreshItemRefValue(bodyVO,
-							e.getBillCardPanel().getBillTable("pk_commission_b"), e.getRow(), e.getBillCardPanel()
-									.getBodyItem("enterprisestandard"), true);
-
-					e.getBillCardPanel().setBodyValueAt(values.get(11), e.getRow(), "pk_productspec");
-					bodyVO.setAttributeValue("productspec", values.get(11));
-					UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
-							e.getRow(), e.getBillCardPanel().getBodyItem("productspec"), true);
-
-					e.getBillCardPanel().setBodyValueAt(values.get(12), e.getRow(), "pk_structuretype");
-					bodyVO.setAttributeValue("structuretype", values.get(12));
-					UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
-							e.getRow(), e.getBillCardPanel().getBodyItem("structuretype"), true);
-				//mod tank setä¸»é”®å·²ç»æ²¡æœ‰æ„ä¹‰äº†,ä½†æ˜¯è¦åˆ·æ–°å‚ç…§
-				/*e.getBillCardPanel().setBodyValueAt(values.get(13), e.getRow(), "pk_contacttype");
-				bodyVO.setAttributeValue("contacttype", values.get(13));
-				UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
-						e.getRow(), e.getBillCardPanel().getBodyItem("contacttype"), true);*/
-				
-				//end tank 2019å¹´3æœˆ30æ—¥15:12:53
-
-					e.getBillCardPanel().setBodyValueAt(values.get(14), e.getRow(), "pk_productstage");
-					bodyVO.setAttributeValue("productstage", values.get(14));
-					UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
-							e.getRow(), e.getBillCardPanel().getBodyItem("productstage"), true);
-
-					e.getBillCardPanel().setBodyValueAt(values.get(7), e.getRow(), "pk_productserial");
-
-					IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-					try {
-						String analyseName = (String) query.executeQuery(
-								"SELECT distinct nc_analysis_name from NC_TEST_INIT p  where p.nc_enstard = '"
-										+ values.get(2) + "'  and p.nc_sample_point = '" + values.get(3)
-										+ "'  and ' ' || p.NC_COIL_TYPE || ',' like '% " + values.get(4)
-										+ ",%'    and p.nc_coil_current = '" + values.get(4)
-										+ "'    and p.nc_stage = '" + values.get(6) + "'", new ColumnProcessor());
-
-						if (!StringUtils.isEmpty(analyseName)) {
-							e.getBillCardPanel().setBodyValueAt(analyseName, e.getRow(), "analysisref");
-						}
-					} catch (BusinessException ex) {
-						Logger.error(ex.getMessage());
-					}
-				}
-			}
+			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
+			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial" });
+		} else if ("enterprisestandard".equals(e.getKey())) {
+			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
+			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
+					"pk_enterprisestandard", "enterprisestandard" });
+		} else if ("productspec".equals(e.getKey())) {
+			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productspec");
+			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
+					"pk_enterprisestandard", "enterprisestandard", "pk_productspec", "productspec" });
+		} else if ("structuretype".equals(e.getKey())) {
+			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_structuretype");
+			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
+					"pk_enterprisestandard", "enterprisestandard", "pk_productspec", "productspec", "pk_structuretype",
+					"structuretype" });
 		} else if ("contactbrand".equals(e.getKey())) {
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_contactbrand");
 		} else if ("samplegroup".equals(e.getKey())) {
-			//mod tank å½“æ ·å“ç»„åˆ«å’Œå®éªŒå‚æ•°éƒ½ä¸ä¸ºç©ºçš„æ—¶å€™è¿›è¡Œé‡æ–°ç”Ÿæˆå­™è¡¨çš„å·¥ä½œ,å¦åˆ™ä¸è¿›è¡Œå¦‚ä½•å·¥ä½œ
+			// mod tank µ±ÑùÆ·×é±ğºÍÊµÑé²ÎÊı¶¼²»Îª¿ÕµÄÊ±ºò½øĞĞÖØĞÂÉú³ÉËï±íµÄ¹¤×÷,·ñÔò²»½øĞĞÈçºÎ¹¤×÷
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_samplegroup");
-			
-			// ä¸å¯é‡å¤ç»„åˆ«
+
+			// ²»¿ÉÖØ¸´×é±ğ
 			for (int i = 0; i < e.getBillCardPanel().getRowCount(); i++) {
 				if (e.getRow() != i) {
 					if (e.getValue().equals(e.getBillCardPanel().getBodyValueAt(i, "pk_samplegroup"))) {
-						MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "é”™è¯¯", "æ ·å“ç»„åˆ« ["
-								+ e.getBillCardPanel().getBodyValueAt(i, "samplegroup") + "] å‘ç”Ÿé‡å¤ã€‚");
+						MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "´íÎó", "ÑùÆ·×é±ğ ["
+								+ e.getBillCardPanel().getBodyValueAt(i, "samplegroup") + "] ·¢ÉúÖØ¸´¡£");
 						e.getBillCardPanel().setBodyValueAt(e.getOldValue(), e.getRow(), "samplegroup");
 						e.getBillCardPanel().setBodyValueAt(e.getOldValue(), e.getRow(), "pk_samplegroup");
 						CommissionBVO bodyVO = new CommissionBVO();
@@ -150,41 +73,49 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					}
 				}
 			}
-			//æ¸…ç©ºå­™è¡¨æ ·å“
+			// Çå¿ÕËï±íÑùÆ·
 			clearGrandLines(e);
 			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "analysisref") != null) {
-				//å¦‚æœå®éªŒå‰å‚æ•°ä¸ä¸ºç©º,é‚£ä¹ˆè¿›è¡Œç”Ÿæˆå­™è¡¨å·¥ä½œ
+				// Èç¹ûÊµÑéÇ°²ÎÊı²»Îª¿Õ,ÄÇÃ´½øĞĞÉú³ÉËï±í¹¤×÷
 				try {
 					generateGrandLines(e);
 				} catch (BusinessException ex) {
 					Logger.error(ex.getMessage());
 				}
 			}
-			//end
-		}else if ("analysisref".equals(e.getKey())) {
-			//mod tank å½“æ ·å“ç»„åˆ«å’Œå®éªŒå‚æ•°éƒ½ä¸ä¸ºç©ºçš„æ—¶å€™è¿›è¡Œé‡æ–°ç”Ÿæˆå­™è¡¨çš„å·¥ä½œ,å¦åˆ™ä¸è¿›è¡Œå¦‚ä½•å·¥ä½œ
+			// end
+		} else if ("analysisref".equals(e.getKey())) {
+			// mod tank µ±ÑùÆ·×é±ğºÍÊµÑé²ÎÊı¶¼²»Îª¿ÕµÄÊ±ºò½øĞĞÖØĞÂÉú³ÉËï±íµÄ¹¤×÷,·ñÔò²»½øĞĞÈçºÎ¹¤×÷
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_analysisref");
-			
-			//æ¸…ç©ºå­™è¡¨æ ·å“
+
+			// Çå¿ÕËï±íÑùÆ·
 			clearGrandLines(e);
 			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") != null) {
-				//å¦‚æœå®éªŒå‰å‚æ•°ä¸ä¸ºç©º,é‚£ä¹ˆè¿›è¡Œç”Ÿæˆå­™è¡¨å·¥ä½œ
+				// Èç¹ûÊµÑéÇ°²ÎÊı²»Îª¿Õ,ÄÇÃ´½øĞĞÉú³ÉËï±í¹¤×÷
 				try {
 					generateGrandLines(e);
 				} catch (BusinessException ex) {
 					Logger.error(ex.getMessage());
 				}
 			}
-			//end
+			// end
+		}
+	}
+
+	private void clearItems(BillCardPanel billCardPanel, int row, String[] exceptions) {
+		for (BillItem item : billCardPanel.getBodyItems()) {
+			if (!Arrays.asList(exceptions).contains(item.getKey())) {
+				billCardPanel.setBodyValueAt(null, row, item.getKey());
+			}
 		}
 	}
 
 	private void clearGrandLines(CardBodyAfterEditEvent e) {
 		int rowCount = this.getGrandCard().getBillCardPanel().getRowCount();
-		int [] lineSet = new int[rowCount];
-		for(int i = 0 ;i< rowCount;i++){
+		int[] lineSet = new int[rowCount];
+		for (int i = 0; i < rowCount; i++) {
 			lineSet[i] = i;
 		}
 		this.getGrandCard().getBillCardPanel().getBodyPanel().delLine(lineSet);
