@@ -9,6 +9,7 @@ import nc.ui.qcco.commission.refmodel.ProductContactRefModel;
 import nc.ui.qcco.commission.refmodel.ProductPointRefModel;
 import nc.ui.qcco.commission.refmodel.ProductSerialRefModel;
 import nc.ui.qcco.commission.refmodel.ProductStructRefModel;
+import nc.ui.qcco.commission.refmodel.ProductTempRefModel;
 import nc.ui.qcco.commission.refmodel.TestInitRefModel;
 
 public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBeforeEditEvent> {
@@ -73,8 +74,15 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductGrade(productGrade);
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductStage(productStage);
 		} else if ("productstage".equals(e.getKey())) {
-			String entStandard = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_" + e.getKey());
-			e.getBillCardPanel().setBodyValueAt(entStandard, e.getRow(), e.getKey());
+			String productserial = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productserial");
+			String basentype = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_enterprisestandard");
+			String productspec = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productspec");
+			String productstruct = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_structuretype");
+			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basprod_type(productserial);
+			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basen_type(basentype);
+			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basprod_point(productspec);
+			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel())
+					.setPk_basprod_struct(productstruct);
 		}
 		// if ("enterprisestandard".equals(e.getKey())) {
 		// if (StringUtils.isEmpty(((UIRefPane)

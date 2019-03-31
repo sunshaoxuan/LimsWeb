@@ -32,22 +32,27 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 	@Override
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
 		if ("productserial".equals(e.getKey())) {
+			// 产品系列
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
 			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial" });
 		} else if ("enterprisestandard".equals(e.getKey())) {
+			// 企业标准
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
 			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
 					"pk_enterprisestandard", "enterprisestandard" });
 		} else if ("productspec".equals(e.getKey())) {
+			// 规格号
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productspec");
 			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
 					"pk_enterprisestandard", "enterprisestandard", "pk_productspec", "productspec" });
 		} else if ("structuretype".equals(e.getKey())) {
+			// 结构类型
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_structuretype");
 			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
 					"pk_enterprisestandard", "enterprisestandard", "pk_productspec", "productspec", "pk_structuretype",
 					"structuretype" });
 		} else if ("contactbrand".equals(e.getKey())) {
+			// 触点牌号
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_contactbrand");
