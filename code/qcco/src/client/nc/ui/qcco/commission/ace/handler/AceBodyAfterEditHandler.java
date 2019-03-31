@@ -14,7 +14,6 @@ import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.beans.constenum.DefaultConstEnum;
 import nc.ui.pub.beans.constenum.IConstEnum;
-import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pub.bill.BillCellEditor;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
@@ -34,23 +33,23 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		if ("productserial".equals(e.getKey())) {
 			// 产品系列
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
-			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial" });
+			clearBodyItems(e, new String[] { "pk_productserial", "productserial" });
 		} else if ("enterprisestandard".equals(e.getKey())) {
 			// 企业标准
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
-			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
-					"pk_enterprisestandard", "enterprisestandard" });
+			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
+					"enterprisestandard" });
 		} else if ("productspec".equals(e.getKey())) {
 			// 规格号
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productspec");
-			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
-					"pk_enterprisestandard", "enterprisestandard", "pk_productspec", "productspec" });
+			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
+					"enterprisestandard", "pk_productspec", "productspec", "typeno" });
 		} else if ("structuretype".equals(e.getKey())) {
 			// 结构类型
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_structuretype");
-			clearItems(e.getBillCardPanel(), e.getRow(), new String[] { "pk_productserial", "productserial",
-					"pk_enterprisestandard", "enterprisestandard", "pk_productspec", "productspec", "pk_structuretype",
-					"structuretype" });
+			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
+					"enterprisestandard", "pk_productspec", "productspec", "pk_structuretype", "structuretype",
+					"typeno" });
 		} else if ("contactbrand".equals(e.getKey())) {
 			// 触点牌号
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
@@ -109,21 +108,28 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		}
 	}
 
-	private void clearItems(BillCardPanel billCardPanel, int row, String[] exceptions) {
-		for (BillItem item : billCardPanel.getBodyItems()) {
+	private void clearBodyItems(CardBodyAfterEditEvent e, String[] exceptions) {
+		for (BillItem item : e.getBillCardPanel().getBodyItems()) {
 			if (!Arrays.asList(exceptions).contains(item.getKey())) {
-				billCardPanel.setBodyValueAt(null, row, item.getKey());
+				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), item.getKey());
+
+				if ("samplegroup".equals(item.getKey()) || "analysisref".equals(item.getKey())) {
+					// 当清空样品组别或实验前参数时，清空孙表
+					clearGrandLines(e);
+				}
 			}
 		}
 	}
 
 	private void clearGrandLines(CardBodyAfterEditEvent e) {
 		int rowCount = this.getGrandCard().getBillCardPanel().getRowCount();
-		int[] lineSet = new int[rowCount];
-		for (int i = 0; i < rowCount; i++) {
-			lineSet[i] = i;
+		if (rowCount > 0) {
+			int[] lineSet = new int[rowCount];
+			for (int i = 0; i < rowCount; i++) {
+				lineSet[i] = i;
+			}
+			this.getGrandCard().getBillCardPanel().getBodyPanel().delLine(lineSet);
 		}
-		this.getGrandCard().getBillCardPanel().getBodyPanel().delLine(lineSet);
 	}
 
 	@SuppressWarnings("unchecked")
