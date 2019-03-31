@@ -1,8 +1,10 @@
 package nc.ui.qcco.commission.ace.handler;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import nc.bs.framework.common.NCLocator;
@@ -90,13 +92,13 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					bodyVO.setAttributeValue("structuretype", values.get(12));
 					UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
 							e.getRow(), e.getBillCardPanel().getBodyItem("structuretype"), true);
-				//mod tank set�����Ѿ�û��������,����Ҫˢ�²���
+				//mod tank set主键已经没有意义了,但是要刷新参照
 				/*e.getBillCardPanel().setBodyValueAt(values.get(13), e.getRow(), "pk_contacttype");
 				bodyVO.setAttributeValue("contacttype", values.get(13));
 				UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
 						e.getRow(), e.getBillCardPanel().getBodyItem("contacttype"), true);*/
 				
-				//end tank 2019��3��30��15:12:53
+				//end tank 2019年3月30日15:12:53
 
 					e.getBillCardPanel().setBodyValueAt(values.get(14), e.getRow(), "pk_productstage");
 					bodyVO.setAttributeValue("productstage", values.get(14));
@@ -127,20 +129,17 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_contactbrand");
 		} else if ("samplegroup".equals(e.getKey())) {
+			//mod tank 当样品组别和实验参数都不为空的时候进行重新生成孙表的工作,否则不进行如何工作
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_samplegroup");
-			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "analysisref") == null) {
-				MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "����", "ʵ��ǰ��������Ϊ�ա�");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "samplegroup");
-				return;
-			}
-			// �����ظ����
+			
+			// 不可重复组别
 			for (int i = 0; i < e.getBillCardPanel().getRowCount(); i++) {
 				if (e.getRow() != i) {
 					if (e.getValue().equals(e.getBillCardPanel().getBodyValueAt(i, "pk_samplegroup"))) {
-						MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "����", "��Ʒ��� ["
-								+ e.getBillCardPanel().getBodyValueAt(i, "samplegroup") + "] �����ظ���");
+						MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "错误", "样品组别 ["
+								+ e.getBillCardPanel().getBodyValueAt(i, "samplegroup") + "] 发生重复。");
 						e.getBillCardPanel().setBodyValueAt(e.getOldValue(), e.getRow(), "samplegroup");
 						e.getBillCardPanel().setBodyValueAt(e.getOldValue(), e.getRow(), "pk_samplegroup");
 						CommissionBVO bodyVO = new CommissionBVO();
@@ -151,33 +150,44 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					}
 				}
 			}
-
-			if (e.getOldValue() == null) {
+			//清空孙表样品
+			clearGrandLines(e);
+			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "analysisref") != null) {
+				//如果实验前参数不为空,那么进行生成孙表工作
 				try {
 					generateGrandLines(e);
 				} catch (BusinessException ex) {
 					Logger.error(ex.getMessage());
 				}
-			} else {
-				for (int row = 0; row < this.getGrandCard().getBillCardPanel().getRowCount(); row++) {
-					this.getGrandCard()
-							.getBillCardPanel()
-							.setBodyValueAt(e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_samplegroup"), row,
-									"samplegroup");
-					SuperVO vo = (SuperVO) this.getGrandCard().getBillCardPanel().getBillModel()
-							.getBodyValueRowVO(row, CommissionBVO.class.getName());
-					vo.setAttributeValue("samplegroup",
-							e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_samplegroup"));
-					UserDefineRefUtils.refreshItemRefValue(vo,
-							this.getGrandCard().getBillCardPanel().getBillTable("pk_commission_r"), row, this
-									.getGrandCard().getBillCardPanel().getBodyItem("samplegroup"), true);
-					this.getGrandCard()
-							.getBillCardPanel()
-							.setBodyValueAt(e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_samplegroup"), row,
-									"pk_samplegroup");
+			}
+			//end
+		}else if ("analysisref".equals(e.getKey())) {
+			//mod tank 当样品组别和实验参数都不为空的时候进行重新生成孙表的工作,否则不进行如何工作
+			BillCellEditor bitem = (BillCellEditor) e.getSource();
+			UIRefPane refPane = (UIRefPane) bitem.getComponent();
+			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_analysisref");
+			
+			//清空孙表样品
+			clearGrandLines(e);
+			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") != null) {
+				//如果实验前参数不为空,那么进行生成孙表工作
+				try {
+					generateGrandLines(e);
+				} catch (BusinessException ex) {
+					Logger.error(ex.getMessage());
 				}
 			}
+			//end
 		}
+	}
+
+	private void clearGrandLines(CardBodyAfterEditEvent e) {
+		int rowCount = this.getGrandCard().getBillCardPanel().getRowCount();
+		int [] lineSet = new int[rowCount];
+		for(int i = 0 ;i< rowCount;i++){
+			lineSet[i] = i;
+		}
+		this.getGrandCard().getBillCardPanel().getBodyPanel().delLine(lineSet);
 	}
 
 	@SuppressWarnings("unchecked")
