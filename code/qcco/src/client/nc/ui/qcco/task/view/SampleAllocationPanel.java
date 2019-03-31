@@ -82,8 +82,27 @@ import nc.vo.trade.bdinfo.BaseDocVO;
 public class SampleAllocationPanel extends UIDialog implements ActionListener, ValueChangedListener{
 	  private SmartCheckBoxList list = null;
 	  private Map<String, String> mapselect = new HashMap<String,String>();
-	  private List<Object>selectedlist = new ArrayList<Object>();
-	// —˘∆∑∑÷≈‰
+	  private String selectedstr;
+	  private Integer testnum;
+	  public Integer getTestnum() {
+		return testnum;
+	}
+
+	public void setTestnum(Integer testnum) {
+		this.testnum = testnum;
+	}
+	List<Integer> listnum = new ArrayList<Integer>();
+	  
+	 
+	
+	public String getSelectedstr() {
+		return selectedstr;
+	}
+
+	public void setSelectedstr(String selectedstr) {
+		this.selectedstr = selectedstr;
+	}
+		// Ê†∑ÂìÅÂàÜÈÖç
 		private String cname = null;
 		private String pk_commission_h;
 		
@@ -95,8 +114,10 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 			this.pk_commission_h = pk_commission_h;
 		}
 
-		public SampleAllocationPanel() {
+		public SampleAllocationPanel(String pk_commission_h) {
 			super();
+			this.pk_commission_h = pk_commission_h;
+			selectedstr = null;
 			initialize(mapselect);
 		}
 
@@ -104,8 +125,8 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 			super(arg1, arg2);
 		}
 
-		public SampleAllocationPanel(Frame arg1) {
-			super(arg1);
+		public SampleAllocationPanel() {
+			super();
 		}
 
 		public SampleAllocationPanel(Frame arg1, String arg2) {
@@ -117,10 +138,6 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 			//initialize();
 		}
 
-		public SampleAllocationPanel(String pk_commission_h1) {
-			this.pk_commission_h = pk_commission_h1;
-			//initialize();
-		}
 
 		private void initialize(Map<String, String> mapselect) {
 			try {
@@ -128,11 +145,14 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 				setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 				setSize(600, 400);
 				setContentPane(getUIDialogContentPane(mapselect));
+				
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
 
 		}
+
+		
 
 		
 		private JPanel getUIDialogContentPane(Map<String, String> mapselect) {
@@ -158,6 +178,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 					ivjUIDialogContentPane1.setLayout(null);
 					getUIDialogContentPane1(mapselect).add(getUIPanel1());
 					getUIDialogContentPane1(mapselect).add(getUIPanel4(mapselect));
+					
 				} catch (Throwable ivjExc) {
 					handleException(ivjExc);
 				}
@@ -175,9 +196,9 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 		private JPanel getUIPanel4(Map<String, String> mapselect) {
 			if(null == checkbox){
 				checkbox = new UIPanel();
-				List<Integer> indexlist = new ArrayList<Integer>();
+				//Êü•ÊâælistÊï∞ÊçÆ
 				Vector<SmartListData> listData = new Vector<SmartListData>();
-				//≤È’“list ˝æ›
+				List<Integer> indexlist = new ArrayList<Integer>();
 				Map<String, Integer> maps = getListDatas();
 				List<String> lists = getLastDatas(maps);
 				if(null != lists && lists.size() > 0){
@@ -189,7 +210,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 					}
 				}
 				this.list = new SmartCheckBoxList(listData);
-				if (mapselect.size() > 0) {
+				if (null != mapselect && mapselect.size() > 0) {
 					for(SmartListData sdata : listData){
 						for(String map : mapselect.keySet()){
 							if(map.toString().equals(sdata.toString())){
@@ -212,10 +233,27 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 			  //  this.list.setSelectedIndex(0);
 			    //getUIPanel4(mapselect).add(new UIScrollPane());
 			   // UIScrollPane.setViewportView(this.list);
-				selectedlist.add(this.list.getSelectedValuesList());
+				
 			    checkbox.setBounds(100, 110, 300, 450);
 			    checkbox.add(this.list);
 			}
+			if(this.list.getSelectedValuesList() != null && this.list.getSelectedValuesList().size() > 0){
+				try {
+					List<SmartListData> selectedValuesList = this.list.getSelectedValuesList();
+					List<String> strlist = new ArrayList<String>();
+					for (SmartListData st : selectedValuesList) {
+						strlist.add(st.getSmartName());
+					}
+					if (null != listnum) {
+						selectedstr = StringOrderUtils.outOrderString(strlist.toArray(new String[strlist.size()]),listnum);
+						testnum = strlist.size();
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		
 			return checkbox;
 		}
 		
@@ -225,7 +263,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 			for(String key : maps.keySet()){
 				Integer quantity = Integer.valueOf(maps.get(key));
 				if(quantity > 0){
-					for(int x = 1; x< quantity; x++){
+					for(int x = 1; x<= quantity; x++){
 						list.add(key + String.valueOf(x));
 					}
 				}
@@ -234,28 +272,52 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 		}
 
 		private Map<String, Integer> getListDatas() {
-			IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName()); 
-			List<Map<String,Object>> custlist = null;
-			Map<String,Integer> map = new HashMap<String,Integer>();
-			try {
-				custlist = (List<Map<String,Object>>) iUAPQueryBS. executeQuery("select nc_sample_name,max(QUANTITY) as QUANTITY from (select  DISTINCT c.nc_sample_name,commission.QUANTITY from QC_COMMISSION_B commission "
-						+ "left join NC_SAMPLE_GROUP c on "
-						+ "commission.PK_SAMPLEGROUP= c.pk_sample_group) GROUP by nc_sample_name",new MapListProcessor());
-			} catch (BusinessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(null == custlist){
-				return null;
-			}
-			for(Map<String,Object> maps : custlist){
-				map.put((String) maps.get("nc_sample_name"),Integer.parseInt(maps.get("quantity")+""));
-			}
-			return map;
+			 IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());   
+					
+					Map<String, Integer> maps = new HashMap<String,Integer>();
+					
+					try {
+						List<Map<String, Object>> custlist = (List<Map<String,Object>>) iUAPQueryBS. executeQuery("select "
+								+ "samplegroup.nc_sample_name, commission.QUANTITY from QC_COMMISSION_B commission left join NC_SAMPLE_GROUP samplegroup "
+								+ "on commission.PK_SAMPLEGROUP = samplegroup.pk_sample_group where "
+								+ "commission.PK_COMMISSION_H='"+pk_commission_h+"' order by samplegroup.nc_sample_code",new MapListProcessor());
+					
+					if (null != custlist && custlist.size() > 0 ) {
+						for(Map<String,Object> map : custlist ){
+							maps.put(map.get("nc_sample_name").toString(), Integer.parseInt(String.valueOf(map.get("quantity"))));
+						}
+						if (maps != null && maps.size() > 0 && listnum.size() <= 0) {
+							if (maps.containsKey("A")) {
+								listnum.add(maps.get("A"));
+							}else {
+								listnum.add(0);
+							}
+							if (maps.containsKey("B")) {
+								listnum.add(maps.get("B"));
+							}else {
+								listnum.add(0);
+							}
+							if (maps.containsKey("C")) {
+								listnum.add(maps.get("C"));
+							}else {
+								listnum.add(0);
+							}
+							if (maps.containsKey("D")) {
+								listnum.add(maps.get("D"));
+							}else {
+								listnum.add(0);
+							}
+						}
+					}
+					} catch (BusinessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			return maps;
 		}
 
 		/**
-		 * —˘∆∑∑÷≈‰
+		 * Ê†∑ÂìÅÂàÜÈÖç
 		 * @return
 		 */
 		private UIPanel getUIPanel1() {
@@ -264,7 +326,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 					ivjUIPanel1 = new UIPanel();
 					ivjUIPanel1.setName("ivjUIPanel1");
 					ivjUIPanel1.setLayout(null);
-					// —˘∆∑∑÷≈‰
+					// Ê†∑ÂìÅÂàÜÈÖç
 					ivjUIPanel1.add(getSampleNameLabel());
 					ivjUIPanel1.add(getSampleNameField());
 					ivjUIPanel1.add(getBtnOKtop());
@@ -278,7 +340,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 
 		
 		/**
-		 * »∑∂® »°œ˚∞¥≈•
+		 * Á°ÆÂÆö ÂèñÊ∂àÊåâÈíÆ
 		 * @return
 		 */
 		private nc.ui.pub.beans.UIPanel getUIPanel2() {
@@ -297,7 +359,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 		}
 
 		/**
-		 * —˘∆∑∑÷≈‰√˚≥∆
+		 * Ê†∑ÂìÅÂàÜÈÖçÂêçÁß∞
 		 * @return
 		 */
 		private UILabel getSampleNameLabel() {
@@ -305,7 +367,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 				try {
 					sampleNameLabel = new UILabel();
 					sampleNameLabel.setName("sampleNameLabel");
-					sampleNameLabel.setText("—˘∆∑∑÷≈‰");
+					sampleNameLabel.setText("Ê†∑ÂìÅÂàÜÈÖç");
 					sampleNameLabel.setBounds(0, 10, 80, 30);
 				} catch (Throwable ivjExc) {
 					handleException(ivjExc);
@@ -318,7 +380,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 		
 
 		/**
-		 * —˘∆∑∑÷≈‰«∞ ‰»ÎøÚ
+		 * Ê†∑ÂìÅÂàÜÈÖçÂâçËæìÂÖ•Ê°Ü
 		 * 
 		 * @return
 		 */
@@ -338,18 +400,21 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 		}
 		
 		/**
-		 * »∑∂®≤Ÿ◊˜
+		 * Á°ÆÂÆöÊìç‰Ωú
 		 * 
 		 * @throws Exception
 		 */
 		private void onButtonOKClicked() {
 			this.sampleName = getSampleNameField().getText();
+			//selectedstr = null;
+			getUIPanel4(null);
+			checkbox = null;
 			this.closeOK();
 
 		}
 
 		/**
-		 * »∑∂®≤Ÿ◊˜
+		 * Á°ÆÂÆöÊìç‰Ωú
 		 * 
 		 * @throws Exception
 		 */
@@ -357,7 +422,9 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 			this.sampleName = getSampleNameField().getText();
 			String[] strs = null;
 			try {
-				strs = StringOrderUtils.outDisOrderArray(sampleName);
+				if (listnum != null ) {
+					strs = StringOrderUtils.outDisOrderArray(sampleName,  listnum);
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -369,9 +436,15 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 				ivjUIDialogContentPane = null;
 				ivjUIDialogContentPane1 = null;
 				checkbox = null;
+				//listnum.clear();
+				//getUIPanel4(mapselect);
+				getContentPane().hide();
+				//getRootPane().getLayeredPane().remove(getRootPane().getContentPane());
 				initialize(mapselect);
-				mapselect = null;
-				initialize(mapselect);
+				//mapselect = null;
+				//listnum = null;
+				//getUIDialogContentPane1()
+				
 				
 				
 			}
@@ -389,12 +462,12 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 						IProgressMonitor progressMonitor = NCProgresses.createDialogProgressMonitor(getParent());
 
 						try {
-							progressMonitor.beginTask("ÖR≥ˆ÷–...", IProgressMonitor.UNKNOWN_REMAIN_TIME);
-							progressMonitor.setProcessInfo("ÖR≥ˆ÷–£¨’à…‘∫Ú.....");
+							progressMonitor.beginTask("ÂåØÂá∫‰∏≠...", IProgressMonitor.UNKNOWN_REMAIN_TIME);
+							progressMonitor.setProcessInfo("ÂåØÂá∫‰∏≠ÔºåË´ãÁ®çÂÄô.....");
 							onButtonOKClicked();
 						} finally {
 
-							progressMonitor.done(); // Ω¯∂»»ŒŒÒΩ· ¯
+							progressMonitor.done(); // ËøõÂ∫¶‰ªªÂä°ÁªìÊùü
 						}
 					}
 				}.start();
@@ -424,7 +497,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 		}
 
 		/**
-		 * …˙≥…Ω” ’∆˜µƒ…¢¡–¬Î°£ ¥À∑Ω∑®÷˜“™”……¢¡–±Ì ÷ß≥÷£¨»Á java.util ÷–Ã·π©µƒƒ«–©…¢¡–±Ì°£@return Ω” ’∆˜µƒ’˚ ˝…¢¡–¬Î
+		 * ÁîüÊàêÊé•Êî∂Âô®ÁöÑÊï£ÂàóÁ†Å„ÄÇ Ê≠§ÊñπÊ≥ï‰∏ªË¶ÅÁî±Êï£ÂàóË°® ÊîØÊåÅÔºåÂ¶Ç java.util ‰∏≠Êèê‰æõÁöÑÈÇ£‰∫õÊï£ÂàóË°®„ÄÇ@return Êé•Êî∂Âô®ÁöÑÊï¥Êï∞Êï£ÂàóÁ†Å
 		 */
 		public int hashCode() {
 			return super.hashCode();
@@ -434,7 +507,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 				try {
 					btnOKtop = new UIButton();
 					btnOKtop.setName("btnOKtop");
-					btnOKtop.setText("»∑∂®");
+					btnOKtop.setText("Á°ÆÂÆö");
 					btnOKtop.addActionListener(this);
 					btnOKtop.setBounds(420, 12, 30, 30);
 					btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.ALT_MASK),
@@ -450,7 +523,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 				try {
 					btnOK = new UIButton();
 					btnOK.setName("btnOK");
-					btnOK.setText("»∑∂®");
+					btnOK.setText("Á°ÆÂÆö");
 					btnOK.addActionListener(this);
 					btnOK.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.ALT_MASK),
 							JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -466,7 +539,7 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 				try {
 					btnCancel = new UIButton();
 					btnCancel.setName("btnCancel");
-					btnCancel.setText("»°œ˚");
+					btnCancel.setText("ÂèñÊ∂à");
 					btnCancel.addActionListener(this);
 					btnCancel.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK),
 							JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -490,23 +563,23 @@ public class SampleAllocationPanel extends UIDialog implements ActionListener, V
 
 
 		private void handleException(Throwable exception) {
-			Logger.error("--------- Œ¥≤∂◊ΩµΩµƒ“Ï≥£ ---------");
+			Logger.error("--------- Êú™ÊçïÊçâÂà∞ÁöÑÂºÇÂ∏∏ ---------");
 			MessageDialog.showErrorDlg(this, null, exception.getMessage());
 			exception.printStackTrace();
 		}
-		private UIButton btnOKtop = null;// »∑∂®∞¥≈•
+		private UIButton btnOKtop = null;// Á°ÆÂÆöÊåâÈíÆ
 		
-		private UIButton btnOK = null;// »∑∂®∞¥≈•
-		private UIButton btnCancel = null;// »°œ˚∞¥≈•
+		private UIButton btnOK = null;// Á°ÆÂÆöÊåâÈíÆ
+		private UIButton btnCancel = null;// ÂèñÊ∂àÊåâÈíÆ
 		private JPanel ivjUIDialogContentPane = null;
 		private JPanel ivjUIDialogContentPane1 = null;
 		private UIPanel ivjUIPanel1 = null;
 		private UIPanel ivjUIPanel2 = null;
-		private UILabel sampleNameLabel = null;// —˘∆∑∑÷≈‰
-		private UIButton button = null;// »∑∂®∞¥≈•
-		private JTextField sampleNameField = null;// —˘∆∑∑÷≈‰
+		private UILabel sampleNameLabel = null;// Ê†∑ÂìÅÂàÜÈÖç
+		private UIButton button = null;// Á°ÆÂÆöÊåâÈíÆ
+		private JTextField sampleNameField = null;// Ê†∑ÂìÅÂàÜÈÖç
 		//private UIRefPane refpanel;
 		private JPanel checkbox = null;
-		private String sampleName = null;// —˘∆∑∑÷≈‰
+		private String sampleName = null;// Ê†∑ÂìÅÂàÜÈÖç
 
 }

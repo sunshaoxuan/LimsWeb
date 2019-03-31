@@ -1,52 +1,74 @@
 package nc.ui.qcco.task.utils;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
- * tab±êÇ©¹¤¾ßÀà
+ * tabæ ‡ç­¾å·¥å…·ç±»
  */
 public class StringOrderUtils {
-    //¶şÎ¬±íĞĞÊı
-    private static int ROW_NUM = 26;
-    //¶şÎ¬±íÁĞÊı
-    private static int COL_NUM = 301;
 
-    private static boolean[][] orderTable = new boolean[ROW_NUM][COL_NUM];
 
     /**
-     * In : array{A1,A2,A4,B1,C1}
+     * @param  arrays{A1,A2,A4,B1,C1}
+     * @param rowNumList æ¯ç»„çš„æ•°é‡,æ¯”å¦‚:rowNumList[0]ä¸ºAç»„æ•°é‡,rowNumList[1]ä¸ºBç»„æ•°é‡,rowNumList.size()ä¸ºåˆ†ç»„æ•°é‡
      * Out : String "A1-A2,A4,B1,C1"
      *
      * @author Tank
-     * @date 2019Äê3ÔÂ15ÈÕ10:01:40
+     * @date 2019å¹´3æœˆ15æ—¥10:01:40
      */
-    public static String outOrderString(String[] arrays) throws Exception {
-        putArrayInTable(arrays);
-        return outTableString();
+    public static String outOrderString(String[] arrays, List<Integer> rowNumList) throws Exception {
+        boolean[][] orderTable = init(rowNumList);
+        putArrayInTable(arrays,orderTable,rowNumList);
+        return outTableString(orderTable,rowNumList);
     }
 
     /**
-     * In : String "A1-A2,A4,B1,C1"
+     * @param  arrays String "A1-A2,A4,B1,C1"
+     * @param rowNumList æ¯ç»„çš„æ•°é‡,æ¯”å¦‚:rowNumList[0]ä¸ºAç»„æ•°é‡,rowNumList[1]ä¸ºBç»„æ•°é‡,rowNumList.size()ä¸ºåˆ†ç»„æ•°é‡
      * Out : array{A1,A2,A4,B1,C1}
      *
      * @author Tank
-     * @date 2019Äê3ÔÂ15ÈÕ10:01:40
+     * @date 2019å¹´3æœˆ15æ—¥10:01:40
      */
-    public static String[] outDisOrderArray(String arrays) throws Exception {
-        putStringInTable(arrays);
-        return outTableArrays();
+    public static String[] outDisOrderArray(String arrays,List<Integer> rowNumList) throws Exception {
+        boolean[][] orderTable = init(rowNumList);
+        putStringInTable(arrays,orderTable,rowNumList);
+        return outTableArrays(orderTable,rowNumList);
     }
 
     /**
-     * ½«¶şÎ¬±íÊä³ö³ÉString
+     * åˆ›å»ºä¸€ä¸ªä»¥æœ€å¤§æ•°é‡ä¸ºåˆ—æ•°,æœ€å¤§ç»„æ•°ä¸ºè¡Œæ•°çš„äºŒç»´è¡¨
+     * @param rowNumList
      */
-    private static String[] outTableArrays() {
+    private static boolean[][] init(List<Integer> rowNumList) throws Exception {
+        if(null == rowNumList){
+            throw new Exception("ç»„å†…æ•°é‡å‚æ•°å‡ºé”™!");
+        }
+        //å¯»æ‰¾æœ€å¤§çš„æ ·å“æ•°é‡
+        int max = 0;
+        for(int i = 0;i<rowNumList.size();i++){
+            if(rowNumList.get(i)!=null){
+                if(max < rowNumList.get(i)){
+                    max = rowNumList.get(i);
+                }
+            }else{
+                throw new Exception((char)(i+65) +"ç»„å†…æ ·å“æ•°é‡ä¸èƒ½ä¸º0");
+            }
+        }
+        if(0 == max){
+            throw new Exception("ç»„å†…æ ·å“æ•°é‡ä¸èƒ½ä¸º0");
+        }
+        return new boolean[rowNumList.size()][max+1];
+    }
+    /**
+     * å°†äºŒç»´è¡¨è¾“å‡ºæˆString
+     */
+    private static String[] outTableArrays(boolean[][] orderTable,List<Integer> rowNumList) {
         Set<String> resultSet = new HashSet<>();
         StringBuilder sb = new StringBuilder();
         if (orderTable != null) {
-            for(int i = 0 ; i < ROW_NUM ; i ++){
-                for (int j = 0 ; j <COL_NUM;j++){
+            for(int i = 0 ; i < rowNumList.size() ; i ++){
+                for (int j = 1 ; j <=rowNumList.get(i);j++){
                     if(orderTable[i][j]){
                         sb.append((char)(i+65)).append(j);
                         resultSet.add(sb.toString());
@@ -59,38 +81,37 @@ public class StringOrderUtils {
     }
 
     /**
-     * ½«StringÕ¹¿ªµ½¶şÎ¬±íÖĞ
-     * TODO Èç¹ûĞèÒª¿çĞĞÉú³ÉÄÇĞèÒª´«ÈëÃ¿ĞĞµÄ³¤¶È
+     * å°†Stringå±•å¼€åˆ°äºŒç»´è¡¨ä¸­
      */
-    private static void putStringInTable(String arrays) throws Exception {
-        orderTable = new boolean[ROW_NUM][COL_NUM];
+    private static void putStringInTable(String arrays,boolean[][] orderTable,List<Integer> rowNumList) throws Exception {
+        if(orderTable.length == 0){
+            return ;
+        }
         if (arrays != null && arrays.length() > 0) {
             String[] tabArrays = arrays.replaceAll(" ", "").split(",");
             for (String tabString : tabArrays) {
                 if (tabString.indexOf('-') == -1) {
-                    //µ¥¸ö´æÈë
+                    //å•ä¸ªå­˜å…¥
                     try {
                         int row = tabString.charAt(0);
                         int col = Integer.parseInt(tabString.substring(1, tabString.length()));
                         orderTable[row - 65][col] = true;
                     } catch (Exception e) {
-                        throw new Exception("·Ç·¨×Ö·û:" + tabString);
+                        throw new Exception("éæ³•å­—ç¬¦:" + tabString);
                     }
                 } else {
-                    //ÏßĞÔ´æÈë
+                    //çº¿æ€§å­˜å…¥
                     String[] splitTabs = tabString.split("-");
                     if (splitTabs.length != 2) {
-                        throw new Exception("·Ç·¨×Ö·û:" + tabString);
+                        throw new Exception("éæ³•å­—ç¬¦:" + tabString);
                     } else {
                         try {
                             int startRow = splitTabs[0].charAt(0);
                             int startCol = Integer.parseInt(splitTabs[0].substring(1, splitTabs[0].length()));
                             int endRow = splitTabs[1].charAt(0);
                             int endCol = Integer.parseInt(splitTabs[1].substring(1, splitTabs[1].length()));
-                            if(startRow != endRow){
-                                throw new Exception("²»ÄÜ½øĞĞ¿çĞĞ:" + tabString);
-                            }
-                            //Ë³ĞòÏà·´ÏÈ½»»»
+
+                            //é¡ºåºç›¸åå…ˆäº¤æ¢
                             if (startRow > endRow || (startRow == endRow && startCol > endCol)) {
                                 int temp = endRow;
                                 endRow = startRow;
@@ -100,14 +121,14 @@ public class StringOrderUtils {
                                 startCol = endCol;
                                 endCol = temp;
                             }
-                            //¿ªÊ¼´æÈë
+                            //å¼€å§‹å­˜å…¥
                             for (int i = (startRow - 65); (i < 26 && i <= endRow - 65); i++) {
-                                for (int j = startCol; (j < 300 && (i != endRow-65 || j <= endCol)); j++) {
+                                for (int j = startCol; (j <= rowNumList.get(i) && (i != endRow-65 || j <= endCol)); j++) {
                                     orderTable[i][j] = true;
                                 }
                             }
                         } catch (Exception e) {
-                            throw new Exception("·Ç·¨×Ö·û:" + tabString);
+                            throw new Exception("éæ³•å­—ç¬¦:" + tabString);
                         }
                     }
                 }
@@ -116,29 +137,30 @@ public class StringOrderUtils {
     }
 
     /**
-     * ½«¶şÎ¬±íÊä³ö³ÉString
+     * å°†äºŒç»´è¡¨è¾“å‡ºæˆString
      */
-    private static String outTableString() {
-        if (orderTable == null) {
+    private static String outTableString(boolean[][] orderTable,List<Integer> rowNumList) {
+        if (orderTable == null||orderTable.length == 0) {
             return null;
         }
         StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < ROW_NUM; i++) {
-            int lineLength = 0;
-            for (int j = 0; j < COL_NUM; j++) {
+        //å£°æ˜ä¸€æ¡çº¿
+        int lineLength = 0;
+        for (int i = 0; i < rowNumList.size(); i++) {
+            for (int j = 1; j <= rowNumList.get(i); j++) {
                 if (orderTable[i][j]) {
                     if (0 == lineLength) {
                         sb.append((char) (i + 65)).append(j);
                         lineLength++;
                     } else if (1 == lineLength) {
                         sb.append("-");
-                        if ((COL_NUM - 1) == j) {
+                        lineLength++;
+                        if (rowNumList.get(i) == j && (rowNumList.size()-1) == i) {
+                            //æœ€åä¸€åˆ—æœ€åä¸€è¡Œçš„æ—¶å€™å°±ç›´æ¥åŠ å®Œäº†
                             sb.append((char) (i + 65)).append(j).append(",");
                         }
-                        lineLength++;
                     } else if (1 < lineLength) {
-                        if ((COL_NUM - 1) == j) {
+                        if (rowNumList.get(i) == j && (rowNumList.size()-1) == i ) {
                             sb.append((char) (i + 65)).append(j).append(",");
                         }
                         lineLength++;
@@ -151,23 +173,33 @@ public class StringOrderUtils {
                         sb.append(",");
                     }else{
                         lineLength = 0;
-                        //lineLength¶ÏÁË,½ÓÉÏÒ»¸ö
-                        sb.append((char) (i + 65)).append(j - 1).append(",");
+                        //lineLengthæ–­äº†,æ¥ä¸Šä¸€ä¸ª
+                        if(j>1){
+                            sb.append((char) (i + 65)).append(j - 1).append(",");
+                        }else{
+                            sb.append((char) (i - 1 + 65)).append(rowNumList.get(i-1)).append(",");
+                        }
+
                     }
 
                 }
             }
         }
-        return sb.deleteCharAt(sb.length()-1).toString();
+        if(lineLength != 1){
+            sb.deleteCharAt(sb.length()-1).toString();
+        }
+        return sb.toString();
     }
 
     /**
-     * ½«tabÊı×é´æ½ø±íÖĞ
+     * å°†tabæ•°ç»„å­˜è¿›è¡¨ä¸­
      */
-    private static void putArrayInTable(String[] arrays) throws Exception {
-        orderTable = new boolean[ROW_NUM][COL_NUM];
+    private static void putArrayInTable(String[] arrays,boolean[][] orderTable,List<Integer> rowNumList) throws Exception {
+        if(orderTable.length == 0){
+            return ;
+        }
         if (arrays != null && arrays.length > 0) {
-            //Êı×éÕ¹¿ª³É¶şÎ¬±í
+            //æ•°ç»„å±•å¼€æˆäºŒç»´è¡¨
             for (String tab : arrays) {
                 if (null != tab && tab.replaceAll(" ", "").length() >= 2) {
                     tab = tab.replaceAll(" ", "");
@@ -176,7 +208,7 @@ public class StringOrderUtils {
                         int col = Integer.parseInt(tab.substring(1, tab.length()));
                         orderTable[row - 65][col] = true;
                     } catch (Exception e) {
-                        throw new Exception("×Ö·û·Ç·¨:" + tab);
+                        throw new Exception("å­—ç¬¦éæ³•:" + tab);
                     }
                 }
             }

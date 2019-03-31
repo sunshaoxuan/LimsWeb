@@ -505,7 +505,9 @@
 				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
 					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent" />
 					<property name="handler">
-						<bean class="nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler" />
+						<bean class="nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler" >
+							<property name="mainBillForm" ref="billFormEditor" />					
+						</bean>
 					</property>
 				</bean>
 			</list>
@@ -586,6 +588,7 @@
 		<property name="editActions">
 			<list>
 				<ref bean="saveAction" />
+				<ref bean="temporarilySaveAction" />
 				<ref bean="cancelAction" />
 			</list>
 		</property>
@@ -629,7 +632,17 @@
 		<property name="validationService" ref="validateService" />
 		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
 	</bean>
-
+	<!-- 保存按钮 -->
+	<bean id="temporarilySaveAction" class="nc.ui.qcco.task.action.TaskTemporarilySaveAction">
+		<property name="model" ref="manageAppModel" />
+		<property name="service" ref="bmModelModelService" />
+		<property name="editor" ref="billFormEditor" />
+		<property name="mainGrandModel" ref="mainGrandModel" />
+		<property name="billFormEditor" ref="billFormEditor" />
+		<property name="billForm" ref="MainGrandbillFormEditor" />
+		<property name="validationService" ref="validateService" />
+		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
+	</bean>
 	<!-- 保存组合校验 -->
 	<bean id="validateService" class="nc.ui.pubapp.uif2app.validation.CompositeValidation">
 		<property name="validators">

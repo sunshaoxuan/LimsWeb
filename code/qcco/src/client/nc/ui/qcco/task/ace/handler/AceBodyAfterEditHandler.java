@@ -1,5 +1,7 @@
 package nc.ui.qcco.task.ace.handler;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,10 +22,12 @@ import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
+import nc.ui.qcco.task.utils.StringOrderUtils;
 import nc.vo.pub.BusinessException;
 import nc.vo.qcco.commission.CommissionRVO;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 
 public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEditEvent> {
@@ -40,17 +44,19 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 	@SuppressWarnings("unchecked")
 	@Override
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
-		if ("samplequantity".equals(e.getKey())) {
+		if ("sampleallocation".equals(e.getKey())) {
 			String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 			if(null == pk_commission_h){
 				return;
 			}
+			
+			
 			IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 			try {
 				List<Map<String, Object>> sunlist = (List<Map<String, Object>>) query
 						.executeQuery(
-								"select b.PK_SAMPLEGROUP,b.ENTERPRISESTANDARD,b.PRODUCTSPEC,b.PRODUCTSTAGE,"
-								+ "b.STRUCTURETYPE,p.NC_SAMPLE_NAME from qc_commission_b b "
+								"select b.PK_SAMPLEGROUP,b.pk_ENTERPRISESTANDARD,b.pk_PRODUCTSPEC,b.pk_PRODUCTSTAGE,"
+								+ "b.pk_STRUCTURETYPE,p.NC_SAMPLE_NAME from qc_commission_b b "
 								+ "left join NC_SAMPLE_GROUP p on p.PK_SAMPLE_GROUP = b.PK_SAMPLEGROUP" 
 								+ " where b.PK_COMMISSION_H='"+pk_commission_h+"' ",
 								new MapListProcessor());
@@ -74,6 +80,8 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		}
 	}
 
+	
+
 	@SuppressWarnings("unchecked")
 	private void generateGrandLines(Map<String, Object> map) throws BusinessException {
 		IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
@@ -86,11 +94,11 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 								+ " INNER JOIN NC_UNITS_TYPE u ON u.pk_units_type = p.pk_units_type "
 								+ " INNER JOIN NC_RESULT_TYPE r ON r.pk_result_type = p.pk_result_type "
 								+ "where p.nc_enstard = '"
-								+ map.get("enterprisestandard")
+								+ map.get("pk_enterprisestandard")
 								+ "'  and p.nc_sample_point = '"
-								+ map.get("productspec")
+								+ map.get("pk_productspec")
 								+ "'  and ' ' || p.NC_COIL_TYPE || ',' like '% "
-								+ map.get("structuretype")
+								+ map.get("pk_structuretype")
 								+ ",%'    and p.nc_coil_current = '"
 								+ map.get("structuretype")
 								+ "'    and p.nc_stage = '"

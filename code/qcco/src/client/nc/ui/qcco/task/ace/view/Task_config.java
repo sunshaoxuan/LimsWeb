@@ -992,6 +992,7 @@ private nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler getAceBodyBeforeEdi
  return (nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler)context.get("nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler#6e35bc3d");
   nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler bean = new nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler();
   context.put("nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler#6e35bc3d",bean);
+  bean.setMainBillForm(getBillFormEditor());
 setBeanFacotryIfBeanFacatoryAware(bean);
 invokeInitializingBean(bean);
 return bean;
@@ -1037,7 +1038,7 @@ return bean;
 
 private List getManagedList18(){  List list = new ArrayList();  list.add(getAddAction());  list.add(getEditAction());  list.add(getDeleteAction());  list.add(getCopyAction());  list.add(getSeparatorAction());  list.add(getQueryAction());  list.add(getCardRefreshAction());  list.add(getSeparatorAction());  list.add(getPrintMenuAction());  list.add(getSeparatorAction());  list.add(getCommitScriptAction());  list.add(getUnCommitScriptAction());  list.add(getApproveScriptAction());  list.add(getUNApproveScriptAction());  list.add(getSeparatorAction());  list.add(getLinkQueryAction());  list.add(getSeparatorAction());  list.add(getOutputAction());  list.add(getSeparatorAction());  list.add(getPFApproveStatusInfoAction());  return list;}
 
-private List getManagedList19(){  List list = new ArrayList();  list.add(getSaveAction());  list.add(getCancelAction());  return list;}
+private List getManagedList19(){  List list = new ArrayList();  list.add(getSaveAction());  list.add(getTemporarilySaveAction());  list.add(getCancelAction());  return list;}
 
 public nc.funcnode.ui.action.SeparatorAction getSeparatorAction(){
  if(context.get("separatorAction")!=null)
@@ -1113,6 +1114,24 @@ public nc.ui.qcco.task.action.TaskSaveAction getSaveAction(){
  return (nc.ui.qcco.task.action.TaskSaveAction)context.get("saveAction");
   nc.ui.qcco.task.action.TaskSaveAction bean = new nc.ui.qcco.task.action.TaskSaveAction();
   context.put("saveAction",bean);
+  bean.setModel(getManageAppModel());
+  bean.setService(getBmModelModelService());
+  bean.setEditor(getBillFormEditor());
+  bean.setMainGrandModel(getMainGrandModel());
+  bean.setBillFormEditor(getBillFormEditor());
+  bean.setBillForm(getMainGrandbillFormEditor());
+  bean.setValidationService(getValidateService());
+  bean.setExceptionHandler(getExceptionHandler());
+setBeanFacotryIfBeanFacatoryAware(bean);
+invokeInitializingBean(bean);
+return bean;
+}
+
+public nc.ui.qcco.task.action.TaskTemporarilySaveAction getTemporarilySaveAction(){
+ if(context.get("temporarilySaveAction")!=null)
+ return (nc.ui.qcco.task.action.TaskTemporarilySaveAction)context.get("temporarilySaveAction");
+  nc.ui.qcco.task.action.TaskTemporarilySaveAction bean = new nc.ui.qcco.task.action.TaskTemporarilySaveAction();
+  context.put("temporarilySaveAction",bean);
   bean.setModel(getManageAppModel());
   bean.setService(getBmModelModelService());
   bean.setEditor(getBillFormEditor());
