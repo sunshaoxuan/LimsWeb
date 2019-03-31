@@ -20,6 +20,7 @@ import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.commission.refmodel.EntTypeRefModel;
+import nc.ui.qcco.commission.refmodel.ProductContactRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.lang.UFBoolean;
@@ -89,6 +90,13 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					bodyVO.setAttributeValue("structuretype", values.get(12));
 					UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
 							e.getRow(), e.getBillCardPanel().getBodyItem("structuretype"), true);
+				//mod tank set主键已经没有意义了,但是要刷新参照
+				/*e.getBillCardPanel().setBodyValueAt(values.get(13), e.getRow(), "pk_contacttype");
+				bodyVO.setAttributeValue("contacttype", values.get(13));
+				UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
+						e.getRow(), e.getBillCardPanel().getBodyItem("contacttype"), true);*/
+				
+				//end tank 2019年3月30日15:12:53
 
 					e.getBillCardPanel().setBodyValueAt(values.get(14), e.getRow(), "pk_productstage");
 					bodyVO.setAttributeValue("productstage", values.get(14));

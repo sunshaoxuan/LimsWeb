@@ -169,7 +169,7 @@
 	<bean id="componentValueManager" class="nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter"></bean>
 	
 	<!-- 孙卡片视图 -->
-	<bean id="sunbillForm1" class="nc.ui.pubapp.uif2app.view.ShowUpableBillForm" init-method="initUI">
+	<bean id="sunbillForm1" class="nc.ui.qcco.commission.ace.view.CommissionGrandBillForm" init-method="initUI">
 		<property name="model" ref="bmModel2"></property>
 		<property name="componentValueManager" ref="componentValueManager"></property>
 		<property name="templateContainer" ref="templateContainer" />
@@ -181,6 +181,8 @@
 		<property name="bodyLineActions">
 			<list>
 				<!-- 提供了一组默认实现 -->
+				<bean class="nc.ui.qcco.commission.action.SelectAllLineAction" />
+				<bean class="nc.ui.qcco.commission.action.SelectNoneLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.components.grand.action.GrandBodyAddLineAction" >
 					<property name="mainForm" ref="billForm" />
 				</bean>
