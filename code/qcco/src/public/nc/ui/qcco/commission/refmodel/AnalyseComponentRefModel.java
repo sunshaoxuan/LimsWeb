@@ -8,7 +8,18 @@ public class AnalyseComponentRefModel extends AbstractRefModel {
 		this.setTableName("NC_TEST_INIT");
 		this.setMutilLangNameRef(false);
 	}
+	private StringBuilder sb = new StringBuilder();
+	// ÕâÊÇÅ×¿ª!
+	private String pk_ncEnstardCode = "";
 
+	public String getPk_ncEnstardCode() {
+		return pk_ncEnstardCode;
+	}
+
+	public void setPk_ncEnstardCode(String pk_ncEnstardCode) {
+		this.pk_ncEnstardCode = pk_ncEnstardCode;
+	}
+	
 	public java.lang.String[] getFieldCode() {
 		return new String[] { "TEST_INIT_CODE", "TEST_INIT_NAME" };
 	}
@@ -40,6 +51,15 @@ public class AnalyseComponentRefModel extends AbstractRefModel {
 	protected String getSql(String strPatch, String[] strFieldCode,
 			String[] hiddenFields, String strTableName, String strWherePart,
 			String strGroupField, String strOrderField) {
-		return "select TEST_INIT_CODE, TEST_INIT_NAME, PK_TEST_INIT from NC_TEST_INIT";
+		sb.delete(0, sb.length());
+			sb.append("select TEST_INIT_CODE, TEST_INIT_NAME, PK_TEST_INIT ,resulttype.NC_RESULT_NAMECN  from NC_TEST_INIT init  inner join NC_BASEN_TYPE type1 on (init.NC_ENSTARD = type1.NC_BBASEN_NAME ");
+
+			if (getPk_ncEnstardCode() != null && !getPk_ncEnstardCode().equals("")) {
+
+				sb.append("and type1.PK_BASEN_TYPE = '").append(getPk_ncEnstardCode()).append("' ");
+			}
+			sb.append(" )").append(" left join nc_result_type resulttype on init.PK_RESULT_TYPE = resulttype.PK_RESULT_TYPE ");
+		
+		return sb.toString();
 	}
 }
