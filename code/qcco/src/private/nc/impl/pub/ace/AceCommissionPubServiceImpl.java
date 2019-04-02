@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import nc.bs.dao.BaseDAO;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.qcco.commission.ace.bp.AceCommissionApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionDeleteBP;
@@ -17,6 +18,7 @@ import nc.bs.qcco.commission.ace.bp.AceCommissionSendApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionUnApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionUnSendApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionUpdateBP;
+import nc.hr.utils.InSQLCreator;
 import nc.impl.pubapp.pattern.data.bill.BillLazyQuery;
 import nc.impl.pubapp.pattern.data.bill.tool.BillTransferTool;
 import nc.impl.pubapp.pattern.data.vo.VODelete;
@@ -33,6 +35,7 @@ import nc.vo.pub.VOStatus;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
+import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.commission.CommissionRVO;
 
 public abstract class AceCommissionPubServiceImpl {
@@ -40,7 +43,15 @@ public abstract class AceCommissionPubServiceImpl {
 			IMDPersistenceService.class);
 	IMDPersistenceQueryService query = NCLocator.getInstance().lookup(
 			IMDPersistenceQueryService.class);
+private BaseDAO dao = null;
+	
 
+	public BaseDAO getDao() {
+		if(dao == null){
+			dao = new BaseDAO();
+		}
+		return dao;
+	}
 	// ÐÂÔö
 	public AggCommissionHVO[] pubinsertBills(AggCommissionHVO[] clientFullVOs,
 			AggCommissionHVO[] originBills) throws BusinessException {
@@ -63,6 +74,33 @@ public abstract class AceCommissionPubServiceImpl {
 	// É¾³ý
 	public void pubdeleteBills(AggCommissionHVO[] vos) throws BusinessException {
 		try {
+					List<String> list = new ArrayList<String>();
+			for(AggCommissionHVO vo : vos){
+				list.add((String) vo.getParent().getAttributeValue("pk_commission_h"));
+			}
+			InSQLCreator insql = new InSQLCreator();
+			String commissionInSQL = insql.getInSQL(list.toArray(new String[0]));
+			List<CommissionHVO> lists = (List<CommissionHVO>) this.getDao().retrieveByClause(CommissionHVO.class, "pk_commission_h in("+commissionInSQL+")");
+			if(lists.size() > 0){
+				for(AggCommissionHVO vo : vos){
+					CommissionBVO[] bvos = (CommissionBVO[])vo.getChildrenVO();
+					for(CommissionHVO hvo : lists){
+						vo.getParentVO().setTs(hvo.getTs());
+						if(null != hvo.getAttributeValue("pk_commission_h") && vo.getParentVO().getAttributeValue("pk_commission_h") !=null && hvo.getAttributeValue("pk_commission_h").equals(vo.getParentVO().getAttributeValue("pk_commission_h"))){
+							for(CommissionBVO bvo : bvos){
+								bvo.setTs(hvo.getTs());
+								CommissionRVO[] rvos = bvo.getPk_commission_r();
+								if (null != rvos) {
+									for(CommissionRVO rvo : rvos){
+										rvo.setTs(hvo.getTs());
+									}
+								}
+							}
+						}
+					}
+					
+				}
+			}
 			BillTransferTool<AggCommissionHVO> transferTool = new BillTransferTool<AggCommissionHVO>(
 					(AggCommissionHVO[]) vos);
 			AggCommissionHVO[] fullBills = transferTool.getClientFullInfoBill();

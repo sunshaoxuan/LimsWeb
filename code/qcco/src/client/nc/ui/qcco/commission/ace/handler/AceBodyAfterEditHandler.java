@@ -112,7 +112,9 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		for (BillItem item : e.getBillCardPanel().getBodyItems()) {
 			if (!Arrays.asList(exceptions).contains(item.getKey())) {
 				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), item.getKey());
-
+				if (item.getKey().equals("rowno")) {
+					continue;
+				}
 				if ("samplegroup".equals(item.getKey()) || "analysisref".equals(item.getKey())) {
 					// 当清空样品组别或实验前参数时，清空孙表
 					clearGrandLines(e);

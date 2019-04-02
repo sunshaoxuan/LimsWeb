@@ -101,8 +101,10 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 						for(CommissionBVO bvo : bvos){
 							bvo.setTs(hvo.getTs());
 							CommissionRVO[] rvos = bvo.getPk_commission_r();
-							for(CommissionRVO rvo : rvos){
-								rvo.setTs(hvo.getTs());
+							if (null != rvos) {
+								for(CommissionRVO rvo : rvos){
+									rvo.setTs(hvo.getTs());
+								}
 							}
 						}
 					}
