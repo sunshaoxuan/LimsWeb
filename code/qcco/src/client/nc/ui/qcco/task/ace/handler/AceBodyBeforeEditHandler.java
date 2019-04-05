@@ -57,18 +57,18 @@ public class AceBodyBeforeEditHandler implements
 			try{
 			String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 			if(null == pk_commission_h){
-				MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "é”™è¯¯", "å§”æ‰˜å•ä¸èƒ½ä¸ºç©ºã€‚"); 
+				MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "´íÎó", "Î¯ÍĞµ¥²»ÄÜÎª¿Õ¡£"); 
 				return;
 			}
 			
 				
 				SampleAllocationPanel samplepanel = new SampleAllocationPanel(pk_commission_h);
-				samplepanel.setTitle("æ ·å“åˆ†é…å‚ç…§");
+				samplepanel.setTitle("ÑùÆ··ÖÅä²ÎÕÕ");
 				if (samplepanel.showModal() == 1) {
 					String strvalue = samplepanel.getSelectedstr();
 					Integer testnum = samplepanel.getTestnum();
 					BillCardPanel card = this.getMainBillForm().getBillCardPanel();
-					//æ ¡éªŒæ ·å“åˆ†é…æ˜¯å¦é‡å¤
+					//Ğ£ÑéÑùÆ··ÖÅäÊÇ·ñÖØ¸´
 					List<String> strlist = new ArrayList<String>();
 					for (int i = 0; i < e.getBillCardPanel().getRowCount()-1; i++) {
 						strlist.add((String) this.getMainBillForm().getBillCardPanel().getBodyValueAt(i, "sampleallocation"));
@@ -76,7 +76,7 @@ public class AceBodyBeforeEditHandler implements
 					if (strlist != null && strlist.size()>0 && strvalue != null) {
 						List<String> commList = validate(pk_commission_h,strlist,strvalue);
 						if (commList.size() > 0) {
-							MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "é”™è¯¯", "æ ·å“åˆ†é…ä¸èƒ½é‡å¤ã€‚"); 
+							MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "´íÎó", "ÑùÆ··ÖÅä²»ÄÜÖØ¸´¡£"); 
 							return;
 						}	
 					}
@@ -174,7 +174,7 @@ public class AceBodyBeforeEditHandler implements
 			try {
 				btnCancel = new UIButton();
 				btnCancel.setName("btnCancel");
-				btnCancel.setText("å–æ¶ˆ");
+				btnCancel.setText("È¡Ïû");
 				btnCancel.addActionListener(this);
 				btnCancel.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK),
 						JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -184,8 +184,8 @@ public class AceBodyBeforeEditHandler implements
 		}
 		return btnCancel;
 	}
-	private UIButton btnOK = null;// ç¡®å®šæŒ‰é’®
-	private UIButton btnCancel = null;// å–æ¶ˆæŒ‰é’®
+	private UIButton btnOK = null;// È·¶¨°´Å¥
+	private UIButton btnCancel = null;// È¡Ïû°´Å¥
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub

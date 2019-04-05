@@ -58,15 +58,15 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction{
 
 	public TaskTemporarilySaveAction() {
 		super();
-		String name = "æš‚å­˜"
-		/*@res "æš‚å­˜"*/;
+		String name = "Ôİ´æ"
+		/*@res "Ôİ´æ"*/;
 		setBtnName(name);
 		setCode("TaskTemporarilySave");
 		putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke('I', Event.CTRL_MASK));
 		putValue(Action.SHORT_DESCRIPTION, name+"(Ctrl+I)");
 	}
 
-	// æ³¨æ„å°†å­™é¢æ¿XXXå±æ€§è®¾ç½®
+	// ×¢Òâ½«ËïÃæ°åXXXÊôĞÔÉèÖÃ
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
 		
@@ -108,7 +108,7 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction{
 
 
 	    if (getService() == null) {
-	      throw new BusinessException("serviceä¸èƒ½ä¸ºç©º");
+	      throw new BusinessException("service²»ÄÜÎª¿Õ");
 	    }
 	    afterUpdateVOs = getService().insert(lightVOs);
 
@@ -138,7 +138,7 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction{
 
 
 	    if (getService() == null) {
-	      throw new BusinessException("serviceç¥¥å¤”å³ˆè«¾ï¹");
+	      throw new BusinessException("serviceÏéÙçRÖZ©z");
 	    }
 	    afterUpdateVOs = getService().update(lightVOs);
 
@@ -151,7 +151,7 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction{
 
 	protected void showSuccessInfo() {
 		ShowStatusBarMsgUtil.showStatusBarMsg(IShowMsgConstant.getSaveSuccessInfo(), getMainGrandModel().getMainModel().getContext());
-//		// è”šç§æ´˜æˆ²è¶¼åƒ‡ç¬ç´²æ¢“ç¥©å¼‡è‘©å¼‡
+//		// Îµ¶m›Ÿ‘òõÂƒJ¸‘¼œè÷µ‚mİâm
 //		if (getExceptionHandler() instanceof DefaultExceptionHanler) {
 //			((DefaultExceptionHanler) getExceptionHandler()).setAutoClearError(true);
 //		}

@@ -6,17 +6,17 @@ import nc.vo.pub.VOStatus;
 import nc.vo.pub.pf.BillStatusEnum;
 
 /**
- * æ ‡å‡†å•æ®é€å®¡çš„BP
+ * ±ê×¼µ¥¾İËÍÉóµÄBP
  */
 public class AceCommissionSendApproveBP {
 	/**
-	 * é€å®¡åŠ¨ä½œ
+	 * ËÍÉó¶¯×÷
 	 * 
 	 * @param vos
-	 *            å•æ®VOæ•°ç»„
+	 *            µ¥¾İVOÊı×é
 	 * @param script
-	 *            å•æ®åŠ¨ä½œè„šæœ¬å¯¹è±¡
-	 * @return é€å®¡åçš„å•æ®VOæ•°ç»„
+	 *            µ¥¾İ¶¯×÷½Å±¾¶ÔÏó
+	 * @return ËÍÉóºóµÄµ¥¾İVOÊı×é
 	 */
 
 	public AggCommissionHVO[] sendApprove(AggCommissionHVO[] clientBills,
@@ -26,7 +26,7 @@ public class AceCommissionSendApproveBP {
 					BillStatusEnum.COMMIT.value());
 			clientFullVO.getParentVO().setStatus(VOStatus.UPDATED);
 		}
-		// æ•°æ®æŒä¹…åŒ–
+		// Êı¾İ³Ö¾Ã»¯
 		AggCommissionHVO[] returnVos = new BillUpdate<AggCommissionHVO>().update(
 				clientBills, originBills);
 		return returnVos;

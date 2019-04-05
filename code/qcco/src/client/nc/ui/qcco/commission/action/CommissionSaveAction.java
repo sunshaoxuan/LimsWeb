@@ -11,6 +11,8 @@ import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
 import nc.itf.qcco.ICommissionMaintain;
 import nc.itf.qcco.ITaskMaintain;
+import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.BeanListProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.linkoperate.LinkEditData;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
@@ -165,14 +167,15 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 	private void deleteOldTask(IBill[] bills) throws BusinessException {
 		if (bills != null && bills.length >= 0) {
 			List<AggCommissionHVO> deleteList = new ArrayList();
+			StringBuilder pkSb = new StringBuilder();
 			for (IBill bill : bills) {
-				if (bill != null && bill.getParent() != null) {
-					deleteList.add((AggCommissionHVO) bill.getParent());
+				if (bill != null && bill instanceof AggCommissionHVO&& bill.getParent() != null) {
+					deleteList.add(((AggCommissionHVO) bill));
 				}
 			}
-			ICommissionMaintain ITaskMaintain = (ICommissionMaintain) NCLocator.getInstance().lookup(
-					ICommissionMaintain.class);
-			ITaskMaintain.delete(deleteList.toArray(new AggCommissionHVO[0]));
+			//删除就的任务单
+			ITaskMaintain ITaskMaintain = (ITaskMaintain) NCLocator.getInstance().lookup(ITaskMaintain.class);
+			ITaskMaintain.deleteOldList(deleteList);
 		}
 
 	}

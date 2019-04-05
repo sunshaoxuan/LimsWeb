@@ -1,12 +1,15 @@
 package nc.impl.qcco;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
 import nc.ui.querytemplate.querytree.IQueryScheme;
+import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionRVO;
 import nc.vo.qcco.task.AggTaskHVO;
@@ -114,5 +117,38 @@ private BaseDAO dao = null;
 			AggTaskHVO[] originBills) throws BusinessException {
 		return super.pubunapprovebills(clientFullVOs, originBills);
 	}
+	@Override
+	public void deleteOldList(List<AggCommissionHVO> deleteList) throws BusinessException {
+		Set<String> commissionPkSet = new HashSet();
+		if(deleteList!=null){
+			for(AggCommissionHVO hvo:deleteList){
+				commissionPkSet.add(hvo.getPrimaryKey());
+			}
+			InSQLCreator insql = new InSQLCreator();
+	        String pkInSQL = insql.getInSQL(commissionPkSet.toArray(new String[0]));
+	        String sql = "update qc_commission_r "
+	        		+" set dr = 1 "
+	        		+" where PK_COMMISSION_R in ( "
+	        		+" select PK_COMMISSION_R from qc_commission_r r "
+	        		+" left join qc_commission_b b on b.PK_COMMISSION_B = r.PK_COMMISSION_B "
+	        		+" left join qc_commission_h h on h.PK_COMMISSION_H = h.PK_COMMISSION_H "
+	        		+" where h.PK_COMMISSION_H in ("+pkInSQL+") "
+	        		+" )";
+	        getDao().executeUpdate(sql);
+		}
 
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

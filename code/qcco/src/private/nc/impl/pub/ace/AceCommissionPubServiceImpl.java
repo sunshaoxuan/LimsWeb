@@ -61,16 +61,44 @@ private BaseDAO dao = null;
 					clientFullVOs);
 			// 调用BP
 			AceCommissionInsertBP action = new AceCommissionInsertBP();
+
 			AggCommissionHVO[] retvos = action.insert(clientFullVOs);
 			// 构造返回数据
 			// return transferTool.getBillForToClient(retvos);
+			//处理ts问题
+			dealTs(retvos);
 			return retvos;
 		} catch (Exception e) {
 			ExceptionUtils.marsh(e);
 		}
 		return null;
 	}
-
+	/**
+	 * 孙表存储时,要造成ts不一致的问题
+	 * @param vos
+	 * @throws BusinessException
+	 */
+	private void dealTs(AggCommissionHVO[] vos) throws BusinessException {
+		if(vos!=null && vos.length > 0){
+			for(AggCommissionHVO hvo : vos){
+				if(hvo==null){
+					continue;
+				}
+				//更新孙表的ts
+				String sql = " update qc_commission_r "
+				+" set ts = (select ts from qc_commission_h where PK_COMMISSION_H = '"+hvo.getPrimaryKey()+"') "
+				+" where PK_COMMISSION_R in ( "
+				+" select PK_COMMISSION_R from qc_commission_r r "
+				+" left join qc_commission_b b on b.PK_COMMISSION_B = r.PK_COMMISSION_B "
+				+" left join qc_commission_h h on h.PK_COMMISSION_H = h.PK_COMMISSION_H "
+				+" where h.PK_COMMISSION_H = '"+hvo.getPrimaryKey()+"' "
+				+"  ) ";
+				this.getDao().executeUpdate(sql);
+			}
+			
+		}
+		
+	}
 	// 删除
 	public void pubdeleteBills(AggCommissionHVO[] vos) throws BusinessException {
 		try {

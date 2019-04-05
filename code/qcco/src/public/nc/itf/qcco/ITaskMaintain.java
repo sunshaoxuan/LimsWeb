@@ -1,6 +1,9 @@
 package nc.itf.qcco;
 
+import java.util.List;
+
 import nc.ui.querytemplate.querytree.IQueryScheme;
+import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.pub.BusinessException;
 
@@ -33,4 +36,9 @@ public interface ITaskMaintain {
 
 	public AggTaskHVO[] unapprove(AggTaskHVO[] clientFullVOs,
 			AggTaskHVO[] originBills) throws BusinessException;
+	/**
+	 * 删除旧的任务单(当委托单修改时,删除任务单)
+	 * @param deleteList
+	 */
+	public void deleteOldList(List<AggCommissionHVO> deleteList)throws BusinessException;
 }

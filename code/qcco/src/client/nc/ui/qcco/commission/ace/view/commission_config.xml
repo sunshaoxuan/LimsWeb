@@ -328,7 +328,7 @@
 		<property name="bodyLineActions">
 			<list>
 				<!-- 提供了一组默认实现 -->
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyAddLineAction" />
+				<bean class="nc.ui.qcco.commission.action.CommissionBodyAddLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyDelLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />

@@ -73,7 +73,9 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductSpec(productSpec);
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductGrade(productGrade);
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductStage(productStage);
-		} else if ("productstage".equals(e.getKey())) {
+		}
+		//温度字段不可修改
+		/*else if ("productstage".equals(e.getKey())) {
 			String productserial = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productserial");
 			String basentype = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_enterprisestandard");
 			String productspec = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productspec");
@@ -83,7 +85,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basprod_point(productspec);
 			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel())
 					.setPk_basprod_struct(productstruct);
-		}
+		}*/
 		// if ("enterprisestandard".equals(e.getKey())) {
 		// if (StringUtils.isEmpty(((UIRefPane)
 		// bitem.getComponent()).getRefPK())) {
