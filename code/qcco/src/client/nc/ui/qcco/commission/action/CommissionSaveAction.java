@@ -115,7 +115,8 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 						"是否跳转到新的任务单?")) {
 			LinkEditData data = new LinkEditData();
 			data.setBillID(pk_task_h);
-			SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
+			//TODO 跳转先不用
+			//SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
 		}
 
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
@@ -160,7 +161,8 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 						"是否跳转到新的任务单?")) {
 			LinkEditData data = new LinkEditData();
 			data.setBillID(pk_task_h);
-			SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
+			//TODO 跳转先不用
+			//SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
 		}
 	}
 

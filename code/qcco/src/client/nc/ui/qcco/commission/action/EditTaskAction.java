@@ -55,7 +55,8 @@ public class EditTaskAction extends NCAction {
 					}
 				}
 				data.setBillID(pk_task_h);
-				SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
+				//TODO 跳转先不用
+				//SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
 			}
 		}
 	}
