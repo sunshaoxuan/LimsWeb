@@ -550,6 +550,8 @@
 				<ref bean="outputAction" />
 				<ref bean="separatorAction" />
 				<ref bean="pFApproveStatusInfoAction" />
+				<!--附件上传 -->
+				<ref bean="fileupload" />
 			</list>
 		</property>
 	</bean>
@@ -581,6 +583,7 @@
 				<ref bean="outputAction" />
 				<ref bean="separatorAction" />
 				<ref bean="pFApproveStatusInfoAction" />
+				<ref bean="fileupload" />
 			</list>
 		</property>
 
@@ -593,7 +596,10 @@
 			</list>
 		</property>
 	</bean>
-
+<!-- 文件上传按钮 -->
+	<bean id="fileupload" class="nc.ui.qcco.task.action.FileUploadAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
 	<!-- 分隔按钮 -->
 	<bean id="separatorAction" class="nc.funcnode.ui.action.SeparatorAction" />
 	<!-- 显示列表的拦截器 -->
