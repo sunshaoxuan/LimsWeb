@@ -44,7 +44,7 @@ public class EntTypeRefModel extends AbstractRefModel {
 	protected String getSql(String strPatch, String[] strFieldCode, String[] hiddenFields, String strTableName,
 			String strWherePart, String strGroupField, String strOrderField) {
 		return "select TRIM(NC_BASEN_CODE) NC_BASEN_CODE, NC_BBASEN_NAME, PK_BASEN_TYPE from NC_BASEN_TYPE "
-				+ (StringUtils.isEmpty(getPk_basprod_type()) ? "1=1" : (" WHERE PK_BASPROD_TYPE = '"
+				+ (StringUtils.isEmpty(getPk_basprod_type()) ? " WHERE 1=1" : (" WHERE PK_BASPROD_TYPE = '"
 						+ this.getPk_basprod_type() + "'"));
 	}
 
