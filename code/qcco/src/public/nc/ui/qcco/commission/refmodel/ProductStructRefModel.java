@@ -2,6 +2,8 @@ package nc.ui.qcco.commission.refmodel;
 
 import nc.ui.bd.ref.AbstractRefModel;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ProductStructRefModel extends AbstractRefModel {
 	private String pk_basprod_type;
 	private String pk_basen_type;
@@ -45,13 +47,13 @@ public class ProductStructRefModel extends AbstractRefModel {
 			String strWherePart, String strGroupField, String strOrderField) {
 		return "SELECT TRIM(BP.NC_BASPRODSTRUCT_CODE) NC_BASPRODSTRUCT_CODE, TRIM(BP.NC_BASPRODSTRUCT_NAME) NC_BASPRODSTRUCT_NAME, BP.PK_BASPROD_STRUCT "
 				+ " FROM NC_SAMPLE_INFO SI INNER JOIN NC_BASPROD_STRUCT BP ON BP.PK_BASPROD_STRUCT = SI.PK_BASPROD_STRUCT "
-				+ " WHERE SI.PK_BASPROD_TYPE = '"
-				+ getPk_basprod_type()
-				+ "' AND SI.PK_BASEN_TYPE = '"
-				+ getPk_basen_type()
-				+ "' AND SI.PK_BASPROD_POINT = '"
-				+ getPk_basprod_point()
-				+ "' "
+				+ " WHERE 1=1 "
+				+ (StringUtils.isEmpty(getPk_basprod_type()) ? "" : ("AND SI.PK_BASPROD_TYPE = '"
+						+ getPk_basprod_type() + "'"))
+				+ (StringUtils.isEmpty(getPk_basen_type()) ? ""
+						: (" AND SI.PK_BASEN_TYPE = '" + getPk_basen_type() + "'"))
+				+ (StringUtils.isEmpty(getPk_basprod_point()) ? "" : ("' AND SI.PK_BASPROD_POINT = '"
+						+ getPk_basprod_point() + "' "))
 				+ " GROUP BY BP.NC_BASPRODSTRUCT_CODE, BP.NC_BASPRODSTRUCT_NAME, BP.PK_BASPROD_STRUCT "
 				+ " ORDER BY CAST(BP.NC_BASPRODSTRUCT_CODE AS NUMBER)";
 	}

@@ -4,6 +4,8 @@ import java.util.Vector;
 
 import nc.ui.bd.ref.AbstractRefModel;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ProductContactRefModel extends AbstractRefModel {
 	private String pk_basprod_type;
 	private String pk_basen_type;
@@ -91,15 +93,15 @@ public class ProductContactRefModel extends AbstractRefModel {
 			String strWherePart, String strGroupField, String strOrderField) {
 		String sql = "SELECT TRIM(BP.NC_BASPRODCONTACT_CODE) NC_BASPRODCONTACT_CODE, TRIM(BP.NC_BASPRODCONTACT_NAME) NC_BASPRODCONTACT_NAME, BP.PK_BASPROD_CONTACT "
 				+ " FROM NC_SAMPLE_INFO SI INNER JOIN NC_BASPROD_CONTACT BP ON BP.PK_BASPROD_CONTACT = SI.PK_BASPROD_CONTACT "
-				+ " WHERE SI.PK_BASPROD_TYPE = '"
-				+ getPk_basprod_type()
-				+ "' AND SI.PK_BASEN_TYPE = '"
-				+ getPk_basen_type()
-				+ "' AND SI.PK_BASPROD_POINT = '"
-				+ getPk_basprod_point()
-				+ "' AND SI.PK_BASPROD_STRUCT = '"
-				+ getPk_basprod_struct()
-				+ "' "
+				+ " WHERE 1=1 "
+				+ (StringUtils.isEmpty(getPk_basprod_type()) ? "" : (" AND SI.PK_BASPROD_TYPE = '"
+						+ getPk_basprod_type() + "'"))
+				+ (StringUtils.isEmpty(getPk_basen_type()) ? ""
+						: (" AND SI.PK_BASEN_TYPE = '" + getPk_basen_type() + "'"))
+				+ (StringUtils.isEmpty(getPk_basprod_point()) ? "" : (" AND SI.PK_BASPROD_POINT = '"
+						+ getPk_basprod_point() + "'"))
+				+ (StringUtils.isEmpty(getPk_basprod_struct()) ? "" : (" AND SI.PK_BASPROD_STRUCT = '"
+						+ getPk_basprod_struct() + "' "))
 				+ " GROUP BY BP.NC_BASPRODCONTACT_CODE, BP.NC_BASPRODCONTACT_NAME, BP.PK_BASPROD_CONTACT "
 				+ " ORDER BY CAST(BP.NC_BASPRODCONTACT_CODE AS NUMBER)";
 
