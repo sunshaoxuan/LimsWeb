@@ -51,6 +51,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 	@Override
 	public AggCommissionHVO[] save(AggCommissionHVO[] clientFullVOs,
 			AggCommissionHVO[] originBills) throws BusinessException {
+		checkMail(clientFullVOs);
 		return super.pubsendapprovebills(clientFullVOs, originBills);
 	}
 
@@ -74,6 +75,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 
 	@Override
 	public AggCommissionHVO[] insert(AggCommissionHVO[] vos) throws BusinessException {
+		checkMail(vos);
 		return super.pubinsertBills(vos,null);
 	}
 
@@ -86,6 +88,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 	@Override
 	public AggCommissionHVO[] update(AggCommissionHVO[] vos)
 			throws BusinessException {
+		checkMail(vos);
 		List<String> list = new ArrayList<String>();
 		for(AggCommissionHVO vo : vos){
 			list.add((String) vo.getParent().getAttributeValue("pk_commission_h"));
@@ -114,6 +117,25 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 		}
 
 		return super.pubupdateBills(vos);
+	}
+
+
+
+	private void checkMail(AggCommissionHVO[] vos) throws BusinessException{
+		if(vos!=null){
+			for(AggCommissionHVO aggvo : vos){
+				if(aggvo!=null &&aggvo.getParentVO()!=null
+						&&aggvo.getParentVO().getEmail()!=null
+						&&!aggvo.getParentVO().getEmail().equals("")){
+					String email = aggvo.getParentVO().getEmail();
+					boolean isMatch = 
+							email.matches("^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$");
+					if(!isMatch){
+						throw new BusinessException("电子邮箱不合法");
+					}
+				}
+			}
+		}
 	}
 
 	
