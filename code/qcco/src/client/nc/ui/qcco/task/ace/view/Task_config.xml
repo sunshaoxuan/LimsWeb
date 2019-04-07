@@ -40,7 +40,7 @@
 	</bean>
 
 	<!-- 管理应用模型 -->
-	<bean id="manageAppModel2" class="nc.ui.pubapp.uif2app.model.BillManageModel">
+	<bean id="manageAppModel2" class="nc.ui.qcco.tak.model.SubGrandBillModel">
 		<property name="businessObjectAdapterFactory" ref="boadatorfactory2"></property>
 		<property name="context" ref="context"></property>
 	</bean>
@@ -461,6 +461,28 @@
 			</list>
 		</property>
 	</bean>
+	<!-- Mediator，模型之间监听关系部分 -->
+	<bean id="grandModelEventMediator" class="nc.ui.pubapp.uif2app.model.AppEventHandlerMediator">
+		<property name="model" ref="manageAppModel2" />
+		<property name="handlerGroup">
+			<list>
+				<!-- nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent -->
+				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
+					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent" />
+					<property name="handler">
+						<bean class="nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler" />
+					</property>
+				</bean>
+				<!-- nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent -->
+				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
+					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent" />
+					<property name="handler">
+						<bean class="nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
 	<bean id="eventMediator" class="nc.ui.pubapp.uif2app.model.AppEventHandlerMediator">
 		<property name="model" ref="manageAppModel" />
 		<property name="handlerGroup">
@@ -550,6 +572,8 @@
 				<ref bean="outputAction" />
 				<ref bean="separatorAction" />
 				<ref bean="pFApproveStatusInfoAction" />
+				<!--附件上传 -->
+				<ref bean="fileupload" />
 			</list>
 		</property>
 	</bean>
@@ -581,6 +605,7 @@
 				<ref bean="outputAction" />
 				<ref bean="separatorAction" />
 				<ref bean="pFApproveStatusInfoAction" />
+				<ref bean="fileupload" />
 			</list>
 		</property>
 
@@ -631,6 +656,10 @@
 		<property name="billForm" ref="MainGrandbillFormEditor" />
 		<property name="validationService" ref="validateService" />
 		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
+	</bean>
+	<!-- 文件上传按钮 -->
+	<bean id="fileupload" class="nc.ui.qcco.task.action.FileUploadAction">
+		<property name="model" ref="manageAppModel" />
 	</bean>
 	<!-- 保存按钮 -->
 	<bean id="temporarilySaveAction" class="nc.ui.qcco.task.action.TaskTemporarilySaveAction">
