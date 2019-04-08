@@ -10,15 +10,15 @@ public class SampleGroupRefModel extends AbstractRefModel {
 	}
 
 	public java.lang.String[] getFieldCode() {
-		return new String[] { "NC_SAMPLE_CODE" };
+		return new String[] { "NC_SAMPLE_CODE", "NC_SAMPLE_NAME" };
 	}
 
 	public java.lang.String[] getFieldName() {
-		return new String[] { "样品组别编码" };
+		return new String[] { "样品组别编码", "样品组别名称" };
 	}
 
 	public java.lang.String[] getHiddenFieldCode() {
-		return new String[] { "PK_SAMPLE_GROUP","NC_SAMPLE_NAME" };
+		return new String[] { "PK_SAMPLE_GROUP" };
 	}
 
 	public java.lang.String getPkFieldCode() {
@@ -30,21 +30,20 @@ public class SampleGroupRefModel extends AbstractRefModel {
 	}
 
 	public int getDefaultFieldCount() {
-		return 1;
+		return 2;
 	}
 
 	public java.lang.String getRefTitle() {
 		return "请选择样品组别";
 	}
-	
+
 	@Override
 	public String getRefNameField() {
-		return "NC_SAMPLE_CODE";
+		return "NC_SAMPLE_NAME";
 	}
 
-	protected String getSql(String strPatch, String[] strFieldCode,
-			String[] hiddenFields, String strTableName, String strWherePart,
-			String strGroupField, String strOrderField) {
-		return "select NC_SAMPLE_NAME, PK_SAMPLE_GROUP from NC_SAMPLE_GROUP WHERE ISENABLE=1 ORDER BY NC_SAMPLE_CODE";
+	protected String getSql(String strPatch, String[] strFieldCode, String[] hiddenFields, String strTableName,
+			String strWherePart, String strGroupField, String strOrderField) {
+		return "select NC_SAMPLE_CODE, NC_SAMPLE_NAME, PK_SAMPLE_GROUP from NC_SAMPLE_GROUP WHERE ISENABLE=1 ORDER BY NC_SAMPLE_CODE";
 	}
 }

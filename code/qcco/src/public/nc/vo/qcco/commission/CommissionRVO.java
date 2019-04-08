@@ -11,7 +11,7 @@ import nc.vo.pubapp.pattern.model.meta.entity.vo.VOMetaFactory;
  * <p>
  * 此处添加累的描述信息
  * </p>
- * 创建日期:2019/3/25
+ * 创建日期:2019/4/8
  * 
  * @author yonyouBQ
  * @version NCPrj ??
@@ -77,7 +77,7 @@ public class CommissionRVO extends SuperVO {
 	public UFDateTime ts;
 
 	/**
-	 * 属性 pk_commission_r的Getter方法.属性名：参数行主键 创建日期:2019/3/25
+	 * 属性 pk_commission_r的Getter方法.属性名：参数行主键 创建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -86,7 +86,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性pk_commission_r的Setter方法.属性名：参数行主键 创建日期:2019/3/25
+	 * 属性pk_commission_r的Setter方法.属性名：参数行主键 创建日期:2019/4/8
 	 * 
 	 * @param newPk_commission_r
 	 *            java.lang.String
@@ -96,7 +96,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 rowno的Getter方法.属性名：行号 创建日期:2019/3/25
+	 * 属性 rowno的Getter方法.属性名：行号 创建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -105,7 +105,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性rowno的Setter方法.属性名：行号 创建日期:2019/3/25
+	 * 属性rowno的Setter方法.属性名：行号 创建日期:2019/4/8
 	 * 
 	 * @param newRowno
 	 *            java.lang.String
@@ -115,7 +115,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 analysisname的Getter方法.属性名：实验前参数名称 创建日期:2019/3/25
+	 * 属性 analysisname的Getter方法.属性名：实验前参数名称 创建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -124,7 +124,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性analysisname的Setter方法.属性名：实验前参数名称 创建日期:2019/3/25
+	 * 属性analysisname的Setter方法.属性名：实验前参数名称 创建日期:2019/4/8
 	 * 
 	 * @param newAnalysisname
 	 *            java.lang.String
@@ -134,7 +134,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 pk_samplegroup的Getter方法.属性名：样品组别 创建日期:2019/3/25
+	 * 属性 pk_samplegroup的Getter方法.属性名：样品组别 创建日期:2019/4/8
 	 * 
 	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
@@ -143,7 +143,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性pk_samplegroup的Setter方法.属性名：样品组别 创建日期:2019/3/25
+	 * 属性pk_samplegroup的Setter方法.属性名：样品组别 创建日期:2019/4/8
 	 * 
 	 * @param newPk_samplegroup
 	 *            nc.vo.bd.defdoc.DefdocVO
@@ -153,7 +153,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 pk_component的Getter方法.属性名：参数项 创建日期:2019/3/25
+	 * 属性 pk_component的Getter方法.属性名：参数项 创建日期:2019/4/8
 	 * 
 	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
@@ -162,7 +162,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性pk_component的Setter方法.属性名：参数项 创建日期:2019/3/25
+	 * 属性pk_component的Setter方法.属性名：参数项 创建日期:2019/4/8
 	 * 
 	 * @param newPk_component
 	 *            nc.vo.bd.defdoc.DefdocVO
@@ -172,7 +172,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 pk_valuetype的Getter方法.属性名：值类型 创建日期:2019/3/25
+	 * 属性 pk_valuetype的Getter方法.属性名：值类型 创建日期:2019/4/8
 	 * 
 	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
@@ -181,7 +181,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性pk_valuetype的Setter方法.属性名：值类型 创建日期:2019/3/25
+	 * 属性pk_valuetype的Setter方法.属性名：值类型 创建日期:2019/4/8
 	 * 
 	 * @param newPk_valuetype
 	 *            nc.vo.bd.defdoc.DefdocVO
@@ -191,7 +191,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 stdmaxvalue的Getter方法.属性名：最大值 创建日期:2019/3/25
+	 * 属性 stdmaxvalue的Getter方法.属性名：最大值 创建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -200,7 +200,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性stdmaxvalue的Setter方法.属性名：最大值 创建日期:2019/3/25
+	 * 属性stdmaxvalue的Setter方法.属性名：最大值 创建日期:2019/4/8
 	 * 
 	 * @param newStdmaxvalue
 	 *            java.lang.String
@@ -210,7 +210,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 stdminvalue的Getter方法.属性名：最小值 创建日期:2019/3/25
+	 * 属性 stdminvalue的Getter方法.属性名：最小值 创建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -219,7 +219,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性stdminvalue的Setter方法.属性名：最小值 创建日期:2019/3/25
+	 * 属性stdminvalue的Setter方法.属性名：最小值 创建日期:2019/4/8
 	 * 
 	 * @param newStdminvalue
 	 *            java.lang.String
@@ -229,7 +229,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 unitname的Getter方法.属性名：单位 创建日期:2019/3/25
+	 * 属性 unitname的Getter方法.属性名：单位 创建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -238,7 +238,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性unitname的Setter方法.属性名：单位 创建日期:2019/3/25
+	 * 属性unitname的Setter方法.属性名：单位 创建日期:2019/4/8
 	 * 
 	 * @param newUnitname
 	 *            java.lang.String
@@ -248,7 +248,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 judgeflag的Getter方法.属性名：是否判定 创建日期:2019/3/25
+	 * 属性 judgeflag的Getter方法.属性名：是否判定 创建日期:2019/4/8
 	 * 
 	 * @return nc.vo.pub.lang.UFBoolean
 	 */
@@ -257,7 +257,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性judgeflag的Setter方法.属性名：是否判定 创建日期:2019/3/25
+	 * 属性judgeflag的Setter方法.属性名：是否判定 创建日期:2019/4/8
 	 * 
 	 * @param newJudgeflag
 	 *            nc.vo.pub.lang.UFBoolean
@@ -267,7 +267,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 testflag的Getter方法.属性名：是否测试 创建日期:2019/3/25
+	 * 属性 testflag的Getter方法.属性名：是否测试 创建日期:2019/4/8
 	 * 
 	 * @return nc.vo.pub.lang.UFBoolean
 	 */
@@ -276,7 +276,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性testflag的Setter方法.属性名：是否测试 创建日期:2019/3/25
+	 * 属性testflag的Setter方法.属性名：是否测试 创建日期:2019/4/8
 	 * 
 	 * @param newTestflag
 	 *            nc.vo.pub.lang.UFBoolean
@@ -286,7 +286,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 productstage的Getter方法.属性名：测试温度 创建日期:2019/3/25
+	 * 属性 productstage的Getter方法.属性名：测试温度 创建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -295,7 +295,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性productstage的Setter方法.属性名：测试温度 创建日期:2019/3/25
+	 * 属性productstage的Setter方法.属性名：测试温度 创建日期:2019/4/8
 	 * 
 	 * @param newProductstage
 	 *            java.lang.String
@@ -305,7 +305,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 生成上层主键的Getter方法.属性名：上层主键 创建日期:2019/3/25
+	 * 属性 生成上层主键的Getter方法.属性名：上层主键 创建日期:2019/4/8
 	 * 
 	 * @return String
 	 */
@@ -314,7 +314,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性生成上层主键的Setter方法.属性名：上层主键 创建日期:2019/3/25
+	 * 属性生成上层主键的Setter方法.属性名：上层主键 创建日期:2019/4/8
 	 * 
 	 * @param newPk_commission_b
 	 *            String
@@ -324,7 +324,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性 生成时间戳的Getter方法.属性名：时间戳 创建日期:2019/3/25
+	 * 属性 生成时间戳的Getter方法.属性名：时间戳 创建日期:2019/4/8
 	 * 
 	 * @return nc.vo.pub.lang.UFDateTime
 	 */
@@ -333,7 +333,7 @@ public class CommissionRVO extends SuperVO {
 	}
 
 	/**
-	 * 属性生成时间戳的Setter方法.属性名：时间戳 创建日期:2019/3/25
+	 * 属性生成时间戳的Setter方法.属性名：时间戳 创建日期:2019/4/8
 	 * 
 	 * @param newts
 	 *            nc.vo.pub.lang.UFDateTime

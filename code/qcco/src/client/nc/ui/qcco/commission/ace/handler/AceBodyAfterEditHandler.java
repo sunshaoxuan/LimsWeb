@@ -38,7 +38,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		if ("productserial".equals(e.getKey())) {
 			// 产品系列
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
-			clearBodyItems(e, new String[] { "pk_productserial", "productserial" });
+			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "samplegroup", "pk_samplegroup" });
 			// 刷新温度字段
 			refreshProductstage(e);
 			// 刷新实验前参数
@@ -51,14 +51,16 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// 企业标准
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
 			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
-					"enterprisestandard", "analysisref" });
+					"enterprisestandard", "analysisref", "samplegroup", "pk_samplegroup" });
 			// 刷新温度字段
 			refreshProductstage(e);
 		} else if ("productspec".equals(e.getKey())) {
 			// 规格号
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productspec");
-			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
-					"enterprisestandard", "pk_productspec", "productspec", "typeno" });
+			// clearBodyItems(e, new String[] { "pk_productserial",
+			// "productserial", "pk_enterprisestandard",
+			// "enterprisestandard", "pk_productspec", "productspec", "typeno",
+			// "samplegroup", "pk_samplegroup" });
 			// 刷新温度字段
 			refreshProductstage(e);
 			// 刷新实验前参数
@@ -70,11 +72,15 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		} else if ("structuretype".equals(e.getKey())) {
 			// 结构类型
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_structuretype");
-			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
-					"enterprisestandard", "pk_productspec", "productspec", "pk_structuretype", "structuretype",
-					"typeno", "analysisref" });
+			// clearBodyItems(e, new String[] { "pk_productserial",
+			// "productserial", "pk_enterprisestandard",
+			// "enterprisestandard", "pk_productspec", "productspec",
+			// "pk_structuretype", "structuretype",
+			// "typeno", "analysisref", "samplegroup", "pk_samplegroup" });
 			// 刷新温度字段
 			refreshProductstage(e);
+		} else if ("ref_contacttype".equals(e.getKey())) {
+			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "contacttype");
 		} else if ("contactbrand".equals(e.getKey())) {
 			// 触点牌号
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
@@ -104,7 +110,8 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			}
 		}
 
-		if ("samplegroup".equals(e.getKey()) || "contacttype".equals(e.getKey())) {
+		if ("enterprisestandard".equals(e.getKey()) || "productspec".equals(e.getKey())
+				|| "samplegroup".equals(e.getKey()) || "ref_contacttype".equals(e.getKey())) {
 			// 清空孙表样品
 			clearGrandLines(e);
 			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") != null
@@ -259,7 +266,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 								+ "'  and p.nc_sample_point = '"
 								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "productspec")
 								+ "'  and ' ' || p.Nc_contact_type || ',' like '% "
-								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "contacttype")
+								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "ref_contacttype")
 								+ ",%'  and ' ' || p.NC_COIL_TYPE || ',' like '% "
 								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "structuretype")
 								+ ",%'  and p.nc_coil_current = '"

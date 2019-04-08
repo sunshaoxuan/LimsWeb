@@ -9,7 +9,6 @@ import nc.ui.qcco.commission.refmodel.ProductContactRefModel;
 import nc.ui.qcco.commission.refmodel.ProductPointRefModel;
 import nc.ui.qcco.commission.refmodel.ProductSerialRefModel;
 import nc.ui.qcco.commission.refmodel.ProductStructRefModel;
-import nc.ui.qcco.commission.refmodel.ProductTempRefModel;
 import nc.ui.qcco.commission.refmodel.TestInitRefModel;
 
 public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBeforeEditEvent> {
@@ -48,13 +47,13 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					.setPk_basprod_type(productserial);
 			((ProductStructRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basen_type(basentype);
 			((ProductStructRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basprod_point(productspec);
-		} else if ("contacttype".equals(e.getKey())) {
+		} else if ("ref_contacttype".equals(e.getKey())) {
 			// 触点类型
 			String productserial = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productserial");
 			String basentype = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_enterprisestandard");
 			String productspec = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productspec");
 			String productstruct = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_structuretype");
-			UIRefPane pane = (UIRefPane) (e.getBillCardPanel().getBodyItem("contacttype").getComponent());
+			UIRefPane pane = (UIRefPane) (e.getBillCardPanel().getBodyItem("ref_contacttype").getComponent());
 			ProductContactRefModel refModel = (ProductContactRefModel) (pane.getRefModel());
 			refModel.setCacheEnabled(false);
 			pane.setCacheEnabled(false);
@@ -74,28 +73,6 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductGrade(productGrade);
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductStage(productStage);
 		}
-		//温度字段不可修改
-		/*else if ("productstage".equals(e.getKey())) {
-			String productserial = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productserial");
-			String basentype = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_enterprisestandard");
-			String productspec = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productspec");
-			String productstruct = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_structuretype");
-			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basprod_type(productserial);
-			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basen_type(basentype);
-			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setPk_basprod_point(productspec);
-			((ProductTempRefModel) ((UIRefPane) bitem.getComponent()).getRefModel())
-					.setPk_basprod_struct(productstruct);
-		}*/
-		// if ("enterprisestandard".equals(e.getKey())) {
-		// if (StringUtils.isEmpty(((UIRefPane)
-		// bitem.getComponent()).getRefPK())) {
-		// String productserial = (String)
-		// e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productserial");
-		// ((EntTypeRefModel) ((UIRefPane)
-		// bitem.getComponent()).getRefModel()).setPk_basprod_type(productserial);
-		// }
-		// }
-
 		e.setReturnValue(true);
 	}
 }

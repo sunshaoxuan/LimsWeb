@@ -11,7 +11,7 @@ import nc.vo.pubapp.pattern.model.meta.entity.vo.VOMetaFactory;
  * <p>
  * 此處添加累的描述信息
  * </p>
- * 創建日期:2019/3/25
+ * 創建日期:2019/4/8
  * 
  * @author yonyouBQ
  * @version NCPrj ??
@@ -50,7 +50,7 @@ public class CommissionBVO extends SuperVO {
 	/**
 	 * 觸點類型
 	 */
-	public String pk_contacttype;
+	public String contacttype;
 	/**
 	 * 樣品數量
 	 */
@@ -70,7 +70,7 @@ public class CommissionBVO extends SuperVO {
 	/**
 	 * 溫度
 	 */
-	public String pk_productstage;
+	public String productstage;
 	/**
 	 * 樣品組別
 	 */
@@ -93,9 +93,8 @@ public class CommissionBVO extends SuperVO {
 	public UFDateTime ts;
 
 	public CommissionRVO[] pk_commission_r;
-
 	/**
-	 * 屬性 pk_commission_b的Getter方法.屬性名：樣品行主鍵 創建日期:2019/3/25
+	 * 屬性 pk_commission_b的Getter方法.屬性名：樣品行主鍵 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -104,7 +103,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_commission_b的Setter方法.屬性名：樣品行主鍵 創建日期:2019/3/25
+	 * 屬性pk_commission_b的Setter方法.屬性名：樣品行主鍵 創建日期:2019/4/8
 	 * 
 	 * @param newPk_commission_b
 	 *            java.lang.String
@@ -114,7 +113,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 rowno的Getter方法.屬性名：行號 創建日期:2019/3/25
+	 * 屬性 rowno的Getter方法.屬性名：行號 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -123,7 +122,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性rowno的Setter方法.屬性名：行號 創建日期:2019/3/25
+	 * 屬性rowno的Setter方法.屬性名：行號 創建日期:2019/4/8
 	 * 
 	 * @param newRowno
 	 *            java.lang.String
@@ -133,7 +132,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_productserial的Getter方法.屬性名：產品系列 創建日期:2019/3/25
+	 * 屬性 pk_productserial的Getter方法.屬性名：產品系列 創建日期:2019/4/8
 	 * 
 	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
@@ -142,7 +141,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_productserial的Setter方法.屬性名：產品系列 創建日期:2019/3/25
+	 * 屬性pk_productserial的Setter方法.屬性名：產品系列 創建日期:2019/4/8
 	 * 
 	 * @param newPk_productserial
 	 *            nc.vo.bd.defdoc.DefdocVO
@@ -152,26 +151,26 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_enterprisestandard的Getter方法.屬性名：企業標準 創建日期:2019/3/25
+	 * 屬性 pk_enterprisestandard的Getter方法.屬性名：企業標準 創建日期:2019/4/8
 	 * 
-	 * @return java.lang.String
+	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
 	public String getPk_enterprisestandard() {
 		return this.pk_enterprisestandard;
 	}
 
 	/**
-	 * 屬性pk_enterprisestandard的Setter方法.屬性名：企業標準 創建日期:2019/3/25
+	 * 屬性pk_enterprisestandard的Setter方法.屬性名：企業標準 創建日期:2019/4/8
 	 * 
 	 * @param newPk_enterprisestandard
-	 *            java.lang.String
+	 *            nc.vo.bd.defdoc.DefdocVO
 	 */
 	public void setPk_enterprisestandard(String pk_enterprisestandard) {
 		this.pk_enterprisestandard = pk_enterprisestandard;
 	}
 
 	/**
-	 * 屬性 typeno的Getter方法.屬性名：規格型號 創建日期:2019/3/25
+	 * 屬性 typeno的Getter方法.屬性名：規格型號 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -180,7 +179,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性typeno的Setter方法.屬性名：規格型號 創建日期:2019/3/25
+	 * 屬性typeno的Setter方法.屬性名：規格型號 創建日期:2019/4/8
 	 * 
 	 * @param newTypeno
 	 *            java.lang.String
@@ -190,64 +189,64 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_productspec的Getter方法.屬性名：規格號 創建日期:2019/3/25
+	 * 屬性 pk_productspec的Getter方法.屬性名：規格號 創建日期:2019/4/8
 	 * 
-	 * @return java.lang.String
+	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
 	public String getPk_productspec() {
 		return this.pk_productspec;
 	}
 
 	/**
-	 * 屬性pk_productspec的Setter方法.屬性名：規格號 創建日期:2019/3/25
+	 * 屬性pk_productspec的Setter方法.屬性名：規格號 創建日期:2019/4/8
 	 * 
 	 * @param newPk_productspec
-	 *            java.lang.String
+	 *            nc.vo.bd.defdoc.DefdocVO
 	 */
 	public void setPk_productspec(String pk_productspec) {
 		this.pk_productspec = pk_productspec;
 	}
 
 	/**
-	 * 屬性 pk_structuretype的Getter方法.屬性名：結構類型 創建日期:2019/3/25
+	 * 屬性 pk_structuretype的Getter方法.屬性名：結構類型 創建日期:2019/4/8
 	 * 
-	 * @return java.lang.String
+	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
 	public String getPk_structuretype() {
 		return this.pk_structuretype;
 	}
 
 	/**
-	 * 屬性pk_structuretype的Setter方法.屬性名：結構類型 創建日期:2019/3/25
+	 * 屬性pk_structuretype的Setter方法.屬性名：結構類型 創建日期:2019/4/8
 	 * 
 	 * @param newPk_structuretype
-	 *            java.lang.String
+	 *            nc.vo.bd.defdoc.DefdocVO
 	 */
 	public void setPk_structuretype(String pk_structuretype) {
 		this.pk_structuretype = pk_structuretype;
 	}
 
 	/**
-	 * 屬性 pk_contacttype的Getter方法.屬性名：觸點類型 創建日期:2019/3/25
+	 * 屬性 contacttype的Getter方法.屬性名：觸點類型 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
-	public String getPk_contacttype() {
-		return this.pk_contacttype;
+	public String getContacttype() {
+		return this.contacttype;
 	}
 
 	/**
-	 * 屬性pk_contacttype的Setter方法.屬性名：觸點類型 創建日期:2019/3/25
+	 * 屬性contacttype的Setter方法.屬性名：觸點類型 創建日期:2019/4/8
 	 * 
-	 * @param newPk_contacttype
+	 * @param newContacttype
 	 *            java.lang.String
 	 */
-	public void setPk_contacttype(String pk_contacttype) {
-		this.pk_contacttype = pk_contacttype;
+	public void setContacttype(String contacttype) {
+		this.contacttype = contacttype;
 	}
 
 	/**
-	 * 屬性 quantity的Getter方法.屬性名：樣品數量 創建日期:2019/3/25
+	 * 屬性 quantity的Getter方法.屬性名：樣品數量 創建日期:2019/4/8
 	 * 
 	 * @return nc.vo.pub.lang.UFDouble
 	 */
@@ -256,7 +255,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性quantity的Setter方法.屬性名：樣品數量 創建日期:2019/3/25
+	 * 屬性quantity的Setter方法.屬性名：樣品數量 創建日期:2019/4/8
 	 * 
 	 * @param newQuantity
 	 *            nc.vo.pub.lang.UFDouble
@@ -266,7 +265,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 manufacturer的Getter方法.屬性名：製造商 創建日期:2019/3/25
+	 * 屬性 manufacturer的Getter方法.屬性名：製造商 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -275,7 +274,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性manufacturer的Setter方法.屬性名：製造商 創建日期:2019/3/25
+	 * 屬性manufacturer的Setter方法.屬性名：製造商 創建日期:2019/4/8
 	 * 
 	 * @param newManufacturer
 	 *            java.lang.String
@@ -285,7 +284,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_contactbrand的Getter方法.屬性名：觸點牌號 創建日期:2019/3/25
+	 * 屬性 pk_contactbrand的Getter方法.屬性名：觸點牌號 創建日期:2019/4/8
 	 * 
 	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
@@ -294,7 +293,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_contactbrand的Setter方法.屬性名：觸點牌號 創建日期:2019/3/25
+	 * 屬性pk_contactbrand的Setter方法.屬性名：觸點牌號 創建日期:2019/4/8
 	 * 
 	 * @param newPk_contactbrand
 	 *            nc.vo.bd.defdoc.DefdocVO
@@ -304,7 +303,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 contactmodel的Getter方法.屬性名：觸點型號 創建日期:2019/3/25
+	 * 屬性 contactmodel的Getter方法.屬性名：觸點型號 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -313,7 +312,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性contactmodel的Setter方法.屬性名：觸點型號 創建日期:2019/3/25
+	 * 屬性contactmodel的Setter方法.屬性名：觸點型號 創建日期:2019/4/8
 	 * 
 	 * @param newContactmodel
 	 *            java.lang.String
@@ -323,26 +322,26 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_productstage的Getter方法.屬性名：溫度 創建日期:2019/3/25
+	 * 屬性 productstage的Getter方法.屬性名：溫度 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
-	public String getPk_productstage() {
-		return this.pk_productstage;
+	public String getProductstage() {
+		return this.productstage;
 	}
 
 	/**
-	 * 屬性pk_productstage的Setter方法.屬性名：溫度 創建日期:2019/3/25
+	 * 屬性productstage的Setter方法.屬性名：溫度 創建日期:2019/4/8
 	 * 
-	 * @param newPk_productstage
+	 * @param newProductstage
 	 *            java.lang.String
 	 */
-	public void setPk_productstage(String pk_productstage) {
-		this.pk_productstage = pk_productstage;
+	public void setProductstage(String productstage) {
+		this.productstage = productstage;
 	}
 
 	/**
-	 * 屬性 pk_samplegroup的Getter方法.屬性名：樣品組別 創建日期:2019/3/25
+	 * 屬性 pk_samplegroup的Getter方法.屬性名：樣品組別 創建日期:2019/4/8
 	 * 
 	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
@@ -351,7 +350,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_samplegroup的Setter方法.屬性名：樣品組別 創建日期:2019/3/25
+	 * 屬性pk_samplegroup的Setter方法.屬性名：樣品組別 創建日期:2019/4/8
 	 * 
 	 * @param newPk_samplegroup
 	 *            nc.vo.bd.defdoc.DefdocVO
@@ -361,7 +360,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 analysisref的Getter方法.屬性名：實驗前參數 創建日期:2019/3/25
+	 * 屬性 analysisref的Getter方法.屬性名：實驗前參數 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -370,7 +369,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性analysisref的Setter方法.屬性名：實驗前參數 創建日期:2019/3/25
+	 * 屬性analysisref的Setter方法.屬性名：實驗前參數 創建日期:2019/4/8
 	 * 
 	 * @param newAnalysisref
 	 *            java.lang.String
@@ -380,7 +379,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 otherinfo的Getter方法.屬性名：其他信息 創建日期:2019/3/25
+	 * 屬性 otherinfo的Getter方法.屬性名：其他信息 創建日期:2019/4/8
 	 * 
 	 * @return java.lang.String
 	 */
@@ -389,7 +388,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性otherinfo的Setter方法.屬性名：其他信息 創建日期:2019/3/25
+	 * 屬性otherinfo的Setter方法.屬性名：其他信息 創建日期:2019/4/8
 	 * 
 	 * @param newOtherinfo
 	 *            java.lang.String
@@ -399,7 +398,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 生成上層主鍵的Getter方法.屬性名：上層主鍵 創建日期:2019/3/25
+	 * 屬性 生成上層主鍵的Getter方法.屬性名：上層主鍵 創建日期:2019/4/8
 	 * 
 	 * @return String
 	 */
@@ -408,7 +407,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性生成上層主鍵的Setter方法.屬性名：上層主鍵 創建日期:2019/3/25
+	 * 屬性生成上層主鍵的Setter方法.屬性名：上層主鍵 創建日期:2019/4/8
 	 * 
 	 * @param newPk_commission_h
 	 *            String
@@ -418,7 +417,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 生成時間戳的Getter方法.屬性名：時間戳 創建日期:2019/3/25
+	 * 屬性 生成時間戳的Getter方法.屬性名：時間戳 創建日期:2019/4/8
 	 * 
 	 * @return nc.vo.pub.lang.UFDateTime
 	 */
@@ -427,7 +426,7 @@ public class CommissionBVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性生成時間戳的Setter方法.屬性名：時間戳 創建日期:2019/3/25
+	 * 屬性生成時間戳的Setter方法.屬性名：時間戳 創建日期:2019/4/8
 	 * 
 	 * @param newts
 	 *            nc.vo.pub.lang.UFDateTime
@@ -440,7 +439,6 @@ public class CommissionBVO extends SuperVO {
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("qcco.commission_b");
 	}
-
 	public CommissionRVO[] getPk_commission_r() {
 		return pk_commission_r;
 	}
