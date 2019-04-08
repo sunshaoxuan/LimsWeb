@@ -39,10 +39,13 @@ public class AceHeadTailBeforeEditHandler implements
 			if(typeName != null){
 				String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 				String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
-				//先把模板字段设为null
-				for(String temp : allTemplateFields){
-					e.getBillCardPanel().getHeadItem(temp).setValue(null);
+				//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+				if(templates!=null && templates.length > 0){
+					for(String temp : allTemplateFields){
+						e.getBillCardPanel().getHeadItem(temp).setValue(null);
+					}
 				}
+				
 				e.getBillCardPanel().hideHeadItem(allTemplateFields);
 				if(templates == null){
 					templates = allTemplateFields;
