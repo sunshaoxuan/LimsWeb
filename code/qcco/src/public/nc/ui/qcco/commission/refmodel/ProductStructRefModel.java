@@ -52,7 +52,7 @@ public class ProductStructRefModel extends AbstractRefModel {
 						+ getPk_basprod_type() + "'"))
 				+ (StringUtils.isEmpty(getPk_basen_type()) ? ""
 						: (" AND SI.PK_BASEN_TYPE = '" + getPk_basen_type() + "'"))
-				+ (StringUtils.isEmpty(getPk_basprod_point()) ? "" : ("' AND SI.PK_BASPROD_POINT = '"
+				+ (StringUtils.isEmpty(getPk_basprod_point()) ? "" : (" AND SI.PK_BASPROD_POINT = '"
 						+ getPk_basprod_point() + "' "))
 				+ " GROUP BY BP.NC_BASPRODSTRUCT_CODE, BP.NC_BASPRODSTRUCT_NAME, BP.PK_BASPROD_STRUCT "
 				+ " ORDER BY CAST(BP.NC_BASPRODSTRUCT_CODE AS NUMBER)";

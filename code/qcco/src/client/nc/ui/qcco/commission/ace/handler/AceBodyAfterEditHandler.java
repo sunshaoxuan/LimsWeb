@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
@@ -24,7 +23,6 @@ import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.commission.refmodel.ProductSerialRefModel;
-import nc.ui.qcco.commission.refmodel.ProductTempRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFBoolean;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -40,10 +38,10 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		if ("productserial".equals(e.getKey())) {
 			// 产品系列
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
-			clearBodyItems(e, new String[] { "pk_productserial", "productserial" });
-			//刷新温度字段
+			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "samplegroup", "pk_samplegroup" });
+			// 刷新温度字段
 			refreshProductstage(e);
-			//刷新实验前参数
+			// 刷新实验前参数
 			try {
 				refreshAnalysisBeforeAndGrandValus(e);
 			} catch (BusinessException e1) {
@@ -53,17 +51,19 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// 企业标准
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
 			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
-					"enterprisestandard","analysisref" });
-			//刷新温度字段
+					"enterprisestandard", "analysisref", "samplegroup", "pk_samplegroup" });
+			// 刷新温度字段
 			refreshProductstage(e);
 		} else if ("productspec".equals(e.getKey())) {
 			// 规格号
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productspec");
-			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
-					"enterprisestandard", "pk_productspec", "productspec", "typeno" });
-			//刷新温度字段
+			// clearBodyItems(e, new String[] { "pk_productserial",
+			// "productserial", "pk_enterprisestandard",
+			// "enterprisestandard", "pk_productspec", "productspec", "typeno",
+			// "samplegroup", "pk_samplegroup" });
+			// 刷新温度字段
 			refreshProductstage(e);
-			//刷新实验前参数
+			// 刷新实验前参数
 			try {
 				refreshAnalysisBeforeAndGrandValus(e);
 			} catch (BusinessException e1) {
@@ -72,11 +72,15 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		} else if ("structuretype".equals(e.getKey())) {
 			// 结构类型
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_structuretype");
-			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
-					"enterprisestandard", "pk_productspec", "productspec", "pk_structuretype", "structuretype",
-					"typeno","analysisref" });
-			//刷新温度字段
+			// clearBodyItems(e, new String[] { "pk_productserial",
+			// "productserial", "pk_enterprisestandard",
+			// "enterprisestandard", "pk_productspec", "productspec",
+			// "pk_structuretype", "structuretype",
+			// "typeno", "analysisref", "samplegroup", "pk_samplegroup" });
+			// 刷新温度字段
 			refreshProductstage(e);
+		} else if ("ref_contacttype".equals(e.getKey())) {
+			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "contacttype");
 		} else if ("contactbrand".equals(e.getKey())) {
 			// 触点牌号
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
@@ -104,26 +108,14 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					}
 				}
 			}
-			// 清空孙表样品
-			clearGrandLines(e);
-			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "analysisref") != null) {
-				// 如果实验前参数不为空,那么进行生成孙表工作
-				try {
-					generateGrandLines(e);
-				} catch (BusinessException ex) {
-					Logger.error(ex.getMessage());
-				}
-			}
-			// end
-		} else if ("analysisref".equals(e.getKey())) {
-			// mod tank 当样品组别和实验参数都不为空的时候进行重新生成孙表的工作,否则不进行如何工作
-			BillCellEditor bitem = (BillCellEditor) e.getSource();
-			UIRefPane refPane = (UIRefPane) bitem.getComponent();
-			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_analysisref");
+		}
 
+		if ("enterprisestandard".equals(e.getKey()) || "productspec".equals(e.getKey())
+				|| "samplegroup".equals(e.getKey()) || "ref_contacttype".equals(e.getKey())) {
 			// 清空孙表样品
 			clearGrandLines(e);
-			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") != null) {
+			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") != null
+					&& e.getBillCardPanel().getBodyValueAt(e.getRow(), "analysisref") != null) {
 				// 如果实验前参数不为空,那么进行生成孙表工作
 				try {
 					generateGrandLines(e);
@@ -134,36 +126,38 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// end
 		}
 	}
+
 	/**
 	 * 根据表体变动后带出实验前参数
+	 * 
 	 * @param e
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
-	private void refreshAnalysisBeforeAndGrandValus(CardBodyAfterEditEvent e) throws BusinessException{
-		
-		UIRefPane refPane = (UIRefPane)e.getBillCardPanel().getBodyItem("productserial").getComponent();
-		ProductSerialRefModel refMode = (ProductSerialRefModel)refPane.getRefModel();
-		
-		
-		String description = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "productserial");
-		String productspec = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "productspec");
+	private void refreshAnalysisBeforeAndGrandValus(CardBodyAfterEditEvent e) throws BusinessException {
+
+		UIRefPane refPane = (UIRefPane) e.getBillCardPanel().getBodyItem("productserial").getComponent();
+		ProductSerialRefModel refMode = (ProductSerialRefModel) refPane.getRefModel();
+
+		String description = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "productserial");
+		String productspec = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "productspec");
 		String c_prod_type_c1 = refMode.getSecondClassCode();
-		
+
 		String sql = " SELECT DISTINCT pgs.ANALYSIS analysis_name "
 				+ " FROM product p , product_grade pg, prod_grade_STAGE pgs "
-				+ " WHERE p.c_prod_type_c1 LIKE '"+c_prod_type_c1+"' "  //产品大类 
-				+ " AND p.description = '"+description+"' "    //产品系列
-				+ " AND pg.sampling_point = '"+productspec+"' " //规格号??!!
-				+ " AND p.active = 'T' "
-				+ " AND removed = 'F' "
-				+ " and pgs.order_number = 1 "
-				+ " AND p.name = pg.product  "
-				+ " AND pgs.product = p.name "
-				+ " AND pgs.sampling_point = pg.sampling_point "
-				+ " AND pgs.GRADE = pg.grade ";
+				+ " WHERE p.c_prod_type_c1 LIKE '"
+				+ c_prod_type_c1
+				+ "' " // 产品大类
+				+ " AND p.description = '"
+				+ description
+				+ "' " // 产品系列
+				+ " AND pg.sampling_point = '"
+				+ productspec
+				+ "' " // 规格号??!!
+				+ " AND p.active = 'T' " + " AND removed = 'F' " + " and pgs.order_number = 1 "
+				+ " AND p.name = pg.product  " + " AND pgs.product = p.name "
+				+ " AND pgs.sampling_point = pg.sampling_point " + " AND pgs.GRADE = pg.grade ";
 		IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-		String analysis_name = (String) query
-				.executeQuery(sql, new ColumnProcessor());
+		String analysis_name = (String) query.executeQuery(sql, new ColumnProcessor());
 		if (analysis_name != null) {
 			e.getBillCardPanel().setBodyValueAt(analysis_name, e.getRow(), "analysisref");
 		}
@@ -171,18 +165,19 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		clearGrandLines(e);
 		generateGrandLines(e);
 	}
-	
+
 	/**
 	 * 根据表体变动后带出温度,如果不止一个,用串的方式显示
+	 * 
 	 * @param e
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	private void refreshProductstage(CardBodyAfterEditEvent e) {
 		String productserial = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productserial");
 		String basentype = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_enterprisestandard");
 		String productspec = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productspec");
 		String productstruct = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_structuretype");
-		
+
 		String sql = "SELECT TRIM(BP.NC_BASPRODTEMP_CODE) NC_BASPRODTEMP_CODE, TRIM(BP.NC_BASPRODTEMP_NAME) NC_BASPRODTEMP_NAME, BP.PK_BASPROD_TEMP "
 				+ " FROM NC_SAMPLE_INFO SI INNER JOIN NC_BASPROD_TEMP BP ON BP.PK_BASPROD_TEMP = SI.PK_BASPROD_TEMP "
 				+ " WHERE SI.PK_BASPROD_TYPE = '"
@@ -199,26 +194,24 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 		List<Map<String, Object>> refList = null;
 		try {
-			refList = (List<Map<String, Object>>) query
-					.executeQuery(sql, new MapListProcessor());
+			refList = (List<Map<String, Object>>) query.executeQuery(sql, new MapListProcessor());
 		} catch (BusinessException e1) {
 			Log.debug(e1.getMessage());
 		}
 		StringBuilder sb = new StringBuilder();
 		if (refList != null && refList.size() > 0) {
 			for (Map<String, Object> refRow : refList) {
-				if(refRow!=null && refRow.get("nc_basprodtemp_name")!=null){
+				if (refRow != null && refRow.get("nc_basprodtemp_name") != null) {
 					sb.append(refRow.get("nc_basprodtemp_name")).append(",");
 				}
 			}
 		}
-		if(sb.length()>=1){
-			sb.deleteCharAt(sb.length()-1);	
+		if (sb.length() >= 1) {
+			sb.deleteCharAt(sb.length() - 1);
 		}
-		
+
 		e.getBillCardPanel().setBodyValueAt(sb.toString(), e.getRow(), "productstage");
 	}
-	
 
 	private void clearBodyItems(CardBodyAfterEditEvent e, String[] exceptions) {
 		for (BillItem item : e.getBillCardPanel().getBodyItems()) {
@@ -239,18 +232,17 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		int rowCount = this.getGrandCard().getBillCardPanel().getRowCount();
 		Set<Integer> lineSet = new HashSet<>();
 		if (rowCount > 0) {
-			
+
 			for (int i = 0; i < rowCount; i++) {
-				//只清空自动生成的行
-				UFBoolean ifAuto = 
-						(UFBoolean)getGrandCard().getBillCardPanel().getBodyValueAt(i, "isAutoGeneration");
-				if(ifAuto!=null && ifAuto.booleanValue()){
+				// 只清空自动生成的行
+				UFBoolean ifAuto = (UFBoolean) getGrandCard().getBillCardPanel().getBodyValueAt(i, "isAutoGeneration");
+				if (ifAuto != null && ifAuto.booleanValue()) {
 					lineSet.add(i);
 				}
 			}
-			Integer [] lineArray = lineSet.toArray(new Integer[0]);
+			Integer[] lineArray = lineSet.toArray(new Integer[0]);
 			int[] resultArray = new int[lineArray.length];
-			for(int i = 0;i<lineArray.length;i++){
+			for (int i = 0; i < lineArray.length; i++) {
 				resultArray[i] = lineArray[i];
 			}
 			this.getGrandCard().getBillCardPanel().getBodyPanel().delLine(resultArray);
@@ -273,13 +265,14 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "enterprisestandard")
 								+ "'  and p.nc_sample_point = '"
 								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "productspec")
-								+ "'  and ' ' || p.NC_COIL_TYPE || ',' like '% "
+								+ "'  and ' ' || p.Nc_contact_type || ',' like '% "
+								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "ref_contacttype")
+								+ ",%'  and ' ' || p.NC_COIL_TYPE || ',' like '% "
 								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "structuretype")
-								+ ",%'    and p.nc_coil_current = '"
+								+ ",%'  and p.nc_coil_current = '"
 								+ e.getBillCardPanel().getBodyValueAt(e.getRow(), "structuretype")
-								
 								+ "' )"
-								+ "order by def1", new MapListProcessor());
+								+ "  order by nc_stage, def1", new MapListProcessor());
 		if (refList != null && refList.size() > 0) {
 			for (Map<String, Object> refRow : refList) {
 				this.getGrandCard().getBillCardPanel().getBodyPanel().addLine();
@@ -294,12 +287,13 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 								"pk_samplegroup");
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "judgeflag");
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "testflag");
-				//系统生成标识
+				// 系统生成标识
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isAutoGeneration");
-				//企业标准
-				String pk_enterprisestandard = 
-						(String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_enterprisestandard");
-				this.getGrandCard().getBillCardPanel().setBodyValueAt(pk_enterprisestandard, row, "pk_enterprisestandard");
+				// 企业标准
+				String pk_enterprisestandard = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(),
+						"pk_enterprisestandard");
+				this.getGrandCard().getBillCardPanel()
+						.setBodyValueAt(pk_enterprisestandard, row, "pk_enterprisestandard");
 				String resultCode = "";
 				String resultName = "";
 				String refCode = "";
@@ -349,6 +343,5 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 	public void setGrandCard(ShowUpableBillForm grandCard) {
 		this.grandCard = grandCard;
 	}
-	
-	
+
 }
