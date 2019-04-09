@@ -130,6 +130,7 @@ public class CardPanelEventUtil {
 			String[] tabCodes = grandBillForm.getBillCardPanel().getBillData().getBodyTableCodes();
 			for (String grandTabcode : tabCodes) {
 				ArrayList<Object> grandVOList = grandAllVOMap.get(grandTabcode);
+				
 				if (grandVOList != null) {
 					grandBillForm.getBillCardPanel().getBillData()
 							.setBodyValueVO(grandTabcode, grandVOList.toArray(new SuperVO[0]));

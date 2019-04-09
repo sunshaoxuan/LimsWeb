@@ -1,5 +1,8 @@
 package nc.ui.qcco.commission.ace.handler;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
@@ -39,10 +42,19 @@ public class AceHeadTailBeforeEditHandler implements
 			if(typeName != null){
 				String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 				String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
+				Set<String> templatesSet = new HashSet();
+				
 				//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+				//清空时,不清空此模板包含的字段
 				if(templates!=null && templates.length > 0){
+					for(String tmp : templates){
+						templatesSet.add(tmp);
+					}
 					for(String temp : allTemplateFields){
-						e.getBillCardPanel().getHeadItem(temp).setValue(null);
+						if(!templatesSet.contains(temp)){
+							e.getBillCardPanel().getHeadItem(temp).setValue(null);
+						}
+						
 					}
 				}
 				

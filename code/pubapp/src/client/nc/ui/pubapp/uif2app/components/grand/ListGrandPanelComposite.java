@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import org.jfree.util.Log;
+
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.desktop.ui.WorkbenchEnvironment;
 import nc.ui.pub.beans.UIPanel;
@@ -33,9 +35,12 @@ import nc.ui.uif2.editor.BillListView;
 import nc.ui.uif2.model.AppEventConst;
 import nc.ui.uif2.model.BillManageModel;
 import nc.vo.pub.AggregatedValueObject;
+import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.uif2.AppStatusRegisteryCallback;
 
 /**
@@ -52,6 +57,7 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 	protected ListGrandPanel expendPane;
 
 	private AutoShowUpEventSource autoShowUpComponent = new AutoShowUpEventSource(this);
+	
 
 	@Override
 	public void initUI() {
@@ -234,6 +240,15 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 			this.getModel().getMainModel().fireEvent(event);
 		}
 		this.autoShowUpComponent.showMeUp();
+		//刷新子表参照
+		try {
+			UserDefineRefUtils.refreshBillListBodyDefRefs(
+					(AggCommissionHVO) (this.getModel().getSelectedData()),
+					(BillListView) this.mainPanel, "pk_commission_b",
+					CommissionBVO.class);
+		} catch (BusinessException e) {
+			Log.debug(e.getMessage());
+		}
 	}
 
 	/**

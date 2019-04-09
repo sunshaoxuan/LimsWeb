@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.desktop.ui.WorkbenchEnvironment;
 import nc.ui.pub.beans.UIPanel;
 import nc.ui.pub.bill.BillEditEvent;
@@ -45,6 +46,8 @@ import nc.ui.uif2.model.BillManageModel;
 import nc.vo.pub.AggregatedValueObject;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.SuperVO;
+import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.uif2.AppStatusRegisteryCallback;
 
 /**
@@ -520,6 +523,7 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 
 	private void onUiStateChange(UIState state) {
 		String currentbodyTabCode = ((BillForm) this.getMainPanel()).getBillCardPanel().getCurrentBodyTableCode();
+		((BillForm) this.getMainPanel()).getBillCardPanel().getBillModel(currentbodyTabCode).getRowCount();
 		BillForm grandBillForm = (BillForm) this.getMaingrandrelationship().getBodyTabTOGrandCardComposite()
 				.get(currentbodyTabCode);
 		if (state.equals(UIState.ADD)) {
@@ -575,7 +579,10 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 		if (state.equals(UIState.EDIT)) {
 
 			CardPanelEventUtil.rowChangeStateIsEdit(this, event, grandValidationService, this.mainGrandBlankFilter);
-
+			//tank 2019年4月9日23:46:01 刷新子表操作
+			UserDefineRefUtils.refreshBillCardBodyDefRefs(
+					(AggCommissionHVO)(this.getModel().getSelectedData()), 
+					(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
 		} else if (state.equals(UIState.ADD)) {
 
 			CardPanelEventUtil.rowChangeStateIsAdd(this, event, grandValidationService, this.mainGrandBlankFilter);

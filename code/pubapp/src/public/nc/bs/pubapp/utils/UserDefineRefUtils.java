@@ -49,7 +49,7 @@ public class UserDefineRefUtils {
 			SuperVO fullBodyVO = null;
 			if (aggvo.getAllChildrenVO() != null) {
 				for (ISuperVO realBody : aggvo.getChildren(bodyVOClass)) {
-					if (bodyVO.getPrimaryKey().equals(realBody.getPrimaryKey())) {
+					if (bodyVO.getPrimaryKey()!=null && bodyVO.getPrimaryKey().equals(realBody.getPrimaryKey())) {
 						fullBodyVO = (SuperVO) realBody;
 						break;
 					}
@@ -59,13 +59,25 @@ public class UserDefineRefUtils {
 					for (BillItem item : billForm.getBillCardPanel().getBillModel(tabCode).getBodyItems()) {
 						if (!StringUtils.isEmpty(item.getRefType()) && item.getRefType().contains("<")) {
 							String itemKey = item.getKey();
-							BillItem pkItem = billForm.getBillCardPanel().getBillModel(tabCode)
-									.getItemByKey("pk_" + itemKey);
-							if (pkItem != null) {
-								fullBodyVO.setAttributeValue(itemKey, fullBodyVO.getAttributeValue("pk_" + itemKey));
+							if("ref_contacttype".equals(itemKey)||"contacttype".equals(itemKey)){
+								BillItem pkItem = billForm.getBillCardPanel().getBillModel(tabCode)
+										.getItemByKey("contacttype");
+								
+								if (pkItem != null) {
+									fullBodyVO.setAttributeValue(itemKey, fullBodyVO.getAttributeValue("contacttype"));
+								}
+								UserDefineRefUtils.refreshItemRefValue(fullBodyVO, billForm.getBillCardPanel()
+										.getBillTable(tabCode), row, item, true);
+							}else{
+								BillItem pkItem = billForm.getBillCardPanel().getBillModel(tabCode)
+										.getItemByKey("pk_" + itemKey);
+								
+								if (pkItem != null) {
+									fullBodyVO.setAttributeValue(itemKey, fullBodyVO.getAttributeValue("pk_" + itemKey));
+								}
+								UserDefineRefUtils.refreshItemRefValue(fullBodyVO, billForm.getBillCardPanel()
+										.getBillTable(tabCode), row, item, true);
 							}
-							UserDefineRefUtils.refreshItemRefValue(fullBodyVO, billForm.getBillCardPanel()
-									.getBillTable(tabCode), row, item, true);
 						}
 					}
 				}

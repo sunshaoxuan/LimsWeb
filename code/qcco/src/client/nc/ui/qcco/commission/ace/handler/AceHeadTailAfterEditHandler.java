@@ -1,6 +1,8 @@
 package nc.ui.qcco.commission.ace.handler;
 
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
@@ -53,16 +55,28 @@ public class AceHeadTailAfterEditHandler implements IAppEventHandler<CardHeadTai
 			if (typeName != null) {
 				String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 				String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
-				// 先把模板字段设为灰
-				// 先把模板字段设为null
-				for (String temp : allTemplateFields) {
-					e.getBillCardPanel().getHeadItem(temp).setValue(null);
+				Set<String> templatesSet = new HashSet();
+				
+				//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+				//清空时,不清空此模板包含的字段
+				if(templates!=null && templates.length > 0){
+					for(String tmp : templates){
+						templatesSet.add(tmp);
+					}
+					for(String temp : allTemplateFields){
+						if(!templatesSet.contains(temp)){
+							e.getBillCardPanel().getHeadItem(temp).setValue(null);
+						}
+						
+					}
 				}
+				
 				e.getBillCardPanel().hideHeadItem(allTemplateFields);
-				if (templates == null) {
+				if(templates == null){
 					templates = allTemplateFields;
 				}
 				e.getBillCardPanel().showHeadItem(templates);
+				
 			}
 		}
 	}
