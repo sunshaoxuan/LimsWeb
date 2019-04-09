@@ -75,10 +75,10 @@ invokeInitializingBean(bean);
 return bean;
 }
 
-public nc.ui.qcco.tak.model.SubGrandBillModel getManageAppModel2(){
+public nc.ui.qcco.task.model.SubGrandBillModel getManageAppModel2(){
  if(context.get("manageAppModel2")!=null)
- return (nc.ui.qcco.tak.model.SubGrandBillModel)context.get("manageAppModel2");
-  nc.ui.qcco.tak.model.SubGrandBillModel bean = new nc.ui.qcco.tak.model.SubGrandBillModel();
+ return (nc.ui.qcco.task.model.SubGrandBillModel)context.get("manageAppModel2");
+  nc.ui.qcco.task.model.SubGrandBillModel bean = new nc.ui.qcco.task.model.SubGrandBillModel();
   context.put("manageAppModel2",bean);
   bean.setBusinessObjectAdapterFactory(getBoadatorfactory2());
   bean.setContext(getContext());

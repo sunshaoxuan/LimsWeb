@@ -1,4 +1,4 @@
-package nc.ui.qcco.tak.model;
+package nc.ui.qcco.task.model;
 
 import nc.ui.pubapp.uif2app.model.BillManageModel;
 
