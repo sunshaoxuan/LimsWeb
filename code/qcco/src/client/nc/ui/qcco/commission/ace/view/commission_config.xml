@@ -816,7 +816,7 @@
 	<!-- 双击列表行后显示卡片 -->
 	<bean id="mouseClickShowPanelMediator" class="nc.ui.pubapp.uif2app.view.MouseClickShowPanelMediator">
 		<property name="listView" ref="billListView" />
-		<property name="showUpComponent" ref="billForm" />
+		<property name="showUpComponent" ref="MainGrandbillForm" />
 		<property name="hyperLinkColumn" value="null" />
 	</bean>
 	<!-- 单据号 
