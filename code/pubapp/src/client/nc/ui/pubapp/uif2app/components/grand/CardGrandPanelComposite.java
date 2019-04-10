@@ -91,6 +91,11 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 		this.autoShowUpComponent.showMeUp();
 
 		showGranListUp();
+		
+		//tank 2019年4月9日23:46:01 刷新子表操作
+		UserDefineRefUtils.refreshBillCardBodyDefRefs(
+				(AggCommissionHVO)(this.getModel().getSelectedData()), 
+				(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
 	}
 
 	/**

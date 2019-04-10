@@ -65,6 +65,7 @@ public class CardPanelEventUtil {
 				List<Object> grandVOList = mainGrandPanel.getMainGrandAssist().getGrandCardDataByMainRow(rowChangeBean,
 						relationShip, grandValidationService, filter);
 				if (grandVOList != null && grandVOList.size() > 0) {
+					//grandBillCardPanel.getBillModel(grandTabCode).clearBodyData();
 					setGrandToFormStausIsEdit(grandBillForm, grandTabCode, grandVOList);
 				} else {
 					grandBillCardPanel.getBillModel(grandTabCode).clearBodyData();
@@ -108,6 +109,9 @@ public class CardPanelEventUtil {
 		int lastrow = event.getOldRow();
 		BillCardPanel mainBillCardPanel = ((BillForm) mainGrandPanel.getMainPanel()).getBillCardPanel();
 		int currentRow = event.getRow();
+		if(-1==lastrow && 0==currentRow){
+			return;
+		}
 		if (currentRow >= 0) {
 			String currentbodyTabCode = mainBillCardPanel.getCurrentBodyTableCode();
 			MainGrandRelationShip relationShip = mainGrandPanel.getMaingrandrelationship();
@@ -140,7 +144,12 @@ public class CardPanelEventUtil {
 				}
 			}
 			grandAutoAddLine(mainGrandPanel, grandBillForm, grandAllVOMap);
+			/*//if
+			if(-1==lastrow&&currentRow!=-1){
+				mainGrandPanel.getModel().set
+			}*/
 		}
+		
 	}
 
 	/**
