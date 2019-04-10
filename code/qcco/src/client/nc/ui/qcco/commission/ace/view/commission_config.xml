@@ -8,26 +8,26 @@
 	<bean id="context" class="nc.vo.uif2.LoginContext"></bean>
 
 	<!-- 模型部分配置*********************************************************** -->
- 	<!-- 单据删除代理，支持批操作 -->
+	<!-- 单据删除代理，支持批操作 -->
 	<bean id="deleteProxy" class="nc.ui.qcco.commission.ace.serviceproxy.AceCommissionDeleteProxy" />
 	<!-- 应用服务类，负责进行模型操作的处理 -->
 	<bean id="bmModelModelService" class="nc.ui.qcco.commission.ace.serviceproxy.AceCommissionMaintainProxy">
 		<property name="grandTabAndVOMap">
-				<map>
-					<entry key="pk_commission_r">
-						<ref bean="CommissionRVO"></ref>
-					</entry>
-				</map>
+			<map>
+				<entry key="pk_commission_r">
+					<ref bean="CommissionRVO"></ref>
+				</entry>
+			</map>
 		</property>
 	</bean>
-	
-	
+
+
 	<!-- 对象转换器工厂，由此获取操作对象的特征信息 -->
 	<bean id="BOAdapterFactory" class="nc.ui.pubapp.uif2app.view.value.AggVOMetaBDObjectAdapterFactory">
-		
+
 	</bean>
 	<bean id="BOAdapterFactory2" class="nc.vo.bd.meta.BDObjectAdpaterFactory" />
-   
+
 	<!-- 层次结构构造策略 -->
 
 	<!-- 模型元素 -->
@@ -51,23 +51,23 @@
 		<property name="mainModel" ref="bmModel"></property>
 		<!-- 孙MODEL -->
 		<property name="grandModel" ref="bmModel2"></property>
-	</bean>	
-	<bean id="mainGrandBlankFilter" class="nc.ui.pubapp.uif2app.components.grand.MainGrandBlankFilter"> 
-	<!--过滤的MAP -->
-	<property name="childFilterMap">
-		 <map>
- 			<entry>
- 			<key>
- 		<!--页签code -->
- 		<value>pk_commission_b</value>
- 		</key>
- 		<list>
- 		<!--检验是否空行字段code -->
- 		<value>rowno</value>
- 		</list>
- 		</entry>
- 		</map>
- 	</property>
+	</bean>
+	<bean id="mainGrandBlankFilter" class="nc.ui.pubapp.uif2app.components.grand.MainGrandBlankFilter">
+		<!--过滤的MAP -->
+		<property name="childFilterMap">
+			<map>
+				<entry>
+					<key>
+						<!--页签code -->
+						<value>pk_commission_b</value>
+					</key>
+					<list>
+						<!--检验是否空行字段code -->
+						<value>rowno</value>
+					</list>
+				</entry>
+			</map>
+		</property>
 	</bean>
 	<!-- 子孙之间对应模板关系配置 -->
 	<bean id="mainGrandRelationShip" class="nc.ui.pubapp.uif2app.components.grand.MainGrandRelationShip">
@@ -160,14 +160,14 @@
 
 	<!-- 孙列表视图 -->
 	<bean id="sunlistView1" class="nc.ui.qcco.commission.ace.view.GrandBillList"
-	init-method="initUI">
+		  init-method="initUI">
 		<property name="model" ref="bmModel2"></property>
 		<property name="templateContainer" ref="templateContainer"></property>
-		<property name="nodekey" value="param"></property>
+		<property name="nodekey" value="param1"></property>
 	</bean>
 
 	<bean id="componentValueManager" class="nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter"></bean>
-	
+
 	<!-- 孙卡片视图 -->
 	<bean id="sunbillForm1" class="nc.ui.qcco.commission.ace.view.CommissionGrandBillForm" init-method="initUI">
 		<property name="model" ref="bmModel2"></property>
@@ -211,14 +211,14 @@
 	</bean>
 
 
-	
+
 	<!-- 数据模型管理器，主要负责各种方式的模型初始化 -->
 	<bean id="bmModelModelDataManager" class="nc.ui.pubapp.uif2app.query2.model.ModelDataManager">
 		<property name="model"><ref bean="bmModel"/></property>
 		<property name="service"><ref bean="bmModelModelService" /></property>
 	</bean>
 
-	
+
 	<!-- Mediator，模型之间监听关系部分 -->
 	<bean id="grandModelEventMediator" class="nc.ui.pubapp.uif2app.model.AppEventHandlerMediator">
 		<property name="model" ref="bmModel2" />
@@ -244,7 +244,7 @@
 		</property>
 	</bean>
 
-    <!-- 组织面板//newadd -->
+	<!-- 组织面板//newadd -->
 
 	<!-- 卡片界面的工具栏和返回按钮 -->
 
@@ -289,8 +289,8 @@
 					</list>
 				</property>
 			</bean>
-		</property> 
-	</bean> 
+		</property>
+	</bean>
 	<!-- 列表自定义项处理 -->
 	<bean name="userdefitemlistPreparator" class="nc.ui.uif2.editor.UserdefitemContainerListPreparator">
 		<property name="container" ref="userdefitemContainer" />
@@ -310,13 +310,13 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="orgpanel" class="nc.ui.bd.pub.BDOrgPanel" init-method="initUI">
 		<property name="model" ref="bmModel" />
 		<property name="dataManager" ref="bmModelModelDataManager" />
 		<property name="pk_orgtype" value="BUSINESSUNIT00000000" />
 	</bean>
-	
+
 	<bean id="billForm" class="nc.ui.pubapp.uif2app.view.ShowUpableBillForm" init-method="initUI">
 		<property name="model" ref="bmModel"></property>
 		<property name="templateContainer" ref="templateContainer" />
@@ -361,7 +361,7 @@
 					</list>
 				</property>
 			</bean>
-		</property> 
+		</property>
 	</bean>
 	<!-- 卡片自定义项配置 -->
 	<bean name="userdefitemPreparator" class="nc.ui.uif2.editor.UserdefitemContainerPreparator">
@@ -390,7 +390,7 @@
 		<property name="materialField" value="pk_productserial" />
 	</bean>
 	<bean id="userdefitemContainer"
-	class="nc.ui.uif2.userdefitem.UserDefItemContainer">
+		  class="nc.ui.uif2.userdefitem.UserDefItemContainer">
 		<property name="context" ref="context" />
 		<property name="params">
 			<list>
@@ -408,14 +408,14 @@
 	</bean>
 	<!-- 快速查询区域 -->
 	<bean id="queryArea" class="nc.ui.pubapp.uif2app.tangramlayout.UEQueryAreaShell"
-	init-method="initUI">
+		  init-method="initUI">
 		<property name="queryAreaCreator" ref="queryAction" />
 	</bean>
 	<!-- 查询信息栏 -->
 	<bean id="queryInfo" class="nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel">
 		<property name="model" ref="bmModel" />
 	</bean>
-	
+
 
 	<!--====== 视图元素：[卡片界面工具栏和返回按钮控件实例对象] ==============-->
 	<bean id="viewb" class="nc.ui.pubapp.uif2app.tangramlayout.UECardLayoutToolbarPanel" >
@@ -429,8 +429,8 @@
 		</property>
 	</bean>
 
-	
-	
+
+
 	<!-- 界面布局总装 -->
 	<bean id="container" class="nc.ui.uif2.TangramContainer" init-method="initUI">
 		<property name="model" ref="bmModel" />
@@ -439,14 +439,14 @@
 				<property name="showMode" value="CardLayout" />
 				<property name="tabs">
 					<list>
-					   <bean class="nc.ui.uif2.tangramlayout.node.VSNode">
-              				<property name="showMode" value="NoDivider" />
-              				<property name="up">
-               					<bean class="nc.ui.uif2.tangramlayout.node.CNode">
-                  					<property name="component" ref="orgpanel" />
-                				</bean>
-              				</property>
-              				<property name="down">
+						<bean class="nc.ui.uif2.tangramlayout.node.VSNode">
+							<property name="showMode" value="NoDivider" />
+							<property name="up">
+								<bean class="nc.ui.uif2.tangramlayout.node.CNode">
+									<property name="component" ref="orgpanel" />
+								</bean>
+							</property>
+							<property name="down">
 								<bean class="nc.ui.uif2.tangramlayout.node.HSNode">
 									<property name="left">
 										<bean class="nc.ui.uif2.tangramlayout.node.CNode">
@@ -579,12 +579,12 @@
 	<bean id="separatorAction" class="nc.funcnode.ui.action.SeparatorAction" />
 	<!-- 显示列表的拦截器 -->
 	<bean id="showListInterceptor"
-	class="nc.ui.pubapp.uif2app.actions.interceptor.ShowUpComponentInterceptor">
+		  class="nc.ui.pubapp.uif2app.actions.interceptor.ShowUpComponentInterceptor">
 		<property name="showUpComponent" ref="MainGrandlistView" />
 	</bean>
 	<!-- 显示卡片的拦截器 -->
 	<bean id="showCardInterceptor"
-	class="nc.ui.pubapp.uif2app.actions.interceptor.ShowUpComponentInterceptor">
+		  class="nc.ui.pubapp.uif2app.actions.interceptor.ShowUpComponentInterceptor">
 		<property name="showUpComponent" ref="MainGrandbillForm" />
 	</bean>
 	<!-- 新增按钮 -->
@@ -653,7 +653,7 @@
 		<property name="showUpComponent" ref="MainGrandlistView" />
 		<property name="templateContainer" ref="queryTemplateContainer" />
 	</bean> -->
-	
+
 	<!-- 列表下刷新 -->
 	<bean id="refreshAction" class="nc.ui.pubapp.uif2app.query2.action.DefaultRefreshAction">
 		<property name="dataManager" ref="bmModelModelDataManager" />
@@ -705,7 +705,7 @@
 		</property>
 	</bean>
 
-	
+
 
 	<!-- model与界面的表体排序同步组件 -->
 	<bean id="billBodySortMediator" class="nc.ui.pubapp.uif2app.model.BillBodySortMediator">
@@ -753,7 +753,7 @@
 						<bean class="nc.ui.qcco.commission.ace.handler.AceAddHandler" />
 					</property>
 				</bean>
-				
+
 				<!-- nc.ui.pubapp.uif2app.event.card.CardHeadTailBeforeEditEvent -->
 				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
 					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardHeadTailBeforeEditEvent" />
@@ -768,7 +768,7 @@
 						<bean class="nc.ui.qcco.commission.ace.handler.AceHeadTailAfterEditHandler" />
 					</property>
 				</bean>
-				
+
 				<!-- nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent -->
 				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
 					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent" />
@@ -930,7 +930,7 @@
 	<bean id="checkAllAction" class="nc.ui.qcco.commission.action.CheckAllAction">
 		<property name="billListPanel" ref="billListView" />
 	</bean>
-	
+
 	<bean id="editTaskAction" class="nc.ui.qcco.commission.action.EditTaskAction">
 		<property name="billListPanel" ref="billListView" />
 	</bean>
@@ -941,16 +941,16 @@
 	<bean id="exceptionHandler" class="nc.ui.uif2.DefaultExceptionHanler">
 		<constructor-arg><ref bean="container"/></constructor-arg>
 		<property name="context"><ref bean="context" /></property>
-	</bean> 
-	
+	</bean>
+
 
 	<!-- 自动修正卡片界面的分数显示控件(换算率) -->
 	<bean id="fractionFixMediator" class="nc.ui.pubapp.uif2app.view.FractionFixMediator" init-method="initUI">
 		<constructor-arg ref="billForm"/>
 	</bean>
-	
-	
-	
+
+
+
 	<bean id="remoteCallCombinatorCaller" class="nc.ui.uif2.editor.UIF2RemoteCallCombinatorCaller">
 		<property name="remoteCallers">
 			<list>
@@ -960,6 +960,6 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!-- 批量保存校验服务类 -->
 </beans>
