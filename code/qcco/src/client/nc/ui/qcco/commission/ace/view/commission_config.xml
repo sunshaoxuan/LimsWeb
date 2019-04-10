@@ -163,7 +163,7 @@
 	init-method="initUI">
 		<property name="model" ref="bmModel2"></property>
 		<property name="templateContainer" ref="templateContainer"></property>
-		<property name="nodekey" value="param"></property>
+		<property name="nodekey" value="param1"></property>
 	</bean>
 
 	<bean id="componentValueManager" class="nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter"></bean>

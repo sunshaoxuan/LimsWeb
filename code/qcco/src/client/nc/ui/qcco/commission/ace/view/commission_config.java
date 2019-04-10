@@ -251,7 +251,7 @@ public class commission_config extends AbstractJavaBeanDefinition {
 		context.put("sunlistView1", bean);
 		bean.setModel(getBmModel2());
 		bean.setTemplateContainer(getTemplateContainer());
-		bean.setNodekey("param");
+		bean.setNodekey("param1");
 		bean.initUI();
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
