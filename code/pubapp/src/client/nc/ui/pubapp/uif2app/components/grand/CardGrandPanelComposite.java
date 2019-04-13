@@ -3,6 +3,7 @@ package nc.ui.pubapp.uif2app.components.grand;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -96,6 +97,8 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 		UserDefineRefUtils.refreshBillCardBodyDefRefs(
 				(AggCommissionHVO)(this.getModel().getSelectedData()), 
 				(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
+		//tank 2019年4月13日17:30:54 刷新孙表操作
+		CardPanelEventUtil.grandModelInit(this);
 	}
 
 	/**

@@ -223,10 +223,28 @@ public abstract class AceCommissionPubServiceImpl {
 			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
 			this.persistent(fullGrandVOs, originGrandVOs);
 
+			//处理孙表中的主表pk为空的问题
+			if(fullBills!=null){
+				for(AggCommissionHVO aggvo : fullBills){
+					if(aggvo!=null && aggvo.getChildren(CommissionBVO.class)!=null){
+						CommissionBVO[] bvos = (CommissionBVO[])(aggvo.getChildren(CommissionBVO.class));
+						for(CommissionBVO bvo : bvos){
+							if(bvo!=null && bvo.getPk_commission_r()!=null){
+								String pk_commission_b = bvo.getPk_commission_b();		
+								for(CommissionRVO rvo : bvo.getPk_commission_r()){
+									if(rvo!=null){
+										rvo.setPk_commission_b(pk_commission_b);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			AceCommissionUpdateBP bp = new AceCommissionUpdateBP();
 			AggCommissionHVO[] retBills = bp.update(fullBills, originBills);
 
-			return aggvos;
+			return retBills;
 		} catch (Exception e) {
 			ExceptionUtils.marsh(e);
 		}

@@ -332,6 +332,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					IConstEnum aValue = new DefaultConstEnum(refName, refName);
 					this.getGrandCard().getBillCardPanel().setBodyValueAt(aValue.getValue(), row, "component");
 				}
+				//e.getBillCardPanel().getBodyValueAt(row, "qc_commission_b");
 			}
 		}
 	}
