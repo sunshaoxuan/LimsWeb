@@ -1902,5 +1902,5 @@ public class commission_config extends AbstractJavaBeanDefinition {
 		list.add(getUserdefitemContainer());
 		return list;
 	}
-
+//
 }
