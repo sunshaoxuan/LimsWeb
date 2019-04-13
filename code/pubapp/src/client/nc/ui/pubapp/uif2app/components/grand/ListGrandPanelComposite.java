@@ -26,6 +26,7 @@ import nc.ui.pubapp.uif2app.components.grand.util.CardPanelEventUtil;
 import nc.ui.pubapp.uif2app.event.list.ListBodyRowChangedEvent;
 import nc.ui.pubapp.uif2app.event.list.ListBodyTabChangedEvent;
 import nc.ui.pubapp.uif2app.event.list.ListHeadRowChangedEvent;
+import nc.ui.pubapp.uif2app.query2.model.IModelDataManager;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.uif2.AppEvent;
 import nc.ui.uif2.UIState;
@@ -58,6 +59,18 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 
 	private AutoShowUpEventSource autoShowUpComponent = new AutoShowUpEventSource(this);
 	
+	private IModelDataManager dataManager;
+	
+	
+	
+
+	public IModelDataManager getDataManager() {
+		return dataManager;
+	}
+
+	public void setDataManager(IModelDataManager dataManager) {
+		this.dataManager = dataManager;
+	}
 
 	@Override
 	public void initUI() {
@@ -240,8 +253,11 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 			this.getModel().getMainModel().fireEvent(event);
 		}
 		this.autoShowUpComponent.showMeUp();
-		//刷新子表参照
+		
 		try {
+			//刷新主表
+			getDataManager().refresh();
+			//刷新子表参照
 			UserDefineRefUtils.refreshBillListBodyDefRefs(
 					(AggCommissionHVO) (this.getModel().getSelectedData()),
 					(BillListView) this.mainPanel, "pk_commission_b",

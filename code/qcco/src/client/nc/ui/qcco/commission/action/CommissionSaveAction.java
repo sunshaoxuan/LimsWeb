@@ -169,7 +169,6 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 	private void deleteOldTask(IBill[] bills) throws BusinessException {
 		if (bills != null && bills.length >= 0) {
 			List<AggCommissionHVO> deleteList = new ArrayList();
-			StringBuilder pkSb = new StringBuilder();
 			for (IBill bill : bills) {
 				if (bill != null && bill instanceof AggCommissionHVO&& bill.getParent() != null) {
 					deleteList.add(((AggCommissionHVO) bill));

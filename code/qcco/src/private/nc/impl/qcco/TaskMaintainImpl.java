@@ -126,15 +126,29 @@ private BaseDAO dao = null;
 			}
 			InSQLCreator insql = new InSQLCreator();
 	        String pkInSQL = insql.getInSQL(commissionPkSet.toArray(new String[0]));
-	        String sql = "update qc_commission_r "
-	        		+" set dr = 1 "
-	        		+" where PK_COMMISSION_R in ( "
-	        		+" select PK_COMMISSION_R from qc_commission_r r "
-	        		+" left join qc_commission_b b on b.PK_COMMISSION_B = r.PK_COMMISSION_B "
-	        		+" left join qc_commission_h h on h.PK_COMMISSION_H = h.PK_COMMISSION_H "
-	        		+" where h.PK_COMMISSION_H in ("+pkInSQL+") "
+	        String delHSql = " update qc_task_h set dr = 1 "
+	        		+" where pk_commission_h in ("+pkInSQL+") ";
+	        getDao().executeUpdate(delHSql);
+	        
+	        String delBSql = " UPDATE qc_task_b set dr = 1 where pk_task_h "
+	        		+ " in ( select pk_task_h from qc_task_h "
+	        		+" where pk_commission_h in ("+pkInSQL+") "
 	        		+" )";
-	        getDao().executeUpdate(sql);
+	        getDao().executeUpdate(delBSql);
+	        
+	        String delRSql = " UPDATE qc_task_r set dr = 1 where pk_task_b "
+	        		+ " in ( select pk_task_b from qc_task_b where pk_task_h "
+	        		+ " in ( select pk_task_h from qc_task_h "
+	        		+" where pk_commission_h in ("+pkInSQL+") "
+	        		+" ))";
+	        getDao().executeUpdate(delRSql);
+	        
+	        String delSSql = " UPDATE qc_task_s set dr = 1 where pk_task_b "
+	        		+ " in ( select pk_task_b from qc_task_b where pk_task_h "
+	        		+ " in ( select pk_task_h from qc_task_h  "
+	        		+" where pk_commission_h in ("+pkInSQL+") "
+	        		+" ))";
+	        getDao().executeUpdate(delSSql);
 		}
 
 	}
