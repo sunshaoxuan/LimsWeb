@@ -1,15 +1,10 @@
 package nc.ui.qcco.task.view;
 
-import java.awt.BorderLayout;
-import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -26,6 +21,27 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import javax.swing.ListSelectionModel;
 
 import bsh.This;
@@ -36,14 +52,12 @@ import com.ibm.db2.jcc.sqlj.e;
 import com.ufida.report.free.plugin.fieldattribute.SmartCheckBoxList;
 import com.ufida.report.free.plugin.fieldattribute.SmartListData;
 
-import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.hr.utils.ResHelper;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.SQLParameter;
 import nc.jdbc.framework.processor.MapListProcessor;
-import nc.ui.ml.NCLangRes;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.beans.UIButton;
 import nc.ui.pub.beans.UIDialog;
@@ -56,63 +70,31 @@ import nc.ui.pub.beans.ValueChangedEvent;
 import nc.ui.pub.beans.ValueChangedListener;
 import nc.ui.pub.beans.progress.IProgressMonitor;
 import nc.ui.pub.beans.progress.NCProgresses;
-import nc.ui.pub.bill.BillCardPanel;
-import nc.ui.pub.bill.BillEditEvent;
-import nc.ui.pub.bill.BillListData;
-import nc.ui.pub.bill.BillListPanel;
 import nc.ui.pub.formula.ui.InputHandler.insert_break;
 import nc.ui.qcco.commission.refmodel.SampleAllocationRefModel;
 import nc.ui.qcco.commission.refmodel.UnitTypeRefModel;
 import nc.ui.qcco.task.utils.StringOrderUtils;
 import nc.vo.pub.BusinessException;
-import nc.vo.pub.CircularlyAccessibleValueObject;
-import nc.vo.qcco.task.SampleAllocatVO;
-import nc.vo.qcco.task.TaskBodyVO;
 import nc.vo.trade.bdinfo.BaseDocVO;
 
-public class SampleAllocationPanel extends UIDialog implements
-		nc.ui.pub.bill.BillEditListener2, ActionListener {
-	private BillListPanel billListHeadPanel = null;
-	private BillCardPanel billListBodyPanel = null;
-	private static final long serialVersionUID = 1L;
-	private UIPanel bnPanel = null;
-	private UIButton okButton = null;
-	private UIButton cancelButton = null;
-	private Checkbox checkbox = null;
 
-	private JPanel ivjUIDialogContentPane1;
 
-	private UIPanel ivjUIPanel1 = null;
-	private JTextField projectTypeField = null;// 项目类型
-	private UILabel projectTypeLabel = null;// 项目类型
-
-	private UIButton btnOKtop = null;// 确定按钮
-	private String pk_commission_h;
-	List<Integer> listnum = new ArrayList<Integer>();
-	private String projectType;
-
-	private CircularlyAccessibleValueObject[] ss = null;
-	private JPanel ivjUIDialogContentPane = null;
-	private String selectedstr;
-	private Integer testnum;
-	private String[] strs;
-
-	public String[] getStrs() {
-		return strs;
-	}
-
-	public void setStrs(String[] strs) {
-		this.strs = strs;
-	}
-
-	public Integer getTestnum() {
+public class SampleAllocationPanel extends UIDialog implements ActionListener, ValueChangedListener{
+	  private SmartCheckBoxList list = null;
+	  private Map<String, String> mapselect = new HashMap<String,String>();
+	  private String selectedstr;
+	  private Integer testnum;
+	  public Integer getTestnum() {
 		return testnum;
 	}
 
 	public void setTestnum(Integer testnum) {
 		this.testnum = testnum;
 	}
-
+	List<Integer> listnum = new ArrayList<Integer>();
+	  
+	 
+	
 	public String getSelectedstr() {
 		return selectedstr;
 	}
@@ -120,354 +102,484 @@ public class SampleAllocationPanel extends UIDialog implements
 	public void setSelectedstr(String selectedstr) {
 		this.selectedstr = selectedstr;
 	}
+		// 样品分配
+		private String cname = null;
+		private String pk_commission_h;
+		
+		public String getPk_commission_h() {
+			return pk_commission_h;
+		}
 
-	public String getProjectType() {
-		return projectType;
-	}
+		public void setPk_commission_h(String pk_commission_h) {
+			this.pk_commission_h = pk_commission_h;
+		}
 
-	public void setProjectType(String projectType) {
-		this.projectType = projectType;
-	}
+		public SampleAllocationPanel(String pk_commission_h) {
+			super();
+			this.pk_commission_h = pk_commission_h;
+			selectedstr = null;
+			initialize(mapselect);
+		}
 
-	public SampleAllocationPanel(String pk_commission_h) throws DAOException {
-		this.pk_commission_h = pk_commission_h;
-		initialize();
-	}
+		public SampleAllocationPanel(Container arg1, String arg2) {
+			super(arg1, arg2);
+		}
 
-	private void initialize() {
-		// this.setTitle("请选择数据");
-		this.setLayout(new BorderLayout());
-		this.setSize(new Dimension(400, 480));
-		this.setContentPane(getUIDialogContentPane());
+		public SampleAllocationPanel() {
+			super();
+		}
 
-	}
+		public SampleAllocationPanel(Frame arg1, String arg2) {
+			super(arg1, arg2);
+		}
 
-	private Container getUIDialogContentPane() {
-		if (ivjUIDialogContentPane == null) {
+		public SampleAllocationPanel(Container arg1) {
+			super(arg1);
+			//initialize();
+		}
+
+
+		private void initialize(Map<String, String> mapselect) {
 			try {
-				ivjUIDialogContentPane = new javax.swing.JPanel();
-				ivjUIDialogContentPane.setName("ivjUIDialogContentPane");
-				ivjUIDialogContentPane.setLayout(new java.awt.BorderLayout());
-				getUIDialogContentPane().add(getUIDialogContentPane1(),
-						BorderLayout.CENTER);
-				getUIDialogContentPane().add(getBnPanel(), BorderLayout.SOUTH);
+				setName("SampleAllocationPanel");
+				setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+				setSize(600, 400);
+				setContentPane(getUIDialogContentPane(mapselect));
+				
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
+
 		}
-		return ivjUIDialogContentPane;
 
-	}
+		
 
-	private UIPanel getBnPanel() {
-		if (this.bnPanel == null) {
-			this.bnPanel = new UIPanel();
-			this.bnPanel.setLayout(new FlowLayout());
-			this.bnPanel.setPreferredSize(new Dimension(500, 50));
-			this.bnPanel.add(getOkButton(), null);
-			this.bnPanel.add(getCancelButton(), null);
-		}
-		return this.bnPanel;
-	}
-
-	private UIButton getOkButton() {
-		if (this.okButton == null) {
-			this.okButton = new UIButton();
-			this.okButton.setBounds(new Rectangle(50, 5, 30, 20));
-			this.okButton.setText(NCLangRes.getInstance().getStrByID("common",
-					"UC001-0000044"));
-			this.okButton.setPreferredSize(new Dimension(60, 22));
-			this.okButton.addActionListener(this);
-		}
-		return this.okButton;
-	}
-
-	private UIButton getCancelButton() {
-		if (this.cancelButton == null) {
-			this.cancelButton = new UIButton();
-			this.cancelButton.setBounds(new Rectangle(200, 5, 30, 20));
-			this.cancelButton.setText(NCLangRes.getInstance().getStrByID(
-					"common", "UC001-0000008"));
-			this.cancelButton.setPreferredSize(new Dimension(60, 22));
-			this.cancelButton.addActionListener(this);
-		}
-		return this.cancelButton;
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(getOkButton())) {
-			setResult(UIDialog.ID_OK);
-			SampleAllocatVO[] sampleAllocatVOsAllocatVO = (SampleAllocatVO[]) getBillListHeadPanel()
-					.getBodyBillModel().getBodySelectedVOs(
-							"nc.vo.qcco.task.SampleAllocatVO");
-			if (sampleAllocatVOsAllocatVO != null
-					&& sampleAllocatVOsAllocatVO.length > 0) {
-				List<String> strlist = new ArrayList<>();
-				for (SampleAllocatVO taskBodyVO : sampleAllocatVOsAllocatVO) {
-					strlist.add(taskBodyVO.getSampleallocat());
-				}
+		
+		private JPanel getUIDialogContentPane(Map<String, String> mapselect) {
+			if (ivjUIDialogContentPane == null) {
 				try {
-					testnum = strlist.size();
-					selectedstr = StringOrderUtils.outOrderString(
-							strlist.toArray(new String[strlist.size()]),
-							listnum);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					ivjUIDialogContentPane = new javax.swing.JPanel();
+					ivjUIDialogContentPane.setName("ivjUIDialogContentPane");
+					ivjUIDialogContentPane.setLayout(new java.awt.BorderLayout());
+					getUIDialogContentPane(mapselect).add(getUIDialogContentPane1(mapselect), "Center");
+					getUIDialogContentPane(mapselect).add(getUIPanel2(), "South");
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
 				}
 			}
-			dispose();
-		} else if (e.getSource().equals(getCancelButton())) {
-			setResult(UIDialog.ID_CANCEL);
-			dispose();
-		} else if (e.getSource() == this.getBtnOKtop()) {
-			onButtonOKtopClicked();
+			return ivjUIDialogContentPane;
 		}
-	}
-
-	private JPanel getUIDialogContentPane1() {
-		if (ivjUIDialogContentPane1 == null) {
-			ivjUIDialogContentPane1 = new javax.swing.JPanel();
-			ivjUIDialogContentPane1.setName("ivjUIDialogContentPane1");
-			ivjUIDialogContentPane1.setLayout(null);
-			// ivjUIDialogContentPane1.setLayout(new BorderLayout());
-			getUIDialogContentPane1().add(getUIPanel1());
-			getUIDialogContentPane1().add(getBillListHeadPanel());
-		}
-		return ivjUIDialogContentPane1;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	private UIPanel getUIPanel1() {
-		if (ivjUIPanel1 == null) {
-			try {
-				ivjUIPanel1 = new UIPanel();
-				ivjUIPanel1.setName("ivjUIPanel1");
-				ivjUIPanel1.setLayout(null);
-				ivjUIPanel1.add(getSampleNameLabel());
-				ivjUIPanel1.add(getSampleNameField());
-
-				ivjUIPanel1.add(getBtnOKtop());
-				ivjUIPanel1.setBounds(50, 10, 400, 70);
-			} catch (Throwable ivjExc) {
-				handleException(ivjExc);
-			}
-		}
-		return ivjUIPanel1;
-	}
-
-	private UIButton getBtnOKtop() {
-		if (btnOKtop == null) {
-			try {
-				btnOKtop = new UIButton();
-				btnOKtop.setName("btnOKtop");
-				btnOKtop.setText("查询");
-				btnOKtop.addActionListener(this);
-				btnOKtop.setBounds(250, 5, 50, 30);
-				btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(
-						KeyEvent.VK_Y, InputEvent.ALT_MASK),
-						JComponent.WHEN_IN_FOCUSED_WINDOW);
-			} catch (Throwable ivjExc) {
-				handleException(ivjExc);
-			}
-		}
-		return btnOKtop;
-	}
-
-	private UILabel getSampleNameLabel() {
-		if (projectTypeLabel == null) {
-			try {
-				projectTypeLabel = new UILabel();
-				projectTypeLabel.setName("projectTypeLabel");
-				projectTypeLabel.setText("样品分配");
-				projectTypeLabel.setBounds(0, 5, 80, 30);
-			} catch (Throwable ivjExc) {
-				handleException(ivjExc);
-			}
-		}
-		return projectTypeLabel;
-	}
-
-	private JTextField getSampleNameField() {
-		if (this.projectTypeField == null) {
-			try {
-				projectTypeField = new UITextField();
-				projectTypeField.setName("projectTypeField");
-				projectTypeField.setBounds(70, 8, 150, 50);
-				projectTypeField.setText(null);
-			} catch (Throwable ivjExc) {
-				handleException(ivjExc);
-			}
-
-		}
-		return this.projectTypeField;
-	}
-
-	private void handleException(Throwable exception) {
-		Logger.error("--------- 未捕捉到的异常 ---------");
-		MessageDialog.showErrorDlg(this, null, exception.getMessage());
-		exception.printStackTrace();
-	}
-
-	private void onButtonOKtopClicked() {
-		ivjUIDialogContentPane = null;
-		ivjUIDialogContentPane1 = null;
-		billListHeadPanel = null;
-		this.projectType = getSampleNameField().getText();
-
-		try {
-			if (listnum != null) {
-				strs = StringOrderUtils.outDisOrderArray(projectType, listnum);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.getContentPane().hide();
-		initialize();
-
-	}
-
-	/*
-	 * 根据选择的收款单数据，对已经填写的数据进行校验。
-	 */
-	private String checkListData(String redate, String backdate) {
-
-		return null;
-	}
-
-	private String checkCardData(String redate, String backdate) {
-		String message = "";
-		return message;
-	}
-
-	/*
-	 * 获取模版
-	 */
-	private BillListPanel getBillListHeadPanel() {
-		if (billListHeadPanel == null) {
-			billListHeadPanel = new BillListPanel();
-			billListHeadPanel.loadTemplet("1001ZZ100000000022UV");
-			billListHeadPanel.setVisible(true);
-			billListHeadPanel.setEnabled(true);
-			billListHeadPanel.setBounds(90, 80, 200, 350);
-
-			billListHeadPanel.setMultiSelect(true);
-			Map<String, Integer> maps = getListDatas();
-			List<String> lists = getLastDatas(maps);
-			// 查询出listData
-			List<SampleAllocatVO> taskvos = new ArrayList<>();
-			if (null != lists && lists.size() > 0) {
-				for (String string : lists) {
-					SampleAllocatVO sampleAllocatVO = new SampleAllocatVO();
-					sampleAllocatVO.setSampleallocat(string);
-					taskvos.add(sampleAllocatVO);
+		
+		private JPanel getUIDialogContentPane1(Map<String, String> mapselect) {
+			if (ivjUIDialogContentPane1 == null) {
+				try {
+					ivjUIDialogContentPane1 = new javax.swing.JPanel();
+					ivjUIDialogContentPane1.setName("ivjUIDialogContentPane1");
+					ivjUIDialogContentPane1.setLayout(null);
+					getUIDialogContentPane1(mapselect).add(getUIPanel1());
+					getUIDialogContentPane1(mapselect).add(getUIPanel4(mapselect));
+					
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
 				}
-				/*for (int i = 0; i < 25; i++) {
-					SampleAllocatVO sampleAllocatVO = new SampleAllocatVO();
-					sampleAllocatVO.setSampleallocat("String"+i);
-					taskvos.add(sampleAllocatVO);
-				}*/
 			}
-			billListHeadPanel.setBodyValueVO(taskvos
-					.toArray(new SampleAllocatVO[0]));
-			SampleAllocatVO[] bodyValueVOs = (SampleAllocatVO[]) billListHeadPanel
-					.getBodyBillModel().getBodyValueVOs(
-							"nc.vo.qcco.task.SampleAllocatVO");
-			List<Integer> indexlist = new ArrayList<>();
-			if (strs != null && strs.length > 0) {
-				for (String str : strs) {
-					for (int i = 0; i < bodyValueVOs.length; i++) {
-						if (str.equals(bodyValueVOs[i].getSampleallocat())) {
-							indexlist.add(i);
+			return ivjUIDialogContentPane1;
+		}
+
+		
+		
+		
+		
+		
+		
+		
+		private JPanel getUIPanel4(Map<String, String> mapselect) {
+			if(null == checkbox){
+				checkbox = new UIPanel();
+				//查找list数据
+				Vector<SmartListData> listData = new Vector<SmartListData>();
+				List<Integer> indexlist = new ArrayList<Integer>();
+				Map<String, Integer> maps = getListDatas();
+				List<String> lists = getLastDatas(maps);
+				if(null != lists && lists.size() > 0){
+					for(String string :lists){
+						SmartListData smartListData = new SmartListData(null);
+						smartListData.setSmartName(string);
+						smartListData.setEnable(true);
+						listData.add(smartListData);
+					}
+				}
+				this.list = new SmartCheckBoxList(listData);
+				if (null != mapselect && mapselect.size() > 0) {
+					for(SmartListData sdata : listData){
+						for(String map : mapselect.keySet()){
+							if(map.toString().equals(sdata.toString())){
+								indexlist.add(listData.indexOf(sdata));
+							}
 						}
 					}
+					int[] d = new int[indexlist.size()];
+					for(int i = 0;i<indexlist.size();i++){
+						d[i] = indexlist.get(i);
+					}
+					// this.list.
+					//this.list.setSelectedValue(this.list.get, arg1);
+					this.list.setSelectedIndices(d);
 				}
-				for (Integer integer : indexlist) {
-
-					billListHeadPanel.getBodyBillModel()
-							.setRowState(integer, 4);
+			    //this.list.updateUI();
+			  //  this.list.setSelectionBackground(arg0);
+			   // this.list.setSelectionModel(arg0);
+			    //ListSelectionModel
+			  //  this.list.setSelectedIndex(0);
+			    //getUIPanel4(mapselect).add(new UIScrollPane());
+			   // UIScrollPane.setViewportView(this.list);
+				
+			    checkbox.setBounds(100, 110, 300, 450);
+			    checkbox.add(this.list);
+			}
+			if(this.list.getSelectedValuesList() != null && this.list.getSelectedValuesList().size() > 0){
+				try {
+					List<SmartListData> selectedValuesList = this.list.getSelectedValuesList();
+					List<String> strlist = new ArrayList<String>();
+					for (SmartListData st : selectedValuesList) {
+						strlist.add(st.getSmartName());
+					}
+					if (null != listnum) {
+						selectedstr = StringOrderUtils.outOrderString(strlist.toArray(new String[strlist.size()]),listnum);
+						testnum = strlist.size();
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
-			// billListHeadPanel.getBodyBillModel().addRowAttributeObject(2,
-			// key, o);
-			billListHeadPanel.setAutoscrolls(true);
+		
+			return checkbox;
 		}
-		return billListHeadPanel;
-	}
-
-	@Override
-	public boolean beforeEdit(BillEditEvent paramBillEditEvent) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private List<String> getLastDatas(Map<String, Integer> maps) {
-		List<String> list = new ArrayList<String>();
-		for (String key : maps.keySet()) {
-			Integer quantity = Integer.valueOf(maps.get(key));
-			if (quantity > 0) {
-				for (int x = 1; x <= quantity; x++) {
-					list.add(key + String.valueOf(x));
-				}
-			}
-		}
-		return list;
-	}
-
-	private Map<String, Integer> getListDatas() {
-		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(
-				IUAPQueryBS.class.getName());
-
-		Map<String, Integer> maps = new HashMap<String, Integer>();
-
-		try {
-			List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
-					.executeQuery(
-							"select "
-									+ "samplegroup.nc_sample_name, commission.QUANTITY from QC_COMMISSION_B commission left join NC_SAMPLE_GROUP samplegroup "
-									+ "on commission.PK_SAMPLEGROUP = samplegroup.pk_sample_group where "
-									+ "commission.PK_COMMISSION_H='"
-									+ pk_commission_h
-									+ "' order by samplegroup.nc_sample_code",
-							new MapListProcessor());
-
-			if (null != custlist && custlist.size() > 0) {
-				for (Map<String, Object> map : custlist) {
-					maps.put(map.get("nc_sample_name").toString(), Integer
-							.parseInt(String.valueOf(map.get("quantity"))));
-				}
-				if (maps != null && maps.size() > 0 && listnum.size() <= 0) {
-					if (maps.containsKey("A")) {
-						listnum.add(maps.get("A"));
-					} else {
-						listnum.add(0);
-					}
-					if (maps.containsKey("B")) {
-						listnum.add(maps.get("B"));
-					} else {
-						listnum.add(0);
-					}
-					if (maps.containsKey("C")) {
-						listnum.add(maps.get("C"));
-					} else {
-						listnum.add(0);
-					}
-					if (maps.containsKey("D")) {
-						listnum.add(maps.get("D"));
-					} else {
-						listnum.add(0);
+		
+		
+		private List<String> getLastDatas(Map<String, Integer> maps) {
+			List<String> list = new ArrayList<String>();
+			for(String key : maps.keySet()){
+				Integer quantity = Integer.valueOf(maps.get(key));
+				if(quantity > 0){
+					for(int x = 1; x<= quantity; x++){
+						list.add(key + String.valueOf(x));
 					}
 				}
 			}
-		} catch (BusinessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return list;
 		}
-		return maps;
-	}
+
+		private Map<String, Integer> getListDatas() {
+			 IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());   
+					
+					Map<String, Integer> maps = new HashMap<String,Integer>();
+					
+					try {
+						List<Map<String, Object>> custlist = (List<Map<String,Object>>) iUAPQueryBS. executeQuery("select "
+								+ "samplegroup.nc_sample_name, commission.QUANTITY from QC_COMMISSION_B commission left join NC_SAMPLE_GROUP samplegroup "
+								+ "on commission.PK_SAMPLEGROUP = samplegroup.pk_sample_group where "
+								+ "commission.PK_COMMISSION_H='"+pk_commission_h+"' order by samplegroup.nc_sample_code",new MapListProcessor());
+					
+					if (null != custlist && custlist.size() > 0 ) {
+						for(Map<String,Object> map : custlist ){
+							maps.put(map.get("nc_sample_name").toString(), Integer.parseInt(String.valueOf(map.get("quantity"))));
+						}
+						if (maps != null && maps.size() > 0 && listnum.size() <= 0) {
+							if (maps.containsKey("A")) {
+								listnum.add(maps.get("A"));
+							}else {
+								listnum.add(0);
+							}
+							if (maps.containsKey("B")) {
+								listnum.add(maps.get("B"));
+							}else {
+								listnum.add(0);
+							}
+							if (maps.containsKey("C")) {
+								listnum.add(maps.get("C"));
+							}else {
+								listnum.add(0);
+							}
+							if (maps.containsKey("D")) {
+								listnum.add(maps.get("D"));
+							}else {
+								listnum.add(0);
+							}
+						}
+					}
+					} catch (BusinessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			return maps;
+		}
+
+		/**
+		 * 样品分配
+		 * @return
+		 */
+		private UIPanel getUIPanel1() {
+			if (ivjUIPanel1 == null) {
+				try {
+					ivjUIPanel1 = new UIPanel();
+					ivjUIPanel1.setName("ivjUIPanel1");
+					ivjUIPanel1.setLayout(null);
+					// 样品分配
+					ivjUIPanel1.add(getSampleNameLabel());
+					ivjUIPanel1.add(getSampleNameField());
+					ivjUIPanel1.add(getBtnOKtop());
+					ivjUIPanel1.setBounds(50, 10,580, 50);
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
+				}
+			}
+			return ivjUIPanel1;
+		}
+
+		
+		/**
+		 * 确定 取消按钮
+		 * @return
+		 */
+		private nc.ui.pub.beans.UIPanel getUIPanel2() {
+			if (ivjUIPanel2 == null) {
+				try {
+					ivjUIPanel2 = new nc.ui.pub.beans.UIPanel();
+					ivjUIPanel2.setName("UIPanel2");
+					ivjUIPanel2.setBackground(new java.awt.Color(204, 204, 204));
+					getUIPanel2().add(getBtnOK(), getBtnOK().getName());
+					getUIPanel2().add(getBtnCancel(), getBtnCancel().getName());
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
+				}
+			}
+			return ivjUIPanel2;
+		}
+
+		/**
+		 * 样品分配名称
+		 * @return
+		 */
+		private UILabel getSampleNameLabel() {
+			if (sampleNameLabel == null) {
+				try {
+					sampleNameLabel = new UILabel();
+					sampleNameLabel.setName("sampleNameLabel");
+					sampleNameLabel.setText("样品分配");
+					sampleNameLabel.setBounds(0, 10, 80, 30);
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
+				}
+			}
+			return sampleNameLabel;
+		}
+		
+		
+		
+
+		/**
+		 * 样品分配前输入框
+		 * 
+		 * @return
+		 */
+		private JTextField getSampleNameField() {
+			if (this.sampleNameField == null) {
+				try {
+					sampleNameField = new UITextField();
+					sampleNameField.setName("sampleNameField");
+					sampleNameField.setBounds(100, 12, 300, 50);
+					sampleNameField.setText(null);
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
+				}
+
+			}
+			return this.sampleNameField;
+		}
+		
+		/**
+		 * 确定操作
+		 * 
+		 * @throws Exception
+		 */
+		private void onButtonOKClicked() {
+			this.sampleName = getSampleNameField().getText();
+			//selectedstr = null;
+			getUIPanel4(null);
+			checkbox = null;
+			this.closeOK();
+
+		}
+
+		/**
+		 * 确定操作
+		 * 
+		 * @throws Exception
+		 */
+		private void onButtonOKtopClicked() {
+			this.sampleName = getSampleNameField().getText();
+			String[] strs = null;
+			try {
+				if (listnum != null ) {
+					strs = StringOrderUtils.outDisOrderArray(sampleName,  listnum);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(strs != null && strs.length > 0){
+				for(String str : strs){
+					mapselect.put(str, null);
+				}
+				ivjUIDialogContentPane = null;
+				ivjUIDialogContentPane1 = null;
+				checkbox = null;
+				//listnum.clear();
+				//getUIPanel4(mapselect);
+				getContentPane().hide();
+				//getRootPane().getLayeredPane().remove(getRootPane().getContentPane());
+				initialize(mapselect);
+				//mapselect = null;
+				//listnum = null;
+				//getUIDialogContentPane1()
+				
+				
+				
+			}
+
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			if (e.getSource() == this.getBtnOK()) {
+				new Thread() {
+					@Override
+					public void run() {
+
+						IProgressMonitor progressMonitor = NCProgresses.createDialogProgressMonitor(getParent());
+
+						try {
+							progressMonitor.beginTask("匯出中...", IProgressMonitor.UNKNOWN_REMAIN_TIME);
+							progressMonitor.setProcessInfo("匯出中，請稍候.....");
+							onButtonOKClicked();
+						} finally {
+
+							progressMonitor.done(); // 进度任务结束
+						}
+					}
+				}.start();
+			} else if(e.getSource() == this.getBtnOKtop()){
+				onButtonOKtopClicked();
+			}
+			if (e.getSource() == this.getBtnCancel()) {
+				this.closeCancel();
+			}
+
+		}
+
+		public void valueChanged(ValueChangedEvent e) {
+			
+		}
+
+		public boolean equals(Object obj) {
+			return super.equals(obj);
+		}
+
+		protected void finalize() throws Throwable {
+			super.finalize();
+		}
+
+		protected LayoutManager getLayoutManager() {
+			return new GridLayout(2, 2);
+		}
+
+		/**
+		 * 生成接收器的散列码。 此方法主要由散列表 支持，如 java.util 中提供的那些散列表。@return 接收器的整数散列码
+		 */
+		public int hashCode() {
+			return super.hashCode();
+		}
+		private UIButton getBtnOKtop() {
+			if (btnOKtop == null) {
+				try {
+					btnOKtop = new UIButton();
+					btnOKtop.setName("btnOKtop");
+					btnOKtop.setText("确定");
+					btnOKtop.addActionListener(this);
+					btnOKtop.setBounds(420, 12, 30, 30);
+					btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.ALT_MASK),
+							JComponent.WHEN_IN_FOCUSED_WINDOW);
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
+				}
+			}
+			return btnOKtop;
+		}
+		private UIButton getBtnOK() {
+			if (btnOK == null) {
+				try {
+					btnOK = new UIButton();
+					btnOK.setName("btnOK");
+					btnOK.setText("确定");
+					btnOK.addActionListener(this);
+					btnOK.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.ALT_MASK),
+							JComponent.WHEN_IN_FOCUSED_WINDOW);
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
+				}
+			}
+			return btnOK;
+		}
+
+		private UIButton getBtnCancel() {
+			if (btnCancel == null) {
+				try {
+					btnCancel = new UIButton();
+					btnCancel.setName("btnCancel");
+					btnCancel.setText("取消");
+					btnCancel.addActionListener(this);
+					btnCancel.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK),
+							JComponent.WHEN_IN_FOCUSED_WINDOW);
+				} catch (Throwable ivjExc) {
+					handleException(ivjExc);
+				}
+			}
+			return btnCancel;
+		}
+
+
+		public String getSampleName() {
+			return sampleName;
+		}
+
+		public void setSampleName(String sampleName) {
+			this.sampleName = sampleName;
+		}
+		
+		
+
+
+		private void handleException(Throwable exception) {
+			Logger.error("--------- 未捕捉到的异常 ---------");
+			MessageDialog.showErrorDlg(this, null, exception.getMessage());
+			exception.printStackTrace();
+		}
+		private UIButton btnOKtop = null;// 确定按钮
+		
+		private UIButton btnOK = null;// 确定按钮
+		private UIButton btnCancel = null;// 取消按钮
+		private JPanel ivjUIDialogContentPane = null;
+		private JPanel ivjUIDialogContentPane1 = null;
+		private UIPanel ivjUIPanel1 = null;
+		private UIPanel ivjUIPanel2 = null;
+		private UILabel sampleNameLabel = null;// 样品分配
+		private UIButton button = null;// 确定按钮
+		private JTextField sampleNameField = null;// 样品分配
+		//private UIRefPane refpanel;
+		private JPanel checkbox = null;
+		private String sampleName = null;// 样品分配
 
 }
