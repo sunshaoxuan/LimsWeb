@@ -40,7 +40,7 @@
 	</bean>
 
 	<!-- 管理应用模型 -->
-	<bean id="manageAppModel2" class="nc.ui.qcco.tak.model.SubGrandBillModel">
+	<bean id="manageAppModel2" class="nc.ui.qcco.task.model.SubGrandBillModel">
 		<property name="businessObjectAdapterFactory" ref="boadatorfactory2"></property>
 		<property name="context" ref="context"></property>
 	</bean>
@@ -173,7 +173,7 @@
 	init-method="initUI">
 		<property name="model" ref="manageAppModel2"></property>
 		<property name="templateContainer" ref="templateContainer"></property>
-		<property name="nodekey" value="sunparas"></property>
+		<property name="nodekey" value="sunparas1"></property>
 	</bean>
 
 	<bean id="componentValueManager" class="nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter"></bean>
@@ -287,7 +287,7 @@
 		<property name="bodyLineActions">
 			<list>
 				<!-- 提供了一组默认实现 -->
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyAddLineAction" />
+				<bean class="nc.ui.qcco.task.action.TaskBodyAddLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyDelLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />
@@ -528,7 +528,8 @@
 					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent" />
 					<property name="handler">
 						<bean class="nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler" >
-							<property name="mainBillForm" ref="billFormEditor" />					
+							<property name="mainBillForm" ref="billFormEditor" />
+							<property name="grandCard" ref="sunbillFormEditor1" />						
 						</bean>
 					</property>
 				</bean>
