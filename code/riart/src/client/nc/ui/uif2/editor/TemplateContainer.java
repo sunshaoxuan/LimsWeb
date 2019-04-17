@@ -96,10 +96,12 @@ public class TemplateContainer implements IRemoteCallCombinatorUser {
 		}
 
 		if (!StringUtil.isEmptyWithTrim(funcode)) {
-			loader.prepare(funcode, getPk_loginuser(), getPk_group(), nodeKeies.toArray(new String[0]));
-		} else {
-			loader.prepare(getContext().getNodeCode(), getContext().getPk_loginUser(), getContext().getPk_group(),
+			loader.prepare(funcode, getPk_loginuser(), getPk_group(),
 					nodeKeies.toArray(new String[0]));
+		} else {
+			loader.prepare(getContext().getNodeCode(), getContext()
+					.getPk_loginUser(), getContext().getPk_group(), nodeKeies
+					.toArray(new String[0]));
 		}
 
 		prepared = true;
@@ -154,7 +156,8 @@ public class TemplateContainer implements IRemoteCallCombinatorUser {
 	 *            Ò³Ç©±àÂë
 	 * @return
 	 */
-	public BillTempletVO getTemplate(String nodeKey, String pos, List<String> tab) {
+	public BillTempletVO getTemplate(String nodeKey, String pos,
+			List<String> tab) {
 		// nodeKey = null;
 
 		int iPos = -1;
@@ -186,6 +189,37 @@ public class TemplateContainer implements IRemoteCallCombinatorUser {
 			template.setChildrenVO(list.toArray(new BillTempletBodyVO[0]));
 			return template;
 		} else if (null != nodeKey && nodeKey.equals("param")) {
+			BillTempletVO template = getTemplate(nodeKey, iPos, tab);
+			BillTempletBodyVO[] bodyVO = template.getBodyVO();
+			List<BillTempletBodyVO> list = new ArrayList<BillTempletBodyVO>();
+			for (int i = 0; i < bodyVO.length; i++) {
+				list.add(bodyVO[i]);
+			}
+			for (int i = 0; i < listextra.size(); i++) {
+				list.add(listextra.get(i));
+			}
+			template.setChildrenVO(list.toArray(new BillTempletBodyVO[0]));
+			listextra.clear();
+			return template;
+		} else if (null != nodeKey && nodeKey.equals("sunparas1")) {
+			// audittable
+			nodeKey = "sunparas";
+
+			BillTempletVO template = getTemplate(nodeKey, iPos, tab);
+			BillTempletBodyVO[] bodyVO = template.getBodyVO();
+			List<BillTempletBodyVO> list = new ArrayList<BillTempletBodyVO>();
+			for (int i = 0; i < bodyVO.length; i++) {
+				// &&
+				// bodyVO[i].getMetadataproperty().contains("qcco.commission_h")
+				if (bodyVO[i].getTableCode().equals("audittable") || bodyVO[i].getTable_code().equals("tailtable")) {
+					listextra.add(bodyVO[i]);
+				} else {
+					list.add(bodyVO[i]);
+				}
+			}
+			template.setChildrenVO(list.toArray(new BillTempletBodyVO[0]));
+			return template;
+		} else if (null != nodeKey && nodeKey.equals("sunparas")) {
 			BillTempletVO template = getTemplate(nodeKey, iPos, tab);
 			BillTempletBodyVO[] bodyVO = template.getBodyVO();
 			List<BillTempletBodyVO> list = new ArrayList<BillTempletBodyVO>();
@@ -273,21 +307,24 @@ public class TemplateContainer implements IRemoteCallCombinatorUser {
 
 			// ÏîÄ¿
 			for (BillTempletBodyVO bodyVO : bodyVOes) {
-				if (bodyVO.getPos() == pos && tab.contains(bodyVO.getTable_code()))
+				if (bodyVO.getPos() == pos
+						&& tab.contains(bodyVO.getTable_code()))
 					newBodyVOes.add(bodyVO);
 			}
 		}
 
-		BillTempletHeadVO newHeadVO = (BillTempletHeadVO) template.getHeadVO().clone();
-		newHeadVO.getStructvo().setBillTabVOs(newTabs.toArray(new BillTabVO[0]));
+		BillTempletHeadVO newHeadVO = (BillTempletHeadVO) template.getHeadVO()
+				.clone();
+		newHeadVO.getStructvo()
+				.setBillTabVOs(newTabs.toArray(new BillTabVO[0]));
 
 		return new BillTempletVO(newHeadVO, newBodyVOes);
 
 	}
 
 	protected void fetchMDInfo() {
-		MDPathInfo[] pathinfos = BillTemplateMDPropFetchUtil.fetchMDPathInfo(this.templates
-				.toArray(new BillTempletVO[0]));
+		MDPathInfo[] pathinfos = BillTemplateMDPropFetchUtil
+				.fetchMDPathInfo(this.templates.toArray(new BillTempletVO[0]));
 		if (pathinfos == null || pathinfos.length == 0)
 			return;
 		try {
