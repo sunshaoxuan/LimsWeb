@@ -2,12 +2,8 @@ package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
 
-import com.sun.org.apache.xml.internal.resolver.helpers.Debug;
-
 import nc.bs.uif2.IActionCode;
-import nc.ui.pub.bill.BillData;
 import nc.ui.pub.bill.BillItem;
-import nc.ui.pub.bill.action.BillTableLineAction;
 import nc.ui.pubapp.uif2app.actions.AbstractBodyTableExtendAction;
 import nc.ui.pubapp.uif2app.actions.intf.ICardPanelDefaultActionProcessor;
 import nc.ui.uif2.NCAction;
@@ -42,24 +38,27 @@ public class SelectAllLineAction extends AbstractBodyTableExtendAction
 	@Override
 	public void doAction() {
 		int selectCol = getCardPanel().getBillTable().getSelectedColumn();
-		BillItem[] data = getCardPanel().getBodyItems();
-		if(data!=null&&data.length > 0){
-			try{
-				for(int i = 0 ;i < data.length ; i++){
-					if(7 == selectCol){
-						getCardPanel().setBodyValueAt(true, i, "judgeflag");	
+		if(getCardPanel().getBodyShowItems()!=null 
+				&& getCardPanel().getBodyShowItems().length >=(selectCol+1)){
+			BillItem showItem = getCardPanel().getBodyShowItems()[selectCol];
+			String selectKey = showItem.getKey();
+			BillItem[] data = getCardPanel().getBodyItems();
+			if(data!=null&&data.length > 0){
+				try{
+					for(int i = 0 ;i < data.length ; i++){
+						if(selectKey.equals("judgeflag")){
+							getCardPanel().setBodyValueAt(true, i, "judgeflag");	
+						}
+						if(selectKey.equals("testflag")){
+							getCardPanel().setBodyValueAt(true, i, "testflag");
+						}
 					}
-					if(8 == selectCol){
-						getCardPanel().setBodyValueAt(true, i, "testflag");
-					}
+				}catch(Exception e){
+					Log.debug(getClass().getName()+"全选失败!");
 				}
-			}catch(Exception e){
-				Log.debug(getClass().getName()+"全选失败!");
+				
 			}
-			
 		}
-		
-
 	}
 
 }

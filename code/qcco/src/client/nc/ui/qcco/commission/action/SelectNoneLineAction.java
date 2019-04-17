@@ -42,24 +42,27 @@ public class SelectNoneLineAction extends AbstractBodyTableExtendAction
 	@Override
 	public void doAction() {
 		int selectCol = getCardPanel().getBillTable().getSelectedColumn();
-		BillItem[] data = getCardPanel().getBodyItems();
-		if(data!=null&&data.length > 0){
-			try{
-				for(int i = 0 ;i < data.length ; i++){
-					if(7 == selectCol){
-						getCardPanel().setBodyValueAt(false, i, "judgeflag");	
+		if(getCardPanel().getBodyShowItems()!=null 
+				&& getCardPanel().getBodyShowItems().length >=(selectCol+1)){
+			BillItem showItem = getCardPanel().getBodyShowItems()[selectCol];
+			String selectKey = showItem.getKey();
+			BillItem[] data = getCardPanel().getBodyItems();
+			if(data!=null&&data.length > 0){
+				try{
+					for(int i = 0 ;i < data.length ; i++){
+						if(selectKey.equals("judgeflag")){
+							getCardPanel().setBodyValueAt(false, i, "judgeflag");	
+						}
+						if(selectKey.equals("testflag")){
+							getCardPanel().setBodyValueAt(false, i, "testflag");
+						}
 					}
-					if(8 == selectCol){
-						getCardPanel().setBodyValueAt(false, i, "testflag");
-					}
+				}catch(Exception e){
+					Log.debug(getClass().getName()+"全选失败!");
 				}
-			}catch(Exception e){
-				Log.debug(getClass().getName()+"全消失败!");
+				
 			}
-			
 		}
-		
-
 	}
 
 }
