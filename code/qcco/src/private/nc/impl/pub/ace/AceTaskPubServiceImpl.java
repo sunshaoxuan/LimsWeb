@@ -120,7 +120,7 @@ public abstract class AceTaskPubServiceImpl {
 			BillTransferTool<AggTaskHVO> transTool = new BillTransferTool<AggTaskHVO>((AggTaskHVO[]) vos); 
 			AggTaskHVO[] fullBills = transTool.getClientFullInfoBill();
 			AggTaskHVO[] originBills = transTool.getOriginBills(); 
-			
+
 			// ËïVOµÄÐÞ¸Ä
 			// nc.impl.pubapp.pattern.data.vo.template.UpdateBPTemplate
 

@@ -62,7 +62,7 @@ private BaseDAO dao = null;
 		InSQLCreator insql = new InSQLCreator();
 		String commissionInSQL = insql.getInSQL(list.toArray(new String[0]));
 		List<TaskHVO> lists = (List<TaskHVO>) this.getDao().retrieveByClause(TaskHVO.class, "pk_commission_h in("+commissionInSQL+")");
-		
+
 		super.pubdeleteBills(vos);
 		
 	}

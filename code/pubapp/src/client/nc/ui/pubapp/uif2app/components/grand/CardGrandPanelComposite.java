@@ -93,12 +93,17 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 
 		showGranListUp();
 		
-		//tank 2019年4月9日23:46:01 刷新子表操作
-		UserDefineRefUtils.refreshBillCardBodyDefRefs(
-				(AggCommissionHVO)(this.getModel().getSelectedData()), 
-				(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
-		//tank 2019年4月13日17:30:54 刷新孙表操作
-		CardPanelEventUtil.grandModelInit(this);
+		if(this.getModel().getSelectedData() instanceof AggCommissionHVO){
+			//tank 2019年4月9日23:46:01 刷新子表操作
+			UserDefineRefUtils.refreshBillCardBodyDefRefs(
+					(AggCommissionHVO)(this.getModel().getSelectedData()), 
+					(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
+			//tank 2019年4月13日17:30:54 刷新孙表操作
+			CardPanelEventUtil.grandModelInit(this);
+			//加载模板
+			CardPanelEventUtil.loadHeadItem(this);
+			
+		}
 	}
 
 	/**

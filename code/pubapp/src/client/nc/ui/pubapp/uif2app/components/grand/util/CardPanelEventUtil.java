@@ -3,14 +3,19 @@ package nc.ui.pubapp.uif2app.components.grand.util;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.ListSelectionModel;
 
+import mx4j.log.Logger;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.itf.pubapp.uif2app.components.grand.IGrandAggVosQueryService;
+import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pub.bill.BillModel;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
@@ -21,13 +26,16 @@ import nc.ui.pubapp.uif2app.components.grand.MainGrandRelationShip;
 import nc.ui.pubapp.uif2app.components.grand.model.IGrandValidationService;
 import nc.ui.pubapp.uif2app.event.card.CardBodyRowChangedEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
+import nc.ui.qcco.commission.ace.handler.CommissionShowTemplate;
 import nc.ui.uif2.UIState;
 import nc.ui.uif2.editor.BillListView;
 import nc.vo.pub.AggregatedValueObject;
+import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.commission.AggCommissionHVO;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -442,5 +450,74 @@ public class CardPanelEventUtil {
 		billlistView.getBillListPanel().getBodyBillModel(tableCode).loadLoadRelationItemValue();
 		billlistView.getBillListPanel().getBodyBillModel(tableCode).execLoadFormula();
 	}
+	//根据委托单类型加载模板
+	public static void loadHeadItem(
+			CardGrandPanelComposite cardGrandPanelComposite) {
+		AggCommissionHVO aggvo = (AggCommissionHVO)(cardGrandPanelComposite.getModel().getSelectedData());
+		if(aggvo!=null && aggvo.getParentVO()!=null && aggvo.getParentVO().getPk_commissiontype()!=null){
+			String pk_commissiontype = aggvo.getParentVO().getPk_commissiontype();
+			if(pk_commissiontype!=null){
+				IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());   
+				String typeName = null;
+				try {
+					typeName = (String)iUAPQueryBS. executeQuery(
+							" select  NAME "
+							+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
+							+ " and PK_PROJ_TYPE = '"+pk_commissiontype+"'",new ColumnProcessor());
+				} catch (BusinessException e) {
+					e.printStackTrace();
+				}  
+				if(typeName != null){
+					BillCardPanel mainBillCardPanel = ((BillForm) cardGrandPanelComposite.getMainPanel()).getBillCardPanel();
+					changeTemplet(typeName,mainBillCardPanel);
+				}
+			}
+		}
+	
+	
+
+	}
+	
+	private static void changeTemplet(String typeName,BillCardPanel billCardPanel){
+
+		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
+		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
+		Set<String> templatesSet = new HashSet();
+		
+		//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+		//清空时,不清空此模板包含的字段
+		if(templates!=null && templates.length > 0){
+			for(String tmp : templates){
+				templatesSet.add(tmp);
+			}
+			for(String temp : allTemplateFields){
+				if(!templatesSet.contains(temp)){
+					billCardPanel.getHeadItem(temp).setValue(null);
+				}
+				
+			}
+		}
+		
+		billCardPanel.hideHeadItem(allTemplateFields);
+		if(templates == null){
+			templates = allTemplateFields;
+		}
+		billCardPanel.showHeadItem(templates);
+		
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

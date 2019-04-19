@@ -233,11 +233,11 @@ public class SunlistPanel extends UIDialog implements
 			TaskBodyVO[] bodySelectedVOs = (TaskBodyVO[]) getBillListHeadPanel()
 					.getBodyBillModel().getBodySelectedVOs(
 							"nc.vo.qcco.task.TaskBodyVO");
-			
+
 			if (null != bodySelectedVOs && bodySelectedVOs.length > 0) {
 				for (int i = 0; i < bodySelectedVOs.length; i++) {
 					for(TaskHBodyVO taskHBodyVO : pkbodylist){
-						if (taskHBodyVO.getTaskBodyVO().getAccordstandard().equals(bodySelectedVOs[i].getAccordstandard()) 
+						if (taskHBodyVO.getTaskBodyVO().getAccordstandard().equals(bodySelectedVOs[i].getAccordstandard())
 								&& (taskHBodyVO.getTaskBodyVO().getCbplan()==null ? "":taskHBodyVO.getTaskBodyVO().getCbplan()).equals(bodySelectedVOs[i].getCbplan()==null?"":bodySelectedVOs[i].getCbplan())
 								&& (taskHBodyVO.getTaskBodyVO().getProjectName()==null?"":taskHBodyVO.getTaskBodyVO().getProjectName()).equals(bodySelectedVOs[i].getProjectName()==null?"":bodySelectedVOs[i].getProjectName())
 								&& (taskHBodyVO.getTaskBodyVO().getProjectType()==null?"":taskHBodyVO.getTaskBodyVO().getProjectType()).equals(bodySelectedVOs[i].getProjectType()==null?"":bodySelectedVOs[i].getProjectType())
@@ -246,10 +246,10 @@ public class SunlistPanel extends UIDialog implements
 								&& (taskHBodyVO.getTaskBodyVO().getTestList()==null?"":taskHBodyVO.getTaskBodyVO().getTestList()).equals(bodySelectedVOs[i].getTestList()==null?"":bodySelectedVOs[i].getTestList())) {
 							getPklist().add(taskHBodyVO);
 						}
-					}
 				}
 			}
-			
+			}
+
 			dispose();
 		} else if (e.getSource().equals(getCancelButton())) {
 			setResult(UIDialog.ID_CANCEL);
@@ -595,22 +595,22 @@ public class SunlistPanel extends UIDialog implements
 					String psInSQL = insql.getInSQL(str);
 					sql+=" and nc_testlist_name in("+psInSQL+")";
 				}else {
-					sql +="  and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
-				}
-				
+				sql+=" and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
+			}
+
 			}
 			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("productcate")&& conditionmaps.get("productcate")!= "" ){
-				
+
 				if (conditionmaps.get("productcate").contains(",")) {
 					String[] str = conditionmaps.get("productcate").split(",");
 					InSQLCreator insql = new InSQLCreator();
 					String psInSQL = insql.getInSQL(str);
 					sql+=" and nc_include_protype in("+psInSQL+")";
-				}else {	
-					sql +="  and nc_include_protype like '%"+conditionmaps.get("productcate")+"%'";
-				}
+				}else {
+				sql +="  and nc_include_protype like '%"+conditionmaps.get("productcate")+"%'";
 			}
-			
+			}
+
 			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 					.executeQuery(
 							sql,
@@ -630,14 +630,14 @@ public class SunlistPanel extends UIDialog implements
 					taskbodyvo.setReportName(map.get("nc_report_name"));
 					//taskbodyvo.setUnique(map.get("nc_cb_plan")+i);
 					conditions.add(taskbodyvo);
-					
+
 					taskHBodyVO.setProjectName(map.get("nc_task_name"));
 					taskHBodyVO.setReportName(map.get("nc_report_name"));
 					taskHBodyVO.setTestresultname(map.get("c_test_condition"));
 					taskHBodyVO.setTestresultshortname(map.get("common_name"));
 					taskHBodyVO.setTaskBodyVO(taskbodyvo);
 					pkbodylist.add(taskHBodyVO);
-					
+
 				}
 			}
 		}catch (Exception e) {
@@ -737,9 +737,9 @@ public class SunlistPanel extends UIDialog implements
 			billListHeadPanel.setBounds(10, 140, 800, 650);
 			billListHeadPanel.setAutoscrolls(true);
 			billListHeadPanel.setMultiSelect(true);
-			
+
 			if (ss == null ) {
-				Map<String, String> conditionmaps = new HashMap<>();
+			Map<String, String> conditionmaps = new HashMap<>();
 				conditionmaps.put("productcate", productcate.replace(" ", ""));
 				List<TaskBodyVO> taskvos = getListbody(conditionmaps);
 				ss = taskvos.toArray(new TaskBodyVO[0]);

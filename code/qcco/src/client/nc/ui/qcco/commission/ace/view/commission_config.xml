@@ -595,9 +595,10 @@
 		<property name="interceptor" ref="showCardInterceptor" />
 	</bean>
 
-	<bean id="editAction" class="nc.ui.uif2.actions.EditAction">
+	<bean id="editAction" class="nc.ui.qcco.commission.action.CommissionEditAction">
 		<property name="model" ref="bmModel" />
 		<property name="interceptor" ref="showCardInterceptor" />
+		<property name="mainGrandPanel" ref="MainGrandbillForm" />
 	</bean>
 	<!-- É¾³ý°´Å¥ -->
 	<bean id="deleteAction" class="nc.ui.qcco.commission.action.CommissionDeleteAction">
@@ -637,8 +638,9 @@
 			</list>
 		</property>
 	</bean>
-	<bean id="cancelAction" class="nc.ui.pubapp.uif2app.actions.CancelAction">
+	<bean id="cancelAction" class="nc.ui.qcco.commission.action.CommissionCancelAction">
 		<property name="model" ref="bmModel" />
+		<property name="mainGrandPanel" ref="MainGrandbillForm" />
 	</bean>
 	<!-- ¸´ÖÆ -->
 	<bean id="copyAction" class="nc.ui.pubapp.uif2app.actions.CopyAction">
