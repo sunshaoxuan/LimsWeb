@@ -6,6 +6,8 @@ import java.util.List;
 import nc.bs.dao.DAOException;
 import nc.ui.pubapp.uif2app.actions.BodyAddLineAction;
 import nc.ui.qcco.task.view.SunlistPanel;
+import nc.vo.qcco.task.TaskBodyVO;
+import nc.vo.qcco.task.TaskHBodyVO;
 
 public class TaskBodyAddLineAction extends BodyAddLineAction {
 
@@ -17,22 +19,26 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 					.getHeadItem("pk_commission_h").getValue();
 			SunlistPanel sunlistPanel = new SunlistPanel(pk_commission_h);
 			if (sunlistPanel.showModal() == 1) {
-				List<String> pklists = sunlistPanel.getPklist();
+				List<TaskHBodyVO> pklists = sunlistPanel.getPklist();
 				if (pklists != null && pklists.size() > 0) {
 					for (int i = 0; i < pklists.size(); i++) {
 						super.doAction();
-						super.getCardPanel().setBodyValueAt("99",
+						super.getCardPanel().setBodyValueAt(i,
 								this.getCardPanel().getRowCount() - 1,
 								"taskcode");
-						super.getCardPanel().setBodyValueAt("99",
+						super.getCardPanel().setBodyValueAt(pklists.get(i).getReportName(),
 								this.getCardPanel().getRowCount() - 1,
-								"taskname");
-						super.getCardPanel().setBodyValueAt("99",
+								"testitem");
+						super.getCardPanel().setBodyValueAt(pklists.get(i).getProjectName(),
 								this.getCardPanel().getRowCount() - 1,
-								"pk_testcondition");
-						super.getCardPanel().setBodyValueAt("99",
+								"standardclause");
+						super.getCardPanel().setBodyValueAt(pklists.get(i).getTestresultname(),
 								this.getCardPanel().getRowCount() - 1,
 								"pk_testresultname");
+						super.getCardPanel().setBodyValueAt(pklists.get(i).getTestresultshortname(),
+								this.getCardPanel().getRowCount() - 1,
+								"testresultshortname");
+						
 
 					}
 				}
