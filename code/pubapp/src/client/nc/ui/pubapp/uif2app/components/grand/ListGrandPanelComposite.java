@@ -42,6 +42,7 @@ import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
+import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.uif2.AppStatusRegisteryCallback;
 
 /**
@@ -256,12 +257,19 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 		
 		try {
 			//刷新主表
-			getDataManager().refresh();
-			//刷新子表参照
-			UserDefineRefUtils.refreshBillListBodyDefRefs(
-					(AggCommissionHVO) (this.getModel().getSelectedData()),
-					(BillListView) this.mainPanel, "pk_commission_b",
-					CommissionBVO.class);
+			if (getDataManager() != null) {
+				getDataManager().refresh();
+			}
+			if (this.getModel().getSelectedData() instanceof CommissionHVO) {
+				//刷新子表参照
+				if (this.getModel().getSelectedData() instanceof CommissionHVO) {
+					UserDefineRefUtils.refreshBillListBodyDefRefs(
+							(AggCommissionHVO) (this.getModel().getSelectedData()),
+							(BillListView) this.mainPanel, "pk_commission_b",
+							CommissionBVO.class);
+				}
+			}
+			
 		} catch (BusinessException e) {
 			Log.debug(e.getMessage());
 		}

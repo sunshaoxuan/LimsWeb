@@ -92,13 +92,16 @@ public class AceBodyBeforeEditHandler implements
 							.getBillCardPanel();
 					// 校验样品分配是否重复
 					List<String> strlist = new ArrayList<String>();
-					for (int i = 0; i < e.getBillCardPanel().getRowCount() - 1; i++) {
+					card.setBodyValueAt(null, e.getRow(),
+							"sampleallocation");
+					for (int i = 0; i <= e.getBillCardPanel().getRowCount() - 1; i++) {
 						strlist.add((String) this.getMainBillForm()
 								.getBillCardPanel()
 								.getBodyValueAt(i, "sampleallocation"));
 					}
 					if (strlist != null && strlist.size() > 0
 							&& strvalue != null) {
+						
 						List<String> commList = validate(pk_commission_h,
 								strlist, strvalue);
 						if (commList.size() > 0) {
@@ -145,7 +148,6 @@ public class AceBodyBeforeEditHandler implements
 
 	}
 
-
 	private List<CommissionRVO> generateGrandLines(CardBodyBeforeEditEvent e,List<String> alist,
 			String pk_commission_h) {
 		List<CommissionRVO> list = new ArrayList<>();
@@ -164,7 +166,17 @@ public class AceBodyBeforeEditHandler implements
 							new MapListProcessor());
 				
 				if (refList != null && refList.size() > 0) {
+					int rowu = this.getGrandCard().getBillCardPanel().getRowCount();
+					if(rowu >= 0){
+						int[] rows = new int[rowu];
+						for (int i = 0; i < rowu; i++) {
+							rows[i]=i;
+						}
+						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
+					}
+					
 					for (Map<String, Object> refRow : refList) {
+						
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").addLine();
 						int row = this.getGrandCard().getBillCardPanel().getRowCount() - 1;
 						
