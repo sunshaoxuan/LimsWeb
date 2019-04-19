@@ -27,6 +27,7 @@ import com.informix.util.stringUtil;
 import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
+import nc.hr.utils.InSQLCreator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.uap.lfw.jsp.uimeta.UICardLayout;
@@ -232,10 +233,17 @@ public class SunlistPanel extends UIDialog implements
 			TaskBodyVO[] bodySelectedVOs = (TaskBodyVO[]) getBillListHeadPanel()
 					.getBodyBillModel().getBodySelectedVOs(
 							"nc.vo.qcco.task.TaskBodyVO");
+			
 			if (null != bodySelectedVOs && bodySelectedVOs.length > 0) {
 				for (int i = 0; i < bodySelectedVOs.length; i++) {
 					for(TaskHBodyVO taskHBodyVO : pkbodylist){
-						if (bodySelectedVOs[i].getUnique().equals(taskHBodyVO.getUnique())) {
+						if (taskHBodyVO.getTaskBodyVO().getAccordstandard().equals(bodySelectedVOs[i].getAccordstandard()) 
+								&& (taskHBodyVO.getTaskBodyVO().getCbplan()==null ? "":taskHBodyVO.getTaskBodyVO().getCbplan()).equals(bodySelectedVOs[i].getCbplan()==null?"":bodySelectedVOs[i].getCbplan())
+								&& (taskHBodyVO.getTaskBodyVO().getProjectName()==null?"":taskHBodyVO.getTaskBodyVO().getProjectName()).equals(bodySelectedVOs[i].getProjectName()==null?"":bodySelectedVOs[i].getProjectName())
+								&& (taskHBodyVO.getTaskBodyVO().getProjectType()==null?"":taskHBodyVO.getTaskBodyVO().getProjectType()).equals(bodySelectedVOs[i].getProjectType()==null?"":bodySelectedVOs[i].getProjectType())
+								&& (taskHBodyVO.getTaskBodyVO().getReportName()==null?"":taskHBodyVO.getTaskBodyVO().getReportName()).equals(bodySelectedVOs[i].getReportName()==null?"":bodySelectedVOs[i].getReportName())
+								&& (taskHBodyVO.getTaskBodyVO().getDetailDescription()==null?"":taskHBodyVO.getTaskBodyVO().getDetailDescription()).equals(bodySelectedVOs[i].getDetailDescription()==null?"":bodySelectedVOs[i].getDetailDescription())
+								&& (taskHBodyVO.getTaskBodyVO().getTestList()==null?"":taskHBodyVO.getTaskBodyVO().getTestList()).equals(bodySelectedVOs[i].getTestList()==null?"":bodySelectedVOs[i].getTestList())) {
 							getPklist().add(taskHBodyVO);
 						}
 					}
@@ -390,7 +398,7 @@ public class SunlistPanel extends UIDialog implements
 				businessField = new UITextField();
 				businessField.setName("businessField");
 				businessField.setBounds(570, 8, 150, 50);
-				businessField.setText(productstard);
+				businessField.setText(productstard.replace(" ", ""));
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -477,7 +485,7 @@ public class SunlistPanel extends UIDialog implements
 				projectCateField = new UITextField();
 				projectCateField.setName("projectCateField");
 				projectCateField.setBounds(570, 48, 150, 50);
-				projectCateField.setText(productcate);
+				projectCateField.setText(productcate.replace(" ", ""));
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -581,10 +589,26 @@ public class SunlistPanel extends UIDialog implements
 				sql +="and nc_analysis_method like '%"+conditionmaps.get("testWay")+"%'";
 			}
 			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("productstard")&& conditionmaps.get("productstard")!= "" ){
-				sql+=" and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
+				if (conditionmaps.get("productstard").contains(",")) {
+					String[] str = conditionmaps.get("productstard").split(",");
+					InSQLCreator insql = new InSQLCreator();
+					String psInSQL = insql.getInSQL(str);
+					sql+=" and nc_testlist_name in("+psInSQL+")";
+				}else {
+					sql +="  and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
+				}
+				
 			}
 			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("productcate")&& conditionmaps.get("productcate")!= "" ){
-				sql +="  and nc_include_protype like '%"+conditionmaps.get("productcate")+"%'";
+				
+				if (conditionmaps.get("productcate").contains(",")) {
+					String[] str = conditionmaps.get("productcate").split(",");
+					InSQLCreator insql = new InSQLCreator();
+					String psInSQL = insql.getInSQL(str);
+					sql+=" and nc_include_protype in("+psInSQL+")";
+				}else {	
+					sql +="  and nc_include_protype like '%"+conditionmaps.get("productcate")+"%'";
+				}
 			}
 			
 			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
@@ -604,14 +628,14 @@ public class SunlistPanel extends UIDialog implements
 					taskbodyvo.setProjectType(map.get("nc_task_type"));
 					taskbodyvo.setTestList(map.get("nc_testlist_name"));
 					taskbodyvo.setReportName(map.get("nc_report_name"));
-					taskbodyvo.setUnique(map.get("nc_cb_plan")+i);
+					//taskbodyvo.setUnique(map.get("nc_cb_plan")+i);
 					conditions.add(taskbodyvo);
 					
 					taskHBodyVO.setProjectName(map.get("nc_task_name"));
 					taskHBodyVO.setReportName(map.get("nc_report_name"));
 					taskHBodyVO.setTestresultname(map.get("c_test_condition"));
 					taskHBodyVO.setTestresultshortname(map.get("common_name"));
-					taskHBodyVO.setUnique(map.get("nc_cb_plan")+i);
+					taskHBodyVO.setTaskBodyVO(taskbodyvo);
 					pkbodylist.add(taskHBodyVO);
 					
 				}
@@ -713,34 +737,11 @@ public class SunlistPanel extends UIDialog implements
 			billListHeadPanel.setBounds(10, 140, 800, 650);
 			billListHeadPanel.setAutoscrolls(true);
 			billListHeadPanel.setMultiSelect(true);
-			/*this.projectType = getSampleNameField().getText();
-			this.productstard = getbusinessField().getText();
-			this.productcate = getProjectCateField().getText();
-			this.testProject = getTestProjectField().getText();
-			this.scope = getScopeField().getText();
-			this.testWay = getTestWayField().getText();
-			Map<String, String> conditionmaps = new HashMap<>();
-			if(null != projectType &&projectType.length() > 0){
-				conditionmaps.put("projectType", this.projectType);
-			}
-			if(null != productstard &&productstard.length() > 0){
-				conditionmaps.put("productstard", this.productstard);
-			}
-			if(null != productcate &&productcate.length() > 0){
-				conditionmaps.put("productcate", this.productcate);
-			}
-			if(null != testProject &&testProject.length() > 0){
-				conditionmaps.put("testProject", this.testProject);
-			}
-			if(null != scope &&scope.length() > 0){
-				conditionmaps.put("scope", this.scope);
-			}
-			if(null != testWay &&testWay.length() > 0){
-				conditionmaps.put("testWay", this.testWay);
-			}
-			*/
+			
 			if (ss == null ) {
-				List<TaskBodyVO> taskvos = getListbody(null);
+				Map<String, String> conditionmaps = new HashMap<>();
+				conditionmaps.put("productcate", productcate.replace(" ", ""));
+				List<TaskBodyVO> taskvos = getListbody(conditionmaps);
 				ss = taskvos.toArray(new TaskBodyVO[0]);
 			}
 			billListHeadPanel.setBodyValueVO(ss);

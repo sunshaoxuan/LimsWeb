@@ -11,7 +11,16 @@ public class TaskHBodyVO extends SuperVO {
 	private String testresultname;//测试结果名称
 	private String testresultshortname;//测试结果短名称
 	private String unique;//唯一标识
+	private TaskBodyVO taskBodyVO;
 	
+	public TaskBodyVO getTaskBodyVO() {
+		return taskBodyVO;
+	}
+
+	public void setTaskBodyVO(TaskBodyVO taskBodyVO) {
+		this.taskBodyVO = taskBodyVO;
+	}
+
 	public String getUnique() {
 		return unique;
 	}
