@@ -799,7 +799,7 @@
 	<!-- 双击列表行后显示卡片 -->
 	<bean id="mouseClickShowPanelMediator" class="nc.ui.pubapp.uif2app.view.MouseClickShowPanelMediator">
 		<property name="listView" ref="listView" />
-		<property name="showUpComponent" ref="billFormEditor" />
+		<property name="showUpComponent" ref="MainGrandbillFormEditor" />
 		<property name="hyperLinkColumn" value="vbillcode" />
 	</bean>
 	<!-- 单据号 -->
