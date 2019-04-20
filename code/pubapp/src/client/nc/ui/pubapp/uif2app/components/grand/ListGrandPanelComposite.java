@@ -43,6 +43,9 @@ import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionHVO;
+import nc.vo.qcco.task.AggTaskHVO;
+import nc.vo.qcco.task.TaskBVO;
+import nc.vo.qcco.task.TaskHVO;
 import nc.vo.uif2.AppStatusRegisteryCallback;
 
 /**
@@ -268,6 +271,11 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 							(BillListView) this.mainPanel, "pk_commission_b",
 							CommissionBVO.class);
 				}
+			}else if (this.getModel().getSelectedData() instanceof TaskHVO) {
+				//by he
+				UserDefineRefUtils.refreshBillCardBodyDefRefs(
+						(AggTaskHVO)(this.getModel().getSelectedData()), 
+						(BillForm)this.mainPanel, "pk_task_b", TaskBVO.class);
 			}
 			
 		} catch (BusinessException e) {

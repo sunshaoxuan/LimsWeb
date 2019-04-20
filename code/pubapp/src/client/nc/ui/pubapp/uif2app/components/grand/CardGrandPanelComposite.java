@@ -49,6 +49,8 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.SuperVO;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
+import nc.vo.qcco.task.AggTaskHVO;
+import nc.vo.qcco.task.TaskBVO;
 import nc.vo.uif2.AppStatusRegisteryCallback;
 
 /**
@@ -99,6 +101,11 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 				(AggCommissionHVO)(this.getModel().getSelectedData()), 
 				(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
 		//tank 2019年4月13日17:30:54 刷新孙表操作
+		}else if (this.getModel().getSelectedData() instanceof AggTaskHVO) {
+			//by he
+			UserDefineRefUtils.refreshBillCardBodyDefRefs(
+					(AggTaskHVO)(this.getModel().getSelectedData()), 
+					(BillForm)this.mainPanel, "pk_task_b", TaskBVO.class);
 		}
 		CardPanelEventUtil.grandModelInit(this);
 	}
@@ -594,6 +601,11 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 				UserDefineRefUtils.refreshBillCardBodyDefRefs(
 						(AggCommissionHVO)(this.getModel().getSelectedData()), 
 						(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
+			}else if (this.getModel().getSelectedData() instanceof AggTaskHVO) {
+				//by he
+				UserDefineRefUtils.refreshBillCardBodyDefRefs(
+						(AggTaskHVO)(this.getModel().getSelectedData()), 
+						(BillForm)this.mainPanel, "pk_task_b", TaskBVO.class);
 			}
 			
 		} else if (state.equals(UIState.ADD)) {

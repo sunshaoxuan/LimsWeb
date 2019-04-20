@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import org.apache.xmlbeans.impl.jam.mutable.MPackage;
+
 import com.borland.jbcl.layout.PaneLayout;
 import com.informix.util.stringUtil;
 
@@ -233,21 +235,26 @@ public class SunlistPanel extends UIDialog implements
 			TaskBodyVO[] bodySelectedVOs = (TaskBodyVO[]) getBillListHeadPanel()
 					.getBodyBillModel().getBodySelectedVOs(
 							"nc.vo.qcco.task.TaskBodyVO");
-
+			Map<TaskHBodyVO,String>map = new HashMap<>();
 			if (null != bodySelectedVOs && bodySelectedVOs.length > 0) {
 				for (int i = 0; i < bodySelectedVOs.length; i++) {
 					for(TaskHBodyVO taskHBodyVO : pkbodylist){
-						if (taskHBodyVO.getTaskBodyVO().getAccordstandard().equals(bodySelectedVOs[i].getAccordstandard())
+						if ((taskHBodyVO.getTaskBodyVO().getAccordstandard()==null?"":taskHBodyVO.getTaskBodyVO().getAccordstandard()).equals(bodySelectedVOs[i].getAccordstandard()==null?"":bodySelectedVOs[i].getAccordstandard())
 								&& (taskHBodyVO.getTaskBodyVO().getCbplan()==null ? "":taskHBodyVO.getTaskBodyVO().getCbplan()).equals(bodySelectedVOs[i].getCbplan()==null?"":bodySelectedVOs[i].getCbplan())
 								&& (taskHBodyVO.getTaskBodyVO().getProjectName()==null?"":taskHBodyVO.getTaskBodyVO().getProjectName()).equals(bodySelectedVOs[i].getProjectName()==null?"":bodySelectedVOs[i].getProjectName())
 								&& (taskHBodyVO.getTaskBodyVO().getProjectType()==null?"":taskHBodyVO.getTaskBodyVO().getProjectType()).equals(bodySelectedVOs[i].getProjectType()==null?"":bodySelectedVOs[i].getProjectType())
 								&& (taskHBodyVO.getTaskBodyVO().getReportName()==null?"":taskHBodyVO.getTaskBodyVO().getReportName()).equals(bodySelectedVOs[i].getReportName()==null?"":bodySelectedVOs[i].getReportName())
 								&& (taskHBodyVO.getTaskBodyVO().getDetailDescription()==null?"":taskHBodyVO.getTaskBodyVO().getDetailDescription()).equals(bodySelectedVOs[i].getDetailDescription()==null?"":bodySelectedVOs[i].getDetailDescription())
 								&& (taskHBodyVO.getTaskBodyVO().getTestList()==null?"":taskHBodyVO.getTaskBodyVO().getTestList()).equals(bodySelectedVOs[i].getTestList()==null?"":bodySelectedVOs[i].getTestList())) {
-							getPklist().add(taskHBodyVO);
+							map.put(taskHBodyVO, null);
 						}
 				}
 			}
+			}
+			if (null != map && map.size() > 0) {
+				for(TaskHBodyVO taskHBodyVO: map.keySet()){
+					getPklist().add(taskHBodyVO);
+				}
 			}
 
 			dispose();
@@ -558,11 +565,12 @@ public class SunlistPanel extends UIDialog implements
 	
 	//查询出弹出框内容
 	public List<TaskBodyVO> getListbody(Map<String, String> conditionmaps){
+		//先判断条数是否超标
 		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(
 				IUAPQueryBS.class.getName());
 		List<TaskBodyVO> conditions = new ArrayList<TaskBodyVO>();
 		try {
-			String sql = "SELECT    trim(NC_TASK_ADDUNION.nc_testlist_name)as nc_testlist_name, "
+			String sql = "SELECT  DISTINCT  trim(NC_TASK_ADDUNION.nc_testlist_name)as nc_testlist_name, "
 					+ "  trim(NC_TASK_ADDUNION.nc_report_name)as nc_report_name,"
 					+ "  trim(NC_TASK_ADDUNION.nc_analysis_method) nc_analysis_method ,    "
 					+ " trim(NC_TASK_ADDUNION.nc_task_type) nc_task_type,"

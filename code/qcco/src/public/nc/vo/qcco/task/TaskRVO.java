@@ -63,7 +63,7 @@ public class TaskRVO extends SuperVO {
 	/**
 	 * 值類型
 	 */
-	public String valuetype;
+	public String pk_valuetype;
 	/**
 	 * 上層單據主鍵
 	 */
@@ -272,23 +272,14 @@ public class TaskRVO extends SuperVO {
 		this.pk_component = pk_component;
 	}
 
-	/**
-	 * 屬性 valuetype的Getter方法.屬性名：值類型 創建日期:2019/4/19
-	 *
-	 * @return nc.vo.bd.defdoc.DefdocVO
-	 */
-	public String getValuetype() {
-		return this.valuetype;
+	
+
+	public String getPk_valuetype() {
+		return pk_valuetype;
 	}
 
-	/**
-	 * 屬性valuetype的Setter方法.屬性名：值類型 創建日期:2019/4/19
-	 *
-	 * @param newValuetype
-	 *            nc.vo.bd.defdoc.DefdocVO
-	 */
-	public void setValuetype(String valuetype) {
-		this.valuetype = valuetype;
+	public void setPk_valuetype(String pk_valuetype) {
+		this.pk_valuetype = pk_valuetype;
 	}
 
 	/**
