@@ -198,6 +198,33 @@ public class TemplateContainer implements IRemoteCallCombinatorUser {
 			template.setChildrenVO(list.toArray(new BillTempletBodyVO[0]));
 			listextra.clear();
 			return template;
+		} else if (null != nodeKey && nodeKey.equals("sunparas1")) {
+			nodeKey="sunparas";
+			BillTempletVO template = getTemplate(nodeKey, iPos, tab);
+			BillTempletBodyVO[] bodyVO = template.getBodyVO();
+			List<BillTempletBodyVO> list = new ArrayList<BillTempletBodyVO>();
+			for (int i = 0; i < bodyVO.length; i++) {
+				if (bodyVO[i].getTableCode().equals("audittable") || bodyVO[i].getTable_code().equals("tailtable")) {
+					listextra.add(bodyVO[i]);
+				} else {
+					list.add(bodyVO[i]);
+				}
+			}
+			template.setChildrenVO(list.toArray(new BillTempletBodyVO[0]));
+			return template;
+		} else if (null != nodeKey && nodeKey.equals("sunparas")) {
+			BillTempletVO template = getTemplate(nodeKey, iPos, tab);
+			BillTempletBodyVO[] bodyVO = template.getBodyVO();
+			List<BillTempletBodyVO> list = new ArrayList<BillTempletBodyVO>();
+			for (int i = 0; i < bodyVO.length; i++) {
+				list.add(bodyVO[i]);
+			}
+			for (int i = 0; i < listextra.size(); i++) {
+				list.add(listextra.get(i));
+			}
+			template.setChildrenVO(list.toArray(new BillTempletBodyVO[0]));
+			listextra.clear();
+			return template;
 		} else {
 
 			return getTemplate(nodeKey, iPos, tab);
