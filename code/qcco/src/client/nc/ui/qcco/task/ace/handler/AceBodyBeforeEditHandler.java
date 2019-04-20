@@ -101,7 +101,7 @@ public class AceBodyBeforeEditHandler implements
 					}
 					if (strlist != null && strlist.size() > 0
 							&& strvalue != null) {
-						
+
 						List<String> commList = validate(pk_commission_h,
 								strlist, strvalue);
 						if (commList.size() > 0) {
@@ -174,9 +174,9 @@ public class AceBodyBeforeEditHandler implements
 						}
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
 					}
-					
+
 					for (Map<String, Object> refRow : refList) {
-						
+
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").addLine();
 						int row = this.getGrandCard().getBillCardPanel().getRowCount() - 1;
 						

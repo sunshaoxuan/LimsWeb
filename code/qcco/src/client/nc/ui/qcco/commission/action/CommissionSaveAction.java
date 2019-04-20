@@ -100,7 +100,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		if(null != typeName){
 			changeTemplet(typeName,this.billFormEditor.getBillCardPanel());
 		}
-		
+		billForm.showMeUp();
 		showSuccessInfo();
 	}
 
@@ -184,8 +184,14 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
 		getModel().setUiState(UIState.NOT_EDIT);
-		getMainGrandModel().directlyUpdate(clientVOs[0]);
-
+		//getMainGrandModel().directlyUpdate(clientVOs[0]);
+		List<AggCommissionHVO> clientVOsList = new ArrayList();
+		for(IBill bill : clientVOs){
+			if(bill instanceof AggCommissionHVO){
+				clientVOsList.add((AggCommissionHVO)bill);
+			}
+		}
+		getMainGrandModel().getMainModel().initModel(clientVOsList.toArray(new AggCommissionHVO[0]));
 		if (pk_task_h != null
 				&& MessageDialog.ID_YES == MessageDialog.showYesNoDlg(billFormEditor.getBillCardPanel(), "跳转",
 						"是否跳转到新的任务单?")) {

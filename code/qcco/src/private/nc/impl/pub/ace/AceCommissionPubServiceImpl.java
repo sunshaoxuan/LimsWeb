@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
+import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.qcco.commission.ace.bp.AceCommissionApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionDeleteBP;
@@ -183,94 +186,101 @@ public abstract class AceCommissionPubServiceImpl {
 
 	// 修改
 	public AggCommissionHVO[] pubupdateBills(AggCommissionHVO[] vos) throws BusinessException {
-		try {
-			BillTransferTool<AggCommissionHVO> transTool = new BillTransferTool<AggCommissionHVO>(
-					(AggCommissionHVO[]) vos);
-			AggCommissionHVO[] fullBills = transTool.getClientFullInfoBill();
-			AggCommissionHVO[] originBills = transTool.getOriginBills();
-			//表体检测
-			checkBodyIsNull(vos);
-			// 孙VO的修改
-			// nc.impl.pubapp.pattern.data.vo.template.UpdateBPTemplate
+		AggCommissionHVO[] vosClone = vos.clone();
+		//删除原vo
+		List<CommissionHVO> oldVOList = deleteOldVO(vos);
+		AggCommissionHVO[] vosNew = deal2New(vosClone);
+		//处理审计信息
+		dealPub(vosNew,oldVOList);
+		return pubinsertBills(vosNew, null);
+	}
+	/**
+	 * delete
+	 * @param vos
+	 * @throws BusinessException 
+	 */
+	private List<CommissionHVO> deleteOldVO(AggCommissionHVO[] vos) throws BusinessException {
+		List<CommissionHVO> list = new ArrayList();
+		Set<String> deletePks = new HashSet();
+		for(AggCommissionHVO vo : vos){
+			deletePks.add(vo.getPrimaryKey());
+		}
+		//子表删除
+		getDao().deleteByPKs(CommissionHVO.class, deletePks.toArray(new String[0]));
+		
+		InSQLCreator insql = new InSQLCreator();
+        String deletePksInSQL = insql.getInSQL(deletePks.toArray(new String[0]));
+		//子表切换
+		getDao().executeUpdate("update qc_commission_b set dr = 0 where PK_COMMISSION_h in ("+deletePksInSQL+")");
+		//孙表切换
+		getDao().executeUpdate("update qc_commission_r set dr = 0 where pk_commission_r in ( "
+        +" select pk_commission_r from qc_commission_r r "
+        +" left join qc_commission_b b on b.PK_COMMISSION_b = r.PK_COMMISSION_b "
+        +" where b.PK_COMMISSION_h in("+deletePksInSQL+") ) ");
+		
+		//这里一般只有一个存入aggvo
+		for(AggCommissionHVO hvo : vos){
+			list.add((CommissionHVO)(getDao().retrieveByPK(CommissionHVO.class, hvo.getPrimaryKey())));
+		}
+		return list;
+	}
 
-			AggCommissionHVO[] aggvos = (AggCommissionHVO[]) vos;
-			String[] tableCodes = originBills[0].getTableCodes();
-
-			Map<IVOMeta, List<ISuperVO>> fullGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
-			Map<IVOMeta, List<ISuperVO>> originGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
-			for (String tableCode : tableCodes) {
-				SuperVO[] originChildrens = (SuperVO[]) originBills[0].getTableVO(tableCode);
-				for (SuperVO childVO : originChildrens) {
-					// 将当前页签下的当前子的所有孙都查询出来了,并赋值给originBills中的孙。
-					if (tableCode.equals("pk_commission_b")) {
-						String originChildPK = ((CommissionBVO) childVO).getPrimaryKey();
-						Collection originRVOs = query.queryBillOfVOByCond(CommissionRVO.class, "pk_commission_b = '"
-								+ originChildPK + "'", false);
-						if (originRVOs != null && originRVOs.size() != 0) {
-							CommissionRVO[] originGrandvos = (CommissionRVO[]) originRVOs
-									.toArray(new CommissionRVO[originRVOs.size()]);
-							((CommissionBVO) childVO).setPk_commission_r(originGrandvos);
-							IVOMeta meta = ((SuperVO) (originRVOs.iterator().next())).getMetaData();
-							if (originGrandVOs.get(meta) == null) {
-								originGrandVOs.put(meta, (List<ISuperVO>) originRVOs);
-							} else {
-								originGrandVOs.get(meta).addAll(originRVOs);
-							}
-						}
-					}
-				}
-
-				SuperVO[] currentChildrens = (SuperVO[]) aggvos[0].getTableVO(tableCode);
-				if (currentChildrens != null && currentChildrens.length > 0) {
-					for (SuperVO childVO : currentChildrens) {
-						ISuperVO[] currentGrandvos = (CommissionRVO[]) ((CommissionBVO) childVO).getPk_commission_r();
-						for (int i = 0; currentGrandvos != null && i < currentGrandvos.length; i++) {
-							((CommissionRVO) currentGrandvos[i]).setPk_commission_b((childVO.getPrimaryKey()));
-						}
-						if (currentGrandvos != null && currentGrandvos.length != 0) {
-							IVOMeta meta = ((SuperVO) (currentGrandvos[0])).getMetaData();
-							List arrayList = new ArrayList(Arrays.asList(currentGrandvos));
-							if (fullGrandVOs.get(meta) == null) {
-								fullGrandVOs.put(meta, arrayList);
-							} else {
-								fullGrandVOs.get(meta).addAll(arrayList);
-							}
-						}
-
-					}
+	private void dealPub(AggCommissionHVO[] vosNew,List<CommissionHVO> vosOld) {
+		if(null == vosNew || null == vosOld){
+			return ;
+		}
+		for(int i = 0 ; i<vosNew.length ;i++){
+			if(vosNew[i]!=null && vosOld.get(i)!=null){
+				CommissionHVO newVO = vosNew[i].getParentVO();
+				CommissionHVO oldVO = vosOld.get(i);
+				if(newVO!=null && oldVO != null){
+					newVO.setTs(oldVO.getTs());
+					newVO.setCreationtime(oldVO.getCreationtime());
+					newVO.setCreator(oldVO.getCreator());
+					newVO.setModifiedtime(oldVO.getModifiedtime());
+					newVO.setModifier(oldVO.getModifier());
 				}
 			}
-			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
+		}
+	}
 
-
-			this.persistent(fullGrandVOs, originGrandVOs);
-
-			//处理孙表中的主表pk为空的问题
-			if(fullBills!=null){
-				for(AggCommissionHVO aggvo : fullBills){
-					if(aggvo!=null && aggvo.getChildren(CommissionBVO.class)!=null){
-						CommissionBVO[] bvos = (CommissionBVO[])(aggvo.getChildren(CommissionBVO.class));
-						for(CommissionBVO bvo : bvos){
-							if(bvo!=null && bvo.getPk_commission_r()!=null){
-								String pk_commission_b = bvo.getPk_commission_b();		
-								for(CommissionRVO rvo : bvo.getPk_commission_r()){
-									if(rvo!=null){
-										rvo.setPk_commission_b(pk_commission_b);
-									}
+	/**
+	 * 包装成一个新数据
+	 * @param Bills
+	 * @throws DAOException 
+	 */
+	private AggCommissionHVO[] deal2New (AggCommissionHVO[] Bills) throws DAOException{
+		if(Bills!=null){
+			for(AggCommissionHVO aggvo : Bills){
+				if(aggvo!=null && aggvo.getChildren(CommissionBVO.class)!=null&&aggvo.getParentVO()!=null){
+					aggvo.getParentVO().setTs(null);
+					aggvo.getParentVO().setPk_commission_h(null);
+					aggvo.getParentVO().setStatus(2);
+					aggvo.getParentVO().setCreator(null);
+					aggvo.getParentVO().setCreationtime(null);
+					aggvo.getParentVO().setModifiedtime(null);
+					aggvo.getParentVO().setModifier(null);
+					CommissionBVO[] bvos = (CommissionBVO[])(aggvo.getChildren(CommissionBVO.class));
+					for(CommissionBVO bvo : bvos){
+						if(bvo!=null ){
+							bvo.setPk_commission_h(null);
+							bvo.setPk_commission_b(null);
+							bvo.setTs(null);
+							bvo.setStatus(2);
+							for(CommissionRVO rvo : bvo.getPk_commission_r()){
+								if(rvo!=null){
+									rvo.setPk_commission_b(null);
+									rvo.setPk_commission_r(null);
+									rvo.setTs(null);
+									rvo.setStatus(2);
 								}
 							}
 						}
 					}
 				}
 			}
-			AceCommissionUpdateBP bp = new AceCommissionUpdateBP();
-			AggCommissionHVO[] retBills = bp.update(fullBills, originBills);
-
-			return retBills;
-		} catch (Exception e) {
-			ExceptionUtils.marsh(e);
 		}
-		return null;
+		return Bills;
 	}
 
 	// 参考 BillUpdate.persistent方法

@@ -274,10 +274,10 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 			}else if (this.getModel().getSelectedData() instanceof TaskHVO) {
 				//by he
 				UserDefineRefUtils.refreshBillCardBodyDefRefs(
-						(AggTaskHVO)(this.getModel().getSelectedData()), 
+						(AggTaskHVO)(this.getModel().getSelectedData()),
 						(BillForm)this.mainPanel, "pk_task_b", TaskBVO.class);
 			}
-			
+
 		} catch (BusinessException e) {
 			Log.debug(e.getMessage());
 		}

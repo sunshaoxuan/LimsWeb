@@ -98,13 +98,15 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 		//tank 2019年4月9日23:46:01 刷新子表操作
 		if (this.getModel().getSelectedData() instanceof AggCommissionHVO) {
 		UserDefineRefUtils.refreshBillCardBodyDefRefs(
-				(AggCommissionHVO)(this.getModel().getSelectedData()), 
+				(AggCommissionHVO)(this.getModel().getSelectedData()),
 				(BillForm)this.mainPanel, "pk_commission_b", CommissionBVO.class);
+			//加载模板
+			CardPanelEventUtil.loadHeadItem(this);
 		//tank 2019年4月13日17:30:54 刷新孙表操作
 		}else if (this.getModel().getSelectedData() instanceof AggTaskHVO) {
 			//by he
 			UserDefineRefUtils.refreshBillCardBodyDefRefs(
-					(AggTaskHVO)(this.getModel().getSelectedData()), 
+					(AggTaskHVO)(this.getModel().getSelectedData()),
 					(BillForm)this.mainPanel, "pk_task_b", TaskBVO.class);
 		}
 		CardPanelEventUtil.grandModelInit(this);
@@ -604,7 +606,7 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 			}else if (this.getModel().getSelectedData() instanceof AggTaskHVO) {
 				//by he
 				UserDefineRefUtils.refreshBillCardBodyDefRefs(
-						(AggTaskHVO)(this.getModel().getSelectedData()), 
+						(AggTaskHVO)(this.getModel().getSelectedData()),
 						(BillForm)this.mainPanel, "pk_task_b", TaskBVO.class);
 			}
 			
@@ -614,6 +616,7 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 		} else if (state.equals(UIState.NOT_EDIT)) {
 
 			CardPanelEventUtil.rowChangeStateIsnoEdit(this, event);
+			CardPanelEventUtil.grandModelInit(this);
 		}
 	}
 

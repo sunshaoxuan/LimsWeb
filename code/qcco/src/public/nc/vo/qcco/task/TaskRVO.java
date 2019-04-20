@@ -272,7 +272,7 @@ public class TaskRVO extends SuperVO {
 		this.pk_component = pk_component;
 	}
 
-	
+
 
 	public String getPk_valuetype() {
 		return pk_valuetype;
