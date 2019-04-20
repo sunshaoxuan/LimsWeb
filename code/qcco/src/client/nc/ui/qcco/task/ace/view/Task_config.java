@@ -183,7 +183,7 @@ public nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite getMainGran
   bean.setMediator(getMainGrandMediator());
   bean.setMainPanel(getListView());
   bean.setExpendShrinkGrandListAction(getExpendShrinkGrandListAction());
-  bean.setGrandString("?獺");
+  bean.setGrandString("孙表信息");
   bean.initUI();
 setBeanFacotryIfBeanFacatoryAware(bean);
 invokeInitializingBean(bean);
@@ -201,7 +201,7 @@ public nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite getMainGran
   bean.setMainGrandBlankFilter(getMainGrandBlankFilter());
   bean.setMediator(getMainGrandMediator());
   bean.setExpendShrinkGrandCardAction(getExpendShrinkGrandCardAction());
-  bean.setGrandString("?獺");
+  bean.setGrandString("孙表信息");
   bean.initUI();
 setBeanFacotryIfBeanFacatoryAware(bean);
 invokeInitializingBean(bean);
@@ -1597,7 +1597,7 @@ public nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction getMetaDataBasedPri
   context.put("metaDataBasedPrintAction",bean);
   bean.setModel(getManageAppModel());
   bean.setActioncode("Preview");
-  bean.setActionname("??");
+  bean.setActionname("打印");
   bean.setPreview(true);
   bean.setNodeKey("ot");
   bean.setExceptionHandler(getExceptionHandler());
