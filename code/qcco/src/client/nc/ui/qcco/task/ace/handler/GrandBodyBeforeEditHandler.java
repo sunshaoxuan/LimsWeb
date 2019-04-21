@@ -19,7 +19,7 @@ public void handleAppEvent(CardBodyBeforeEditEvent e) {
 			}
 			
 		}
-		if ("refvalue".equals(e.getKey())) {
+		if ("pk_refvalue".equals(e.getKey())) {
 			Integer valueways =e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways")== null ?null: (Integer) e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
 			if(null == valueways){
 				MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "错误", "取值方式不能为空。"); 

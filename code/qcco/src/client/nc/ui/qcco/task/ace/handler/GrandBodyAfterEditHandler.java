@@ -16,14 +16,14 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 		if ("valueways".equals(e.getKey())) {
 			if (e.getValue() != null) {
 				if ((int)e.getValue() == 1) {
-					e.getBillCardPanel().getBodyItem("refvalue").setEnabled(false);
+					e.getBillCardPanel().getBodyItem("pk_refvalue").setEnabled(false);
 					e.getBillCardPanel().getBodyItem("textvalue").setEnabled(true);
 				}else if((int)e.getValue() == 2) {
-					e.getBillCardPanel().getBodyItem("refvalue").setEnabled(true);
+					e.getBillCardPanel().getBodyItem("pk_refvalue").setEnabled(true);
 					e.getBillCardPanel().getBodyItem("textvalue").setEnabled(false);
 				}else {
 					e.getBillCardPanel().getBodyItem("textvalue").setEnabled(false);
-					e.getBillCardPanel().getBodyItem("refvalue").setEnabled(false);
+					e.getBillCardPanel().getBodyItem("pk_refvalue").setEnabled(false);
 				}
 			}
 		}
