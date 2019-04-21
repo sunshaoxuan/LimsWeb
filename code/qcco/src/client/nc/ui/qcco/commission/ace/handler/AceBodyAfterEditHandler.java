@@ -288,7 +288,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "judgeflag");
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "testflag");
 				// 系统生成标识
-				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isAutoGeneration");
+				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isautogeneration");
 				// 企业标准
 				String pk_enterprisestandard = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(),
 						"pk_enterprisestandard");

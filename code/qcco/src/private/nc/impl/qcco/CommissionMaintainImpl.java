@@ -13,6 +13,7 @@ import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.commission.CommissionRVO;
 import nc.itf.qcco.ICommissionMaintain;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.ISuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 
 public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
@@ -76,6 +77,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 	@Override
 	public AggCommissionHVO[] insert(AggCommissionHVO[] vos) throws BusinessException {
 		checkMail(vos);
+		checkBodyIsNull(vos);
 		return super.pubinsertBills(vos,null);
 	}
 
@@ -89,6 +91,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 	public AggCommissionHVO[] update(AggCommissionHVO[] vos)
 			throws BusinessException {
 		checkMail(vos);
+		checkBodyIsNull(vos);
 		List<String> list = new ArrayList<String>();
 		for(AggCommissionHVO vo : vos){
 			list.add((String) vo.getParent().getAttributeValue("pk_commission_h"));
@@ -147,6 +150,22 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 		
 	}*/
 
-	
+	/**
+	 * 校验表体是否为空
+	 * @param clientFullVOs
+	 * @throws BusinessException 
+	 */
+	private void checkBodyIsNull(AggCommissionHVO[] clientFullVOs) throws BusinessException {
+		if(null != clientFullVOs){
+			for(AggCommissionHVO aggvo : clientFullVOs){
+				if(aggvo!=null){
+					ISuperVO[] bvos = aggvo.getChildren(CommissionBVO.class);
+					if(null== bvos || bvos.length == 0){
+						throw new BusinessException("表体不能为空!");
+					}
+				}
+			}
+		}
+	}
 
 }

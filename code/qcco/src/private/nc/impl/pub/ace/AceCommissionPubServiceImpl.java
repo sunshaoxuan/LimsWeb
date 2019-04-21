@@ -61,8 +61,6 @@ public abstract class AceCommissionPubServiceImpl {
 			BillTransferTool<AggCommissionHVO> transferTool = new BillTransferTool<AggCommissionHVO>(clientFullVOs);
 			// 调用BP
 			AceCommissionInsertBP action = new AceCommissionInsertBP();
-			//表体不能为空
-			checkBodyIsNull(clientFullVOs);
 			AggCommissionHVO[] retvos = action.insert(clientFullVOs);
 			// 构造返回数据
 			// return transferTool.getBillForToClient(retvos);
@@ -75,23 +73,7 @@ public abstract class AceCommissionPubServiceImpl {
 		}
 		return null;
 	}
-	/**
-	 * 校验表体是否为空
-	 * @param clientFullVOs
-	 * @throws BusinessException 
-	 */
-	private void checkBodyIsNull(AggCommissionHVO[] clientFullVOs) throws BusinessException {
-		if(null != clientFullVOs){
-			for(AggCommissionHVO aggvo : clientFullVOs){
-				if(aggvo!=null){
-					ISuperVO[] bvos = aggvo.getChildren(CommissionBVO.class);
-					if(null== bvos || bvos.length == 0){
-						throw new BusinessException("表体不能为空!");
-					}
-				}
-			}
-		}
-	}
+	
 
 	/**
 	 * 孙表存储时,要造成ts不一致的问题
