@@ -50,7 +50,7 @@ public class ProductContactRefModel extends AbstractRefModel {
 	@Override
 	public Vector getData() {
 		Vector data = super.getData();
-		if (data.size() > 1) {
+		if (data != null && data.size() > 1) {
 			return null;
 		}
 		Vector result = new Vector();
