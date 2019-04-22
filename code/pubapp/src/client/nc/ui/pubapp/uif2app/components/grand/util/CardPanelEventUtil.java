@@ -34,6 +34,7 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 
@@ -244,12 +245,18 @@ public class CardPanelEventUtil {
 				ArrayList<Object> grandObjectList = mainGrandPanel.getModel().getQueryDataMap().get(uniqueCardKey);
 				if (grandObjectList != null) {
 					grandBillForm.getBillCardPanel().getBillData()
-							.setBodyValueVO(grandTabCode, grandObjectList.toArray(new SuperVO[0]));
-
+							.setBodyValueVO(grandTabCode, grandObjectList.toArray(new SuperVO[0]));				
+					
 					// ssx add for append user define REFs
 					// on 2019-03-06
 					UserDefineRefUtils.refreshBillCardGrandDefRefs(grandBillForm, grandTabCode, grandObjectList);
-					//
+					//init auditInfo
+					Object aggvo = mainGrandPanel.getModel().getSelectedData();
+					if(aggvo != null && aggvo instanceof AggCommissionHVO){
+						UserDefineRefUtils.refreshBillCardAuditInfo(grandBillForm.getBillCardPanel().getBillData(),(AggCommissionHVO)aggvo);
+					}
+					
+					
 
 					setGrandToFormStausIsEdit(grandBillForm, grandTabCode, grandObjectList);
 				} else {

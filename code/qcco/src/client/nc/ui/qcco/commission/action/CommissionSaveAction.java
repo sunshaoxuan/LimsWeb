@@ -11,6 +11,7 @@ import nc.bs.uif2.BusinessExceptionAdapter;
 import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
+import nc.desktop.ui.WorkbenchEnvironment;
 import nc.itf.qcco.ICommissionMaintain;
 import nc.itf.qcco.ITaskMaintain;
 import nc.itf.uap.IUAPQueryBS;
@@ -93,6 +94,12 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			this.getMainGrandModel().clearBufferData();
 		} else if (this.getModel().getUiState() == UIState.EDIT) {
 			GCPseudoColUtil.getInstance().setPseudoColInfo(agghvo);
+			//set ÐÞ¸ÄÈË
+			if(null != agghvo && agghvo.getParentVO()!=null){
+				
+				String pk_user = billFormEditor.getModel().getContext().getPk_loginUser();
+				agghvo.getParentVO().setModifier(pk_user);
+			}
 			doEditSave(agghvo);
 			this.getMainGrandModel().clearBufferData();
 		}

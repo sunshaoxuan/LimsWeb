@@ -35,6 +35,7 @@ import nc.vo.pub.ISuperVO;
 import nc.vo.pub.IVOMeta;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -170,10 +171,10 @@ public abstract class AceCommissionPubServiceImpl {
 	public AggCommissionHVO[] pubupdateBills(AggCommissionHVO[] vos) throws BusinessException {
 		AggCommissionHVO[] vosClone = vos.clone();
 		//删除原vo
-		List<CommissionHVO> oldVOList = deleteOldVO(vos);
+		deleteOldVO(vos);
 		AggCommissionHVO[] vosNew = deal2New(vosClone);
 		//处理审计信息
-		dealPub(vosNew,oldVOList);
+		dealPub(vosNew,vos);
 		return pubinsertBills(vosNew, null);
 	}
 	/**
@@ -181,8 +182,7 @@ public abstract class AceCommissionPubServiceImpl {
 	 * @param vos
 	 * @throws BusinessException 
 	 */
-	private List<CommissionHVO> deleteOldVO(AggCommissionHVO[] vos) throws BusinessException {
-		List<CommissionHVO> list = new ArrayList();
+	private void deleteOldVO(AggCommissionHVO[] vos) throws BusinessException {
 		Set<String> deletePks = new HashSet();
 		for(AggCommissionHVO vo : vos){
 			deletePks.add(vo.getPrimaryKey());
@@ -200,27 +200,24 @@ public abstract class AceCommissionPubServiceImpl {
         +" left join qc_commission_b b on b.PK_COMMISSION_b = r.PK_COMMISSION_b "
         +" where b.PK_COMMISSION_h in("+deletePksInSQL+") ) ");
 		
-		//这里一般只有一个存入aggvo
-		for(AggCommissionHVO hvo : vos){
-			list.add((CommissionHVO)(getDao().retrieveByPK(CommissionHVO.class, hvo.getPrimaryKey())));
-		}
-		return list;
 	}
 
-	private void dealPub(AggCommissionHVO[] vosNew,List<CommissionHVO> vosOld) {
+	private void dealPub(AggCommissionHVO[] vosNew,AggCommissionHVO[] vosOld) {
 		if(null == vosNew || null == vosOld){
 			return ;
 		}
 		for(int i = 0 ; i<vosNew.length ;i++){
-			if(vosNew[i]!=null && vosOld.get(i)!=null){
+			if(vosNew[i]!=null && vosOld[i]!=null){
 				CommissionHVO newVO = vosNew[i].getParentVO();
-				CommissionHVO oldVO = vosOld.get(i);
+				CommissionHVO oldVO = vosOld[i].getParentVO();
 				if(newVO!=null && oldVO != null){
-					newVO.setTs(oldVO.getTs());
+					UFDateTime ts = new UFDateTime();
+					newVO.setTs(ts);
 					newVO.setCreationtime(oldVO.getCreationtime());
 					newVO.setCreator(oldVO.getCreator());
-					newVO.setModifiedtime(oldVO.getModifiedtime());
+					newVO.setModifiedtime(ts);
 					newVO.setModifier(oldVO.getModifier());
+					newVO.setLastmaketime(ts);
 				}
 			}
 		}
@@ -241,7 +238,7 @@ public abstract class AceCommissionPubServiceImpl {
 					aggvo.getParentVO().setCreator(null);
 					aggvo.getParentVO().setCreationtime(null);
 					aggvo.getParentVO().setModifiedtime(null);
-					aggvo.getParentVO().setModifier(null);
+					//aggvo.getParentVO().setModifier(null);
 					CommissionBVO[] bvos = (CommissionBVO[])(aggvo.getChildren(CommissionBVO.class));
 					for(CommissionBVO bvo : bvos){
 						if(bvo!=null ){

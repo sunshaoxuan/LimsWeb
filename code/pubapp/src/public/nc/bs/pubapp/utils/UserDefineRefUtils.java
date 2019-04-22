@@ -8,6 +8,7 @@ import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.beans.UITable;
 import nc.ui.pub.beans.constenum.DefaultConstEnum;
 import nc.ui.pub.beans.constenum.IConstEnum;
+import nc.ui.pub.bill.BillData;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.uif2.editor.BillListView;
@@ -16,6 +17,8 @@ import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.qcco.commission.CommissionHVO;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -191,5 +194,27 @@ public class UserDefineRefUtils {
 				}
 			}
 		}
+	}
+	/**
+	 * 设置孙表的审计信息(是的你没看错,审计信息确实很奇葩的到了孙表上)
+	 * TODO 动态设置审计信息 (反射) 500年后吧
+	 * @param billData
+	 * @param aggvo
+	 */
+	public static void refreshBillCardAuditInfo(BillData billData, AggCommissionHVO aggvo) {
+		if(billData!=null && aggvo!=null && aggvo.getParentVO()!=null){
+			CommissionHVO hvo = aggvo.getParentVO();
+			billData.setTailItem("creator", hvo.getCreator());
+			billData.setTailItem("creationtime", hvo.getCreationtime());
+			billData.setTailItem("modifier", hvo.getModifier());
+			billData.setTailItem("modifiedtime", hvo.getModifiedtime());
+			billData.setTailItem("lastmaketime", hvo.getLastmaketime());
+			
+		}
+		
+		
+		
+		
+		
 	}
 }
