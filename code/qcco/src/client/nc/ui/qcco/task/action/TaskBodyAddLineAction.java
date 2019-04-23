@@ -25,6 +25,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 						super.doAction();
 						super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
 								this.getCardPanel().getRowCount() - 1,
+								"rowno");
+						super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
+								this.getCardPanel().getRowCount() - 1,
 								"taskcode");
 						super.getCardPanel().setBodyValueAt(pklists.get(i).getReportName(),
 								this.getCardPanel().getRowCount() - 1,
@@ -41,7 +44,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 						super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
 								this.getCardPanel().getRowCount() - 1,
 								"runorder");
-
+						
 
 					}
 				}

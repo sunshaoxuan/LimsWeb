@@ -81,9 +81,9 @@ public class AceBodyBeforeEditHandler implements
 							"错误", "任务单不能为空");
 					return;
 				}
-
+				//getMainBillForm().getBillCardPanel().getBodyItem("sampleallocation").getValue();
 				SampleAllocationPanel samplepanel = new SampleAllocationPanel(
-						pk_commission_h);
+						pk_commission_h,getMainBillForm().getBillCardPanel().getBodyItem("sampleallocation").getValue());
 				samplepanel.setTitle("样品分配参照");
 				if (samplepanel.showModal() == 1) {
 					String strvalue = samplepanel.getSelectedstr();
@@ -94,6 +94,7 @@ public class AceBodyBeforeEditHandler implements
 					List<String> strlist = new ArrayList<String>();
 					card.setBodyValueAt(null, e.getRow(),
 							"sampleallocation");
+					card.setBodyValueAt(null, e.getRow(), "samplequantity");
 					for (int i = 0; i <= e.getBillCardPanel().getRowCount() - 1; i++) {
 						strlist.add((String) this.getMainBillForm()
 								.getBillCardPanel()
@@ -101,14 +102,14 @@ public class AceBodyBeforeEditHandler implements
 					}
 					if (strlist != null && strlist.size() > 0
 							&& strvalue != null) {
-
+						
 						List<String> commList = validate(pk_commission_h,
 								strlist, strvalue);
-						if (commList.size() > 0) {
+						/*if (commList.size() > 0) {
 							MessageDialog.showErrorDlg(e.getContext()
 									.getEntranceUI(), "错误", "样品分配不能重复。");
 							return;
-						}
+						}*/
 					}
 
 					card.setBodyValueAt(strvalue, e.getRow(),
@@ -158,10 +159,11 @@ public class AceBodyBeforeEditHandler implements
 				IUAPQueryBS.class.getName());
 			List<Map<String, Object>> refList = (List<Map<String, Object>>) iUAPQueryBS
 					.executeQuery(
-							"select r.analysisname,r.pk_samplegroup,sample.nc_sample_name,r.pk_component,r.pk_valuetype,resulttype.nc_result_namecn,"
+							"select r.analysisname,r.pk_samplegroup,sample.nc_sample_name,r.pk_component,test.test_init_name,r.pk_valuetype,resulttype.nc_result_namecn,"
 							+ " r.stdmaxvalue,r.stdminvalue,r.unitname,r.judgeflag,r.testflag,r.productstage from QC_COMMISSION_R r "
 							+ " left join NC_SAMPLE_GROUP sample on r.PK_SAMPLEGROUP= sample.PK_SAMPLE_GROUP left join NC_RESULT_TYPE resulttype ON"
-							+ " resulttype.PK_RESULT_TYPE= r.PK_VALUETYPE left join QC_COMMISSION_B b on b.pk_commission_b=r.pk_commission_b where "
+							+ " resulttype.PK_RESULT_TYPE= r.PK_VALUETYPE left join QC_COMMISSION_B b on b.pk_commission_b=r.pk_commission_b"
+							+ " left join NC_TEST_INIT test on test.pk_test_init=r.PK_COMPONENT where "
 							+ "b.pk_commission_h='"+pk_commission_h+"' and sample.nc_sample_name in("+psndocsInSQL+");",
 							new MapListProcessor());
 				
@@ -174,9 +176,9 @@ public class AceBodyBeforeEditHandler implements
 						}
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
 					}
-
+					
 					for (Map<String, Object> refRow : refList) {
-
+						
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").addLine();
 						int row = this.getGrandCard().getBillCardPanel().getRowCount() - 1;
 						
@@ -189,8 +191,8 @@ public class AceBodyBeforeEditHandler implements
 								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "analysisname");
 							} else if (refValue.getKey().equals("pk_component")) {
 								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_component");
-							} else if (refValue.getKey().equals("pk_component")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_component");
+							} else if (refValue.getKey().equals("test_init_name")) {
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "component");
 							}  else if (refValue.getKey().equals("test_init_code")) {
 								refCode = (String) refValue.getValue();
 							} else if (refValue.getKey().equals("test_init_name")) {
@@ -200,9 +202,9 @@ public class AceBodyBeforeEditHandler implements
 							} else if (refValue.getKey().equals("nc_sample_name")) {
 								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "samplegroup");
 							} else if (refValue.getKey().equals("pk_valuetype")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "valuetype");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_valuetype");
 							} else if (refValue.getKey().equals("nc_result_namecn")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "valuetypename");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "valuetype");
 							} else if (refValue.getKey().equals("nc_result_code")) {
 								resultCode = (String) refValue.getValue();
 							} else if (refValue.getKey().equals("nc_result_namecn")) {

@@ -25,7 +25,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-
 import javax.swing.ListSelectionModel;
 
 import bsh.This;
@@ -96,6 +95,9 @@ public class SampleAllocationPanel extends UIDialog implements
 	private String selectedstr;
 	private Integer testnum;
 	private String[] strs;
+	private String beforesample;
+	
+	
 
 	public String[] getStrs() {
 		return strs;
@@ -129,8 +131,18 @@ public class SampleAllocationPanel extends UIDialog implements
 		this.projectType = projectType;
 	}
 
-	public SampleAllocationPanel(String pk_commission_h) throws DAOException {
+	public SampleAllocationPanel(String pk_commission_h,Object obj) throws DAOException {
 		this.pk_commission_h = pk_commission_h;
+		beforesample = (String)obj;
+		if (null != beforesample) {
+			getListDatas();
+			try {
+				strs = StringOrderUtils.outDisOrderArray(beforesample, listnum);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		initialize();
 	}
 
@@ -320,7 +332,17 @@ public class SampleAllocationPanel extends UIDialog implements
 
 		try {
 			if (listnum != null) {
-				strs = StringOrderUtils.outDisOrderArray(projectType, listnum);
+				List<String> numlistnew = new ArrayList<>();
+				if (strs.length > 0) {
+					for (int i = 0; i < strs.length; i++) {
+						numlistnew.add(strs[i]);
+					}
+				}
+				String[] strss = StringOrderUtils.outDisOrderArray(projectType, listnum);
+				for (int i = 0; i < strss.length; i++) {
+					numlistnew.add(strss[i]);
+				}
+				strs = numlistnew.toArray(new String[numlistnew.size()]);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
