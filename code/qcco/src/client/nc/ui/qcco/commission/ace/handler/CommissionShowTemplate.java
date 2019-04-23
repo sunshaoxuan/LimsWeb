@@ -45,6 +45,9 @@ public class CommissionShowTemplate {
 	static final String[] ALL_TEMPLATE_FIELD_VALUES = { "testaim", "progressneed", "productproperty", "customername",
 			"customertype", "testrequirement", "checkingproperty", "productline", "batchnumber", "productdate",
 			"batchserial", "identificationtype", "certificationtype", "itemnumber" };
+	static final String[] PK_ALL_TEMPLATE_FIELD_VALUES = { "pk_commission_h.testaim", "pk_commission_h.progressneed", "pk_commission_h.productproperty", "pk_commission_h.customername",
+		"pk_commission_h.customertype", "pk_commission_h.testrequirement", "pk_commission_h.checkingproperty", "pk_commission_h.productline", "pk_commission_h.batchnumber", "pk_commission_h.productdate",
+		"pk_commission_h.batchserial", "pk_commission_h.identificationtype", "pk_commission_h.certificationtype", "pk_commission_h.itemnumber" };
 
 	/**
 	 * 传入模板名:质量投诉,常规检测,客户要求...获取模板
@@ -79,6 +82,10 @@ public class CommissionShowTemplate {
 
 	public static String[] getTemplateWithAllField() {
 		return ALL_TEMPLATE_FIELD_VALUES;
+
+	}
+	public static String[] getTemplateWithAllField2() {
+		return PK_ALL_TEMPLATE_FIELD_VALUES;
 
 	}
 

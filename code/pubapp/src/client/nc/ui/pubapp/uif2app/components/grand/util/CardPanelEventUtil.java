@@ -37,6 +37,7 @@ import nc.vo.pub.VOStatus;
 import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.qcco.task.AggTaskHVO;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -460,29 +461,90 @@ public class CardPanelEventUtil {
 	//根据委托单类型加载模板
 	public static void loadHeadItem(
 			CardGrandPanelComposite cardGrandPanelComposite) {
-		AggCommissionHVO aggvo = (AggCommissionHVO)(cardGrandPanelComposite.getModel().getSelectedData());
-		if(aggvo!=null && aggvo.getParentVO()!=null && aggvo.getParentVO().getPk_commissiontype()!=null){
-			String pk_commissiontype = aggvo.getParentVO().getPk_commissiontype();
-			if(pk_commissiontype!=null){
-				IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());   
-				String typeName = null;
-				try {
+		
+		
+		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());   
+		if (cardGrandPanelComposite.getModel().getSelectedData() instanceof AggTaskHVO){
+			AggTaskHVO aggvo = (AggTaskHVO) (cardGrandPanelComposite.getModel().getSelectedData());
+			String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
+			String typeName = null;
+			try {
+				if (pk_commission_h != null) {
 					typeName = (String)iUAPQueryBS. executeQuery(
 							" select  NAME "
-							+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
-							+ " and PK_PROJ_TYPE = '"+pk_commissiontype+"'",new ColumnProcessor());
-				} catch (BusinessException e) {
-					e.printStackTrace();
-				}  
+									+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
+									+ " and PK_PROJ_TYPE = (select pk_commissiontype from qc_commission_h where pk_commission_h='"+pk_commission_h+"')",new ColumnProcessor());
+				}
+			} catch (BusinessException e) {
+				e.printStackTrace();
+			}
+			if(typeName != null){
+				BillCardPanel mainBillCardPanel = ((BillForm) cardGrandPanelComposite.getMainPanel()).getBillCardPanel();
+				changeTemplet2(typeName,mainBillCardPanel);
+			}
+		}else if (cardGrandPanelComposite.getModel().getSelectedData() instanceof AggCommissionHVO) {
+			AggCommissionHVO aggvo = (AggCommissionHVO)(cardGrandPanelComposite.getModel().getSelectedData());
+			if(aggvo!=null && aggvo.getParentVO()!=null && aggvo.getParentVO().getPk_commissiontype()!=null){
+				String pk_commissiontype = aggvo.getParentVO().getPk_commissiontype();
+				String typeName = null;
+				if(pk_commissiontype!=null){
+					try {
+						typeName = (String)iUAPQueryBS. executeQuery(
+								" select  NAME "
+										+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
+										+ " and PK_PROJ_TYPE = '"+pk_commissiontype+"'",new ColumnProcessor());
+					} catch (BusinessException e) {
+						e.printStackTrace();
+					}  
+				}
 				if(typeName != null){
 					BillCardPanel mainBillCardPanel = ((BillForm) cardGrandPanelComposite.getMainPanel()).getBillCardPanel();
 					changeTemplet(typeName,mainBillCardPanel);
 				}
 			}
 		}
+		
 	
 	
+		
 
+	}
+	private static void changeTemplet2(String typeName,
+			BillCardPanel billCardPanel) {
+		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
+		List<String> list = new ArrayList<>();
+		for (int i = 0; i < templates.length; i++) {
+			String pktemplate = "pk_commission_h."+templates[i];
+			list.add(pktemplate);
+		}
+		templates = list.toArray(new String[list.size()]);
+		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField2();
+		Set<String> templatesSet = new HashSet();
+		
+		//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+		//清空时,不清空此模板包含的字段
+		if(templates!=null && templates.length > 0){
+			for(String tmp : templates){
+				templatesSet.add(tmp);
+			}
+			for(String temp : allTemplateFields){
+				if(!templatesSet.contains(temp)){
+					if(null == billCardPanel.getHeadItem(temp)){
+						continue;
+					}
+					billCardPanel.getHeadItem(temp).setValue(null);
+				}
+				
+			}
+		}
+		
+		billCardPanel.hideHeadItem(allTemplateFields);
+		if(templates == null){
+			templates = allTemplateFields;
+		}
+		billCardPanel.showHeadItem(templates);
+		
+		
 	}
 	
 	private static void changeTemplet(String typeName,BillCardPanel billCardPanel){
