@@ -390,7 +390,7 @@ public class SunlistPanel extends UIDialog implements
 			try {
 				businessLabel = new UILabel();
 				businessLabel.setName("businessLabel");
-				businessLabel.setText("企业标准");
+				businessLabel.setText("产品标准");
 				businessLabel.setBounds(500, 5, 80, 30);
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
@@ -448,7 +448,7 @@ public class SunlistPanel extends UIDialog implements
 			try {
 				testWayLabel = new UILabel();
 				testWayLabel.setName("testWayLabel");
-				testWayLabel.setText("测试方法");
+				testWayLabel.setText("测试标准");
 				testWayLabel.setBounds(250, 45, 80, 30);
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
