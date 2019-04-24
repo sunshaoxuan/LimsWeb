@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.swing.ListSelectionModel;
 
-import mx4j.log.Logger;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.itf.pubapp.uif2app.components.grand.IGrandAggVosQueryService;
@@ -34,7 +33,6 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
-import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
@@ -75,7 +73,7 @@ public class CardPanelEventUtil {
 				List<Object> grandVOList = mainGrandPanel.getMainGrandAssist().getGrandCardDataByMainRow(rowChangeBean,
 						relationShip, grandValidationService, filter);
 				if (grandVOList != null && grandVOList.size() > 0) {
-					//grandBillCardPanel.getBillModel(grandTabCode).clearBodyData();
+					// grandBillCardPanel.getBillModel(grandTabCode).clearBodyData();
 					setGrandToFormStausIsEdit(grandBillForm, grandTabCode, grandVOList);
 				} else {
 					grandBillCardPanel.getBillModel(grandTabCode).clearBodyData();
@@ -119,7 +117,7 @@ public class CardPanelEventUtil {
 		int lastrow = event.getOldRow();
 		BillCardPanel mainBillCardPanel = ((BillForm) mainGrandPanel.getMainPanel()).getBillCardPanel();
 		int currentRow = event.getRow();
-		if(-1==lastrow && 0==currentRow){
+		if (-1 == lastrow && 0 == currentRow) {
 			return;
 		}
 		if (currentRow >= 0) {
@@ -144,7 +142,7 @@ public class CardPanelEventUtil {
 			String[] tabCodes = grandBillForm.getBillCardPanel().getBillData().getBodyTableCodes();
 			for (String grandTabcode : tabCodes) {
 				ArrayList<Object> grandVOList = grandAllVOMap.get(grandTabcode);
-				
+
 				if (grandVOList != null) {
 					grandBillForm.getBillCardPanel().getBillData()
 							.setBodyValueVO(grandTabcode, grandVOList.toArray(new SuperVO[0]));
@@ -154,12 +152,12 @@ public class CardPanelEventUtil {
 				}
 			}
 			grandAutoAddLine(mainGrandPanel, grandBillForm, grandAllVOMap);
-			/*//if
-			if(-1==lastrow&&currentRow!=-1){
-				mainGrandPanel.getModel().set
-			}*/
+			/*
+			 * //if if(-1==lastrow&&currentRow!=-1){
+			 * mainGrandPanel.getModel().set }
+			 */
 		}
-		
+
 	}
 
 	/**
@@ -246,18 +244,17 @@ public class CardPanelEventUtil {
 				ArrayList<Object> grandObjectList = mainGrandPanel.getModel().getQueryDataMap().get(uniqueCardKey);
 				if (grandObjectList != null) {
 					grandBillForm.getBillCardPanel().getBillData()
-							.setBodyValueVO(grandTabCode, grandObjectList.toArray(new SuperVO[0]));				
-					
+							.setBodyValueVO(grandTabCode, grandObjectList.toArray(new SuperVO[0]));
+
 					// ssx add for append user define REFs
 					// on 2019-03-06
 					UserDefineRefUtils.refreshBillCardGrandDefRefs(grandBillForm, grandTabCode, grandObjectList);
-					//init auditInfo
+					// init auditInfo
 					Object aggvo = mainGrandPanel.getModel().getSelectedData();
-					if(aggvo != null && aggvo instanceof AggCommissionHVO){
-						UserDefineRefUtils.refreshBillCardAuditInfo(grandBillForm.getBillCardPanel().getBillData(),(AggCommissionHVO)aggvo);
+					if (aggvo != null && aggvo instanceof AggCommissionHVO) {
+						UserDefineRefUtils.refreshBillCardAuditInfo(grandBillForm.getBillCardPanel().getBillData(),
+								(AggCommissionHVO) aggvo);
 					}
-					
-					
 
 					setGrandToFormStausIsEdit(grandBillForm, grandTabCode, grandObjectList);
 				} else {
@@ -458,135 +455,120 @@ public class CardPanelEventUtil {
 		billlistView.getBillListPanel().getBodyBillModel(tableCode).loadLoadRelationItemValue();
 		billlistView.getBillListPanel().getBodyBillModel(tableCode).execLoadFormula();
 	}
-	//根据委托单类型加载模板
-	public static void loadHeadItem(
-			CardGrandPanelComposite cardGrandPanelComposite) {
-		
-		
-		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());   
-		if (cardGrandPanelComposite.getModel().getSelectedData() instanceof AggTaskHVO){
+
+	// 根据委托单类型加载模板
+	public static void loadHeadItem(CardGrandPanelComposite cardGrandPanelComposite) {
+
+		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
+		if (cardGrandPanelComposite.getModel().getSelectedData() instanceof AggTaskHVO) {
 			AggTaskHVO aggvo = (AggTaskHVO) (cardGrandPanelComposite.getModel().getSelectedData());
 			String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
 			String typeName = null;
 			try {
 				if (pk_commission_h != null) {
-					typeName = (String)iUAPQueryBS. executeQuery(
-							" select  NAME "
-									+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
-									+ " and PK_PROJ_TYPE = (select pk_commissiontype from qc_commission_h where pk_commission_h='"+pk_commission_h+"')",new ColumnProcessor());
+					typeName = (String) iUAPQueryBS
+							.executeQuery(
+									" select  NAME "
+											+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
+											+ " and PK_PROJ_TYPE = (select pk_commissiontype from qc_commission_h where pk_commission_h='"
+											+ pk_commission_h + "')", new ColumnProcessor());
 				}
 			} catch (BusinessException e) {
 				e.printStackTrace();
 			}
-			if(typeName != null){
-				BillCardPanel mainBillCardPanel = ((BillForm) cardGrandPanelComposite.getMainPanel()).getBillCardPanel();
-				changeTemplet2(typeName,mainBillCardPanel);
+			if (typeName != null) {
+				BillCardPanel mainBillCardPanel = ((BillForm) cardGrandPanelComposite.getMainPanel())
+						.getBillCardPanel();
+				changeTemplet2(typeName, mainBillCardPanel);
 			}
-		}else if (cardGrandPanelComposite.getModel().getSelectedData() instanceof AggCommissionHVO) {
-			AggCommissionHVO aggvo = (AggCommissionHVO)(cardGrandPanelComposite.getModel().getSelectedData());
-			if(aggvo!=null && aggvo.getParentVO()!=null && aggvo.getParentVO().getPk_commissiontype()!=null){
+		} else if (cardGrandPanelComposite.getModel().getSelectedData() instanceof AggCommissionHVO) {
+			AggCommissionHVO aggvo = (AggCommissionHVO) (cardGrandPanelComposite.getModel().getSelectedData());
+			if (aggvo != null && aggvo.getParentVO() != null && aggvo.getParentVO().getPk_commissiontype() != null) {
 				String pk_commissiontype = aggvo.getParentVO().getPk_commissiontype();
 				String typeName = null;
-				if(pk_commissiontype!=null){
+				if (pk_commissiontype != null) {
 					try {
-						typeName = (String)iUAPQueryBS. executeQuery(
-								" select  NAME "
-										+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
-										+ " and PK_PROJ_TYPE = '"+pk_commissiontype+"'",new ColumnProcessor());
+						typeName = (String) iUAPQueryBS.executeQuery(" select  NAME "
+								+ " from NC_PROJ_TYPE WHERE ISENABLE=1 " + " and PK_PROJ_TYPE = '" + pk_commissiontype
+								+ "'", new ColumnProcessor());
 					} catch (BusinessException e) {
 						e.printStackTrace();
-					}  
+					}
 				}
-				if(typeName != null){
-					BillCardPanel mainBillCardPanel = ((BillForm) cardGrandPanelComposite.getMainPanel()).getBillCardPanel();
-					changeTemplet(typeName,mainBillCardPanel);
+				if (typeName != null) {
+					BillCardPanel mainBillCardPanel = ((BillForm) cardGrandPanelComposite.getMainPanel())
+							.getBillCardPanel();
+					changeTemplet(typeName, mainBillCardPanel);
 				}
 			}
 		}
-		
-	
-	
-		
 
 	}
-	private static void changeTemplet2(String typeName,
-			BillCardPanel billCardPanel) {
+
+	private static void changeTemplet2(String typeName, BillCardPanel billCardPanel) {
 		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 		List<String> list = new ArrayList<>();
-		for (int i = 0; i < templates.length; i++) {
-			String pktemplate = "pk_commission_h."+templates[i];
-			list.add(pktemplate);
+		if (templates != null && templates.length > 0) {
+			for (int i = 0; i < templates.length; i++) {
+				String pktemplate = "pk_commission_h." + templates[i];
+				list.add(pktemplate);
+			}
+			templates = list.toArray(new String[list.size()]);
 		}
-		templates = list.toArray(new String[list.size()]);
 		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField2();
 		Set<String> templatesSet = new HashSet();
-		
-		//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
-		//清空时,不清空此模板包含的字段
-		if(templates!=null && templates.length > 0){
-			for(String tmp : templates){
+
+		// 先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+		// 清空时,不清空此模板包含的字段
+		if (templates != null && templates.length > 0) {
+			for (String tmp : templates) {
 				templatesSet.add(tmp);
 			}
-			for(String temp : allTemplateFields){
-				if(!templatesSet.contains(temp)){
-					if(null == billCardPanel.getHeadItem(temp)){
+			for (String temp : allTemplateFields) {
+				if (!templatesSet.contains(temp)) {
+					if (null == billCardPanel.getHeadItem(temp)) {
 						continue;
 					}
 					billCardPanel.getHeadItem(temp).setValue(null);
 				}
-				
+
 			}
 		}
-		
+
 		billCardPanel.hideHeadItem(allTemplateFields);
-		if(templates == null){
+		if (templates == null) {
 			templates = allTemplateFields;
 		}
 		billCardPanel.showHeadItem(templates);
-		
-		
+
 	}
-	
-	private static void changeTemplet(String typeName,BillCardPanel billCardPanel){
+
+	private static void changeTemplet(String typeName, BillCardPanel billCardPanel) {
 
 		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
 		Set<String> templatesSet = new HashSet();
-		
-		//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
-		//清空时,不清空此模板包含的字段
-		if(templates!=null && templates.length > 0){
-			for(String tmp : templates){
+
+		// 先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+		// 清空时,不清空此模板包含的字段
+		if (templates != null && templates.length > 0) {
+			for (String tmp : templates) {
 				templatesSet.add(tmp);
 			}
-			for(String temp : allTemplateFields){
-				if(!templatesSet.contains(temp)){
+			for (String temp : allTemplateFields) {
+				if (!templatesSet.contains(temp)) {
 					billCardPanel.getHeadItem(temp).setValue(null);
 				}
-				
+
 			}
 		}
-		
+
 		billCardPanel.hideHeadItem(allTemplateFields);
-		if(templates == null){
+		if (templates == null) {
 			templates = allTemplateFields;
 		}
 		billCardPanel.showHeadItem(templates);
-		
-	
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }
