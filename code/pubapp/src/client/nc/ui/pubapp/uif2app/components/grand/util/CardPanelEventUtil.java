@@ -513,11 +513,13 @@ public class CardPanelEventUtil {
 			BillCardPanel billCardPanel) {
 		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 		List<String> list = new ArrayList<>();
+		if (templates != null && templates.length>0) {
 		for (int i = 0; i < templates.length; i++) {
 			String pktemplate = "pk_commission_h."+templates[i];
 			list.add(pktemplate);
 		}
 		templates = list.toArray(new String[list.size()]);
+		}
 		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField2();
 		Set<String> templatesSet = new HashSet();
 		
