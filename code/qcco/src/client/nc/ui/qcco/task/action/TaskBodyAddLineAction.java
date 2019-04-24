@@ -44,7 +44,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 						super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
 								this.getCardPanel().getRowCount() - 1,
 								"runorder");
-						
+
 
 					}
 				}

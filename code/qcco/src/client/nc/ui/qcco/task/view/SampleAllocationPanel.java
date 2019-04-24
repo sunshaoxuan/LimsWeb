@@ -96,8 +96,8 @@ public class SampleAllocationPanel extends UIDialog implements
 	private Integer testnum;
 	private String[] strs;
 	private String beforesample;
-	
-	
+
+
 
 	public String[] getStrs() {
 		return strs;
