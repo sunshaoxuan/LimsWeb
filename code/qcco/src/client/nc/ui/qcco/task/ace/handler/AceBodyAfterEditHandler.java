@@ -1,34 +1,16 @@
 package nc.ui.qcco.task.ace.handler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Vector;
 
-import nc.bs.framework.common.NCLocator;
-import nc.bs.logging.Logger;
-import nc.bs.pubapp.utils.UserDefineRefUtils;
-import nc.itf.uap.IUAPQueryBS;
-import nc.jdbc.framework.processor.ColumnProcessor;
-import nc.jdbc.framework.processor.MapListProcessor;
-import nc.ui.pub.beans.MessageDialog;
-import nc.ui.pub.beans.UIRefPane;
-import nc.ui.pub.beans.constenum.DefaultConstEnum;
-import nc.ui.pub.beans.constenum.IConstEnum;
-import nc.ui.pub.bill.BillCellEditor;
+import nc.bs.bank_cvp.compile.registry.BussinessMethods;
+import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
-import nc.ui.qcco.task.utils.StringOrderUtils;
+import nc.ui.uif2.IShowMsgConstant;
+import nc.ui.uif2.ShowStatusBarMsgUtil;
 import nc.vo.pub.BusinessException;
-import nc.vo.qcco.commission.CommissionRVO;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 
 public class AceBodyAfterEditHandler implements
 		IAppEventHandler<CardBodyAfterEditEvent> {
@@ -46,7 +28,10 @@ public class AceBodyAfterEditHandler implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
-		
+		//执行顺序改变后重新排序
+		if ("runorder".equals(e.getKey())) {
+			doSortAndReCode(e);
+		}
 	}
 
 	public ShowUpableBillForm getGrandCard() {
@@ -56,4 +41,67 @@ public class AceBodyAfterEditHandler implements
 	public void setGrandCard(ShowUpableBillForm grandCard) {
 		this.grandCard = grandCard;
 	}
+	
+	private void doSortAndReCode(CardBodyAfterEditEvent e) {
+		//get 委托单号
+		BillItem billItem = mainBillForm.getBillCardPanel().getHeadItem("pk_commission_h.billno");
+		String commissionCode = "";
+		if(billItem!=null && billItem.getValueObject()!=null 
+				&& !String.valueOf(billItem.getValueObject()).replaceAll(" ", "").equals("")){
+			commissionCode = String.valueOf(billItem.getValueObject());
+		}else{
+			commissionCode = "";
+		}
+		
+		if ("runorder".equals(e.getKey())) {
+			mainBillForm.getBillCardPanel().getBillModel().sortByColumn("runorder", true);
+			Vector dataVector = e.getBillCardPanel().getBillModel().getDataVector();
+			StringBuilder sb = new StringBuilder();
+			sb.append(commissionCode);
+			if(dataVector!=null && dataVector.size() > 0){
+				for(int i = 0;i<dataVector.size();i++){
+					if(dataVector!=null){
+						int rowNoColNumber = e.getBillCardPanel().getBillModel().getBodyColByKey("rowno");
+						if(rowNoColNumber >= 0){
+							//改变行号
+							if(dataVector.get(i)!=null){
+								Vector colData = (Vector)dataVector.get(i);
+								colData.set(rowNoColNumber, i+1);
+							}
+							
+						}
+						int runorderColNumber = e.getBillCardPanel().getBillModel().getBodyColByKey("taskcode");
+						if(runorderColNumber >= 0){
+							//重新生成编号
+							if(dataVector.get(i)!=null){
+								sb.append("-");
+								if(i < 9){
+									sb.append(0);
+								}
+								sb.append(i+1);
+								Vector colData = (Vector)dataVector.get(i);
+								colData.set(runorderColNumber, sb.toString());
+								sb.delete(sb.length()-3, sb.length());
+							}
+						}else{
+							ShowStatusBarMsgUtil.showErrorMsg(
+									"重新生成编号失败!","未找到'任务编号'字段", e.getContext());
+							break;
+						}
+					}
+				}
+			}
+			
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

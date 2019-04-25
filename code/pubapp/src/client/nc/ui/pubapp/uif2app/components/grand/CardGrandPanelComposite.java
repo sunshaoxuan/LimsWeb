@@ -108,6 +108,11 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 			UserDefineRefUtils.refreshBillCardBodyDefRefs(
 					(AggTaskHVO)(this.getModel().getSelectedData()),
 					(BillForm)this.mainPanel, "pk_task_b", TaskBVO.class);
+			//ÅÅÐò
+			if(((BillForm)mainPanel).getBillCardPanel().getBillModel().getBodyColByKey("runorder")>=0){
+				((BillForm)mainPanel).getBillCardPanel().getBillModel().sortByColumn("runorder", true);
+			}
+			
 		}
 		CardPanelEventUtil.grandModelInit(this);
 	}
