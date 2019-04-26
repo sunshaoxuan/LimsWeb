@@ -668,7 +668,7 @@ public class SunlistPanel extends UIDialog implements
 			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 					.executeQuery(
 							"select distinct "
-									+ " c.nc_bbasen_name ,d.name as sname,f.nc_first_name as fname,t.p_name as tname from qc_commission_b b left join qc_commission_h h on h.pk_commission_h=b.pk_commission_h left join NC_BASEN_TYPE c on c.pk_basen_type = b.pk_enterprisestandard "
+									+ " c.nc_bbasen_name ,d.name as sname,f.prod_type as fname,t.p_name as tname from qc_commission_b b left join qc_commission_h h on h.pk_commission_h=b.pk_commission_h left join NC_BASEN_TYPE c on c.pk_basen_type = b.pk_enterprisestandard "
 									+ " left join NC_SECOND_TYPE d on d.pk_second_type = h.pk_subcategory "
 									+ " left join NC_FIRST_TYPE f on f.pk_first_type = h.pk_maincategory "
 									+ " left join NC_THIRD_TYPE t on t.pk_third_type = h.pk_lastcategory "
