@@ -81,7 +81,6 @@ public class AceBodyBeforeEditHandler implements
 							"错误", "任务单不能为空");
 					return;
 				}
-
 				//getMainBillForm().getBillCardPanel().getBodyItem("sampleallocation").getValue();
 				SampleAllocationPanel samplepanel = new SampleAllocationPanel(
 						pk_commission_h,getMainBillForm().getBillCardPanel().getBodyItem("sampleallocation").getValue());
@@ -103,7 +102,7 @@ public class AceBodyBeforeEditHandler implements
 					}
 					if (strlist != null && strlist.size() > 0
 							&& strvalue != null) {
-
+						
 						List<String> commList = validate(pk_commission_h,
 								strlist, strvalue);
 						/*if (commList.size() > 0) {
@@ -177,11 +176,11 @@ public class AceBodyBeforeEditHandler implements
 						}
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
 					}
-
 					for (Map<String, Object> refRow : refList) {
-
+						
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").addLine();
-						int row = this.getGrandCard().getBillCardPanel().getRowCount() - 1;
+						//int row = this.getGrandCard().getBillCardPanel().getRowCount() - 1;
+						int row = this.getGrandCard().getBillCardPanel().getRowCount("pk_task_r") - 1;
 						
 						String resultCode = "";
 						String resultName = "";
@@ -189,49 +188,49 @@ public class AceBodyBeforeEditHandler implements
 						String refName = "";
 						for (Entry<String, Object> refValue : refRow.entrySet()) {
 							if (refValue.getKey().equals("analysisname")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "analysisname");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "analysisname","pk_task_r");
 							} else if (refValue.getKey().equals("pk_component")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_component");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_component","pk_task_r");
 							} else if (refValue.getKey().equals("test_init_name")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "component");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "component","pk_task_r");
 							}  else if (refValue.getKey().equals("test_init_code")) {
 								refCode = (String) refValue.getValue();
 							} else if (refValue.getKey().equals("test_init_name")) {
 								refName = (String) refValue.getValue();
 							} else if (refValue.getKey().equals("pk_samplegroup")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_samplegroup");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_samplegroup","pk_task_r");
 							} else if (refValue.getKey().equals("nc_sample_name")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "samplegroup");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "samplegroup","pk_task_r");
 							} else if (refValue.getKey().equals("pk_valuetype")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_valuetype");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_valuetype","pk_task_r");
 							} else if (refValue.getKey().equals("nc_result_namecn")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "valuetype");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "valuetype","pk_task_r");
 							} else if (refValue.getKey().equals("nc_result_code")) {
 								resultCode = (String) refValue.getValue();
 							} else if (refValue.getKey().equals("nc_result_namecn")) {
 								resultName = (String) refValue.getValue();
 							} else if (refValue.getKey().equals("stdmaxvalue")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "stdmaxvalue");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "stdmaxvalue","pk_task_r");
 							} else if (refValue.getKey().equals("stdminvalue")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "stdminvalue");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "stdminvalue","pk_task_r");
 							} else if (refValue.getKey().equals("productstage")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_testtemperature");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_testtemperature","pk_task_r");
 							} else if (refValue.getKey().equals("unitname")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_unit");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "pk_unit","pk_task_r");
 							} else if (refValue.getKey().equals("judgeflag")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "judgeflag");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "judgeflag","pk_task_r");
 							} else if (refValue.getKey().equals("testflag")) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "testflag");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt(refValue.getValue(), row, "testflag","pk_task_r");
 							}
 						}
 						if (!StringUtils.isEmpty(resultCode) && !StringUtils.isEmpty(resultName)) {
 							IConstEnum aValue = new DefaultConstEnum(resultName, resultName);
-							this.getGrandCard().getBillCardPanel().setBodyValueAt(aValue.getValue(), row, "valuetype");
+							this.getGrandCard().getBillCardPanel().setBodyValueAt(aValue.getValue(), row, "valuetype","pk_task_r");
 						}
 
 						if (!StringUtils.isEmpty(refCode) && !StringUtils.isEmpty(refName)) {
 							IConstEnum aValue = new DefaultConstEnum(refName, refName);
-							this.getGrandCard().getBillCardPanel().setBodyValueAt(aValue.getValue(), row, "component");
+							this.getGrandCard().getBillCardPanel().setBodyValueAt(aValue.getValue(), row, "component","pk_task_r");
 						}
 					}
 				}
