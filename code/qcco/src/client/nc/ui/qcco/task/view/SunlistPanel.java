@@ -172,7 +172,7 @@ public class SunlistPanel extends UIDialog implements
 	private void initialize() {
 		this.setTitle("请选择数据");
 		this.setLayout(new BorderLayout());
-		this.setSize(new Dimension(820, 840));
+		this.setSize(new Dimension(860, 440));
 		this.setContentPane(getUIDialogContentPane());
 
 	}
@@ -301,7 +301,7 @@ public class SunlistPanel extends UIDialog implements
 				ivjUIPanel1.add(getProjectCateLabel());
 				ivjUIPanel1.add(getProjectCateField());
 				ivjUIPanel1.add(getBtnOKtop());
-				ivjUIPanel1.setBounds(50, 10, 800, 130);
+				ivjUIPanel1.setBounds(50, 10, 800, 90);
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -316,7 +316,7 @@ public class SunlistPanel extends UIDialog implements
 				btnOKtop.setName("btnOKtop");
 				btnOKtop.setText("查询");
 				btnOKtop.addActionListener(this);
-				btnOKtop.setBounds(700, 88, 50, 30);
+				btnOKtop.setBounds(750, 48, 50, 25);
 				btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(
 						KeyEvent.VK_Y, InputEvent.ALT_MASK),
 						JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -742,7 +742,7 @@ public class SunlistPanel extends UIDialog implements
 			billListHeadPanel.loadTemplet("1001ZZ10000000001YZR");
 			billListHeadPanel.setVisible(true);
 			billListHeadPanel.setEnabled(true);
-			billListHeadPanel.setBounds(10, 140, 800, 650);
+			billListHeadPanel.setBounds(10, 100, 840, 290);
 			billListHeadPanel.setAutoscrolls(true);
 			billListHeadPanel.setMultiSelect(true);
 

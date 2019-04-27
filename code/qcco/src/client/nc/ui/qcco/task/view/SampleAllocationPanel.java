@@ -96,8 +96,8 @@ public class SampleAllocationPanel extends UIDialog implements
 	private Integer testnum;
 	private String[] strs;
 	private String beforesample;
-
-
+	
+	
 
 	public String[] getStrs() {
 		return strs;
@@ -276,7 +276,7 @@ public class SampleAllocationPanel extends UIDialog implements
 			try {
 				btnOKtop = new UIButton();
 				btnOKtop.setName("btnOKtop");
-				btnOKtop.setText("≤È—Ø");
+				btnOKtop.setText("»∑∂®");
 				btnOKtop.addActionListener(this);
 				btnOKtop.setBounds(250, 5, 50, 30);
 				btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(
