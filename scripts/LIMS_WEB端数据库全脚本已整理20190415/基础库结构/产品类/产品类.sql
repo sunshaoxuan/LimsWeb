@@ -1,0 +1,150 @@
+--产品表
+create table NC_PROD_LIST 
+(
+   PK_PROD_LIST         CHAR(20 CHAR)        not null,
+   NAME                 VARCHAR2(20 char),
+   VERSION              NUMBER(10),
+   NC_PROD_CODE         CHAR(50 CHAR),
+   NC_PROD_NAME         CHAR(200 CHAR),
+   NC_PROD_ISDISABLE    SMALLINT,
+   DEF1                 VARCHAR(200),
+   DEF2                 VARCHAR(200),
+   DEF3                 VARCHAR(200),
+   DEF4                 VARCHAR(200),
+   DEF5                 VARCHAR(200),
+   NC_PROD_DES          VARCHAR(200),
+   NC_PROD_ALIAS        VARCHAR(200),
+   constraint PK_NC_PROD_LIST primary key (PK_PROD_LIST)
+);
+
+alter table NC_PROD_LIST
+   add constraint FK_NC_PROD__REFERENCE_PRODUCT foreign key (NAME, VERSION)
+      references LIMS_DATA.PRODUCT (NAME, VERSION);
+
+---
+Insert into NC_PROD_LIST
+select substr(SYS_GUID(),1,20),pu.name,pu.version,RANK() over(order by pu.name asc),
+pu.name,pu.removed,'','','','','',pu.description,pu.code
+from product pu;
+
+-----------------------------------------------------------------------------------------------
+--NC_TEST_LIST
+
+create table NC_TEST_LIST 
+(
+   PK_TEST_LIST         CHAR(20 CHAR)        not null,
+   NAME                 VARCHAR2(20 char),
+   NC_TESTLIST_CODE     CHAR(50 CHAR),
+   NC_TESTLIST_NAME     CHAR(200 CHAR),
+   NC_TESTLIST_ISDISABLE SMALLINT,
+   DEF1                 VARCHAR(200),
+   DEF2                 VARCHAR(200),
+   DEF3                 VARCHAR(200),
+   DEF4                 VARCHAR(200),
+   DEF5                 VARCHAR(200),
+   constraint PK_NC_TEST_LIST primary key (PK_TEST_LIST)
+);
+
+alter table NC_TEST_LIST
+   add constraint FK_NC_TEST__REFERENCE_TEST_LIS foreign key (NAME)
+      references LIMS_DATA.TEST_LIST (NAME);
+---
+delete from NC_TEST_LIST
+
+Insert into NC_TEST_LIST
+select substr(SYS_GUID(),1,20),tl.name,RANK() over(order by tl.name asc),tl.name,(case when tl.removed = 'F' then 0 else 1 end),tl.description,tl.t_Allowed_Product,
+'','',''
+from test_list tl
+
+----------------------------------------------------------------------------------------------
+--分析中的值类型
+create table NC_RESULT_TYPE 
+(
+   PK_RESULT_TYPE       CHAR(20 CHAR)        not null,
+   NC_RESULT_CODE       CHAR(50 CHAR),
+   NC_RESULT_NAME       CHAR(200 CHAR),
+   NC_RESULT_DESCRIPTION VARCHAR(100),
+   NC_RESULT_NAMECN     CHAR(200 CHAR),
+   constraint PK_NC_RESULT_TYPE primary key (PK_RESULT_TYPE)
+);
+
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'1','N','Numberic','数值');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'2','T','TEXT','文本');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'3','L','List','列表');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'4','U','List Allow User Entry','列表允许用户输入');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'5','D','Date','日期');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'6','K','Caculated','计算型');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'7','F','File Name','文件名');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'8','E','Exponential','指数型');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'9','R','RTF Note','RTF备注');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'10','H','Html Note','HTML备注');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'11','S','Standard','标准品');
+insert into NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'12','Y','DateTime','日期时间');
+---
+/*
+                                
+N:Numberic                              数值
+T:TEXT                                  文本
+L:List                                  列表
+U:List Allow User Entry                 列表允许用户输入
+D:Date                                  日期
+K:Caculated                             计算型
+F:File Name                             文件名
+E:Exponential                           指数型                     
+R:RTF Note                              RTF备注
+H:Html Note                             HTML备注
+S:Standard                              标准品
+Y:DateTime                              日期时间
+*/
+--------------------------------------------------------------------------------------------
+--样品添加参照
+create table NC_SAMPLE_INFO 
+(
+   PK_SAMPLE_INFO       CHAR(20 CHAR)        not null,
+   PK_PROD_TYPE         CHAR(20 CHAR),
+   SAMPLE_INFO_CODE     VARCHAR2(200 CHAR),
+   "def1"               VARCHAR2(200 CHAR),
+   "def2"               VARCHAR2(200 CHAR),
+   "def3"               VARCHAR2(200 CHAR),
+   "def4"               VARCHAR2(200 CHAR),
+   "def5"               VARCHAR2(200 CHAR),
+   NAME                 VARCHAR2(20 CHAR),
+   C_PROD_TYPE_C1       VARCHAR2(20 CHAR),
+   DESCRIPTION          VARCHAR2(254 CHAR),
+   ENSTARD              VARCHAR2(20 CHAR),
+   TEST_LIST            VARCHAR2(40 CHAR),
+   SAMPLING_POINT       VARCHAR2(254 CHAR),
+   GRADE                VARCHAR2(20 CHAR),
+   C_ALLOWED_CONTACT    VARCHAR2(100 CHAR),
+   STAGE                VARCHAR2(20 CHAR),
+   ISENABLE             SMALLINT,
+   constraint PK_NC_SAMPLE_INFO primary key (PK_SAMPLE_INFO)
+);
+
+alter table NC_SAMPLE_INFO
+   add constraint FK_NC_SAMPL_REFERENCE_NC_PROD_ foreign key (PK_PROD_TYPE)
+      references NC_PROD_TYPE (PK_PROD_TYPE);
+---
+insert into NC_SAMPLE_INFO
+select distinct
+substr(SYS_GUID(),1,20) , b."产品大类表主键",b."序号",b."def1",b."def2",b."def3",b."def4",b."def5",b."产品名称",
+b."产品类别",b."产品系列",b."企标",b."Test_list名",b."规格号",b."结构类型",b."触点类型",b."温度",dr
+from 
+(select distinct
+npt.pk_prod_type  "产品大类表主键",
+RANK() over(order by p.name,pg.sampling_point asc) "序号",
+'' "def1" ,'' "def2",'' "def3",'' "def4",'' "def5" ,p.code "产品名称",
+p.c_prod_type_c1 "产品类别",p.description "产品系列",p.name "企标",p.test_list "Test_list名",pg.sampling_point "规格号",
+pg.grade "结构类型",p.c_allowed_contact "触点类型",pgs.stage "温度",0 dr
+from product p , product_grade pg,prod_grade_STAGE pgs,NC_PROD_TYPE npt
+where p.ACTIVE = 'T' and p.removed = 'F'
+and p.name = pg.product and p.name = pgs.product 
+and p.c_prod_type_c1 = npt.c_prod_type_c1 
+--and (p.description = 'HF115F-/Q……（0060）')
+) b;
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+-- Create table
+create table NC_RESULT_TYPE
+(
+  pk_result_type        CHAR(20 CHAR) not null,
+  nc_result_code        CHAR(50 CHAR),
+  nc_result_name        CHAR(200 CHAR),
+  nc_result_description VARCHAR2(100),
+  nc_result_namecn      CHAR(200 CHAR)
+)
+tablespace NNC_DATA01
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table NC_RESULT_TYPE
+  add constraint PK_NC_RESULT_TYPE primary key (PK_RESULT_TYPE)
+  using index 
+  tablespace NNC_DATA01
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );

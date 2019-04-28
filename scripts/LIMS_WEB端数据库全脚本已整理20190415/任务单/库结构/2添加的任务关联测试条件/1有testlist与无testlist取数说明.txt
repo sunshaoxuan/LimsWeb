@@ -1,0 +1,3 @@
+有testlist的，在相应表里同时取analysis字段和testlist字段，通过analysis关联到无testlist表获取单位；
+
+无testlist的，直接取nc_component_table的analysis字段

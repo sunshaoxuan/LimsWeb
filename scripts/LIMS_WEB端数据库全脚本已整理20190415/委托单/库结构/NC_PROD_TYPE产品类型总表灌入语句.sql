@@ -1,0 +1,96 @@
+
+
+
+select TRIM(PT.NC_BASPRODTYPE_CODE) NC_BASPRODTYPE_CODE,
+       TRIM(PT.NC_BASPRODTYPE_NAME) NC_BASPRODTYPE_NAME,
+       PT.PK_BASPROD_TYPE
+  from NC_SAMPLE_INFO SI
+ INNER JOIN NC_BASPROD_TYPE PT
+    ON PT.PK_BASPROD_TYPE = SI.PK_BASPROD_TYPE
+ WHERE SI.PK_PROD_TYPE IN
+       (SELECT PK_PROD_TYPE
+          FROM NC_PROD_TYPE
+         WHERE 1 = 1
+           and PROD_TYPE = 'CPA'
+           and C_PROD_TYPE_C1 = 'CPAG')
+ GROUP BY PT.NC_BASPRODTYPE_CODE,
+          PT.NC_BASPRODTYPE_NAME,
+          PT.PK_BASPROD_TYPE
+ ORDER BY cast(NC_BASPRODTYPE_CODE AS NUMBER)
+ 
+
+delete from nc_prod_type
+
+/*Insert into NC_PROD_TYPE
+ select substr(SYS_GUID(),1,20),c.prod_type,
+c1.prod_type,c1.name,
+c2.prod_type,c2.c_prod_type_c1,c2.p_name,
+c1.report_name,c1.report_name,c2.report_name,'1' from C_PROD_TYPE c left join C_PROD_TYPE_C1 c1 on c.prod_type = c1.prod_type
+left join C_PROD_TYPE_C2 c2 on c2.c_prod_type_c1 = c1.name*/
+
+--先去掉此表三个外键
+Insert into NC_PROD_TYPE
+ select substr(SYS_GUID(),1,20),c.prod_type,
+c1.prod_type,c1.name,
+--c2.prod_type,c2.c_prod_type_c1,c2.p_name,
+decode(c2.prod_type,null,c1.name,c2.prod_type) prod_type,
+decode(c2.c_prod_type_c1,null,c1.name,c2.c_prod_type_c1) c_prod_type_c1,
+decode(c2.p_name,null,c1.name,c2.p_name) c_prod_type_c1,
+c1.report_name,c1.report_name,c2.report_name,'1' from C_PROD_TYPE c left join C_PROD_TYPE_C1 c1 on c.prod_type = c1.prod_type
+left join C_PROD_TYPE_C2 c2 on c2.c_prod_type_c1 = c1.name
+
+select * from NC_PROD_TYPE
+
+merge into NC_PROD_TYPE n
+using(
+ select substr(SYS_GUID(),1,20) a,c.prod_type b,
+c1.prod_type c ,c1.name d,
+c2.prod_type e,c2.c_prod_type_c1 f,c2.p_name g,
+c1.report_name h,c1.report_name,c2.report_name i,'1' j from C_PROD_TYPE c left join C_PROD_TYPE_C1 c1 on c.prod_type = c1.prod_type
+left join C_PROD_TYPE_C2 c2 on c2.c_prod_type_c1 = c1.name
+) n2
+on (n.name = n2.name)
+when matched then
+  n.name = n2.name
+  when not matched then
+    insert(a,b,c,d,e,f,g,h,i,j) values(n.pk_prod_type,n.prod_type,n.c_p_prod_type,n.name,n.c_p_prod_type2,n.c_prod_type_c1,n.p_name,n.f_prod_type,n.s_prod_type,n.t_prod_type,n.isenable);
+    
+    
+    
+    
+--追加
+merge into NC_PROD_TYPE n
+using (select substr(SYS_GUID(), 1, 20)  a,
+              c.prod_type b,
+              c1.prod_type c,
+              c1.name d,
+              c2.prod_type e,
+              c2.c_prod_type_c1 f,
+              c2.p_name g,
+              c1.report_name h,
+              c1.report_name i,
+              c2.report_name j,
+              '1' k
+         from C_PROD_TYPE c
+         left join C_PROD_TYPE_C1 c1
+           on c.prod_type = c1.prod_type
+         left join C_PROD_TYPE_C2 c2
+           on c2.c_prod_type_c1 = c1.name) l
+on (n.name = l.d)
+when matched then update set n.prod_type = l.b
+when not matched then
+  insert
+    --(l.a,l.b,l.c,l.d,l.e,l.f,l.g,l.h,l.i,l.j,l.k)
+    (n.pk_prod_type,
+     n.prod_type,
+     n.c_p_prod_type,
+     n.name,
+     n.c_p_prod_type2,
+     n.c_prod_type_c1,
+     n.p_name,
+     n.f_prod_type,
+     n.s_prod_type,
+     n.t_prod_type,
+     n.isenable)
+  values
+    (a,b,c,d,e,f,g,h,i,j,k);
