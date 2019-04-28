@@ -263,7 +263,7 @@ public class SampleAllocationPanel extends UIDialog implements
 				ivjUIPanel1.add(getSampleNameField());
 
 				ivjUIPanel1.add(getBtnOKtop());
-				ivjUIPanel1.setBounds(50, 10, 400, 70);
+				ivjUIPanel1.setBounds(50, 10, 300, 40);
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -333,7 +333,7 @@ public class SampleAllocationPanel extends UIDialog implements
 		try {
 			if (listnum != null) {
 				List<String> numlistnew = new ArrayList<>();
-				if (strs.length > 0) {
+				if (strs != null && strs.length > 0) {
 					for (int i = 0; i < strs.length; i++) {
 						numlistnew.add(strs[i]);
 					}
@@ -375,7 +375,7 @@ public class SampleAllocationPanel extends UIDialog implements
 			billListHeadPanel.loadTemplet("1001ZZ100000000022UV");
 			billListHeadPanel.setVisible(true);
 			billListHeadPanel.setEnabled(true);
-			billListHeadPanel.setBounds(90, 80, 200, 350);
+			billListHeadPanel.setBounds(10, 55, 380, 400);
 
 			billListHeadPanel.setMultiSelect(true);
 			Map<String, Integer> maps = getListDatas();
