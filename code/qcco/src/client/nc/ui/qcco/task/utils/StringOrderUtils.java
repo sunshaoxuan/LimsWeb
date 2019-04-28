@@ -147,25 +147,9 @@ public class StringOrderUtils {
         //声明一条线
         int lineLength = 0;
         for (int i = 0; i < rowNumList.size(); i++) {
-            for (int j = 1; j <= rowNumList.get(i); j++) {
-                if (orderTable[i][j]) {
-                    if (0 == lineLength) {
-                        sb.append((char) (i + 65)).append(j);
-                        lineLength++;
-                    } else if (1 == lineLength) {
-                        sb.append("-");
-                        lineLength++;
-                        if (rowNumList.get(i) == j && (rowNumList.size()-1) == i) {
-                            //最后一列最后一行的时候就直接加完了
-                            sb.append((char) (i + 65)).append(j).append(",");
-                        }
-                    } else if (1 < lineLength) {
-                        if (rowNumList.get(i) == j && (rowNumList.size()-1) == i ) {
-                            sb.append((char) (i + 65)).append(j).append(",");
-                        }
-                        lineLength++;
-                    }
-                } else {
+            for (int j = 1; ; j++) {
+                if(0 == rowNumList.get(i)){
+                    //如果此行为0,则按断线处理
                     if(lineLength == 0){
                         ;
                     }else if(lineLength == 1){
@@ -181,8 +165,49 @@ public class StringOrderUtils {
                         }
 
                     }
-
+                    break;
                 }
+               else if(j <= rowNumList.get(i)){
+                    if (orderTable[i][j]) {
+                        if (0 == lineLength) {
+                            sb.append((char) (i + 65)).append(j);
+                            lineLength++;
+                        } else if (1 == lineLength) {
+                            sb.append("-");
+                            lineLength++;
+                            if (rowNumList.get(i) == j && (rowNumList.size()-1) == i) {
+                                //最后一列最后一行的时候就直接加完了
+                                sb.append((char) (i + 65)).append(j).append(",");
+                            }
+                        } else if (1 < lineLength) {
+                            if (rowNumList.get(i) == j && (rowNumList.size()-1) == i ) {
+                                sb.append((char) (i + 65)).append(j).append(",");
+                            }
+                            lineLength++;
+                        }
+                    } else {
+                        if(lineLength == 0){
+                            ;
+                        }else if(lineLength == 1){
+                            lineLength = 0;
+                            sb.append(",");
+                        }else{
+                            lineLength = 0;
+                            //lineLength断了,接上一个
+                            if(j>1){
+                                sb.append((char) (i + 65)).append(j - 1).append(",");
+                            }else{
+                                sb.append((char) (i - 1 + 65)).append(rowNumList.get(i-1)).append(",");
+                            }
+
+                        }
+
+                    }
+                    if(j == rowNumList.get(i)){
+                        break;
+                    }
+                }
+
             }
         }
         if(lineLength != 1){

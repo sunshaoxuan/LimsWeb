@@ -13,6 +13,16 @@ public class TaskBodyVO extends SuperVO {
 	private String projectName;// 标准条款
 	private String detailDescription;// 详细说明
 	private String cbplan; //
+	private String pk_sunlist;
+	
+
+	public String getPk_sunlist() {
+		return pk_sunlist;
+	}
+
+	public void setPk_sunlist(String pk_sunlist) {
+		this.pk_sunlist = pk_sunlist;
+	}
 
 	public String getAccordstandard() {
 		return accordstandard;

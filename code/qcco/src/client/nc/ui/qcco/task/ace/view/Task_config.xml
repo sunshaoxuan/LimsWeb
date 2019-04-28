@@ -287,7 +287,9 @@
 		<property name="bodyLineActions">
 			<list>
 				<!-- 提供了一组默认实现 -->
-				<bean class="nc.ui.qcco.task.action.TaskBodyAddLineAction" />
+				<bean class="nc.ui.qcco.task.action.TaskBodyAddLineAction" >
+					<property name="grandCard" ref="sunbillFormEditor1" />			
+				</bean>
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyDelLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />

@@ -2,6 +2,7 @@ package nc.vo.qcco.task;
 
 import nc.vo.pub.IVOMeta;
 import nc.vo.pub.SuperVO;
+import nc.vo.pub.lang.UFBoolean;
 import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pub.lang.UFDouble;
 import nc.vo.pubapp.pattern.model.meta.entity.vo.VOMetaFactory;
@@ -30,15 +31,15 @@ public class TaskSVO extends SuperVO {
     /**
      * 狀態
      */
-    public Boolean conditionstatus;
+    public UFBoolean conditionstatus;
     /**
      * 是否可選
      */
-    public Boolean isoptional;
+    public UFBoolean isoptional;
     /**
      * 是否可報告
      */
-    public Boolean isallow_out;
+    public UFBoolean isallow_out;
     /**
      * 儀器
      */
@@ -138,9 +139,9 @@ public class TaskSVO extends SuperVO {
     /**
      * 屬性 conditionstatus的Getter方法.屬性名：狀態 創建日期:2019/4/19
      *
-     * @return nc.vo.pub.lang.UFBoolean
+     * @return nc.vo.pub.lang.UFUFBoolean
      */
-    public Boolean getConditionstatus() {
+    public UFBoolean getConditionstatus() {
         return this.conditionstatus;
     }
 
@@ -148,18 +149,18 @@ public class TaskSVO extends SuperVO {
      * 屬性conditionstatus的Setter方法.屬性名：狀態 創建日期:2019/4/19
      *
      * @param newConditionstatus
-     *            nc.vo.pub.lang.UFBoolean
+     *            nc.vo.pub.lang.UFUFBoolean
      */
-    public void setConditionstatus(Boolean conditionstatus) {
+    public void setConditionstatus(UFBoolean conditionstatus) {
         this.conditionstatus = conditionstatus;
     }
 
     /**
      * 屬性 isoptional的Getter方法.屬性名：是否可選 創建日期:2019/4/19
      *
-     * @return nc.vo.pub.lang.UFBoolean
+     * @return nc.vo.pub.lang.UFUFBoolean
      */
-    public Boolean getIsoptional() {
+    public UFBoolean getIsoptional() {
         return this.isoptional;
     }
 
@@ -167,18 +168,18 @@ public class TaskSVO extends SuperVO {
      * 屬性isoptional的Setter方法.屬性名：是否可選 創建日期:2019/4/19
      *
      * @param newIsoptional
-     *            nc.vo.pub.lang.UFBoolean
+     *            nc.vo.pub.lang.UFUFBoolean
      */
-    public void setIsoptional(Boolean isoptional) {
+    public void setIsoptional(UFBoolean isoptional) {
         this.isoptional = isoptional;
     }
 
     /**
      * 屬性 isallow_out的Getter方法.屬性名：是否可報告 創建日期:2019/4/19
      *
-     * @return nc.vo.pub.lang.UFBoolean
+     * @return nc.vo.pub.lang.UFUFBoolean
      */
-    public Boolean getIsallow_out() {
+    public UFBoolean getIsallow_out() {
         return this.isallow_out;
     }
 
@@ -186,9 +187,9 @@ public class TaskSVO extends SuperVO {
      * 屬性isallow_out的Setter方法.屬性名：是否可報告 創建日期:2019/4/19
      *
      * @param newIsallow_out
-     *            nc.vo.pub.lang.UFBoolean
+     *            nc.vo.pub.lang.UFUFBoolean
      */
-    public void setIsallow_out(Boolean isallow_out) {
+    public void setIsallow_out(UFBoolean isallow_out) {
         this.isallow_out = isallow_out;
     }
 

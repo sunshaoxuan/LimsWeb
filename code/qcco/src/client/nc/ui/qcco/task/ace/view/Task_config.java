@@ -489,6 +489,7 @@ private nc.ui.qcco.task.action.TaskBodyAddLineAction getTaskBodyAddLineAction_f5
  return (nc.ui.qcco.task.action.TaskBodyAddLineAction)context.get("nc.ui.qcco.task.action.TaskBodyAddLineAction#f5def1");
   nc.ui.qcco.task.action.TaskBodyAddLineAction bean = new nc.ui.qcco.task.action.TaskBodyAddLineAction();
   context.put("nc.ui.qcco.task.action.TaskBodyAddLineAction#f5def1",bean);
+  bean.setGrandCard(getSunbillFormEditor1());
 setBeanFacotryIfBeanFacatoryAware(bean);
 invokeInitializingBean(bean);
 return bean;

@@ -239,13 +239,16 @@ public class SunlistPanel extends UIDialog implements
 			if (null != bodySelectedVOs && bodySelectedVOs.length > 0) {
 				for (int i = 0; i < bodySelectedVOs.length; i++) {
 					for(TaskHBodyVO taskHBodyVO : pkbodylist){
-						if ((taskHBodyVO.getTaskBodyVO().getAccordstandard()==null?"":taskHBodyVO.getTaskBodyVO().getAccordstandard()).equals(bodySelectedVOs[i].getAccordstandard()==null?"":bodySelectedVOs[i].getAccordstandard())
+						/*if ((taskHBodyVO.getTaskBodyVO().getAccordstandard()==null?"":taskHBodyVO.getTaskBodyVO().getAccordstandard()).equals(bodySelectedVOs[i].getAccordstandard()==null?"":bodySelectedVOs[i].getAccordstandard())
 								&& (taskHBodyVO.getTaskBodyVO().getCbplan()==null ? "":taskHBodyVO.getTaskBodyVO().getCbplan()).equals(bodySelectedVOs[i].getCbplan()==null?"":bodySelectedVOs[i].getCbplan())
 								&& (taskHBodyVO.getTaskBodyVO().getProjectName()==null?"":taskHBodyVO.getTaskBodyVO().getProjectName()).equals(bodySelectedVOs[i].getProjectName()==null?"":bodySelectedVOs[i].getProjectName())
 								&& (taskHBodyVO.getTaskBodyVO().getProjectType()==null?"":taskHBodyVO.getTaskBodyVO().getProjectType()).equals(bodySelectedVOs[i].getProjectType()==null?"":bodySelectedVOs[i].getProjectType())
 								&& (taskHBodyVO.getTaskBodyVO().getReportName()==null?"":taskHBodyVO.getTaskBodyVO().getReportName()).equals(bodySelectedVOs[i].getReportName()==null?"":bodySelectedVOs[i].getReportName())
 								&& (taskHBodyVO.getTaskBodyVO().getDetailDescription()==null?"":taskHBodyVO.getTaskBodyVO().getDetailDescription()).equals(bodySelectedVOs[i].getDetailDescription()==null?"":bodySelectedVOs[i].getDetailDescription())
 								&& (taskHBodyVO.getTaskBodyVO().getTestList()==null?"":taskHBodyVO.getTaskBodyVO().getTestList()).equals(bodySelectedVOs[i].getTestList()==null?"":bodySelectedVOs[i].getTestList())) {
+							map.put(taskHBodyVO, null);
+						}*/
+						if (taskHBodyVO.getUnique().equals(bodySelectedVOs[i].getPk_sunlist())) {
 							map.put(taskHBodyVO, null);
 						}
 				}
@@ -254,6 +257,7 @@ public class SunlistPanel extends UIDialog implements
 			if (null != map && map.size() > 0) {
 				for(TaskHBodyVO taskHBodyVO: map.keySet()){
 					getPklist().add(taskHBodyVO);
+					pkbodylist.clear();
 				}
 			}
 
@@ -405,7 +409,7 @@ public class SunlistPanel extends UIDialog implements
 				businessField = new UITextField();
 				businessField.setName("businessField");
 				businessField.setBounds(570, 8, 150, 50);
-				businessField.setText(productstard.replace(" ", ""));
+				businessField.setText(productstard ==null ? null : productstard.replace(" ", ""));
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -570,7 +574,7 @@ public class SunlistPanel extends UIDialog implements
 				IUAPQueryBS.class.getName());
 		List<TaskBodyVO> conditions = new ArrayList<TaskBodyVO>();
 		try {
-			String sql = "SELECT  DISTINCT  trim(NC_TASK_ADDUNION.nc_testlist_name)as nc_testlist_name, "
+			String sql = "SELECT  DISTINCT trim(NC_TASK_ADDUNION.pk_task_addunion)   AS pk_task_addunion,  trim(NC_TASK_ADDUNION.nc_testlist_name)as nc_testlist_name, "
 					+ "  trim(NC_TASK_ADDUNION.nc_report_name)as nc_report_name,"
 					+ "  trim(NC_TASK_ADDUNION.nc_analysis_method) nc_analysis_method ,    "
 					+ " trim(NC_TASK_ADDUNION.nc_task_type) nc_task_type,"
@@ -626,6 +630,7 @@ public class SunlistPanel extends UIDialog implements
 			
 			if (null != custlist && custlist.size()>0) {
 				int i = 0;
+				pkbodylist.clear();
 				for (Map<String, String> map : custlist) {
 					TaskBodyVO taskbodyvo = new TaskBodyVO();
 					TaskHBodyVO taskHBodyVO = new TaskHBodyVO();
@@ -637,12 +642,15 @@ public class SunlistPanel extends UIDialog implements
 					taskbodyvo.setTestList(map.get("nc_testlist_name"));
 					taskbodyvo.setReportName(map.get("nc_report_name"));
 					//taskbodyvo.setUnique(map.get("nc_cb_plan")+i);
+					taskbodyvo.setPk_sunlist(map.get("pk_task_addunion"));
 					conditions.add(taskbodyvo);
 
 					taskHBodyVO.setProjectName(map.get("nc_task_name"));
 					taskHBodyVO.setReportName(map.get("nc_report_name"));
+					taskHBodyVO.setTestlistName(map.get("nc_testlist_name"));
 					taskHBodyVO.setTestresultname(map.get("c_test_condition"));
 					taskHBodyVO.setTestresultshortname(map.get("common_name"));
+					taskHBodyVO.setUnique(map.get("pk_task_addunion"));
 					taskHBodyVO.setTaskBodyVO(taskbodyvo);
 					pkbodylist.add(taskHBodyVO);
 
@@ -668,7 +676,9 @@ public class SunlistPanel extends UIDialog implements
 			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 					.executeQuery(
 							"select distinct "
-									+ " c.nc_bbasen_name ,d.name as sname,f.prod_type as fname from qc_commission_b b left join qc_commission_h h on h.pk_commission_h=b.pk_commission_h left join NC_BASEN_TYPE c on c.pk_basen_type = b.pk_enterprisestandard "
+									+ " c.nc_bbasen_name ,d.name as sname,f.prod_type as fname from qc_commission_b b "
+									+ "left join qc_commission_h h on h.pk_commission_h=b.pk_commission_h "
+									+ "left join NC_BASEN_TYPE c on c.pk_basen_type = b.pk_enterprisestandard "
 									+ " left join NC_SECOND_TYPE d on d.pk_second_type = h.pk_subcategory "
 									+ " left join NC_FIRST_TYPE f on f.pk_first_type = h.pk_maincategory "
 									+ " left join NC_THIRD_TYPE t on t.pk_third_type = h.pk_lastcategory "
@@ -683,9 +693,9 @@ public class SunlistPanel extends UIDialog implements
 					if (null != map.get("sname")) {
 						productCateMap.put(map.get("sname"), null);
 					}
-					if (null != map.get("fname")) {
+					/*if (null != map.get("fname")) {
 						productCateMap.put(map.get("fname"), null);
-					}
+					}*/
 					/*if (null != map.get("tname")) {
 						productCateMap.put(map.get("tname"), null);
 					}*/
