@@ -743,7 +743,7 @@ create table NC_SAMPLE_INFO
 
 --样品取数
 truncate table NC_SAMPLE_INFO;
-select * from NC_SAMPLE_INFO;
+--select * from NC_SAMPLE_INFO;
 
 insert into NC_SAMPLE_INFO
 select distinct
