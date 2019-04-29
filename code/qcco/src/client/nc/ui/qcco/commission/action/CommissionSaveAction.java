@@ -252,7 +252,8 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			ITaskMaintain ITaskMaintain = (ITaskMaintain) NCLocator.getInstance().lookup(ITaskMaintain.class);
 			AggTaskHVO newVO = new AggTaskHVO();
 			TaskHVO parentVO = new TaskHVO();
-
+			
+			parentVO.setBillno(commissionHVO.getBillno());
 			parentVO.setPk_commission_h(commissionHVO.getPk_commission_h());
 			parentVO.setPk_group(commissionHVO.getPk_group());
 			parentVO.setPk_org(commissionHVO.getPk_org());
