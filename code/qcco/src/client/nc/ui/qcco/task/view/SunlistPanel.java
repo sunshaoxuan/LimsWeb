@@ -714,11 +714,11 @@ public class SunlistPanel extends UIDialog implements
 					products.put(
 							"productstard",
 							productstardstr.substring(1,
-									productstardstr.length() - 1));
+									productstardstr.length()));
 				}
 				if (productCatestr.length() > 1) {
 					products.put("productcate", productCatestr.substring(1,
-							productCatestr.length() - 1));
+							productCatestr.length()));
 				}
 
 			}
