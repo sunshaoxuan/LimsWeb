@@ -542,6 +542,13 @@
 						<bean class="nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler" />
 					</property>
 				</bean>
+				<!-- nc.ui.pubapp.uif2app.event.card.CardHeadTailBeforeEditEvent -->
+				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
+					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardHeadTailBeforeEditEvent" />
+					<property name="handler">
+						<bean class="nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler" />
+					</property>
+				</bean>
 			</list>
 		</property>
 	</bean>
