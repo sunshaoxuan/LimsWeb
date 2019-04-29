@@ -164,35 +164,37 @@ public abstract class AceTaskPubServiceImpl {
 				}
 
 				SuperVO[] currentChildrens = (SuperVO[]) aggvos[0].getTableVO(tableCode);
-				for (SuperVO childVO : currentChildrens) {
-					ISuperVO[] currentGrandvos = (TaskRVO[]) ((TaskBVO) childVO).getPk_task_r();
-					for (int i = 0; currentGrandvos != null && i < currentGrandvos.length; i++) {
-						((TaskRVO) currentGrandvos[i]).setPk_task_b((childVO.getPrimaryKey()));
-					}
-					if(currentGrandvos != null && currentGrandvos.length!=0){
-						IVOMeta meta = ((SuperVO)(currentGrandvos[0])).getMetaData();
-						List arrayList = new ArrayList(Arrays.asList(currentGrandvos));
-						if(fullGrandVOs.get(meta) == null){
-							fullGrandVOs.put(meta, arrayList);
-						}else{
-							fullGrandVOs.get(meta).addAll(arrayList);
+				if (null != currentChildrens && currentChildrens.length > 0) {
+					for (SuperVO childVO : currentChildrens) {
+						ISuperVO[] currentGrandvos = (TaskRVO[]) ((TaskBVO) childVO).getPk_task_r();
+						for (int i = 0; currentGrandvos != null && i < currentGrandvos.length; i++) {
+							((TaskRVO) currentGrandvos[i]).setPk_task_b((childVO.getPrimaryKey()));
 						}
-					}
-					
-					//样品表
-					ISuperVO[] currentGrandsvos = (TaskSVO[]) ((TaskBVO) childVO).getPk_task_s();
-					for (int i = 0; currentGrandsvos != null && i < currentGrandsvos.length; i++) {
-						((TaskSVO) currentGrandsvos[i]).setPk_task_b((childVO.getPrimaryKey()));
-					}
-					if(currentGrandsvos != null && currentGrandsvos.length!=0){
-						IVOMeta meta = ((SuperVO)(currentGrandsvos[0])).getMetaData();
-						List arrayList = new ArrayList(Arrays.asList(currentGrandsvos));
-						if(fullGrandVOs.get(meta) == null){
-							fullGrandVOs.put(meta, arrayList);
-						}else{
-							fullGrandVOs.get(meta).addAll(arrayList);
+						if(currentGrandvos != null && currentGrandvos.length!=0){
+							IVOMeta meta = ((SuperVO)(currentGrandvos[0])).getMetaData();
+							List arrayList = new ArrayList(Arrays.asList(currentGrandvos));
+							if(fullGrandVOs.get(meta) == null){
+								fullGrandVOs.put(meta, arrayList);
+							}else{
+								fullGrandVOs.get(meta).addAll(arrayList);
+							}
 						}
-					}
+						
+						//样品表
+						ISuperVO[] currentGrandsvos = (TaskSVO[]) ((TaskBVO) childVO).getPk_task_s();
+						for (int i = 0; currentGrandsvos != null && i < currentGrandsvos.length; i++) {
+							((TaskSVO) currentGrandsvos[i]).setPk_task_b((childVO.getPrimaryKey()));
+						}
+						if(currentGrandsvos != null && currentGrandsvos.length!=0){
+							IVOMeta meta = ((SuperVO)(currentGrandsvos[0])).getMetaData();
+							List arrayList = new ArrayList(Arrays.asList(currentGrandsvos));
+							if(fullGrandVOs.get(meta) == null){
+								fullGrandVOs.put(meta, arrayList);
+							}else{
+								fullGrandVOs.get(meta).addAll(arrayList);
+							}
+						}
+				}
 				}
 			}
 			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
