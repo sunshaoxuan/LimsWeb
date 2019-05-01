@@ -31,7 +31,7 @@ public class TaskSVO extends SuperVO {
     /**
      *  î‘B
      */
-    public UFBoolean conditionstatus;
+    public String conditionstatus;
     /**
      * ÊÇ·ñ¿Éßx
      */
@@ -141,7 +141,7 @@ public class TaskSVO extends SuperVO {
      *
      * @return nc.vo.pub.lang.UFUFBoolean
      */
-    public UFBoolean getConditionstatus() {
+    public String getConditionstatus() {
         return this.conditionstatus;
     }
 
@@ -151,7 +151,7 @@ public class TaskSVO extends SuperVO {
      * @param newConditionstatus
      *            nc.vo.pub.lang.UFUFBoolean
      */
-    public void setConditionstatus(UFBoolean conditionstatus) {
+    public void setConditionstatus(String conditionstatus) {
         this.conditionstatus = conditionstatus;
     }
 

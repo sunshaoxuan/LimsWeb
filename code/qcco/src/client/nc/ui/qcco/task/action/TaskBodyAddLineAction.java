@@ -114,9 +114,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								} else if (refValue.getKey().equals("c_defvalue_value")) {
 									this.getGrandCard().getBillCardPanel().setBodyValueAt(map.get("c_defvalue_value"), row, "formatted_entry", "pk_task_s");
 								} else if (refValue.getKey().equals("minimum")) {
-									this.getGrandCard().getBillCardPanel().setBodyValueAt(map.get("minimum"), row, "min_limit", "pk_task_s");
+									this.getGrandCard().getBillCardPanel().setBodyValueAt(Integer.parseInt(map.get("minimum")== null?"0":map.get("minimum")), row, "min_limit", "pk_task_s");
 								} else if (refValue.getKey().equals("maximum")) {
-									this.getGrandCard().getBillCardPanel().setBodyValueAt(map.get("maximum"), row, "max_limit", "pk_task_s");
+									this.getGrandCard().getBillCardPanel().setBodyValueAt(Integer.parseInt(map.get("maximum")== null?"0":map.get("maximum")), row, "max_limit", "pk_task_s");
 								}else if (refValue.getKey().equals("c_en_default_value")) {
 									this.getGrandCard().getBillCardPanel().setBodyValueAt(map.get("c_en_default_value"), row, "englishdescription", "pk_task_s");
 								}else if (refValue.getKey().equals("instrument")) {
@@ -125,7 +125,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								
 							}
 							if (this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "refvalue") == null && this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "textvalue") ==null) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(1, row, "conditionstatus", "pk_task_s");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt("Î´Â¼Èë", row, "conditionstatus", "pk_task_s");
 							}
 							//this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "conditionstatus", "pk_task_s");
 							
@@ -178,7 +178,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								}
 								}
 							if (this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "refvalue") == null && this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "textvalue") ==null) {
-								this.getGrandCard().getBillCardPanel().setBodyValueAt(1, row, "conditionstatus", "pk_task_s");
+								this.getGrandCard().getBillCardPanel().setBodyValueAt("Î´Â¼Èë", row, "conditionstatus", "pk_task_s");
 							}
 							}
 					}

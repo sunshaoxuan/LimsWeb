@@ -32,6 +32,7 @@ import bsh.This;
 import com.borland.jbcl.control.CheckboxPanel;
 import com.hazelcast.spi.annotation.PrivateApi;
 import com.ibm.db2.jcc.sqlj.e;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 import com.ufida.report.free.plugin.fieldattribute.SmartCheckBoxList;
 import com.ufida.report.free.plugin.fieldattribute.SmartListData;
 
@@ -327,17 +328,26 @@ public class SampleAllocationPanel extends UIDialog implements
 	private void onButtonOKtopClicked() {
 		ivjUIDialogContentPane = null;
 		ivjUIDialogContentPane1 = null;
+		SampleAllocatVO[] sampleAllocatVOsAllocatVO = (SampleAllocatVO[])billListHeadPanel
+				.getBodyBillModel().getBodySelectedVOs(
+						"nc.vo.qcco.task.SampleAllocatVO");
 		billListHeadPanel = null;
 		this.projectType = getSampleNameField().getText();
 
 		try {
 			if (listnum != null) {
+				
 				List<String> numlistnew = new ArrayList<>();
-				if (strs != null && strs.length > 0) {
+				if (null != sampleAllocatVOsAllocatVO && sampleAllocatVOsAllocatVO.length > 0) {
+					for(SampleAllocatVO sa : sampleAllocatVOsAllocatVO){
+						numlistnew.add(sa.getSampleallocat());
+					}
+				}
+				/*if (strs != null && strs.length > 0) {
 					for (int i = 0; i < strs.length; i++) {
 						numlistnew.add(strs[i]);
 					}
-				}
+				}*/
 				String[] strss = StringOrderUtils.outDisOrderArray(projectType, listnum);
 				for (int i = 0; i < strss.length; i++) {
 					numlistnew.add(strss[i]);
@@ -375,7 +385,7 @@ public class SampleAllocationPanel extends UIDialog implements
 			billListHeadPanel.loadTemplet("1001ZZ100000000022UV");
 			billListHeadPanel.setVisible(true);
 			billListHeadPanel.setEnabled(true);
-			billListHeadPanel.setBounds(10, 55, 380, 400);
+			billListHeadPanel.setBounds(10, 55, 380, 380);
 
 			billListHeadPanel.setMultiSelect(true);
 			Map<String, Integer> maps = getListDatas();
@@ -437,6 +447,7 @@ public class SampleAllocationPanel extends UIDialog implements
 				}
 			}
 		}
+		java.util.Collections.sort(list);
 		return list;
 	}
 
