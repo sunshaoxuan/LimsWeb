@@ -26,6 +26,14 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 					e.getBillCardPanel().getBodyItem("pk_refvalue").setEnabled(false);
 				}
 			}
+		}else if ("textvalue".equals(e.getKey())){
+			if (e.getValue() != null) {
+				e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+			}
+		}else if ("refvalue".equals(e.getKey())){
+			if (e.getValue() != null) {
+				e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+			}
 		}
 		
 	}
