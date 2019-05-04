@@ -19,6 +19,8 @@ import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionHVO;
+import nc.vo.qcco.task.AggTaskHVO;
+import nc.vo.qcco.task.TaskHVO;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -209,6 +211,25 @@ public class UserDefineRefUtils {
 			billData.setTailItem("modifier", hvo.getModifier());
 			billData.setTailItem("modifiedtime", hvo.getModifiedtime());
 			billData.setTailItem("lastmaketime", hvo.getLastmaketime());
+			
+		}
+		
+		
+		
+		
+		
+	}
+	
+	public static void refreshBillCardAuditInfoTask(BillData billData, AggTaskHVO aggvo) {
+		if(billData!=null && aggvo!=null && aggvo.getParentVO()!=null){
+			TaskHVO hvo = aggvo.getParentVO();
+			billData.setTailItem("creator", hvo.getCreator());
+			billData.setTailItem("creationtime", hvo.getCreationtime());
+			billData.setTailItem("modifier", hvo.getModifier());
+			billData.setTailItem("modifiedtime", hvo.getModifiedtime());
+			billData.setTailItem("lastmaketime", hvo.getLastmaketime());
+			billData.setTailItem("approver", hvo.getApprover());
+			billData.setTailItem("billmaker", hvo.getCreator());
 			
 		}
 		

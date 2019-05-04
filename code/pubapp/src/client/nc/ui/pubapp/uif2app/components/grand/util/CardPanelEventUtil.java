@@ -255,6 +255,10 @@ public class CardPanelEventUtil {
 						UserDefineRefUtils.refreshBillCardAuditInfo(grandBillForm.getBillCardPanel().getBillData(),
 								(AggCommissionHVO) aggvo);
 					}
+					if (aggvo != null && aggvo instanceof AggTaskHVO) {
+						UserDefineRefUtils.refreshBillCardAuditInfoTask(grandBillForm.getBillCardPanel().getBillData(),
+								(AggTaskHVO) aggvo);
+					}
 
 					setGrandToFormStausIsEdit(grandBillForm, grandTabCode, grandObjectList);
 				} else {
