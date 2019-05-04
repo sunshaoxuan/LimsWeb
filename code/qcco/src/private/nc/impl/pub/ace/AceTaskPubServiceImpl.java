@@ -126,12 +126,13 @@ public abstract class AceTaskPubServiceImpl {
 
 			AggTaskHVO[] aggvos = (AggTaskHVO[]) vos;
 			String[] tableCodes = originBills[0].getTableCodes();
-			
+			AceTaskUpdateBP bp = new AceTaskUpdateBP();
+			AggTaskHVO[] retBills = bp.update(fullBills, originBills);
 			
 			Map<IVOMeta, List<ISuperVO>> fullGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
 			Map<IVOMeta, List<ISuperVO>> originGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
 			for (String tableCode : tableCodes) {
-				SuperVO[] originChildrens = (SuperVO[]) originBills[0].getTableVO(tableCode);
+				SuperVO[] originChildrens = (SuperVO[]) retBills[0].getTableVO(tableCode);
 				for (SuperVO childVO : originChildrens) { 
 					// 将当前页签下的当前子的所有孙都查询出来了,并赋值给originBills中的孙。
 					if (tableCode.equals("pk_task_b")) {
@@ -163,7 +164,7 @@ public abstract class AceTaskPubServiceImpl {
 					} 
 				}
 
-				SuperVO[] currentChildrens = (SuperVO[]) aggvos[0].getTableVO(tableCode);
+				SuperVO[] currentChildrens = (SuperVO[]) retBills[0].getTableVO(tableCode);
 				if (null != currentChildrens && currentChildrens.length > 0) {
 					for (SuperVO childVO : currentChildrens) {
 						ISuperVO[] currentGrandvos = (TaskRVO[]) ((TaskBVO) childVO).getPk_task_r();
@@ -198,11 +199,10 @@ public abstract class AceTaskPubServiceImpl {
 				}
 			}
 			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
+			//this.persistent(fullGrandVOs, originGrandVOs);
+			
+			
 			this.persistent(fullGrandVOs, originGrandVOs);
-			
-			AceTaskUpdateBP bp = new AceTaskUpdateBP();
-			AggTaskHVO[] retBills = bp.update(fullBills, originBills);
-			
 			return aggvos;
 		} catch (Exception e) {
 			ExceptionUtils.marsh(e);
