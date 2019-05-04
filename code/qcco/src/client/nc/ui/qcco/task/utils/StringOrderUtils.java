@@ -121,11 +121,13 @@ public class StringOrderUtils {
                                 startCol = endCol;
                                 endCol = temp;
                             }
+                            int j = startCol;
                             //开始存入
                             for (int i = (startRow - 65); (i < 26 && i <= endRow - 65); i++) {
-                                for (int j = startCol; (j <= rowNumList.get(i) && (i != endRow-65 || j <= endCol)); j++) {
+                                for (; (j <= rowNumList.get(i) && (i != endRow-65 || j <= endCol)); j++) {
                                     orderTable[i][j] = true;
                                 }
+                                j = 0;
                             }
                         } catch (Exception e) {
                             throw new Exception("非法字符:" + tabString);
