@@ -539,7 +539,10 @@
 				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
 					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardHeadTailAfterEditEvent" />
 					<property name="handler">
-						<bean class="nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler" />
+						<bean class="nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler" >
+							<property name="mainBillForm" ref="billFormEditor" />
+							<property name="grandCard" ref="sunbillFormEditor1" />						
+						</bean>
 					</property>
 				</bean>
 				<!-- nc.ui.pubapp.uif2app.event.card.CardHeadTailBeforeEditEvent -->
