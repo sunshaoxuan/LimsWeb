@@ -181,8 +181,8 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		}
 		if (MessageDialog.ID_YES == MessageDialog.showYesNoDlg(billFormEditor.getBillCardPanel(), "注意!",
 				"修改委托单会删除已有的任务单,并生成新任务单,是否继续?")) {
+			deleteOldTask(lightVOs);
 			afterUpdateVOs = getService().update(lightVOs);
-			deleteOldTask(afterUpdateVOs);
 			pk_task_h = createNewTask(afterUpdateVOs);
 		} else {
 			return;

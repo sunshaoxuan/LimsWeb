@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import nc.bs.dao.DAOException;
@@ -11,10 +12,14 @@ import nc.bs.framework.common.NCLocator;
 import nc.hr.utils.InSQLCreator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.ui.pub.bill.BillItem;
 import nc.ui.pub.formula.ui.InputHandler.insert_break;
 import nc.ui.pubapp.uif2app.actions.BodyAddLineAction;
+import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
+import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.task.view.SunlistPanel;
+import nc.ui.uif2.ShowStatusBarMsgUtil;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFBoolean;
 import nc.vo.qcco.task.TaskBodyVO;
@@ -22,6 +27,8 @@ import nc.vo.qcco.task.TaskHBodyVO;
 
 public class TaskBodyAddLineAction extends BodyAddLineAction {
 	private ShowUpableBillForm grandCard;
+	
+	private BillForm mainBillForm;//
 	
 	public ShowUpableBillForm getGrandCard() {
 		return grandCard;
@@ -31,6 +38,15 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		this.grandCard = grandCard;
 	}
 
+
+	public BillForm getMainBillForm() {
+		return mainBillForm;
+	}
+
+	public void setMainBillForm(BillForm mainBillForm) {
+		this.mainBillForm = mainBillForm;
+	}
+	
 	@Override
 	public void doAction() {
 		// TODO Auto-generated method stub
@@ -74,6 +90,63 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		} catch (DAOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		//生成编号
+		doSortAndReCode();
+	}
+
+	private void doSortAndReCode() {
+		// get 委托单号
+		BillItem billItem = mainBillForm.getBillCardPanel().getHeadItem(
+				"pk_commission_h.billno");
+		String commissionCode = "";
+		if (billItem != null
+				&& billItem.getValueObject() != null
+				&& !String.valueOf(billItem.getValueObject())
+						.replaceAll(" ", "").equals("")) {
+			commissionCode = String.valueOf(billItem.getValueObject());
+		} else {
+			commissionCode = "";
+		}
+		getCardPanel().getBillModel()
+				.sortByColumn("runorder", true);
+		Vector dataVector = getCardPanel().getBillModel().getDataVector();
+		StringBuilder sb = new StringBuilder();
+		sb.append(commissionCode);
+		if (dataVector != null && dataVector.size() > 0) {
+			for (int i = 0; i < dataVector.size(); i++) {
+				if (dataVector != null) {
+					int rowNoColNumber = getCardPanel().getBillModel()
+							.getBodyColByKey("rowno");
+					if (rowNoColNumber >= 0) {
+						// 改变行号
+						if (dataVector.get(i) != null) {
+							Vector colData = (Vector) dataVector.get(i);
+							colData.set(rowNoColNumber, i + 1);
+						}
+
+					}
+					int runorderColNumber = getCardPanel().getBillModel()
+							.getBodyColByKey("taskcode");
+					if (runorderColNumber >= 0) {
+						// 重新生成编号
+						if (dataVector.get(i) != null) {
+							sb.append("-");
+							if (i < 9) {
+								sb.append(0);
+							}
+							sb.append(i + 1);
+							Vector colData = (Vector) dataVector.get(i);
+							colData.set(runorderColNumber, sb.toString());
+							sb.delete(sb.length() - 3, sb.length());
+						}
+					} else {
+						ShowStatusBarMsgUtil.showErrorMsg("重新生成编号失败!",
+								"未找到'任务编号'字段", getModel().getContext());
+						break;
+					}
+				}
+			}
 		}
 
 	}

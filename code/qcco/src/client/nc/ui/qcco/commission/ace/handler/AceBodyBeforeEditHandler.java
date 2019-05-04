@@ -1,5 +1,8 @@
 package nc.ui.qcco.commission.ace.handler;
 
+import java.util.Vector;
+
+import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
@@ -28,6 +31,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			code = ((UIRefPane) ((BillItem) e.getBillCardPanel().getHeadItem("pk_lastcategory")).getComponent())
 					.getRefCode();
 			((ProductSerialRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setThirdClassCode(code);
+			
 		} else if ("enterprisestandard".equals(e.getKey())) {
 			// 企业标准
 			String productserial = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_productserial");
@@ -73,6 +77,22 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductGrade(productGrade);
 			((TestInitRefModel) ((UIRefPane) bitem.getComponent()).getRefModel()).setProductStage(productStage);
 		}
+		fixValueLost(bitem,e);
 		e.setReturnValue(true);
+	}
+	public void fixValueLost(BillItem bitem,CardBodyBeforeEditEvent e){
+		if(bitem!=null){
+			AbstractRefModel refModel = ((UIRefPane) bitem.getComponent()).getRefModel();
+			if(refModel!=null){
+				String pk_value = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_"+e.getKey());
+				if(pk_value!=null){
+					Vector vector = refModel.matchPkData(pk_value);
+					refModel.setSelectedData(vector);
+				}
+				
+			}
+			
+		}
+		
 	}
 }
