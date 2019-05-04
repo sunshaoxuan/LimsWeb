@@ -166,7 +166,7 @@ public class UserDefineRefUtils {
 	private static SuperVO getSuperVOByPK(List<Object> grandVOList, String primaryKey) {
 		for (Object obj : grandVOList) {
 			String pk = (String) ((SuperVO) obj).getAttributeValue(((SuperVO) obj).getPKFieldName());
-			if (primaryKey.equals(pk)) {
+			if (null != primaryKey && primaryKey.equals(pk)) {
 				return (SuperVO) obj;
 			}
 		}
