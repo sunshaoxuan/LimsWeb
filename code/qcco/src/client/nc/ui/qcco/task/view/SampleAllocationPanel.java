@@ -441,13 +441,46 @@ public class SampleAllocationPanel extends UIDialog implements
 		List<String> list = new ArrayList<String>();
 		for (String key : maps.keySet()) {
 			Integer quantity = Integer.valueOf(maps.get(key));
-			if (quantity > 0) {
-				for (int x = 1; x <= quantity; x++) {
-					list.add(key + String.valueOf(x));
+			if (key.equalsIgnoreCase("A")) {
+				if (quantity > 0) {
+					for (int x = 1; x <= quantity; x++) {
+						list.add(key + String.valueOf(x));
+					}
 				}
 			}
 		}
-		java.util.Collections.sort(list);
+		for (String key : maps.keySet()) {
+			Integer quantity = Integer.valueOf(maps.get(key));
+			if (key.equalsIgnoreCase("B")) {
+				if (quantity > 0) {
+					for (int x = 1; x <= quantity; x++) {
+						list.add(key + String.valueOf(x));
+					}
+				}
+			}
+		}
+		for (String key : maps.keySet()) {
+			Integer quantity = Integer.valueOf(maps.get(key));
+			if (key.equalsIgnoreCase("C")) {
+				if (quantity > 0) {
+					for (int x = 1; x <= quantity; x++) {
+						list.add(key + String.valueOf(x));
+					}
+				}
+			}
+		}
+		for (String key : maps.keySet()) {
+			Integer quantity = Integer.valueOf(maps.get(key));
+			if (key.equalsIgnoreCase("D")) {
+				if (quantity > 0) {
+					for (int x = 1; x <= quantity; x++) {
+						list.add(key + String.valueOf(x));
+					}
+				}
+			}
+		}
+		
+		//java.util.Collections.sort(list);
 		return list;
 	}
 
