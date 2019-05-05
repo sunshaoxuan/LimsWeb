@@ -288,6 +288,7 @@
 			<list>
 				<!-- 提供了一组默认实现 -->
 				<bean class="nc.ui.qcco.task.action.TaskBodyAddLineAction" >
+				<property name="mainBillForm" ref="billFormEditor" />
 					<property name="grandCard" ref="sunbillFormEditor1" />			
 				</bean>
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />

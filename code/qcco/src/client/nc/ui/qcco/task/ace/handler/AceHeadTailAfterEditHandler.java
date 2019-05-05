@@ -30,7 +30,7 @@ public class AceHeadTailAfterEditHandler implements IAppEventHandler<CardHeadTai
 	public void setGrandCard(ShowUpableBillForm grandCard) {
 		this.grandCard = grandCard;
 	}
-	
+
 
 	public BillForm getMainBillForm() {
 		return mainBillForm;
@@ -67,7 +67,7 @@ public class AceHeadTailAfterEditHandler implements IAppEventHandler<CardHeadTai
 		for (int i = grandCard2.getBillCardPanel().getRowCount() - 1; i >= 0; i--) {
 			this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(new int[] { i });
 		}
-		
+
 	}
 
 	private void clearBody(BillCardPanel billcardpanel) {

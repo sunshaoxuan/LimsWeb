@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.beans.constenum.DefaultConstEnum;
@@ -36,6 +38,10 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 	@Override
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
 		if ("productserial".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			// 产品系列
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
 			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "samplegroup", "pk_samplegroup" });
@@ -48,6 +54,10 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				Log.debug(e1.getMessage());
 			}
 		} else if ("enterprisestandard".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			// 企业标准
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
 			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
@@ -55,6 +65,10 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// 刷新温度字段
 			refreshProductstage(e);
 		} else if ("productspec".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			// 规格号
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productspec");
 			// clearBodyItems(e, new String[] { "pk_productserial",
@@ -70,6 +84,10 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				Log.debug(e1.getMessage());
 			}
 		} else if ("structuretype".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			// 结构类型
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_structuretype");
 			// clearBodyItems(e, new String[] { "pk_productserial",
@@ -80,13 +98,25 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// 刷新温度字段
 			refreshProductstage(e);
 		} else if ("ref_contacttype".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "contacttype");
 		} else if ("contactbrand".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			// 触点牌号
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_contactbrand");
 		} else if ("samplegroup".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			// mod tank 当样品组别和实验参数都不为空的时候进行重新生成孙表的工作,否则不进行如何工作
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
@@ -112,6 +142,10 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 
 		if ("enterprisestandard".equals(e.getKey()) || "productspec".equals(e.getKey())
 				|| "samplegroup".equals(e.getKey()) || "ref_contacttype".equals(e.getKey())) {
+			if(e.getOldValue()!=null && e.getValue()==null){
+				fixEmpty(e);
+				return ;
+			}
 			// 清空孙表样品
 			clearGrandLines(e);
 			if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") != null
@@ -335,6 +369,17 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				//e.getBillCardPanel().getBodyValueAt(row, "qc_commission_b");
 			}
 		}
+	}
+	/**
+	 * fix 修改后为空的问题
+	 * @return
+	 */
+	private void fixEmpty(CardBodyAfterEditEvent e){
+		CommissionBVO bodyVO = new CommissionBVO();
+		bodyVO.setAttributeValue(e.getKey(), e.getOldValue());
+		UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
+				e.getRow(), e.getBillCardPanel().getBodyItem(e.getKey()), true);
+
 	}
 
 	public ShowUpableBillForm getGrandCard() {
