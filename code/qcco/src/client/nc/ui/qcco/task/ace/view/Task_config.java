@@ -22,8 +22,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.qcco.task.ace.serviceproxy.AceTaskDeleteProxy getDeleteProxy() {
 		if (context.get("deleteProxy") != null)
-			return (nc.ui.qcco.task.ace.serviceproxy.AceTaskDeleteProxy) context
-					.get("deleteProxy");
+			return (nc.ui.qcco.task.ace.serviceproxy.AceTaskDeleteProxy) context.get("deleteProxy");
 		nc.ui.qcco.task.ace.serviceproxy.AceTaskDeleteProxy bean = new nc.ui.qcco.task.ace.serviceproxy.AceTaskDeleteProxy();
 		context.put("deleteProxy", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -33,8 +32,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.qcco.task.ace.serviceproxy.AceTaskMaintainProxy getBmModelModelService() {
 		if (context.get("bmModelModelService") != null)
-			return (nc.ui.qcco.task.ace.serviceproxy.AceTaskMaintainProxy) context
-					.get("bmModelModelService");
+			return (nc.ui.qcco.task.ace.serviceproxy.AceTaskMaintainProxy) context.get("bmModelModelService");
 		nc.ui.qcco.task.ace.serviceproxy.AceTaskMaintainProxy bean = new nc.ui.qcco.task.ace.serviceproxy.AceTaskMaintainProxy();
 		context.put("bmModelModelService", bean);
 		bean.setGrandTabAndVOMap(getManagedMap0());
@@ -52,8 +50,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.vo.bd.meta.GeneralBDObjectAdapterFactory getBOAdapterFactory() {
 		if (context.get("BOAdapterFactory") != null)
-			return (nc.vo.bd.meta.GeneralBDObjectAdapterFactory) context
-					.get("BOAdapterFactory");
+			return (nc.vo.bd.meta.GeneralBDObjectAdapterFactory) context.get("BOAdapterFactory");
 		nc.vo.bd.meta.GeneralBDObjectAdapterFactory bean = new nc.vo.bd.meta.GeneralBDObjectAdapterFactory();
 		context.put("BOAdapterFactory", bean);
 		bean.setMode("MD");
@@ -64,8 +61,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.vo.bd.meta.BDObjectAdpaterFactory getBoadatorfactory2() {
 		if (context.get("boadatorfactory2") != null)
-			return (nc.vo.bd.meta.BDObjectAdpaterFactory) context
-					.get("boadatorfactory2");
+			return (nc.vo.bd.meta.BDObjectAdpaterFactory) context.get("boadatorfactory2");
 		nc.vo.bd.meta.BDObjectAdpaterFactory bean = new nc.vo.bd.meta.BDObjectAdpaterFactory();
 		context.put("boadatorfactory2", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -75,8 +71,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.model.BillManageModel getManageAppModel() {
 		if (context.get("manageAppModel") != null)
-			return (nc.ui.pubapp.uif2app.model.BillManageModel) context
-					.get("manageAppModel");
+			return (nc.ui.pubapp.uif2app.model.BillManageModel) context.get("manageAppModel");
 		nc.ui.pubapp.uif2app.model.BillManageModel bean = new nc.ui.pubapp.uif2app.model.BillManageModel();
 		context.put("manageAppModel", bean);
 		bean.setContext(getContext());
@@ -88,8 +83,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.qcco.task.model.SubGrandBillModel getManageAppModel2() {
 		if (context.get("manageAppModel2") != null)
-			return (nc.ui.qcco.task.model.SubGrandBillModel) context
-					.get("manageAppModel2");
+			return (nc.ui.qcco.task.model.SubGrandBillModel) context.get("manageAppModel2");
 		nc.ui.qcco.task.model.SubGrandBillModel bean = new nc.ui.qcco.task.model.SubGrandBillModel();
 		context.put("manageAppModel2", bean);
 		bean.setBusinessObjectAdapterFactory(getBoadatorfactory2());
@@ -101,8 +95,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel getMainGrandModel() {
 		if (context.get("mainGrandModel") != null)
-			return (nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel) context
-					.get("mainGrandModel");
+			return (nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel) context.get("mainGrandModel");
 		nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel bean = new nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel();
 		context.put("mainGrandModel", bean);
 		bean.setHandleListCardIsShow(true);
@@ -115,8 +108,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.query2.model.ModelDataManager getBmModelModelDataManager() {
 		if (context.get("bmModelModelDataManager") != null)
-			return (nc.ui.pubapp.uif2app.query2.model.ModelDataManager) context
-					.get("bmModelModelDataManager");
+			return (nc.ui.pubapp.uif2app.query2.model.ModelDataManager) context.get("bmModelModelDataManager");
 		nc.ui.pubapp.uif2app.query2.model.ModelDataManager bean = new nc.ui.pubapp.uif2app.query2.model.ModelDataManager();
 		context.put("bmModelModelDataManager", bean);
 		bean.setModel(getManageAppModel());
@@ -128,8 +120,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.components.grand.MainGrandRelationShip getMainGrandRelationShip() {
 		if (context.get("mainGrandRelationShip") != null)
-			return (nc.ui.pubapp.uif2app.components.grand.MainGrandRelationShip) context
-					.get("mainGrandRelationShip");
+			return (nc.ui.pubapp.uif2app.components.grand.MainGrandRelationShip) context.get("mainGrandRelationShip");
 		nc.ui.pubapp.uif2app.components.grand.MainGrandRelationShip bean = new nc.ui.pubapp.uif2app.components.grand.MainGrandRelationShip();
 		context.put("mainGrandRelationShip", bean);
 		bean.setBodyTabTOGrandListComposite(getManagedMap1());
@@ -205,8 +196,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite getMainGrandlistView() {
 		if (context.get("MainGrandlistView") != null)
-			return (nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite) context
-					.get("MainGrandlistView");
+			return (nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite) context.get("MainGrandlistView");
 		nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite bean = new nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite();
 		context.put("MainGrandlistView", bean);
 		bean.setModel(getMainGrandModel());
@@ -242,8 +232,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.components.grand.MainGrandBlankFilter getMainGrandBlankFilter() {
 		if (context.get("mainGrandBlankFilter") != null)
-			return (nc.ui.pubapp.uif2app.components.grand.MainGrandBlankFilter) context
-					.get("mainGrandBlankFilter");
+			return (nc.ui.pubapp.uif2app.components.grand.MainGrandBlankFilter) context.get("mainGrandBlankFilter");
 		nc.ui.pubapp.uif2app.components.grand.MainGrandBlankFilter bean = new nc.ui.pubapp.uif2app.components.grand.MainGrandBlankFilter();
 		context.put("mainGrandBlankFilter", bean);
 		bean.setChildFilterMap(getManagedMap4());
@@ -266,8 +255,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.components.grand.mediator.MainGrandMediator getMainGrandMediator() {
 		if (context.get("mainGrandMediator") != null)
-			return (nc.ui.pubapp.uif2app.components.grand.mediator.MainGrandMediator) context
-					.get("mainGrandMediator");
+			return (nc.ui.pubapp.uif2app.components.grand.mediator.MainGrandMediator) context.get("mainGrandMediator");
 		nc.ui.pubapp.uif2app.components.grand.mediator.MainGrandMediator bean = new nc.ui.pubapp.uif2app.components.grand.mediator.MainGrandMediator();
 		context.put("mainGrandMediator", bean);
 		bean.setMainBillForm(getBillFormEditor());
@@ -281,8 +269,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.ShowUpableBillListView getSunlistView1() {
 		if (context.get("sunlistView1") != null)
-			return (nc.ui.pubapp.uif2app.view.ShowUpableBillListView) context
-					.get("sunlistView1");
+			return (nc.ui.pubapp.uif2app.view.ShowUpableBillListView) context.get("sunlistView1");
 		nc.ui.pubapp.uif2app.view.ShowUpableBillListView bean = new nc.ui.pubapp.uif2app.view.ShowUpableBillListView();
 		context.put("sunlistView1", bean);
 		bean.setModel(getManageAppModel2());
@@ -296,8 +283,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter getComponentValueManager() {
 		if (context.get("componentValueManager") != null)
-			return (nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter) context
-					.get("componentValueManager");
+			return (nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter) context.get("componentValueManager");
 		nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter bean = new nc.ui.uif2.editor.value.BillCardPanelMetaDataValueAdapter();
 		context.put("componentValueManager", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -307,8 +293,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.ShowUpableBillForm getSunbillFormEditor1() {
 		if (context.get("sunbillFormEditor1") != null)
-			return (nc.ui.pubapp.uif2app.view.ShowUpableBillForm) context
-					.get("sunbillFormEditor1");
+			return (nc.ui.pubapp.uif2app.view.ShowUpableBillForm) context.get("sunbillFormEditor1");
 		nc.ui.pubapp.uif2app.view.ShowUpableBillForm bean = new nc.ui.pubapp.uif2app.view.ShowUpableBillForm();
 		context.put("sunbillFormEditor1", bean);
 		bean.setModel(getManageAppModel2());
@@ -326,8 +311,8 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private List getManagedList1() {
 		List list = new ArrayList();
-		list.add(getBodyAddLineAction_b0a93e());
-		list.add(getBodyInsertLineAction_1257e37());
+		// list.add(getBodyAddLineAction_b0a93e());
+		// list.add(getBodyInsertLineAction_1257e37());
 		list.add(getBodyDelLineAction_816823());
 		list.add(getBodyCopyLineAction_1dbeab5());
 		list.add(getBodyPasteLineAction_10e52a7());
@@ -337,66 +322,55 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyAddLineAction getBodyAddLineAction_b0a93e() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyAddLineAction#b0a93e") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyAddLineAction#b0a93e") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyAddLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyAddLineAction#b0a93e");
 		nc.ui.pubapp.uif2app.actions.BodyAddLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyAddLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyAddLineAction#b0a93e",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyAddLineAction#b0a93e", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyInsertLineAction getBodyInsertLineAction_1257e37() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#1257e37") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#1257e37") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyInsertLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#1257e37");
 		nc.ui.pubapp.uif2app.actions.BodyInsertLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyInsertLineAction();
-		context.put(
-				"nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#1257e37",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#1257e37", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyDelLineAction getBodyDelLineAction_816823() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#816823") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#816823") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyDelLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#816823");
 		nc.ui.pubapp.uif2app.actions.BodyDelLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyDelLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#816823",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#816823", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyCopyLineAction getBodyCopyLineAction_1dbeab5() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#1dbeab5") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#1dbeab5") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyCopyLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#1dbeab5");
 		nc.ui.pubapp.uif2app.actions.BodyCopyLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyCopyLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#1dbeab5",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#1dbeab5", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyPasteLineAction getBodyPasteLineAction_10e52a7() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#10e52a7") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#10e52a7") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyPasteLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#10e52a7");
 		nc.ui.pubapp.uif2app.actions.BodyPasteLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyPasteLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#10e52a7",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#10e52a7", bean);
 		bean.setClearItems(getManagedList2());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -411,14 +385,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction getBodyPasteToTailAction_1547248() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#1547248") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#1547248") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#1547248");
 		nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction bean = new nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction();
-		context.put(
-				"nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#1547248",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#1547248", bean);
 		bean.setClearItems(getManagedList3());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -433,13 +404,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyLineEditAction getBodyLineEditAction_11af887() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#11af887") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#11af887") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyLineEditAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#11af887");
 		nc.ui.pubapp.uif2app.actions.BodyLineEditAction bean = new nc.ui.pubapp.uif2app.actions.BodyLineEditAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#11af887",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#11af887", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
@@ -447,8 +416,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.query2.model.ModelDataManager getModelDataManager() {
 		if (context.get("modelDataManager") != null)
-			return (nc.ui.pubapp.uif2app.query2.model.ModelDataManager) context
-					.get("modelDataManager");
+			return (nc.ui.pubapp.uif2app.query2.model.ModelDataManager) context.get("modelDataManager");
 		nc.ui.pubapp.uif2app.query2.model.ModelDataManager bean = new nc.ui.pubapp.uif2app.query2.model.ModelDataManager();
 		context.put("modelDataManager", bean);
 		bean.setModel(getManageAppModel());
@@ -460,8 +428,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.TemplateContainer getTemplateContainer() {
 		if (context.get("templateContainer") != null)
-			return (nc.ui.pubapp.uif2app.view.TemplateContainer) context
-					.get("templateContainer");
+			return (nc.ui.pubapp.uif2app.view.TemplateContainer) context.get("templateContainer");
 		nc.ui.pubapp.uif2app.view.TemplateContainer bean = new nc.ui.pubapp.uif2app.view.TemplateContainer();
 		context.put("templateContainer", bean);
 		bean.setContext(getContext());
@@ -480,8 +447,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.editor.QueryTemplateContainer getQueryTemplateContainer() {
 		if (context.get("queryTemplateContainer") != null)
-			return (nc.ui.uif2.editor.QueryTemplateContainer) context
-					.get("queryTemplateContainer");
+			return (nc.ui.uif2.editor.QueryTemplateContainer) context.get("queryTemplateContainer");
 		nc.ui.uif2.editor.QueryTemplateContainer bean = new nc.ui.uif2.editor.QueryTemplateContainer();
 		context.put("queryTemplateContainer", bean);
 		bean.setContext(getContext());
@@ -493,8 +459,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.ShowUpableBillListView getListView() {
 		if (context.get("listView") != null)
-			return (nc.ui.pubapp.uif2app.view.ShowUpableBillListView) context
-					.get("listView");
+			return (nc.ui.pubapp.uif2app.view.ShowUpableBillListView) context.get("listView");
 		nc.ui.pubapp.uif2app.view.ShowUpableBillListView bean = new nc.ui.pubapp.uif2app.view.ShowUpableBillListView();
 		context.put("listView", bean);
 		bean.setModel(getManageAppModel());
@@ -508,14 +473,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare getCompositeBillListDataPrepare_1b27d2c() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare#1b27d2c") != null)
+		if (context.get("nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare#1b27d2c") != null)
 			return (nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare) context
 					.get("nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare#1b27d2c");
 		nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare bean = new nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare();
-		context.put(
-				"nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare#1b27d2c",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.view.CompositeBillListDataPrepare#1b27d2c", bean);
 		bean.setBillListDataPrepares(getManagedList5());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -531,8 +493,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.editor.UserdefitemContainerListPreparator getUserdefitemlistPreparator() {
 		if (context.get("userdefitemlistPreparator") != null)
-			return (nc.ui.uif2.editor.UserdefitemContainerListPreparator) context
-					.get("userdefitemlistPreparator");
+			return (nc.ui.uif2.editor.UserdefitemContainerListPreparator) context.get("userdefitemlistPreparator");
 		nc.ui.uif2.editor.UserdefitemContainerListPreparator bean = new nc.ui.uif2.editor.UserdefitemContainerListPreparator();
 		context.put("userdefitemlistPreparator", bean);
 		bean.setContainer(getUserdefitemContainer());
@@ -551,8 +512,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.editor.UserdefQueryParam getUserdefQueryParam_1381118() {
 		if (context.get("nc.ui.uif2.editor.UserdefQueryParam#1381118") != null)
-			return (nc.ui.uif2.editor.UserdefQueryParam) context
-					.get("nc.ui.uif2.editor.UserdefQueryParam#1381118");
+			return (nc.ui.uif2.editor.UserdefQueryParam) context.get("nc.ui.uif2.editor.UserdefQueryParam#1381118");
 		nc.ui.uif2.editor.UserdefQueryParam bean = new nc.ui.uif2.editor.UserdefQueryParam();
 		context.put("nc.ui.uif2.editor.UserdefQueryParam#1381118", bean);
 		bean.setMdfullname("qcco.task");
@@ -565,8 +525,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.editor.UserdefQueryParam getUserdefQueryParam_1ea7399() {
 		if (context.get("nc.ui.uif2.editor.UserdefQueryParam#1ea7399") != null)
-			return (nc.ui.uif2.editor.UserdefQueryParam) context
-					.get("nc.ui.uif2.editor.UserdefQueryParam#1ea7399");
+			return (nc.ui.uif2.editor.UserdefQueryParam) context.get("nc.ui.uif2.editor.UserdefQueryParam#1ea7399");
 		nc.ui.uif2.editor.UserdefQueryParam bean = new nc.ui.uif2.editor.UserdefQueryParam();
 		context.put("nc.ui.uif2.editor.UserdefQueryParam#1ea7399", bean);
 		bean.setMdfullname("qcco.TaskBVO");
@@ -580,8 +539,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.ShowUpableBillForm getBillFormEditor() {
 		if (context.get("billFormEditor") != null)
-			return (nc.ui.pubapp.uif2app.view.ShowUpableBillForm) context
-					.get("billFormEditor");
+			return (nc.ui.pubapp.uif2app.view.ShowUpableBillForm) context.get("billFormEditor");
 		nc.ui.pubapp.uif2app.view.ShowUpableBillForm bean = new nc.ui.pubapp.uif2app.view.ShowUpableBillForm();
 		context.put("billFormEditor", bean);
 		bean.setModel(getManageAppModel());
@@ -614,8 +572,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 			return (nc.ui.qcco.task.action.TaskBodyAddLineAction) context
 					.get("nc.ui.qcco.task.action.TaskBodyAddLineAction#14b4aff");
 		nc.ui.qcco.task.action.TaskBodyAddLineAction bean = new nc.ui.qcco.task.action.TaskBodyAddLineAction();
-		context.put("nc.ui.qcco.task.action.TaskBodyAddLineAction#14b4aff",
-				bean);
+		context.put("nc.ui.qcco.task.action.TaskBodyAddLineAction#14b4aff", bean);
 		bean.setMainBillForm(getBillFormEditor());
 		bean.setGrandCard(getSunbillFormEditor1());
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -624,52 +581,44 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyInsertLineAction getBodyInsertLineAction_28c7b5() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#28c7b5") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#28c7b5") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyInsertLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#28c7b5");
 		nc.ui.pubapp.uif2app.actions.BodyInsertLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyInsertLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#28c7b5",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyInsertLineAction#28c7b5", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyDelLineAction getBodyDelLineAction_14f54c6() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#14f54c6") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#14f54c6") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyDelLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#14f54c6");
 		nc.ui.pubapp.uif2app.actions.BodyDelLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyDelLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#14f54c6",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyDelLineAction#14f54c6", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyCopyLineAction getBodyCopyLineAction_146b6b6() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#146b6b6") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#146b6b6") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyCopyLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#146b6b6");
 		nc.ui.pubapp.uif2app.actions.BodyCopyLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyCopyLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#146b6b6",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyCopyLineAction#146b6b6", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyPasteLineAction getBodyPasteLineAction_185958a() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#185958a") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#185958a") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyPasteLineAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#185958a");
 		nc.ui.pubapp.uif2app.actions.BodyPasteLineAction bean = new nc.ui.pubapp.uif2app.actions.BodyPasteLineAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#185958a",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyPasteLineAction#185958a", bean);
 		bean.setClearItems(getManagedList8());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -684,14 +633,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction getBodyPasteToTailAction_11cd86e() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#11cd86e") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#11cd86e") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#11cd86e");
 		nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction bean = new nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction();
-		context.put(
-				"nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#11cd86e",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction#11cd86e", bean);
 		bean.setClearItems(getManagedList9());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -706,27 +652,22 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.actions.BodyLineEditAction getBodyLineEditAction_c52baa() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#c52baa") != null)
+		if (context.get("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#c52baa") != null)
 			return (nc.ui.pubapp.uif2app.actions.BodyLineEditAction) context
 					.get("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#c52baa");
 		nc.ui.pubapp.uif2app.actions.BodyLineEditAction bean = new nc.ui.pubapp.uif2app.actions.BodyLineEditAction();
-		context.put("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#c52baa",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.actions.BodyLineEditAction#c52baa", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
 	private nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare getCompositeBillDataPrepare_b5a751() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare#b5a751") != null)
+		if (context.get("nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare#b5a751") != null)
 			return (nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare) context
 					.get("nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare#b5a751");
 		nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare bean = new nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare();
-		context.put(
-				"nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare#b5a751",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.view.CompositeBillDataPrepare#b5a751", bean);
 		bean.setBillDataPrepares(getManagedList10());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -742,8 +683,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.material.assistant.MarAsstPreparator getMarAsstPreparator() {
 		if (context.get("marAsstPreparator") != null)
-			return (nc.ui.pubapp.uif2app.view.material.assistant.MarAsstPreparator) context
-					.get("marAsstPreparator");
+			return (nc.ui.pubapp.uif2app.view.material.assistant.MarAsstPreparator) context.get("marAsstPreparator");
 		nc.ui.pubapp.uif2app.view.material.assistant.MarAsstPreparator bean = new nc.ui.pubapp.uif2app.view.material.assistant.MarAsstPreparator();
 		context.put("marAsstPreparator", bean);
 		bean.setModel(getManageAppModel());
@@ -757,8 +697,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.userdefitem.UserDefItemContainer getUserdefitemContainer() {
 		if (context.get("userdefitemContainer") != null)
-			return (nc.ui.uif2.userdefitem.UserDefItemContainer) context
-					.get("userdefitemContainer");
+			return (nc.ui.uif2.userdefitem.UserDefItemContainer) context.get("userdefitemContainer");
 		nc.ui.uif2.userdefitem.UserDefItemContainer bean = new nc.ui.uif2.userdefitem.UserDefItemContainer();
 		context.put("userdefitemContainer", bean);
 		bean.setContext(getContext());
@@ -778,8 +717,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.userdefitem.QueryParam getQueryParam_1fbe76a() {
 		if (context.get("nc.ui.uif2.userdefitem.QueryParam#1fbe76a") != null)
-			return (nc.ui.uif2.userdefitem.QueryParam) context
-					.get("nc.ui.uif2.userdefitem.QueryParam#1fbe76a");
+			return (nc.ui.uif2.userdefitem.QueryParam) context.get("nc.ui.uif2.userdefitem.QueryParam#1fbe76a");
 		nc.ui.uif2.userdefitem.QueryParam bean = new nc.ui.uif2.userdefitem.QueryParam();
 		context.put("nc.ui.uif2.userdefitem.QueryParam#1fbe76a", bean);
 		bean.setMdfullname("qcco.task");
@@ -790,8 +728,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.userdefitem.QueryParam getQueryParam_116157b() {
 		if (context.get("nc.ui.uif2.userdefitem.QueryParam#116157b") != null)
-			return (nc.ui.uif2.userdefitem.QueryParam) context
-					.get("nc.ui.uif2.userdefitem.QueryParam#116157b");
+			return (nc.ui.uif2.userdefitem.QueryParam) context.get("nc.ui.uif2.userdefitem.QueryParam#116157b");
 		nc.ui.uif2.userdefitem.QueryParam bean = new nc.ui.uif2.userdefitem.QueryParam();
 		context.put("nc.ui.uif2.userdefitem.QueryParam#116157b", bean);
 		bean.setMdfullname("qcco.TaskBVO");
@@ -802,8 +739,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.userdefitem.QueryParam getQueryParam_dc64c0() {
 		if (context.get("nc.ui.uif2.userdefitem.QueryParam#dc64c0") != null)
-			return (nc.ui.uif2.userdefitem.QueryParam) context
-					.get("nc.ui.uif2.userdefitem.QueryParam#dc64c0");
+			return (nc.ui.uif2.userdefitem.QueryParam) context.get("nc.ui.uif2.userdefitem.QueryParam#dc64c0");
 		nc.ui.uif2.userdefitem.QueryParam bean = new nc.ui.uif2.userdefitem.QueryParam();
 		context.put("nc.ui.uif2.userdefitem.QueryParam#dc64c0", bean);
 		bean.setRulecode("materialassistant");
@@ -814,8 +750,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.editor.UserdefitemContainerPreparator getUserdefitemPreparator() {
 		if (context.get("userdefitemPreparator") != null)
-			return (nc.ui.uif2.editor.UserdefitemContainerPreparator) context
-					.get("userdefitemPreparator");
+			return (nc.ui.uif2.editor.UserdefitemContainerPreparator) context.get("userdefitemPreparator");
 		nc.ui.uif2.editor.UserdefitemContainerPreparator bean = new nc.ui.uif2.editor.UserdefitemContainerPreparator();
 		context.put("userdefitemPreparator", bean);
 		bean.setContainer(getUserdefitemContainer());
@@ -834,8 +769,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.editor.UserdefQueryParam getUserdefQueryParam_15a84f9() {
 		if (context.get("nc.ui.uif2.editor.UserdefQueryParam#15a84f9") != null)
-			return (nc.ui.uif2.editor.UserdefQueryParam) context
-					.get("nc.ui.uif2.editor.UserdefQueryParam#15a84f9");
+			return (nc.ui.uif2.editor.UserdefQueryParam) context.get("nc.ui.uif2.editor.UserdefQueryParam#15a84f9");
 		nc.ui.uif2.editor.UserdefQueryParam bean = new nc.ui.uif2.editor.UserdefQueryParam();
 		context.put("nc.ui.uif2.editor.UserdefQueryParam#15a84f9", bean);
 		bean.setMdfullname("qcco.task");
@@ -848,8 +782,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.editor.UserdefQueryParam getUserdefQueryParam_1d02857() {
 		if (context.get("nc.ui.uif2.editor.UserdefQueryParam#1d02857") != null)
-			return (nc.ui.uif2.editor.UserdefQueryParam) context
-					.get("nc.ui.uif2.editor.UserdefQueryParam#1d02857");
+			return (nc.ui.uif2.editor.UserdefQueryParam) context.get("nc.ui.uif2.editor.UserdefQueryParam#1d02857");
 		nc.ui.uif2.editor.UserdefQueryParam bean = new nc.ui.uif2.editor.UserdefQueryParam();
 		context.put("nc.ui.uif2.editor.UserdefQueryParam#1d02857", bean);
 		bean.setMdfullname("task.TaskBVO");
@@ -863,8 +796,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.tangramlayout.UEQueryAreaShell getQueryArea() {
 		if (context.get("queryArea") != null)
-			return (nc.ui.pubapp.uif2app.tangramlayout.UEQueryAreaShell) context
-					.get("queryArea");
+			return (nc.ui.pubapp.uif2app.tangramlayout.UEQueryAreaShell) context.get("queryArea");
 		nc.ui.pubapp.uif2app.tangramlayout.UEQueryAreaShell bean = new nc.ui.pubapp.uif2app.tangramlayout.UEQueryAreaShell();
 		context.put("queryArea", bean);
 		bean.setQueryAreaCreator(getQueryAction());
@@ -876,8 +808,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel getQueryInfo() {
 		if (context.get("queryInfo") != null)
-			return (nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel) context
-					.get("queryInfo");
+			return (nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel) context.get("queryInfo");
 		nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel bean = new nc.ui.uif2.tangramlayout.CardLayoutToolbarPanel();
 		context.put("queryInfo", bean);
 		bean.setModel(getManageAppModel());
@@ -888,8 +819,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.tangramlayout.UECardLayoutToolbarPanel getCardInfoPnl() {
 		if (context.get("cardInfoPnl") != null)
-			return (nc.ui.pubapp.uif2app.tangramlayout.UECardLayoutToolbarPanel) context
-					.get("cardInfoPnl");
+			return (nc.ui.pubapp.uif2app.tangramlayout.UECardLayoutToolbarPanel) context.get("cardInfoPnl");
 		nc.ui.pubapp.uif2app.tangramlayout.UECardLayoutToolbarPanel bean = new nc.ui.pubapp.uif2app.tangramlayout.UECardLayoutToolbarPanel();
 		context.put("cardInfoPnl", bean);
 		bean.setTitleAction(getReturnaction());
@@ -901,8 +831,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.pubapp.uif2app.actions.UEReturnAction getReturnaction() {
 		if (context.get("returnaction") != null)
-			return (nc.ui.pubapp.uif2app.actions.UEReturnAction) context
-					.get("returnaction");
+			return (nc.ui.pubapp.uif2app.actions.UEReturnAction) context.get("returnaction");
 		nc.ui.pubapp.uif2app.actions.UEReturnAction bean = new nc.ui.pubapp.uif2app.actions.UEReturnAction();
 		context.put("returnaction", bean);
 		bean.setGoComponent(getMainGrandlistView());
@@ -928,8 +857,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.TBNode getTBNode_5bbbe0() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.TBNode#5bbbe0") != null)
-			return (nc.ui.uif2.tangramlayout.node.TBNode) context
-					.get("nc.ui.uif2.tangramlayout.node.TBNode#5bbbe0");
+			return (nc.ui.uif2.tangramlayout.node.TBNode) context.get("nc.ui.uif2.tangramlayout.node.TBNode#5bbbe0");
 		nc.ui.uif2.tangramlayout.node.TBNode bean = new nc.ui.uif2.tangramlayout.node.TBNode();
 		context.put("nc.ui.uif2.tangramlayout.node.TBNode#5bbbe0", bean);
 		bean.setShowMode("CardLayout");
@@ -948,8 +876,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.HSNode getHSNode_17bb246() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.HSNode#17bb246") != null)
-			return (nc.ui.uif2.tangramlayout.node.HSNode) context
-					.get("nc.ui.uif2.tangramlayout.node.HSNode#17bb246");
+			return (nc.ui.uif2.tangramlayout.node.HSNode) context.get("nc.ui.uif2.tangramlayout.node.HSNode#17bb246");
 		nc.ui.uif2.tangramlayout.node.HSNode bean = new nc.ui.uif2.tangramlayout.node.HSNode();
 		context.put("nc.ui.uif2.tangramlayout.node.HSNode#17bb246", bean);
 		bean.setLeft(getCNode_1088047());
@@ -962,8 +889,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.CNode getCNode_1088047() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.CNode#1088047") != null)
-			return (nc.ui.uif2.tangramlayout.node.CNode) context
-					.get("nc.ui.uif2.tangramlayout.node.CNode#1088047");
+			return (nc.ui.uif2.tangramlayout.node.CNode) context.get("nc.ui.uif2.tangramlayout.node.CNode#1088047");
 		nc.ui.uif2.tangramlayout.node.CNode bean = new nc.ui.uif2.tangramlayout.node.CNode();
 		context.put("nc.ui.uif2.tangramlayout.node.CNode#1088047", bean);
 		bean.setComponent(getQueryArea());
@@ -974,8 +900,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.VSNode getVSNode_aad4d8() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.VSNode#aad4d8") != null)
-			return (nc.ui.uif2.tangramlayout.node.VSNode) context
-					.get("nc.ui.uif2.tangramlayout.node.VSNode#aad4d8");
+			return (nc.ui.uif2.tangramlayout.node.VSNode) context.get("nc.ui.uif2.tangramlayout.node.VSNode#aad4d8");
 		nc.ui.uif2.tangramlayout.node.VSNode bean = new nc.ui.uif2.tangramlayout.node.VSNode();
 		context.put("nc.ui.uif2.tangramlayout.node.VSNode#aad4d8", bean);
 		bean.setUp(getCNode_11dbaf9());
@@ -988,8 +913,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.CNode getCNode_11dbaf9() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.CNode#11dbaf9") != null)
-			return (nc.ui.uif2.tangramlayout.node.CNode) context
-					.get("nc.ui.uif2.tangramlayout.node.CNode#11dbaf9");
+			return (nc.ui.uif2.tangramlayout.node.CNode) context.get("nc.ui.uif2.tangramlayout.node.CNode#11dbaf9");
 		nc.ui.uif2.tangramlayout.node.CNode bean = new nc.ui.uif2.tangramlayout.node.CNode();
 		context.put("nc.ui.uif2.tangramlayout.node.CNode#11dbaf9", bean);
 		bean.setComponent(getQueryInfo());
@@ -1000,8 +924,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.CNode getCNode_17ba571() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.CNode#17ba571") != null)
-			return (nc.ui.uif2.tangramlayout.node.CNode) context
-					.get("nc.ui.uif2.tangramlayout.node.CNode#17ba571");
+			return (nc.ui.uif2.tangramlayout.node.CNode) context.get("nc.ui.uif2.tangramlayout.node.CNode#17ba571");
 		nc.ui.uif2.tangramlayout.node.CNode bean = new nc.ui.uif2.tangramlayout.node.CNode();
 		context.put("nc.ui.uif2.tangramlayout.node.CNode#17ba571", bean);
 		bean.setName(getI18nFB_de602a());
@@ -1032,8 +955,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.VSNode getVSNode_1aa47fb() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.VSNode#1aa47fb") != null)
-			return (nc.ui.uif2.tangramlayout.node.VSNode) context
-					.get("nc.ui.uif2.tangramlayout.node.VSNode#1aa47fb");
+			return (nc.ui.uif2.tangramlayout.node.VSNode) context.get("nc.ui.uif2.tangramlayout.node.VSNode#1aa47fb");
 		nc.ui.uif2.tangramlayout.node.VSNode bean = new nc.ui.uif2.tangramlayout.node.VSNode();
 		context.put("nc.ui.uif2.tangramlayout.node.VSNode#1aa47fb", bean);
 		bean.setUp(getCNode_1f520c9());
@@ -1046,8 +968,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.CNode getCNode_1f520c9() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.CNode#1f520c9") != null)
-			return (nc.ui.uif2.tangramlayout.node.CNode) context
-					.get("nc.ui.uif2.tangramlayout.node.CNode#1f520c9");
+			return (nc.ui.uif2.tangramlayout.node.CNode) context.get("nc.ui.uif2.tangramlayout.node.CNode#1f520c9");
 		nc.ui.uif2.tangramlayout.node.CNode bean = new nc.ui.uif2.tangramlayout.node.CNode();
 		context.put("nc.ui.uif2.tangramlayout.node.CNode#1f520c9", bean);
 		bean.setComponent(getCardInfoPnl());
@@ -1058,8 +979,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private nc.ui.uif2.tangramlayout.node.CNode getCNode_1f239b3() {
 		if (context.get("nc.ui.uif2.tangramlayout.node.CNode#1f239b3") != null)
-			return (nc.ui.uif2.tangramlayout.node.CNode) context
-					.get("nc.ui.uif2.tangramlayout.node.CNode#1f239b3");
+			return (nc.ui.uif2.tangramlayout.node.CNode) context.get("nc.ui.uif2.tangramlayout.node.CNode#1f239b3");
 		nc.ui.uif2.tangramlayout.node.CNode bean = new nc.ui.uif2.tangramlayout.node.CNode();
 		context.put("nc.ui.uif2.tangramlayout.node.CNode#1f239b3", bean);
 		bean.setName(getI18nFB_3b7e90());
@@ -1090,8 +1010,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.event.ChildrenPicky getChildrenPicky() {
 		if (context.get("childrenPicky") != null)
-			return (nc.ui.pubapp.uif2app.event.ChildrenPicky) context
-					.get("childrenPicky");
+			return (nc.ui.pubapp.uif2app.event.ChildrenPicky) context.get("childrenPicky");
 		nc.ui.pubapp.uif2app.event.ChildrenPicky bean = new nc.ui.pubapp.uif2app.event.ChildrenPicky();
 		context.put("childrenPicky", bean);
 		bean.setBillform(getBillFormEditor());
@@ -1109,8 +1028,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.model.AppEventHandlerMediator getGrandModelEventMediator() {
 		if (context.get("grandModelEventMediator") != null)
-			return (nc.ui.pubapp.uif2app.model.AppEventHandlerMediator) context
-					.get("grandModelEventMediator");
+			return (nc.ui.pubapp.uif2app.model.AppEventHandlerMediator) context.get("grandModelEventMediator");
 		nc.ui.pubapp.uif2app.model.AppEventHandlerMediator bean = new nc.ui.pubapp.uif2app.model.AppEventHandlerMediator();
 		context.put("grandModelEventMediator", bean);
 		bean.setModel(getManageAppModel2());
@@ -1141,14 +1059,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler getGrandBodyBeforeEditHandler_8b85e0() {
-		if (context
-				.get("nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler#8b85e0") != null)
+		if (context.get("nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler#8b85e0") != null)
 			return (nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler) context
 					.get("nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler#8b85e0");
 		nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler bean = new nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler();
-		context.put(
-				"nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler#8b85e0",
-				bean);
+		context.put("nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler#8b85e0", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
@@ -1159,8 +1074,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 			return (nc.ui.pubapp.uif2app.event.EventHandlerGroup) context
 					.get("nc.ui.pubapp.uif2app.event.EventHandlerGroup#193a1d0");
 		nc.ui.pubapp.uif2app.event.EventHandlerGroup bean = new nc.ui.pubapp.uif2app.event.EventHandlerGroup();
-		context.put("nc.ui.pubapp.uif2app.event.EventHandlerGroup#193a1d0",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.event.EventHandlerGroup#193a1d0", bean);
 		bean.setEvent("nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent");
 		bean.setHandler(getGrandBodyAfterEditHandler_a134d5());
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -1169,14 +1083,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler getGrandBodyAfterEditHandler_a134d5() {
-		if (context
-				.get("nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler#a134d5") != null)
+		if (context.get("nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler#a134d5") != null)
 			return (nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler) context
 					.get("nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler#a134d5");
 		nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler bean = new nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler();
-		context.put(
-				"nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler#a134d5",
-				bean);
+		context.put("nc.ui.qcco.task.ace.handler.GrandBodyAfterEditHandler#a134d5", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
@@ -1184,8 +1095,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.model.AppEventHandlerMediator getEventMediator() {
 		if (context.get("eventMediator") != null)
-			return (nc.ui.pubapp.uif2app.model.AppEventHandlerMediator) context
-					.get("eventMediator");
+			return (nc.ui.pubapp.uif2app.model.AppEventHandlerMediator) context.get("eventMediator");
 		nc.ui.pubapp.uif2app.model.AppEventHandlerMediator bean = new nc.ui.pubapp.uif2app.model.AppEventHandlerMediator();
 		context.put("eventMediator", bean);
 		bean.setModel(getManageAppModel());
@@ -1244,13 +1154,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.qcco.task.ace.handler.AceOrgChangeHandler getAceOrgChangeHandler_112fee4() {
-		if (context
-				.get("nc.ui.qcco.task.ace.handler.AceOrgChangeHandler#112fee4") != null)
+		if (context.get("nc.ui.qcco.task.ace.handler.AceOrgChangeHandler#112fee4") != null)
 			return (nc.ui.qcco.task.ace.handler.AceOrgChangeHandler) context
 					.get("nc.ui.qcco.task.ace.handler.AceOrgChangeHandler#112fee4");
 		nc.ui.qcco.task.ace.handler.AceOrgChangeHandler bean = new nc.ui.qcco.task.ace.handler.AceOrgChangeHandler();
-		context.put("nc.ui.qcco.task.ace.handler.AceOrgChangeHandler#112fee4",
-				bean);
+		context.put("nc.ui.qcco.task.ace.handler.AceOrgChangeHandler#112fee4", bean);
 		bean.setBillForm(getBillFormEditor());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -1262,8 +1170,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 			return (nc.ui.pubapp.uif2app.event.EventHandlerGroup) context
 					.get("nc.ui.pubapp.uif2app.event.EventHandlerGroup#17d2210");
 		nc.ui.pubapp.uif2app.event.EventHandlerGroup bean = new nc.ui.pubapp.uif2app.event.EventHandlerGroup();
-		context.put("nc.ui.pubapp.uif2app.event.EventHandlerGroup#17d2210",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.event.EventHandlerGroup#17d2210", bean);
 		bean.setEvent("nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent");
 		bean.setHandler(getAceBodyAfterEditHandler_1423462());
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -1272,14 +1179,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler getAceBodyAfterEditHandler_1423462() {
-		if (context
-				.get("nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler#1423462") != null)
+		if (context.get("nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler#1423462") != null)
 			return (nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler) context
 					.get("nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler#1423462");
 		nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler bean = new nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler();
-		context.put(
-				"nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler#1423462",
-				bean);
+		context.put("nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler#1423462", bean);
 		bean.setMainBillForm(getBillFormEditor());
 		bean.setGrandCard(getSunbillFormEditor1());
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -1301,14 +1205,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler getAceBodyBeforeEditHandler_477f91() {
-		if (context
-				.get("nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler#477f91") != null)
+		if (context.get("nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler#477f91") != null)
 			return (nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler) context
 					.get("nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler#477f91");
 		nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler bean = new nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler();
-		context.put(
-				"nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler#477f91",
-				bean);
+		context.put("nc.ui.qcco.task.ace.handler.AceBodyBeforeEditHandler#477f91", bean);
 		bean.setMainBillForm(getBillFormEditor());
 		bean.setGrandCard(getSunbillFormEditor1());
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -1330,14 +1231,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler getAceHeadTailAfterEditHandler_9cb729() {
-		if (context
-				.get("nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler#9cb729") != null)
+		if (context.get("nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler#9cb729") != null)
 			return (nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler) context
 					.get("nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler#9cb729");
 		nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler bean = new nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler();
-		context.put(
-				"nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler#9cb729",
-				bean);
+		context.put("nc.ui.qcco.task.ace.handler.AceHeadTailAfterEditHandler#9cb729", bean);
 		bean.setMainBillForm(getBillFormEditor());
 		bean.setGrandCard(getSunbillFormEditor1());
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -1359,14 +1257,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler getAceHeadTailBeforeEditHandler_138f63a() {
-		if (context
-				.get("nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler#138f63a") != null)
+		if (context.get("nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler#138f63a") != null)
 			return (nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler) context
 					.get("nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler#138f63a");
 		nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler bean = new nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler();
-		context.put(
-				"nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler#138f63a",
-				bean);
+		context.put("nc.ui.qcco.task.ace.handler.AceHeadTailBeforeEditHandler#138f63a", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
@@ -1374,8 +1269,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.actions.ActionContributors getToftpanelActionContributors() {
 		if (context.get("toftpanelActionContributors") != null)
-			return (nc.ui.uif2.actions.ActionContributors) context
-					.get("toftpanelActionContributors");
+			return (nc.ui.uif2.actions.ActionContributors) context.get("toftpanelActionContributors");
 		nc.ui.uif2.actions.ActionContributors bean = new nc.ui.uif2.actions.ActionContributors();
 		context.put("toftpanelActionContributors", bean);
 		bean.setContributors(getManagedList17());
@@ -1393,8 +1287,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.actions.StandAloneToftPanelActionContainer getActionsOfList() {
 		if (context.get("actionsOfList") != null)
-			return (nc.ui.uif2.actions.StandAloneToftPanelActionContainer) context
-					.get("actionsOfList");
+			return (nc.ui.uif2.actions.StandAloneToftPanelActionContainer) context.get("actionsOfList");
 		nc.ui.uif2.actions.StandAloneToftPanelActionContainer bean = new nc.ui.uif2.actions.StandAloneToftPanelActionContainer(
 				getListView());
 		context.put("actionsOfList", bean);
@@ -1433,8 +1326,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.actions.StandAloneToftPanelActionContainer getActionsOfCard() {
 		if (context.get("actionsOfCard") != null)
-			return (nc.ui.uif2.actions.StandAloneToftPanelActionContainer) context
-					.get("actionsOfCard");
+			return (nc.ui.uif2.actions.StandAloneToftPanelActionContainer) context.get("actionsOfCard");
 		nc.ui.uif2.actions.StandAloneToftPanelActionContainer bean = new nc.ui.uif2.actions.StandAloneToftPanelActionContainer(
 				getBillFormEditor());
 		context.put("actionsOfCard", bean);
@@ -1482,8 +1374,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.funcnode.ui.action.SeparatorAction getSeparatorAction() {
 		if (context.get("separatorAction") != null)
-			return (nc.funcnode.ui.action.SeparatorAction) context
-					.get("separatorAction");
+			return (nc.funcnode.ui.action.SeparatorAction) context.get("separatorAction");
 		nc.funcnode.ui.action.SeparatorAction bean = new nc.funcnode.ui.action.SeparatorAction();
 		context.put("separatorAction", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -1541,8 +1432,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.qcco.task.action.TaskDeleteAction getDeleteAction() {
 		if (context.get("deleteAction") != null)
-			return (nc.ui.qcco.task.action.TaskDeleteAction) context
-					.get("deleteAction");
+			return (nc.ui.qcco.task.action.TaskDeleteAction) context.get("deleteAction");
 		nc.ui.qcco.task.action.TaskDeleteAction bean = new nc.ui.qcco.task.action.TaskDeleteAction();
 		context.put("deleteAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1555,8 +1445,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.qcco.task.action.TaskSaveAction getSaveAction() {
 		if (context.get("saveAction") != null)
-			return (nc.ui.qcco.task.action.TaskSaveAction) context
-					.get("saveAction");
+			return (nc.ui.qcco.task.action.TaskSaveAction) context.get("saveAction");
 		nc.ui.qcco.task.action.TaskSaveAction bean = new nc.ui.qcco.task.action.TaskSaveAction();
 		context.put("saveAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1574,8 +1463,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.qcco.task.action.FileUploadAction getFileupload() {
 		if (context.get("fileupload") != null)
-			return (nc.ui.qcco.task.action.FileUploadAction) context
-					.get("fileupload");
+			return (nc.ui.qcco.task.action.FileUploadAction) context.get("fileupload");
 		nc.ui.qcco.task.action.FileUploadAction bean = new nc.ui.qcco.task.action.FileUploadAction();
 		context.put("fileupload", bean);
 		bean.setModel(getManageAppModel());
@@ -1586,8 +1474,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.qcco.task.action.TaskTemporarilySaveAction getTemporarilySaveAction() {
 		if (context.get("temporarilySaveAction") != null)
-			return (nc.ui.qcco.task.action.TaskTemporarilySaveAction) context
-					.get("temporarilySaveAction");
+			return (nc.ui.qcco.task.action.TaskTemporarilySaveAction) context.get("temporarilySaveAction");
 		nc.ui.qcco.task.action.TaskTemporarilySaveAction bean = new nc.ui.qcco.task.action.TaskTemporarilySaveAction();
 		context.put("temporarilySaveAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1605,8 +1492,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.validation.CompositeValidation getValidateService() {
 		if (context.get("validateService") != null)
-			return (nc.ui.pubapp.uif2app.validation.CompositeValidation) context
-					.get("validateService");
+			return (nc.ui.pubapp.uif2app.validation.CompositeValidation) context.get("validateService");
 		nc.ui.pubapp.uif2app.validation.CompositeValidation bean = new nc.ui.pubapp.uif2app.validation.CompositeValidation();
 		context.put("validateService", bean);
 		bean.setValidators(getManagedList21());
@@ -1622,14 +1508,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation getTemplateNotNullValidation_1d825f0() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation#1d825f0") != null)
+		if (context.get("nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation#1d825f0") != null)
 			return (nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation) context
 					.get("nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation#1d825f0");
 		nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation bean = new nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation();
-		context.put(
-				"nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation#1d825f0",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.validation.TemplateNotNullValidation#1d825f0", bean);
 		bean.setBillForm(getBillFormEditor());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -1638,8 +1521,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.CancelAction getCancelAction() {
 		if (context.get("cancelAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.CancelAction) context
-					.get("cancelAction");
+			return (nc.ui.pubapp.uif2app.actions.CancelAction) context.get("cancelAction");
 		nc.ui.pubapp.uif2app.actions.CancelAction bean = new nc.ui.pubapp.uif2app.actions.CancelAction();
 		context.put("cancelAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1650,8 +1532,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.CopyAction getCopyAction() {
 		if (context.get("copyAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.CopyAction) context
-					.get("copyAction");
+			return (nc.ui.pubapp.uif2app.actions.CopyAction) context.get("copyAction");
 		nc.ui.pubapp.uif2app.actions.CopyAction bean = new nc.ui.pubapp.uif2app.actions.CopyAction();
 		context.put("copyAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1664,8 +1545,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.query2.action.DefaultQueryAction getQueryAction() {
 		if (context.get("queryAction") != null)
-			return (nc.ui.pubapp.uif2app.query2.action.DefaultQueryAction) context
-					.get("queryAction");
+			return (nc.ui.pubapp.uif2app.query2.action.DefaultQueryAction) context.get("queryAction");
 		nc.ui.pubapp.uif2app.query2.action.DefaultQueryAction bean = new nc.ui.pubapp.uif2app.query2.action.DefaultQueryAction();
 		context.put("queryAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1679,8 +1559,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.query2.action.DefaultRefreshAction getRefreshAction() {
 		if (context.get("refreshAction") != null)
-			return (nc.ui.pubapp.uif2app.query2.action.DefaultRefreshAction) context
-					.get("refreshAction");
+			return (nc.ui.pubapp.uif2app.query2.action.DefaultRefreshAction) context.get("refreshAction");
 		nc.ui.pubapp.uif2app.query2.action.DefaultRefreshAction bean = new nc.ui.pubapp.uif2app.query2.action.DefaultRefreshAction();
 		context.put("refreshAction", bean);
 		bean.setDataManager(getModelDataManager());
@@ -1692,8 +1571,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.RefreshSingleAction getCardRefreshAction() {
 		if (context.get("cardRefreshAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.RefreshSingleAction) context
-					.get("cardRefreshAction");
+			return (nc.ui.pubapp.uif2app.actions.RefreshSingleAction) context.get("cardRefreshAction");
 		nc.ui.pubapp.uif2app.actions.RefreshSingleAction bean = new nc.ui.pubapp.uif2app.actions.RefreshSingleAction();
 		context.put("cardRefreshAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1704,8 +1582,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction getPrintAction() {
 		if (context.get("printAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction) context
-					.get("printAction");
+			return (nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction) context.get("printAction");
 		nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction bean = new nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction();
 		context.put("printAction", bean);
 		bean.setPreview(false);
@@ -1718,8 +1595,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction getPreviewAction() {
 		if (context.get("previewAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction) context
-					.get("previewAction");
+			return (nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction) context.get("previewAction");
 		nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction bean = new nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction();
 		context.put("previewAction", bean);
 		bean.setPreview(true);
@@ -1732,8 +1608,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.OutputAction getOutputAction() {
 		if (context.get("outputAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.OutputAction) context
-					.get("outputAction");
+			return (nc.ui.pubapp.uif2app.actions.OutputAction) context.get("outputAction");
 		nc.ui.pubapp.uif2app.actions.OutputAction bean = new nc.ui.pubapp.uif2app.actions.OutputAction();
 		context.put("outputAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1746,8 +1621,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.funcnode.ui.action.GroupAction getPrintMenuAction() {
 		if (context.get("printMenuAction") != null)
-			return (nc.funcnode.ui.action.GroupAction) context
-					.get("printMenuAction");
+			return (nc.funcnode.ui.action.GroupAction) context.get("printMenuAction");
 		nc.funcnode.ui.action.GroupAction bean = new nc.funcnode.ui.action.GroupAction();
 		context.put("printMenuAction", bean);
 		bean.setCode("printMenuAction");
@@ -1787,8 +1661,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.lazilyload.DefaultBillLazilyLoader getBillLazilyLoader() {
 		if (context.get("billLazilyLoader") != null)
-			return (nc.ui.pubapp.uif2app.lazilyload.DefaultBillLazilyLoader) context
-					.get("billLazilyLoader");
+			return (nc.ui.pubapp.uif2app.lazilyload.DefaultBillLazilyLoader) context.get("billLazilyLoader");
 		nc.ui.pubapp.uif2app.lazilyload.DefaultBillLazilyLoader bean = new nc.ui.pubapp.uif2app.lazilyload.DefaultBillLazilyLoader();
 		context.put("billLazilyLoader", bean);
 		setBeanFacotryIfBeanFacatoryAware(bean);
@@ -1798,8 +1671,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.lazilyload.LazilyLoadManager getLasilyLodadMediator() {
 		if (context.get("lasilyLodadMediator") != null)
-			return (nc.ui.pubapp.uif2app.lazilyload.LazilyLoadManager) context
-					.get("lasilyLodadMediator");
+			return (nc.ui.pubapp.uif2app.lazilyload.LazilyLoadManager) context.get("lasilyLodadMediator");
 		nc.ui.pubapp.uif2app.lazilyload.LazilyLoadManager bean = new nc.ui.pubapp.uif2app.lazilyload.LazilyLoadManager();
 		context.put("lasilyLodadMediator", bean);
 		bean.setModel(getManageAppModel());
@@ -1818,14 +1690,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad getCardPanelLazilyLoad_1352452() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad#1352452") != null)
+		if (context.get("nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad#1352452") != null)
 			return (nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad) context
 					.get("nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad#1352452");
 		nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad bean = new nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad();
-		context.put(
-				"nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad#1352452",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.lazilyload.CardPanelLazilyLoad#1352452", bean);
 		bean.setBillform(getBillFormEditor());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -1833,14 +1702,11 @@ public class Task_config extends AbstractJavaBeanDefinition {
 	}
 
 	private nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad getListPanelLazilyLoad_1e3906b() {
-		if (context
-				.get("nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad#1e3906b") != null)
+		if (context.get("nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad#1e3906b") != null)
 			return (nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad) context
 					.get("nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad#1e3906b");
 		nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad bean = new nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad();
-		context.put(
-				"nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad#1e3906b",
-				bean);
+		context.put("nc.ui.pubapp.uif2app.lazilyload.ListPanelLazilyLoad#1e3906b", bean);
 		bean.setListView(getListView());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -1849,8 +1715,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.model.BillBodySortMediator getBillBodySortMediator() {
 		if (context.get("billBodySortMediator") != null)
-			return (nc.ui.pubapp.uif2app.model.BillBodySortMediator) context
-					.get("billBodySortMediator");
+			return (nc.ui.pubapp.uif2app.model.BillBodySortMediator) context.get("billBodySortMediator");
 		nc.ui.pubapp.uif2app.model.BillBodySortMediator bean = new nc.ui.pubapp.uif2app.model.BillBodySortMediator(
 				getManageAppModel(), getBillFormEditor(), getListView());
 		context.put("billBodySortMediator", bean);
@@ -1861,8 +1726,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.model.DefaultFuncNodeInitDataListener getInitDataListener() {
 		if (context.get("InitDataListener") != null)
-			return (nc.ui.pubapp.uif2app.model.DefaultFuncNodeInitDataListener) context
-					.get("InitDataListener");
+			return (nc.ui.pubapp.uif2app.model.DefaultFuncNodeInitDataListener) context.get("InitDataListener");
 		nc.ui.pubapp.uif2app.model.DefaultFuncNodeInitDataListener bean = new nc.ui.pubapp.uif2app.model.DefaultFuncNodeInitDataListener();
 		context.put("InitDataListener", bean);
 		bean.setModel(getManageAppModel());
@@ -1876,8 +1740,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.common.validateservice.ClosingCheck getClosingListener() {
 		if (context.get("ClosingListener") != null)
-			return (nc.ui.pubapp.common.validateservice.ClosingCheck) context
-					.get("ClosingListener");
+			return (nc.ui.pubapp.common.validateservice.ClosingCheck) context.get("ClosingListener");
 		nc.ui.pubapp.common.validateservice.ClosingCheck bean = new nc.ui.pubapp.common.validateservice.ClosingCheck();
 		context.put("ClosingListener", bean);
 		bean.setModel(getManageAppModel());
@@ -1889,8 +1752,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.FractionFixMediator getFractionFixMediator() {
 		if (context.get("fractionFixMediator") != null)
-			return (nc.ui.pubapp.uif2app.view.FractionFixMediator) context
-					.get("fractionFixMediator");
+			return (nc.ui.pubapp.uif2app.view.FractionFixMediator) context.get("fractionFixMediator");
 		nc.ui.pubapp.uif2app.view.FractionFixMediator bean = new nc.ui.pubapp.uif2app.view.FractionFixMediator(
 				getBillFormEditor());
 		context.put("fractionFixMediator", bean);
@@ -1902,8 +1764,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.MouseClickShowPanelMediator getMouseClickShowPanelMediator() {
 		if (context.get("mouseClickShowPanelMediator") != null)
-			return (nc.ui.pubapp.uif2app.view.MouseClickShowPanelMediator) context
-					.get("mouseClickShowPanelMediator");
+			return (nc.ui.pubapp.uif2app.view.MouseClickShowPanelMediator) context.get("mouseClickShowPanelMediator");
 		nc.ui.pubapp.uif2app.view.MouseClickShowPanelMediator bean = new nc.ui.pubapp.uif2app.view.MouseClickShowPanelMediator();
 		context.put("mouseClickShowPanelMediator", bean);
 		bean.setListView(getListView());
@@ -1916,8 +1777,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.bill.BillCodeMediator getBillCodeMediator() {
 		if (context.get("billCodeMediator") != null)
-			return (nc.ui.pubapp.bill.BillCodeMediator) context
-					.get("billCodeMediator");
+			return (nc.ui.pubapp.bill.BillCodeMediator) context.get("billCodeMediator");
 		nc.ui.pubapp.bill.BillCodeMediator bean = new nc.ui.pubapp.bill.BillCodeMediator();
 		context.put("billCodeMediator", bean);
 		bean.setBillForm(getBillFormEditor());
@@ -1931,8 +1791,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.view.RowNoMediator getRowNoMediator() {
 		if (context.get("rowNoMediator") != null)
-			return (nc.ui.pubapp.uif2app.view.RowNoMediator) context
-					.get("rowNoMediator");
+			return (nc.ui.pubapp.uif2app.view.RowNoMediator) context.get("rowNoMediator");
 		nc.ui.pubapp.uif2app.view.RowNoMediator bean = new nc.ui.pubapp.uif2app.view.RowNoMediator();
 		context.put("rowNoMediator", bean);
 		bean.setModel(getManageAppModel());
@@ -1944,8 +1803,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.editor.UIF2RemoteCallCombinatorCaller getRemoteCallCombinatorCaller() {
 		if (context.get("remoteCallCombinatorCaller") != null)
-			return (nc.ui.uif2.editor.UIF2RemoteCallCombinatorCaller) context
-					.get("remoteCallCombinatorCaller");
+			return (nc.ui.uif2.editor.UIF2RemoteCallCombinatorCaller) context.get("remoteCallCombinatorCaller");
 		nc.ui.uif2.editor.UIF2RemoteCallCombinatorCaller bean = new nc.ui.uif2.editor.UIF2RemoteCallCombinatorCaller();
 		context.put("remoteCallCombinatorCaller", bean);
 		bean.setRemoteCallers(getManagedList24());
@@ -1964,8 +1822,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.pflow.CommitScriptAction getCommitScriptAction() {
 		if (context.get("commitScriptAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.pflow.CommitScriptAction) context
-					.get("commitScriptAction");
+			return (nc.ui.pubapp.uif2app.actions.pflow.CommitScriptAction) context.get("commitScriptAction");
 		nc.ui.pubapp.uif2app.actions.pflow.CommitScriptAction bean = new nc.ui.pubapp.uif2app.actions.pflow.CommitScriptAction();
 		context.put("commitScriptAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1981,8 +1838,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.pflow.UnCommitScriptAction getUnCommitScriptAction() {
 		if (context.get("unCommitScriptAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.pflow.UnCommitScriptAction) context
-					.get("unCommitScriptAction");
+			return (nc.ui.pubapp.uif2app.actions.pflow.UnCommitScriptAction) context.get("unCommitScriptAction");
 		nc.ui.pubapp.uif2app.actions.pflow.UnCommitScriptAction bean = new nc.ui.pubapp.uif2app.actions.pflow.UnCommitScriptAction();
 		context.put("unCommitScriptAction", bean);
 		bean.setModel(getManageAppModel());
@@ -1998,8 +1854,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.pflow.ApproveScriptAction getApproveScriptAction() {
 		if (context.get("approveScriptAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.pflow.ApproveScriptAction) context
-					.get("approveScriptAction");
+			return (nc.ui.pubapp.uif2app.actions.pflow.ApproveScriptAction) context.get("approveScriptAction");
 		nc.ui.pubapp.uif2app.actions.pflow.ApproveScriptAction bean = new nc.ui.pubapp.uif2app.actions.pflow.ApproveScriptAction();
 		context.put("approveScriptAction", bean);
 		bean.setModel(getManageAppModel());
@@ -2015,8 +1870,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.pflow.UNApproveScriptAction getUNApproveScriptAction() {
 		if (context.get("uNApproveScriptAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.pflow.UNApproveScriptAction) context
-					.get("uNApproveScriptAction");
+			return (nc.ui.pubapp.uif2app.actions.pflow.UNApproveScriptAction) context.get("uNApproveScriptAction");
 		nc.ui.pubapp.uif2app.actions.pflow.UNApproveScriptAction bean = new nc.ui.pubapp.uif2app.actions.pflow.UNApproveScriptAction();
 		context.put("uNApproveScriptAction", bean);
 		bean.setModel(getManageAppModel());
@@ -2032,8 +1886,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.LinkQueryAction getLinkQueryAction() {
 		if (context.get("linkQueryAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.LinkQueryAction) context
-					.get("linkQueryAction");
+			return (nc.ui.pubapp.uif2app.actions.LinkQueryAction) context.get("linkQueryAction");
 		nc.ui.pubapp.uif2app.actions.LinkQueryAction bean = new nc.ui.pubapp.uif2app.actions.LinkQueryAction();
 		context.put("linkQueryAction", bean);
 		bean.setModel(getManageAppModel());
@@ -2045,8 +1898,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction getMetaDataBasedPrintAction() {
 		if (context.get("metaDataBasedPrintAction") != null)
-			return (nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction) context
-					.get("metaDataBasedPrintAction");
+			return (nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction) context.get("metaDataBasedPrintAction");
 		nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction bean = new nc.ui.pubapp.uif2app.actions.MetaDataBasedPrintAction();
 		context.put("metaDataBasedPrintAction", bean);
 		bean.setModel(getManageAppModel());
@@ -2075,10 +1927,8 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	public nc.ui.uif2.DefaultExceptionHanler getExceptionHandler() {
 		if (context.get("exceptionHandler") != null)
-			return (nc.ui.uif2.DefaultExceptionHanler) context
-					.get("exceptionHandler");
-		nc.ui.uif2.DefaultExceptionHanler bean = new nc.ui.uif2.DefaultExceptionHanler(
-				getContainer());
+			return (nc.ui.uif2.DefaultExceptionHanler) context.get("exceptionHandler");
+		nc.ui.uif2.DefaultExceptionHanler bean = new nc.ui.uif2.DefaultExceptionHanler(getContainer());
 		context.put("exceptionHandler", bean);
 		bean.setContext(getContext());
 		setBeanFacotryIfBeanFacatoryAware(bean);
