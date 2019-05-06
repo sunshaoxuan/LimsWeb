@@ -12,8 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-import org.jfree.util.Log;
-
+import nc.bs.logging.Logger;
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.desktop.ui.WorkbenchEnvironment;
 import nc.ui.pub.beans.UIPanel;
@@ -47,6 +46,8 @@ import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskHVO;
 import nc.vo.uif2.AppStatusRegisteryCallback;
+
+import org.jfree.util.Log;
 
 /**
  * 主子孙列表界面
@@ -350,10 +351,20 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 			this.grandEventProcess(event);
 
 		} else if (event instanceof ListHeadRowChangedEvent) {
-
+		    //排序
+			if("C0J00203".equals(((ListHeadRowChangedEvent) event).getContext().getNodeCode())){
+				try{
+					((ListHeadRowChangedEvent) event).getBillListPanel()
+						.getBodyBillModel().sortByColumn("runorder", true);
+				}catch(IllegalArgumentException e){
+					Logger.debug("relation ref reload.");
+					Logger.debug(e.getMessage());
+				}
+			}
 			// 列表表头行切换时的处理(清空显示的孙表表体数据)
 			this.getModel().setAddReturnList(true);
 			this.clearGrandData();
+			
 		} else if (event.getType().equals(AppEventConst.MODEL_INITIALIZED)) {
 			this.clearGrandData();
 			this.getModel().getSelectGrandRowNum().clear();
