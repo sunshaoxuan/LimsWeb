@@ -595,6 +595,8 @@
 				<ref bean="pFApproveStatusInfoAction" />
 				<!--附件上传 -->
 				<ref bean="fileupload" />
+				<ref bean="separatorAction" />
+				<ref bean="previewActionGroup" />
 			</list>
 		</property>
 	</bean>
@@ -627,6 +629,8 @@
 				<ref bean="separatorAction" />
 				<ref bean="pFApproveStatusInfoAction" />
 				<ref bean="fileupload" />
+				<ref bean="separatorAction" />
+				<ref bean="previewActionGroup" />
 			</list>
 		</property>
 
@@ -771,7 +775,35 @@
 			</list>
 		</property>
 	</bean>
-
+	<!-- 报价单按钮 -->
+	<bean id="quotationAction" class="nc.ui.qcco.task.action.QuotationAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+	<!-- 收费单按钮 -->
+	<bean id="payDemandAction" class="nc.ui.qcco.task.action.PayDemandAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+	<!-- 正式报告按钮 -->
+	<bean id="officialReportAction" class="nc.ui.qcco.task.action.OfficialReportAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+	<!-- 满意度评价按钮 -->
+	<bean id="satisfactionAction" class="nc.ui.qcco.task.action.SatisfactionAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+<!-- 预览按钮组 -->
+	<bean id="previewActionGroup" class="nc.funcnode.ui.action.GroupAction">
+		<property name="code" value="previewActionGroup" />
+		<property name="name" value="预览" />
+		<property name="actions">
+			<list>
+				<ref bean="quotationAction" />
+				<ref bean="payDemandAction" />
+				<ref bean="officialReportAction" />
+				<ref bean="satisfactionAction" />
+			</list>
+		</property>
+	</bean>
 	<!-- 懒加载 -->
 	<bean id="billLazilyLoader" class="nc.ui.pubapp.uif2app.lazilyload.DefaultBillLazilyLoader" />
 	<bean id="lasilyLodadMediator" class="nc.ui.pubapp.uif2app.lazilyload.LazilyLoadManager">

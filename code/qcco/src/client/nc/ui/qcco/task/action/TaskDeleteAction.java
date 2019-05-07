@@ -9,6 +9,7 @@ import nc.ui.pubapp.uif2app.model.BillManageModel;
 import nc.ui.uif2.IShowMsgConstant;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
 import nc.ui.uif2.actions.ActionInitializer;
+import nc.ui.uif2.components.CommonConfirmDialogUtils;
 import nc.vo.qcco.task.AggTaskHVO;
 
 public class TaskDeleteAction extends nc.ui.pubapp.uif2app.actions.pflow.DeleteScriptAction{
@@ -22,11 +23,15 @@ public class TaskDeleteAction extends nc.ui.pubapp.uif2app.actions.pflow.DeleteS
 	
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
-		Object value = this.getMainGrandModel().getDeleteAggVO();
-		Object object = this.getSingleBillService().operateBill((AggTaskHVO) value);
-		this.getModel().directlyDelete(object);
-		this.getMainGrandModel().directlyDelete(object);
-		this.showSuccessInfo();
+		if (4 == CommonConfirmDialogUtils.showConfirmDeleteDialog(getModel()
+				.getContext().getEntranceUI())) {
+			Object value = this.getMainGrandModel().getDeleteAggVO();
+			Object object = this.getSingleBillService().operateBill(
+					(AggTaskHVO) value);
+			this.getModel().directlyDelete(object);
+			this.getMainGrandModel().directlyDelete(object);
+			this.showSuccessInfo();
+		}
 	}
 	
 	public TaskDeleteAction() {

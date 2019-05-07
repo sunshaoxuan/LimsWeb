@@ -1,18 +1,24 @@
 package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
+import java.net.URL;
 
+import nc.bap.portal.page.dialog.Dialog;
 import nc.bs.uif2.IActionCode;
+import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pubapp.pub.task.ISingleBillService;
 import nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel;
 import nc.ui.pubapp.uif2app.model.BillManageModel;
+import nc.ui.sm.login.ClientAssistant;
 import nc.ui.uif2.IShowMsgConstant;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
 import nc.ui.uif2.UIState;
 import nc.ui.uif2.actions.ActionInitializer;
+import nc.ui.uif2.components.CommonConfirmDialogUtils;
 import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.tmpub.util.DialogTool;
 
 public class CommissionDeleteAction extends
 		nc.ui.pubapp.uif2app.actions.pflow.DeleteScriptAction {
@@ -27,13 +33,17 @@ public class CommissionDeleteAction extends
 
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
-		Object value = this.getMainGrandModel().getSelectedData();
-		if (value != null) {
-			Object object = this.getSingleBillService().operateBill(
-					(AggCommissionHVO) value);
-			this.getModel().directlyDelete(object);
-			this.getMainGrandModel().directlyDelete(object);
-			this.showSuccessInfo();
+		 
+		if (4 == CommonConfirmDialogUtils.showConfirmDeleteDialog(getModel()
+				.getContext().getEntranceUI())) {
+			Object value = this.getMainGrandModel().getSelectedData();
+			if (value != null) {
+				Object object = this.getSingleBillService().operateBill(
+						(AggCommissionHVO) value);
+				this.getModel().directlyDelete(object);
+				this.getMainGrandModel().directlyDelete(object);
+				this.showSuccessInfo();
+			}
 		}
 	}
 
