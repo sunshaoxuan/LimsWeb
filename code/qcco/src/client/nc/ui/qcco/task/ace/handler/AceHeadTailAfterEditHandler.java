@@ -65,7 +65,7 @@ public class AceHeadTailAfterEditHandler implements IAppEventHandler<CardHeadTai
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			
+
 		}
 		//清空子表和孙表
 		clearBody(this.getMainBillForm().getBillCardPanel());

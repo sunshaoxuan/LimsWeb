@@ -1,7 +1,9 @@
 package nc.impl.qcco;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
 import nc.hr.utils.InSQLCreator;
@@ -52,7 +54,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 	@Override
 	public AggCommissionHVO[] save(AggCommissionHVO[] clientFullVOs,
 			AggCommissionHVO[] originBills) throws BusinessException {
-		checkMail(clientFullVOs);
+		check(clientFullVOs);
 		return super.pubsendapprovebills(clientFullVOs, originBills);
 	}
 
@@ -76,8 +78,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 
 	@Override
 	public AggCommissionHVO[] insert(AggCommissionHVO[] vos) throws BusinessException {
-		checkMail(vos);
-		checkBodyIsNull(vos);
+		check(vos);
 		return super.pubinsertBills(vos,null);
 	}
 
@@ -90,8 +91,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 	@Override
 	public AggCommissionHVO[] update(AggCommissionHVO[] vos)
 			throws BusinessException {
-		checkMail(vos);
-		checkBodyIsNull(vos);
+		check(vos);
 		List<String> list = new ArrayList<String>();
 		for(AggCommissionHVO vo : vos){
 			list.add((String) vo.getParent().getAttributeValue("pk_commission_h"));
@@ -122,6 +122,10 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 		return super.pubupdateBills(vos);
 	}
 
+	private void check(AggCommissionHVO[] vos)throws BusinessException{
+		checkMail(vos);
+		checkBody(vos);
+	}
 
 
 	private void checkMail(AggCommissionHVO[] vos) throws BusinessException{
@@ -151,17 +155,29 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl
 	}*/
 
 	/**
-	 * 校验表体是否为空
+	 * 校验表体是否为空,组别不能重复
 	 * @param clientFullVOs
 	 * @throws BusinessException 
 	 */
-	private void checkBodyIsNull(AggCommissionHVO[] clientFullVOs) throws BusinessException {
+	private void checkBody(AggCommissionHVO[] clientFullVOs) throws BusinessException {
 		if(null != clientFullVOs){
 			for(AggCommissionHVO aggvo : clientFullVOs){
 				if(aggvo!=null){
 					ISuperVO[] bvos = aggvo.getChildren(CommissionBVO.class);
 					if(null== bvos || bvos.length == 0){
 						throw new BusinessException("表体不能为空!");
+					}else{
+						Set<String> groupSet = new HashSet();
+						for(ISuperVO superVO : bvos){
+							CommissionBVO bvo  = (CommissionBVO)superVO;
+							if(bvo!=null && bvo.getPk_samplegroup()!=null){
+								if(groupSet.contains(bvo.getPk_samplegroup())){
+									throw new BusinessException("表体组别不能重复!");
+								}else{
+									groupSet.add(bvo.getPk_samplegroup());
+								}
+							}
+						}
 					}
 				}
 			}

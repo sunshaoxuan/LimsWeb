@@ -246,12 +246,14 @@ public abstract class AceCommissionPubServiceImpl {
 							bvo.setPk_commission_b(null);
 							bvo.setTs(null);
 							bvo.setStatus(2);
-							for(CommissionRVO rvo : bvo.getPk_commission_r()){
-								if(rvo!=null){
-									rvo.setPk_commission_b(null);
-									rvo.setPk_commission_r(null);
-									rvo.setTs(null);
-									rvo.setStatus(2);
+							if(bvo.getPk_commission_r()!=null){
+								for(CommissionRVO rvo : bvo.getPk_commission_r()){
+									if(rvo!=null){
+										rvo.setPk_commission_b(null);
+										rvo.setPk_commission_r(null);
+										rvo.setTs(null);
+										rvo.setStatus(2);
+									}
 								}
 							}
 						}

@@ -269,7 +269,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 
 			for (int i = 0; i < rowCount; i++) {
 				// 只清空自动生成的行
-				UFBoolean ifAuto = (UFBoolean) getGrandCard().getBillCardPanel().getBodyValueAt(i, "isAutoGeneration");
+				UFBoolean ifAuto = (UFBoolean) getGrandCard().getBillCardPanel().getBodyValueAt(i, "isautogeneration");
 				if (ifAuto != null && ifAuto.booleanValue()) {
 					lineSet.add(i);
 				}
