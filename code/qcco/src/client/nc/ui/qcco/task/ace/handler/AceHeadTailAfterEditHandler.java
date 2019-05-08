@@ -12,6 +12,7 @@ import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillCardPanel;
+import nc.ui.pubapp.uif2app.components.grand.util.CardPanelEventUtil;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardHeadTailAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
@@ -53,10 +54,18 @@ public class AceHeadTailAfterEditHandler implements IAppEventHandler<CardHeadTai
 					if (null != refList && refList.size()>0) {
 						e.getBillCardPanel().setHeadItem("billno", refList.get(0).get("billno"));
 					}
+					String typeName = (String) iUAPQueryBS
+							.executeQuery(
+									" select  NAME "
+											+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
+											+ " and PK_PROJ_TYPE = (select pk_commissiontype from qc_commission_h where pk_commission_h='"
+											+ e.getValue() + "')", new ColumnProcessor());
+					CardPanelEventUtil.changeTemplet2(typeName, getMainBillForm().getBillCardPanel());
 				} catch (BusinessException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			
 		}
 		//清空子表和孙表
 		clearBody(this.getMainBillForm().getBillCardPanel());
