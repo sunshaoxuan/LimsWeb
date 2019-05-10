@@ -1,5 +1,9 @@
 package nc.itf.qcco;
 
+import java.util.Map;
+import java.util.Set;
+
+import nc.ui.pub.beans.constenum.IConstEnum;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.pub.BusinessException;
 import nc.vo.qcco.commission.AggCommissionHVO;
@@ -35,5 +39,7 @@ public interface ICommissionMaintain {
 	public void delete(AggCommissionHVO[] aggCommissionHVOs) throws BusinessException;
 
 	public AggCommissionHVO[] update(AggCommissionHVO[] vos) throws BusinessException;
+	
+	public IConstEnum[] getRefName(IConstEnum[] o,Map<String,Map<String,String>> refNamePkMap,Map<String,Object[]> realPksMap) throws BusinessException ;
 
 }
