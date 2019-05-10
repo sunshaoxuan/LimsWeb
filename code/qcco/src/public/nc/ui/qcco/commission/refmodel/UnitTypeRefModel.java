@@ -39,6 +39,6 @@ public class UnitTypeRefModel extends AbstractRefModel {
 
 	protected String getSql(String strPatch, String[] strFieldCode, String[] hiddenFields, String strTableName,
 			String strWherePart, String strGroupField, String strOrderField) {
-		return "select NC_RESULT_CODE,NC_RESULT_NAMECN name, PK_RESULT_TYPE from NC_RESULT_TYPE ";
+		return "select NC_RESULT_CODE,TRIM(NC_RESULT_NAMECN) name, PK_RESULT_TYPE from NC_RESULT_TYPE ";
 	}
 }

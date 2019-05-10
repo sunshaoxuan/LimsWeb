@@ -509,7 +509,7 @@ public class CardPanelEventUtil {
 
 	}
 
-	private static void changeTemplet2(String typeName, BillCardPanel billCardPanel) {
+	public static void changeTemplet2(String typeName, BillCardPanel billCardPanel) {
 		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 		List<String> list = new ArrayList<>();
 		if (templates != null && templates.length > 0) {
