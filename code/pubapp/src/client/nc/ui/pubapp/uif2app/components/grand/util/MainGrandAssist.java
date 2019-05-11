@@ -38,6 +38,7 @@ import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.pub.ValidationException;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.task.TaskBVO;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -788,6 +789,9 @@ public class MainGrandAssist {
         }
         if (children_pk == null) {
             children_pk = (String) changeChild.getAttributeValue("precolumn");
+			if(children_pk == null){
+            	children_pk = (String) changeChild.getAttributeValue("rowno");
+            }
         }
         return children_pk;
     }
