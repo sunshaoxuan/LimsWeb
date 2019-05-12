@@ -175,37 +175,6 @@ where le.list = l.name;
 
 
 
---分析中的值类型
-DROP TABLE LIMS_DATA.NC_RESULT_TYPE;
-
-create table LIMS_DATA.NC_RESULT_TYPE 
-(
-   PK_RESULT_TYPE       CHAR(20 CHAR)        not null,
-   NC_RESULT_CODE       CHAR(50 CHAR),
-   NC_RESULT_NAME       CHAR(200 CHAR),
-   NC_RESULT_DESCRIPTION VARCHAR(100),
-   NC_RESULT_NAMECN     CHAR(200 CHAR),
-   constraint PK_NC_RESULT_TYPE primary key (PK_RESULT_TYPE)
-);
-
-DELETE FROM LIMS_DATA.NC_RESULT_TYPE ;
-
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'1','N','Numberic','数值');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'2','T','TEXT','文本');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'3','L','List','列表');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'4','U','List Allow User Entry','列表允许用户输入');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'5','D','Date','日期');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'6','K','Caculated','计算型');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'7','F','File Name','文件名');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'8','E','Exponential','指数型');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'9','R','RTF Note','RTF备注');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'10','H','Html Note','HTML备注');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'11','S','Standard','标准品');
-insert into LIMS_DATA.NC_RESULT_TYPE values (substr(SYS_GUID(),1,20),'12','Y','DateTime','日期时间');
-
-
-
-
 --无TEST_LIST查找表
 drop table LIMS_DATA.NC_COMPONENT_TABLE cascade constraints;
 
