@@ -7,6 +7,7 @@ import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
+import nc.ui.pubapp.uif2app.actions.RefreshSingleAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
@@ -32,6 +33,15 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 	private CardGrandPanelComposite billForm;
 	private ShowUpableBillForm billFormEditor;
 	//private IDataOperationService service;
+	private RefreshSingleAction refresh;
+
+	public RefreshSingleAction getRefresh() {
+		return refresh;
+	}
+
+	public void setRefresh(RefreshSingleAction refresh) {
+		this.refresh = refresh;
+	}
 
 	public CardGrandPanelComposite getBillForm() {
 		return billForm;
@@ -78,7 +88,7 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 			doEditSave(agghvo);
 			this.getMainGrandModel().clearBufferData();
 		}
-
+		refresh.doAction(e);
 		showSuccessInfo();
 	}
 	

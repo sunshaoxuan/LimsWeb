@@ -677,6 +677,7 @@
 		<property name="service" ref="bmModelModelService" />
 		<property name="editor" ref="billFormEditor" />
 		<property name="mainGrandModel" ref="mainGrandModel" />
+		<property name="refresh" ref="cardRefreshAction"/>
 		<property name="billFormEditor" ref="billFormEditor" />
 		<property name="billForm" ref="MainGrandbillFormEditor" />
 		<property name="validationService" ref="validateService" />
@@ -695,6 +696,7 @@
 		<property name="billFormEditor" ref="billFormEditor" />
 		<property name="billForm" ref="MainGrandbillFormEditor" />
 		<property name="validationService" ref="validateService" />
+		
 		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
 	</bean>
 	<!-- 保存组合校验 -->

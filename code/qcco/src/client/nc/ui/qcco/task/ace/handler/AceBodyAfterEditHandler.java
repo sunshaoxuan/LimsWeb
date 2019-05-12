@@ -32,6 +32,14 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		} else if ("sampleallocation".equals(e.getKey())) {
 			if (StringUtils.isEmpty((String) e.getValue())) {
 				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "samplequantity");
+				int rowu = this.getGrandCard().getBillCardPanel().getRowCount();
+				if (rowu >= 0) {
+					int[] rows = new int[rowu];
+					for (int i = 0; i < rowu; i++) {
+						rows[i] = i;
+					}
+					this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
+				}
 			}
 		}
 	}
