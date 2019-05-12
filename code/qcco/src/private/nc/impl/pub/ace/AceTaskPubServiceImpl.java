@@ -127,7 +127,7 @@ public abstract class AceTaskPubServiceImpl {
 			AggTaskHVO[] aggvos = (AggTaskHVO[]) vos;
 			String[] tableCodes = originBills[0].getTableCodes();
 			AceTaskUpdateBP bp = new AceTaskUpdateBP();
-			AggTaskHVO[] retBills = bp.update(fullBills, originBills);
+			AggTaskHVO[] retBills = bp.update(aggvos, originBills);
 			
 			Map<IVOMeta, List<ISuperVO>> fullGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
 			Map<IVOMeta, List<ISuperVO>> originGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
