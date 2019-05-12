@@ -603,11 +603,19 @@ public class SunlistPanel extends UIDialog implements
 			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("productstard")&& conditionmaps.get("productstard")!= "" ){
 				if (conditionmaps.get("productstard").contains(",")) {
 					String[] str = conditionmaps.get("productstard").split(",");
+					String sssql = "   ( select distinct nc_testlist_name from NC_TASK_ADDUNION where  nc_testlist_name like '%"+str[0]+"%' ";
+					
+					for(int i=1; i<str.length; i++){
+						sssql += " or nc_testlist_name like '%"+str[i]+"%'";
+					}
+					sssql +=")";
 					InSQLCreator insql = new InSQLCreator();
 					String psInSQL = insql.getInSQL(str);
-					sql+=" and nc_testlist_name in("+psInSQL+")";
+					sql+=" and nc_testlist_name in("+sssql+")";
 				}else {
-				sql+=" and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
+				//sql+=" and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
+				sql +=" and nc_testlist_name in ( select distinct nc_testlist_name from NC_TASK_ADDUNION where nc_testlist_name like "
+						+ "'%"+conditionmaps.get("productstard")+"%')";
 			}
 
 			}
@@ -759,6 +767,7 @@ public class SunlistPanel extends UIDialog implements
 			if (ss == null ) {
 			Map<String, String> conditionmaps = new HashMap<>();
 				conditionmaps.put("productcate", productcate.replace(" ", ""));
+				//conditionmaps.put("productstard", productstard.replace(" ", ""));
 				List<TaskBodyVO> taskvos = getListbody(conditionmaps);
 				ss = taskvos.toArray(new TaskBodyVO[0]);
 			}
