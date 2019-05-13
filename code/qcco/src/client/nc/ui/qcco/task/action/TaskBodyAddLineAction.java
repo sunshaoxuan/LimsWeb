@@ -52,6 +52,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			if (sunlistPanel.showModal() == 1) {
 				 pklists = sunlistPanel.getPklist();
 				if (pklists != null && pklists.size() > 0) {
+					int rowno =0;
 					for (int i = 0; i <= pklists.size(); i++) {
 						
 						super.doAction();
@@ -79,11 +80,14 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									this.getCardPanel().getRowCount() - 1, "runorder");
 							
 							super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1, "pk_task_h");
+							
 							// 生成孙表测试条件
 							insertTestCondition(pklists.get(i));
+							
 						}
+						rowno = this.getCardPanel().getRowCount();
 					}
-					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b").delLine(new int[]{pklists.size()});
+					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b").delLine(new int[]{rowno-1});
 				}
 			}
 		} catch (DAOException e) {
@@ -165,9 +169,12 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			if (taskHBodyVO.getTestlistName().equals("_NA")) {
 				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
-								"select cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,cmp.RESULT_TYPE,cmp.UNITS,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
+								"select cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,cmp.RESULT_TYPE,NC_UNITS_TYPE.NC_UNITS_DISP as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
 										+ "cmp.MAXIMUM,cmp.C_EN_DEFAULT_Value,ana.INSTRUMENT, cmp.pk_list_table from nc_component_table cmp "
-										+ "inner join analysis ana on cmp.analysis = ana.name where analysis in (select TRIM(NC_TASK_ADDNAME) "
+										+ "inner join analysis ana on cmp.analysis = ana.name"
+										+ " left join NC_UNITS_TYPE "
+										+ " on cmp.pk_units_type=NC_UNITS_TYPE.pk_units_type where analysis in"
+										+ " (select TRIM(NC_TASK_ADDNAME) "
 										+ "NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"
 										+ taskHBodyVO.getUnique() + "') ", new MapListProcessor());
 				if (custlist != null && custlist.size() > 0) {
@@ -244,10 +251,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
 								"select NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
-										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,NC_TESTLIST_COMP.UNITS,NC_TESTLIST_COMP.C_DEFAULT_VALUE, "
+										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,NC_UNITS_TYPE.NC_UNITS_DISP as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE, "
 										+ " NC_TESTLIST_COMP.MIN_LIMIT,NC_TESTLIST_COMP.MAX_LIMIT,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
 										+ " nc_result_type.pk_result_type,NC_RESULT_TYPE.nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP,NC_COMPONENT_table, "
-										+ " NC_RESULT_TYPE,analysis where NC_ANALYSIS_NAME = (select TRIM(NC_ANALYSIS_NAME) NC_ANALYSIS_NAME "
+										+ " NC_RESULT_TYPE,analysis,NC_UNITS_TYPE where NC_ANALYSIS_NAME = (select TRIM(NC_ANALYSIS_NAME) NC_ANALYSIS_NAME "
 										+ " from nc_analysis_list nal2 where nal2.name in (select distinct nal.nc_test_condition from "
 										+ " nc_analysis_list nal , nc_task_addunion nta where nal.nc_analysis_name = nta.nc_task_addname "
 										+ " and pk_task_addunion='"
@@ -258,7 +265,8 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										+ "' ) and NC_TESTLIST_COMP.NC_ANALYSIS_NAME = "
 										+ " NC_COMPONENT_table.ANALYSIS and NC_TESTLIST_COMP.NC_TLC_COMPONENT = NC_COMPONENT_table.NAME "
 										+ " and NC_COMPONENT_table.pk_result_type= NC_RESULT_TYPE.pk_result_type and "
-										+ " NC_COMPONENT_table.analysis = analysis.name ", new MapListProcessor());
+										+ " NC_COMPONENT_table.analysis = analysis.name "
+										+ " and nc_component_table.pk_units_type=NC_UNITS_TYPE.pk_units_type", new MapListProcessor());
 				if (custlists != null && custlists.size() > 0) {
 					for (Map<String, String> map : custlists) {
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_s").addLine();

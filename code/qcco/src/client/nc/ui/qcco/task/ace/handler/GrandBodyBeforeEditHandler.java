@@ -16,6 +16,15 @@ public void handleAppEvent(CardBodyBeforeEditEvent e) {
 				e.setReturnValue(true);
 				return;
 				
+			}else if(valueways == 1) {
+				e.setReturnValue(true);
+				return;
+			}else if (valueways == 2) {
+				e.setReturnValue(false);
+				return;
+			}else  {
+				e.setReturnValue(false);
+				return;
 			}
 			
 		}
@@ -24,6 +33,15 @@ public void handleAppEvent(CardBodyBeforeEditEvent e) {
 			if(null == valueways){
 				MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "错误", "取值方式不能为空。"); 
 				e.setReturnValue(true);
+				return;
+			}else if (valueways ==1) {
+				e.setReturnValue(false);
+				return;
+			}else if (valueways ==2) {
+				e.setReturnValue(true);
+				return;
+			}else  {
+				e.setReturnValue(false);
 				return;
 			}
 		}
