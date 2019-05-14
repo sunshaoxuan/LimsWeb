@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -14,7 +13,6 @@ import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
-import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.beans.constenum.DefaultConstEnum;
@@ -38,9 +36,9 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 	@Override
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
 		if ("productserial".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			// 产品系列
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
@@ -54,9 +52,9 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				Log.debug(e1.getMessage());
 			}
 		} else if ("enterprisestandard".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			// 企业标准
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
@@ -65,9 +63,9 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// 刷新温度字段
 			refreshProductstage(e);
 		} else if ("productspec".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			// 规格号
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productspec");
@@ -84,9 +82,9 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				Log.debug(e1.getMessage());
 			}
 		} else if ("structuretype".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			// 结构类型
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_structuretype");
@@ -98,24 +96,24 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// 刷新温度字段
 			refreshProductstage(e);
 		} else if ("ref_contacttype".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "contacttype");
 		} else if ("contactbrand".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			// 触点牌号
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
 			UIRefPane refPane = (UIRefPane) bitem.getComponent();
 			e.getBillCardPanel().setBodyValueAt(refPane.getRefPK(), e.getRow(), "pk_contactbrand");
 		} else if ("samplegroup".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			// mod tank 当样品组别和实验参数都不为空的时候进行重新生成孙表的工作,否则不进行如何工作
 			BillCellEditor bitem = (BillCellEditor) e.getSource();
@@ -142,9 +140,9 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 
 		if ("enterprisestandard".equals(e.getKey()) || "productspec".equals(e.getKey())
 				|| "samplegroup".equals(e.getKey()) || "ref_contacttype".equals(e.getKey())) {
-			if(e.getOldValue()!=null && e.getValue()==null){
+			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
-				return ;
+				return;
 			}
 			// 清空孙表样品
 			clearGrandLines(e);
@@ -254,7 +252,8 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				if (item.getKey().equals("rowno")) {
 					continue;
 				}
-				if ("samplegroup".equals(item.getKey()) || "analysisref".equals(item.getKey())) {
+				if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") == null
+						|| e.getBillCardPanel().getBodyValueAt(e.getRow(), "analysisref") == null) {
 					// 当清空样品组别或实验前参数时，清空孙表
 					clearGrandLines(e);
 				}
@@ -269,7 +268,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 
 			for (int i = 0; i < rowCount; i++) {
 				// 只清空自动生成的行
-				UFBoolean ifAuto = (UFBoolean) getGrandCard().getBillCardPanel().getBodyValueAt(i, "isautogeneration");
+				UFBoolean ifAuto = (UFBoolean) getGrandCard().getBillCardPanel().getBodyValueAt(i, "isAutoGeneration");
 				if (ifAuto != null && ifAuto.booleanValue()) {
 					lineSet.add(i);
 				}
@@ -322,7 +321,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "judgeflag");
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "testflag");
 				// 系统生成标识
-				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isautogeneration");
+				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isAutoGeneration");
 				// 企业标准
 				String pk_enterprisestandard = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(),
 						"pk_enterprisestandard");
@@ -366,19 +365,21 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					IConstEnum aValue = new DefaultConstEnum(refName, refName);
 					this.getGrandCard().getBillCardPanel().setBodyValueAt(aValue.getValue(), row, "component");
 				}
-				//e.getBillCardPanel().getBodyValueAt(row, "qc_commission_b");
+				// e.getBillCardPanel().getBodyValueAt(row, "qc_commission_b");
 			}
 		}
 	}
+
 	/**
 	 * fix 修改后为空的问题
+	 * 
 	 * @return
 	 */
-	private void fixEmpty(CardBodyAfterEditEvent e){
+	private void fixEmpty(CardBodyAfterEditEvent e) {
 		CommissionBVO bodyVO = new CommissionBVO();
 		bodyVO.setAttributeValue(e.getKey(), e.getOldValue());
-		UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(),
-				e.getRow(), e.getBillCardPanel().getBodyItem(e.getKey()), true);
+		UserDefineRefUtils.refreshItemRefValue(bodyVO, e.getBillCardPanel().getBodyPanel().getTable(), e.getRow(), e
+				.getBillCardPanel().getBodyItem(e.getKey()), true);
 
 	}
 

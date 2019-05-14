@@ -5,7 +5,6 @@ import java.awt.Checkbox;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,22 +20,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import org.apache.xmlbeans.impl.jam.mutable.MPackage;
-
-import com.borland.jbcl.layout.PaneLayout;
-import com.informix.util.stringUtil;
-
 import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
-import nc.uap.lfw.jsp.uimeta.UICardLayout;
-import nc.uap.lfw.jsp.uimeta.UILayoutPanel;
-import nc.ui.bd.reportitem.batchadd.view.LayoutPanel;
 import nc.ui.ml.NCLangRes;
-import nc.ui.powerrule.ruleeditor.DialogLayout;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.beans.UIButton;
 import nc.ui.pub.beans.UIDialog;
@@ -44,23 +34,16 @@ import nc.ui.pub.beans.UILabel;
 import nc.ui.pub.beans.UIPanel;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.beans.UITextField;
-import nc.ui.pub.bill.BillCardLayout;
 import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pub.bill.BillEditEvent;
-import nc.ui.pub.bill.BillListData;
 import nc.ui.pub.bill.BillListPanel;
-import nc.ui.qcco.task.utils.StringOrderUtils;
-import nc.ui.uif2.components.BorderLayoutPanel;
-import nc.ui.uif2.components.widget.BesideWidgetLayout;
-import nc.vo.pub.AggregatedValueObject;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.qcco.task.TaskBodyVO;
 import nc.vo.qcco.task.TaskHBodyVO;
 
 @SuppressWarnings("unused")
-public class SunlistPanel extends UIDialog implements
-		nc.ui.pub.bill.BillEditListener2, ActionListener {
+public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditListener2, ActionListener {
 	private BillListPanel billListHeadPanel = null;
 	private BillCardPanel billListBodyPanel = null;
 	private static final long serialVersionUID = 1L;
@@ -98,6 +81,7 @@ public class SunlistPanel extends UIDialog implements
 	private JPanel ivjUIDialogContentPane = null;
 	private List<TaskHBodyVO> pklist = null;
 	private List<TaskHBodyVO> pkbodylist = new ArrayList<>();
+
 	public List<TaskHBodyVO> getPklist() {
 		if (null == pklist) {
 			pklist = new ArrayList<TaskHBodyVO>();
@@ -183,8 +167,7 @@ public class SunlistPanel extends UIDialog implements
 				ivjUIDialogContentPane = new javax.swing.JPanel();
 				ivjUIDialogContentPane.setName("ivjUIDialogContentPane");
 				ivjUIDialogContentPane.setLayout(new java.awt.BorderLayout());
-				getUIDialogContentPane().add(getUIDialogContentPane1(),
-						BorderLayout.CENTER);
+				getUIDialogContentPane().add(getUIDialogContentPane1(), BorderLayout.CENTER);
 				getUIDialogContentPane().add(getBnPanel(), BorderLayout.SOUTH);
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
@@ -209,8 +192,7 @@ public class SunlistPanel extends UIDialog implements
 		if (this.okButton == null) {
 			this.okButton = new UIButton();
 			this.okButton.setBounds(new Rectangle(50, 5, 30, 20));
-			this.okButton.setText(NCLangRes.getInstance().getStrByID("common",
-					"UC001-0000044"));
+			this.okButton.setText(NCLangRes.getInstance().getStrByID("common", "UC001-0000044"));
 			this.okButton.setPreferredSize(new Dimension(60, 22));
 			this.okButton.addActionListener(this);
 		}
@@ -221,8 +203,7 @@ public class SunlistPanel extends UIDialog implements
 		if (this.cancelButton == null) {
 			this.cancelButton = new UIButton();
 			this.cancelButton.setBounds(new Rectangle(200, 5, 30, 20));
-			this.cancelButton.setText(NCLangRes.getInstance().getStrByID(
-					"common", "UC001-0000008"));
+			this.cancelButton.setText(NCLangRes.getInstance().getStrByID("common", "UC001-0000008"));
 			this.cancelButton.setPreferredSize(new Dimension(60, 22));
 			this.cancelButton.addActionListener(this);
 		}
@@ -232,30 +213,64 @@ public class SunlistPanel extends UIDialog implements
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(getOkButton())) {
 			setResult(UIDialog.ID_OK);
-			TaskBodyVO[] bodySelectedVOs = (TaskBodyVO[]) getBillListHeadPanel()
-					.getBodyBillModel().getBodySelectedVOs(
-							"nc.vo.qcco.task.TaskBodyVO");
-			Map<TaskHBodyVO,String>map = new HashMap<>();
+			TaskBodyVO[] bodySelectedVOs = (TaskBodyVO[]) getBillListHeadPanel().getBodyBillModel().getBodySelectedVOs(
+					"nc.vo.qcco.task.TaskBodyVO");
+			Map<TaskHBodyVO, String> map = new HashMap<>();
 			if (null != bodySelectedVOs && bodySelectedVOs.length > 0) {
 				for (int i = 0; i < bodySelectedVOs.length; i++) {
-					for(TaskHBodyVO taskHBodyVO : pkbodylist){
-						/*if ((taskHBodyVO.getTaskBodyVO().getAccordstandard()==null?"":taskHBodyVO.getTaskBodyVO().getAccordstandard()).equals(bodySelectedVOs[i].getAccordstandard()==null?"":bodySelectedVOs[i].getAccordstandard())
-								&& (taskHBodyVO.getTaskBodyVO().getCbplan()==null ? "":taskHBodyVO.getTaskBodyVO().getCbplan()).equals(bodySelectedVOs[i].getCbplan()==null?"":bodySelectedVOs[i].getCbplan())
-								&& (taskHBodyVO.getTaskBodyVO().getProjectName()==null?"":taskHBodyVO.getTaskBodyVO().getProjectName()).equals(bodySelectedVOs[i].getProjectName()==null?"":bodySelectedVOs[i].getProjectName())
-								&& (taskHBodyVO.getTaskBodyVO().getProjectType()==null?"":taskHBodyVO.getTaskBodyVO().getProjectType()).equals(bodySelectedVOs[i].getProjectType()==null?"":bodySelectedVOs[i].getProjectType())
-								&& (taskHBodyVO.getTaskBodyVO().getReportName()==null?"":taskHBodyVO.getTaskBodyVO().getReportName()).equals(bodySelectedVOs[i].getReportName()==null?"":bodySelectedVOs[i].getReportName())
-								&& (taskHBodyVO.getTaskBodyVO().getDetailDescription()==null?"":taskHBodyVO.getTaskBodyVO().getDetailDescription()).equals(bodySelectedVOs[i].getDetailDescription()==null?"":bodySelectedVOs[i].getDetailDescription())
-								&& (taskHBodyVO.getTaskBodyVO().getTestList()==null?"":taskHBodyVO.getTaskBodyVO().getTestList()).equals(bodySelectedVOs[i].getTestList()==null?"":bodySelectedVOs[i].getTestList())) {
-							map.put(taskHBodyVO, null);
-						}*/
+					for (TaskHBodyVO taskHBodyVO : pkbodylist) {
+						/*
+						 * if
+						 * ((taskHBodyVO.getTaskBodyVO().getAccordstandard()==
+						 * null
+						 * ?"":taskHBodyVO.getTaskBodyVO().getAccordstandard(
+						 * )).equals
+						 * (bodySelectedVOs[i].getAccordstandard()==null
+						 * ?"":bodySelectedVOs[i].getAccordstandard()) &&
+						 * (taskHBodyVO.getTaskBodyVO().getCbplan()==null ?
+						 * "":taskHBodyVO
+						 * .getTaskBodyVO().getCbplan()).equals(bodySelectedVOs
+						 * [i
+						 * ].getCbplan()==null?"":bodySelectedVOs[i].getCbplan(
+						 * )) &&
+						 * (taskHBodyVO.getTaskBodyVO().getProjectName()==null
+						 * ?""
+						 * :taskHBodyVO.getTaskBodyVO().getProjectName()).equals
+						 * (bodySelectedVOs[i].getProjectName()==null?"":
+						 * bodySelectedVOs[i].getProjectName()) &&
+						 * (taskHBodyVO.getTaskBodyVO
+						 * ().getProjectType()==null?""
+						 * :taskHBodyVO.getTaskBodyVO
+						 * ().getProjectType()).equals(
+						 * bodySelectedVOs[i].getProjectType
+						 * ()==null?"":bodySelectedVOs[i].getProjectType()) &&
+						 * (taskHBodyVO
+						 * .getTaskBodyVO().getReportName()==null?"":
+						 * taskHBodyVO.
+						 * getTaskBodyVO().getReportName()).equals(bodySelectedVOs
+						 * [i].getReportName()==null?"":bodySelectedVOs[i].
+						 * getReportName()) &&
+						 * (taskHBodyVO.getTaskBodyVO().getDetailDescription
+						 * ()==null
+						 * ?"":taskHBodyVO.getTaskBodyVO().getDetailDescription
+						 * ()
+						 * ).equals(bodySelectedVOs[i].getDetailDescription()==
+						 * null?"":bodySelectedVOs[i].getDetailDescription()) &&
+						 * (taskHBodyVO.getTaskBodyVO().getTestList()==null?"":
+						 * taskHBodyVO
+						 * .getTaskBodyVO().getTestList()).equals(bodySelectedVOs
+						 * [
+						 * i].getTestList()==null?"":bodySelectedVOs[i].getTestList
+						 * ())) { map.put(taskHBodyVO, null); }
+						 */
 						if (taskHBodyVO.getUnique().equals(bodySelectedVOs[i].getPk_sunlist())) {
 							map.put(taskHBodyVO, null);
 						}
+					}
 				}
 			}
-			}
 			if (null != map && map.size() > 0) {
-				for(TaskHBodyVO taskHBodyVO: map.keySet()){
+				for (TaskHBodyVO taskHBodyVO : map.keySet()) {
 					getPklist().add(taskHBodyVO);
 					pkbodylist.clear();
 				}
@@ -321,8 +336,7 @@ public class SunlistPanel extends UIDialog implements
 				btnOKtop.setText("查询");
 				btnOKtop.addActionListener(this);
 				btnOKtop.setBounds(750, 48, 50, 25);
-				btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(
-						KeyEvent.VK_Y, InputEvent.ALT_MASK),
+				btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.ALT_MASK),
 						JComponent.WHEN_IN_FOCUSED_WINDOW);
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
@@ -409,7 +423,7 @@ public class SunlistPanel extends UIDialog implements
 				businessField = new UITextField();
 				businessField.setName("businessField");
 				businessField.setBounds(570, 8, 150, 50);
-				businessField.setText(productstard ==null ? null : productstard.replace(" ", ""));
+				businessField.setText(productstard == null ? null : productstard.replace(" ", ""));
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -522,121 +536,117 @@ public class SunlistPanel extends UIDialog implements
 		this.scope = getScopeField().getText();
 		this.testWay = getTestWayField().getText();
 		Map<String, String> conditionmaps = new HashMap<>();
-		if(null != projectType &&projectType.length() > 0){
+		if (null != projectType && projectType.length() > 0) {
 			conditionmaps.put("projectType", this.projectType);
 		}
-		if(null != productstard &&productstard.length() > 0){
+		if (null != productstard && productstard.length() > 0) {
 			conditionmaps.put("productstard", this.productstard);
 		}
-		if(null != productcate &&productcate.length() > 0){
+		if (null != productcate && productcate.length() > 0) {
 			conditionmaps.put("productcate", this.productcate);
 		}
-		if(null != testProject &&testProject.length() > 0){
+		if (null != testProject && testProject.length() > 0) {
 			conditionmaps.put("testProject", this.testProject);
 		}
-		if(null != scope &&scope.length() > 0){
+		if (null != scope && scope.length() > 0) {
 			conditionmaps.put("scope", this.scope);
 		}
-		if(null != testWay &&testWay.length() > 0){
+		if (null != testWay && testWay.length() > 0) {
 			conditionmaps.put("testWay", this.testWay);
 		}
-		
-		
-		
-		
-		
-		
+
 		// 查询出listData
 		List<TaskBodyVO> taskvos = getListbody(conditionmaps);
-		/*BillListData billTempletData = new BillListData();
-		for (int i = 0; i < 34; i++) {
-			TaskBodyVO taskbodyvo = new TaskBodyVO();
-			taskbodyvo.setCbplan("11" + i);
-			taskbodyvo.setDetailDescription("22" + i);
-			taskbodyvo.setAccordstandard("333" + i);
-			taskbodyvo.setProjectName("44" + i);
-			taskbodyvo.setProjectType("55" + i);
-			taskbodyvo.setReportName("66" + i);
-			taskbodyvo.setTestList("77" + i);
-			taskvos.add(taskbodyvo);
-		}*/
+		/*
+		 * BillListData billTempletData = new BillListData(); for (int i = 0; i
+		 * < 34; i++) { TaskBodyVO taskbodyvo = new TaskBodyVO();
+		 * taskbodyvo.setCbplan("11" + i); taskbodyvo.setDetailDescription("22"
+		 * + i); taskbodyvo.setAccordstandard("333" + i);
+		 * taskbodyvo.setProjectName("44" + i); taskbodyvo.setProjectType("55" +
+		 * i); taskbodyvo.setReportName("66" + i); taskbodyvo.setTestList("77" +
+		 * i); taskvos.add(taskbodyvo); }
+		 */
 
 		ss = taskvos.toArray(new TaskBodyVO[0]);
 		this.getContentPane().hide();
 		initialize();
 
 	}
-	
-	//查询出弹出框内容
-	public List<TaskBodyVO> getListbody(Map<String, String> conditionmaps){
-		//先判断条数是否超标
-		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(
-				IUAPQueryBS.class.getName());
+
+	// 查询出弹出框内容
+	public List<TaskBodyVO> getListbody(Map<String, String> conditionmaps) {
+		// 先判断条数是否超标
+		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 		List<TaskBodyVO> conditions = new ArrayList<TaskBodyVO>();
 		try {
-			String sql = "SELECT  DISTINCT trim(NC_TASK_ADDUNION.pk_task_addunion)   AS pk_task_addunion,  trim(NC_TASK_ADDUNION.nc_testlist_name)as nc_testlist_name, "
-					+ "  trim(NC_TASK_ADDUNION.nc_report_name)as nc_report_name,"
+			String sql = "SELECT  DISTINCT trim(NC_TASK_ADDUNION.pk_task_addunion)   pk_task_addunion,  trim(NC_TASK_ADDUNION.nc_testlist_name) nc_testlist_name, "
+					+ "  trim(NC_TASK_ADDUNION.nc_report_name) nc_report_name,"
 					+ "  trim(NC_TASK_ADDUNION.nc_analysis_method) nc_analysis_method ,    "
 					+ " trim(NC_TASK_ADDUNION.nc_task_type) nc_task_type,"
 					+ "    trim(NC_TASK_ADDUNION.nc_task_name) nc_task_name,"
 					+ "   trim(NC_TASK_ADDUNION.nc_task_des) nc_task_des ,"
 					+ "   trim(NC_TASK_ADDUNION.nc_cb_plan) nc_cb_plan,"
-					+ " trim(c.c_test_condition) as c_test_condition, "
+					+ " trim(c.c_test_condition)  c_test_condition, "
 					+ " trim(c.common_name) common_name FROM    NC_TASK_ADDUNION "
 					+ "left join (select a.c_test_condition,common_name,"
 					+ "nc_task_addname from analysis a,nc_task_addunion nca where trim(a.name) = trim(nca.nc_task_addname) )c "
 					+ "on trim(c.nc_task_addname) = trim(NC_TASK_ADDUNION.nc_task_name) WHERE 1=1 ";
-			if (null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("projectType") && conditionmaps.get("projectType")!= "" ) {
-				sql+= "and nc_task_type like '"+conditionmaps.get("projectType")+"'";
-			} 
-			
-			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("scope")&& conditionmaps.get("scope")!= "" ){
-				sql+="and nc_task_des like '%"+conditionmaps.get("scope")+"%'";
+			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("projectType")
+					&& conditionmaps.get("projectType") != "") {
+				sql += "and nc_task_type like '" + conditionmaps.get("projectType") + "'";
 			}
-			
-			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("testProject")&& conditionmaps.get("testProject")!= "" ){
-				sql +="and nc_report_name like '%"+conditionmaps.get("testProject")+"%'";
+
+			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("scope")
+					&& conditionmaps.get("scope") != "") {
+				sql += "and nc_task_des like '%" + conditionmaps.get("scope") + "%'";
 			}
-			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("testWay")&& conditionmaps.get("testWay")!= "" ){
-				sql +="and nc_analysis_method like '%"+conditionmaps.get("testWay")+"%'";
+
+			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("testProject")
+					&& conditionmaps.get("testProject") != "") {
+				sql += "and nc_report_name like '%" + conditionmaps.get("testProject") + "%'";
 			}
-			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("productstard")&& conditionmaps.get("productstard")!= "" ){
+			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("testWay")
+					&& conditionmaps.get("testWay") != "") {
+				sql += "and nc_analysis_method like '%" + conditionmaps.get("testWay") + "%'";
+			}
+			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("productstard")
+					&& conditionmaps.get("productstard") != "") {
 				if (conditionmaps.get("productstard").contains(",")) {
-					String[] str = conditionmaps.get("productstard").split(",");
-					String sssql = "   ( select distinct nc_testlist_name from NC_TASK_ADDUNION where  nc_testlist_name like '%"+str[0]+"%' ";
-					
-					for(int i=1; i<str.length; i++){
-						sssql += " or nc_testlist_name like '%"+str[i]+"%'";
+					String[] str = (conditionmaps.get("productstard") + ",_NA").split(",");
+					String sssql = "   ( select distinct nc_testlist_name from NC_TASK_ADDUNION where  nc_testlist_name like '%"
+							+ str[0] + "%' ";
+
+					for (int i = 1; i < str.length; i++) {
+						sssql += " or nc_testlist_name like '%" + str[i] + "%'";
 					}
-					sssql +=")";
+					sssql += ")";
 					InSQLCreator insql = new InSQLCreator();
 					String psInSQL = insql.getInSQL(str);
-					sql+=" and nc_testlist_name in("+sssql+")";
-				}else {
-				//sql+=" and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
-				sql +=" and nc_testlist_name in ( select distinct nc_testlist_name from NC_TASK_ADDUNION where nc_testlist_name like "
-						+ "'%"+conditionmaps.get("productstard")+"%')";
+					sql += " and nc_testlist_name in(" + sssql + ")";
+				} else {
+					// sql+=" and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
+					sql += " and nc_testlist_name in ( select distinct nc_testlist_name from NC_TASK_ADDUNION where nc_testlist_name like "
+							+ "'%" + conditionmaps.get("productstard") + "%' or nc_testlist_name like '%_NA%')";
+				}
 			}
-
-			}
-			if(null != conditionmaps && conditionmaps.size()>0 && null != conditionmaps.get("productcate")&& conditionmaps.get("productcate")!= "" ){
-
+			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("productcate")
+					&& conditionmaps.get("productcate") != "") {
 				if (conditionmaps.get("productcate").contains(",")) {
 					String[] str = conditionmaps.get("productcate").split(",");
 					InSQLCreator insql = new InSQLCreator();
 					String psInSQL = insql.getInSQL(str);
-					sql+=" and nc_include_protype in("+psInSQL+")";
-				}else {
-				sql +="  and nc_include_protype like '%"+conditionmaps.get("productcate")+"%'";
-			}
+					sql += " and nc_include_protype in(" + psInSQL + ")";
+				} else {
+					sql += "  and nc_include_protype like '%" + conditionmaps.get("productcate") + "%'";
+				}
 			}
 
-			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
-					.executeQuery(
-							sql,
-							new MapListProcessor());
-			
-			if (null != custlist && custlist.size()>0) {
+			sql += " ORDER BY NC_TESTLIST_NAME ";
+
+			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS.executeQuery(sql,
+					new MapListProcessor());
+
+			if (null != custlist && custlist.size() > 0) {
 				int i = 0;
 				pkbodylist.clear();
 				for (Map<String, String> map : custlist) {
@@ -649,7 +659,7 @@ public class SunlistPanel extends UIDialog implements
 					taskbodyvo.setProjectType(map.get("nc_task_type"));
 					taskbodyvo.setTestList(map.get("nc_testlist_name"));
 					taskbodyvo.setReportName(map.get("nc_report_name"));
-					//taskbodyvo.setUnique(map.get("nc_cb_plan")+i);
+					// taskbodyvo.setUnique(map.get("nc_cb_plan")+i);
 					taskbodyvo.setPk_sunlist(map.get("pk_task_addunion"));
 					conditions.add(taskbodyvo);
 
@@ -664,8 +674,8 @@ public class SunlistPanel extends UIDialog implements
 
 				}
 			}
-		}catch (Exception e) {
-				// TODO: handle exception
+		} catch (Exception e) {
+			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return conditions;
@@ -673,26 +683,22 @@ public class SunlistPanel extends UIDialog implements
 
 	// 通过委托单的pk查询出子表的企业标准和产品类别
 	public Map<String, String> getproductdata(String pk_commission_h) {
-		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(
-				IUAPQueryBS.class.getName());
+		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 		Map<String, String> products = new HashMap<String, String>();
 		Map<String, String> productstardMap = new HashMap<String, String>();
 		Map<String, String> productCateMap = new HashMap<String, String>();
 		String productstardstr = "";
 		String productCatestr = "";
 		try {
-			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
-					.executeQuery(
-							"select distinct "
-									+ " c.nc_bbasen_name ,d.name as sname,f.prod_type as fname from qc_commission_b b "
-									+ "left join qc_commission_h h on h.pk_commission_h=b.pk_commission_h "
-									+ "left join NC_BASEN_TYPE c on c.pk_basen_type = b.pk_enterprisestandard "
-									+ " left join NC_SECOND_TYPE d on d.pk_second_type = h.pk_subcategory "
-									+ " left join NC_FIRST_TYPE f on f.pk_first_type = h.pk_maincategory "
-									+ " left join NC_THIRD_TYPE t on t.pk_third_type = h.pk_lastcategory "
-									+ " where h.pk_commission_h='"
-									+ pk_commission_h + "'",
-							new MapListProcessor());
+			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS.executeQuery(
+					"select distinct "
+							+ " c.nc_bbasen_name ,d.name as sname,f.prod_type as fname from qc_commission_b b "
+							+ "left join qc_commission_h h on h.pk_commission_h=b.pk_commission_h "
+							+ "left join NC_BASEN_TYPE c on c.pk_basen_type = b.pk_enterprisestandard "
+							+ " left join NC_SECOND_TYPE d on d.pk_second_type = h.pk_subcategory "
+							+ " left join NC_FIRST_TYPE f on f.pk_first_type = h.pk_maincategory "
+							+ " left join NC_THIRD_TYPE t on t.pk_third_type = h.pk_lastcategory "
+							+ " where h.pk_commission_h='" + pk_commission_h + "'", new MapListProcessor());
 			if (custlist != null && custlist.size() > 0) {
 				for (Map<String, String> map : custlist) {
 					if (null != map.get("nc_bbasen_name")) {
@@ -701,12 +707,14 @@ public class SunlistPanel extends UIDialog implements
 					if (null != map.get("sname")) {
 						productCateMap.put(map.get("sname"), null);
 					}
-					/*if (null != map.get("fname")) {
-						productCateMap.put(map.get("fname"), null);
-					}*/
-					/*if (null != map.get("tname")) {
-						productCateMap.put(map.get("tname"), null);
-					}*/
+					/*
+					 * if (null != map.get("fname")) {
+					 * productCateMap.put(map.get("fname"), null); }
+					 */
+					/*
+					 * if (null != map.get("tname")) {
+					 * productCateMap.put(map.get("tname"), null); }
+					 */
 				}
 				if (null != productstardMap && productstardMap.size() > 0) {
 					for (String str : productstardMap.keySet()) {
@@ -719,14 +727,10 @@ public class SunlistPanel extends UIDialog implements
 					}
 				}
 				if (productstardstr.length() > 1) {
-					products.put(
-							"productstard",
-							productstardstr.substring(1,
-									productstardstr.length()));
+					products.put("productstard", productstardstr.substring(1, productstardstr.length()));
 				}
 				if (productCatestr.length() > 1) {
-					products.put("productcate", productCatestr.substring(1,
-							productCatestr.length()));
+					products.put("productcate", productCatestr.substring(1, productCatestr.length()));
 				}
 
 			}
@@ -764,10 +768,10 @@ public class SunlistPanel extends UIDialog implements
 			billListHeadPanel.setAutoscrolls(true);
 			billListHeadPanel.setMultiSelect(true);
 
-			if (ss == null ) {
-			Map<String, String> conditionmaps = new HashMap<>();
+			if (ss == null) {
+				Map<String, String> conditionmaps = new HashMap<>();
 				conditionmaps.put("productcate", productcate.replace(" ", ""));
-				//conditionmaps.put("productstard", productstard.replace(" ", ""));
+				conditionmaps.put("productstard", productstard.replace(" ", ""));
 				List<TaskBodyVO> taskvos = getListbody(conditionmaps);
 				ss = taskvos.toArray(new TaskBodyVO[0]);
 			}

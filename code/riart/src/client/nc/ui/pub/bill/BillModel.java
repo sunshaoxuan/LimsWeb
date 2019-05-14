@@ -49,13 +49,11 @@ import nc.vo.pub.lang.MultiLangText;
 import nc.vo.pub.lang.UFBoolean;
 import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.task.AggTaskHVO;
-import nc.vo.qcco.task.TaskHVO;
 
 import org.apache.commons.lang.ArrayUtils;
 
 @SuppressWarnings("serial")
-public class BillModel extends AbstractTableModel implements
-		IMutilSortableTableModel, ColoredCell, CellFont, ISpanCell {
+public class BillModel extends AbstractTableModel implements IMutilSortableTableModel, ColoredCell, CellFont, ISpanCell {
 	/**
 	 * The <code>Vector</code> of <code>Vectors</code> of <code>Object</code>
 	 * values.
@@ -182,8 +180,7 @@ public class BillModel extends AbstractTableModel implements
 	// private Hashtable<Cell,Color> hashCellForeColor = new
 	// Hashtable<Cell,Color>();
 
-	private BillModelFormulaProcessor formulaProcessor = new BillModelFormulaProcessor(
-			this);
+	private BillModelFormulaProcessor formulaProcessor = new BillModelFormulaProcessor(this);
 
 	// for formula
 	private BillScrollPane billScrollPane = null;
@@ -194,8 +191,7 @@ public class BillModel extends AbstractTableModel implements
 
 	private BillModelCellEditableController cellEditableController = null;
 
-	private String totalTitle = nc.ui.ml.NCLangRes.getInstance().getStrByID(
-			"common", "UC000-0001146");
+	private String totalTitle = nc.ui.ml.NCLangRes.getInstance().getStrByID("common", "UC000-0001146");
 
 	// private boolean showUserFixRowTable = false;
 
@@ -213,10 +209,11 @@ public class BillModel extends AbstractTableModel implements
 
 	private BillTabVO tabvo = null;
 
-	private String selectModelTxt = nc.ui.ml.NCLangRes.getInstance()
-			.getStrByID("_bill", "UPP_Bill-000563"/*
-												 * @res"选择模式只能设置SELECTED或UNSTATE"
-												 */);
+	private String selectModelTxt = nc.ui.ml.NCLangRes.getInstance().getStrByID("_bill", "UPP_Bill-000563"/*
+																										 * @
+																										 * res
+																										 * "选择模式只能设置SELECTED或UNSTATE"
+																										 */);
 	// 正在导入
 	private boolean isImporting = false;
 	// 是否触发表插入数据事件
@@ -719,83 +716,66 @@ public class BillModel extends AbstractTableModel implements
 	/**
 	 * 设置对应行的Item的精度
 	 */
-	private void setBillItemDecimalByVO(BillItem item, int row,
-			CircularlyAccessibleValueObject bodyRowVO) {
+	private void setBillItemDecimalByVO(BillItem item, int row, CircularlyAccessibleValueObject bodyRowVO) {
 		if (item.getDecimalListener() != null) {
 			String source = item.getDecimalListener().getSource();
 			Object pkValue = bodyRowVO.getAttributeValue(source);
-			if (pkValue != null){
-				 if ( item.getDecimalListener() instanceof IBillModelDecimalListener3) {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, pkValue),
-			              ((IBillModelDecimalListener3) item.getDecimalListener())
-			                  .getRoundingModeFromSource( row, pkValue));
-			          }
-			     else {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, pkValue));
-			     }
+			if (pkValue != null) {
+				if (item.getDecimalListener() instanceof IBillModelDecimalListener3) {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, pkValue),
+							((IBillModelDecimalListener3) item.getDecimalListener()).getRoundingModeFromSource(row,
+									pkValue));
+				} else {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, pkValue));
+				}
 
-//				item.setDecimalDigits(item.getDecimalListener()
-//						.getDecimalFromSource(row, pkValue));
+				// item.setDecimalDigits(item.getDecimalListener()
+				// .getDecimalFromSource(row, pkValue));
 			}
-				
+
 		}
 	}
 
 	private void setBillItemDecimalByRow(BillItem item, int row) {
 		if (item.getDecimalListener() != null) {
-			int colIndex = getBodyColByKey(item.getDecimalListener()
-					.getSource());
+			int colIndex = getBodyColByKey(item.getDecimalListener().getSource());
 			Object id = getValueAt(row, colIndex);
 			if (id != null && id instanceof IConstEnum)
 				id = ((IConstEnum) id).getValue();
-			if (id != null){
-				 if ( item.getDecimalListener() instanceof IBillModelDecimalListener3) {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, id),
-			              ((IBillModelDecimalListener3) item.getDecimalListener())
-			                  .getRoundingModeFromSource( row, id));
-			          }
-			     else {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, id));
-			     }
+			if (id != null) {
+				if (item.getDecimalListener() instanceof IBillModelDecimalListener3) {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, id),
+							((IBillModelDecimalListener3) item.getDecimalListener()).getRoundingModeFromSource(row, id));
+				} else {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, id));
+				}
 
-				
-//				item.setDecimalDigits(item.getDecimalListener()
-//						.getDecimalFromSource(row, id));
+				// item.setDecimalDigits(item.getDecimalListener()
+				// .getDecimalFromSource(row, id));
 			}
-				
+
 		}
 	}
-	
-	
-	private void setBillItemDecimalByRow(BillItem item, int row,int digits) {
+
+	private void setBillItemDecimalByRow(BillItem item, int row, int digits) {
 		if (item.getDecimalListener() != null) {
-			int colIndex = getBodyColByKey(item.getDecimalListener()
-					.getSource());
+			int colIndex = getBodyColByKey(item.getDecimalListener().getSource());
 			Object id = getValueAt(row, colIndex);
 			if (id != null && id instanceof IConstEnum)
 				id = ((IConstEnum) id).getValue();
-			if (id != null){
-				 if ( item.getDecimalListener() instanceof IBillModelDecimalListener3) {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, id),
-			              ((IBillModelDecimalListener3) item.getDecimalListener())
-			                  .getRoundingModeFromSource( row, id));
-			          }
-			     else {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, id));
-			     }
-			}
-			else{
-				if(digits!=-100){
+			if (id != null) {
+				if (item.getDecimalListener() instanceof IBillModelDecimalListener3) {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, id),
+							((IBillModelDecimalListener3) item.getDecimalListener()).getRoundingModeFromSource(row, id));
+				} else {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, id));
+				}
+			} else {
+				if (digits != -100) {
 					item.setDecimalDigits(digits);
 				}
 			}
-				
+
 		}
 	}
 
@@ -1093,8 +1073,7 @@ public class BillModel extends AbstractTableModel implements
 		java.util.Arrays.sort(row);
 
 		for (int i = row.length - 1; i >= 0; i--) {
-			if (getRowStateModel(row[i]) == NORMAL
-					|| getRowStateModel(row[i]) == MODIFICATION)
+			if (getRowStateModel(row[i]) == NORMAL || getRowStateModel(row[i]) == MODIFICATION)
 				vDeleteRow.add(getRowVectorAtModel(row[i]));
 
 			if (getCellSpan() != null) {
@@ -1186,20 +1165,16 @@ public class BillModel extends AbstractTableModel implements
 	private void loadRelationItemValue(int row, int column, boolean isedit) {
 		BillItem item = getBodyItems()[column];
 
-		if (item.getDataType() == IBillItem.UFREF
-				&& item.getMetaDataProperty() != null) {
+		if (item.getDataType() == IBillItem.UFREF && item.getMetaDataProperty() != null) {
 
-			ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(item,
-					isedit);
+			ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(item, isedit);
 
 			if (relationitem != null) {
 				if (getValueAt(row, column) != null) {
-					String id = (String) ((IConstEnum) getValueAt(row, column))
-							.getValue();
+					String id = (String) ((IConstEnum) getValueAt(row, column)).getValue();
 					// IConstEnum Value Object[]:,Key:itemkey
-					IConstEnum[] o = item.getGetBillRelationItemValue()
-							.getRelationItemValue(relationitem,
-									new String[] { id });
+					IConstEnum[] o = item.getGetBillRelationItemValue().getRelationItemValue(relationitem,
+							new String[] { id });
 					if (o != null) {
 						for (int i = 0; i < o.length; i++) {
 							if (o[i].getValue() != null) {
@@ -1219,27 +1194,23 @@ public class BillModel extends AbstractTableModel implements
 
 	}
 
-	public void loadEditRelationItemValue(int startrow, int endrow,
-			String itemkey) {
+	public void loadEditRelationItemValue(int startrow, int endrow, String itemkey) {
 		loadRelationItemValue(startrow, endrow, getBodyColByKey(itemkey), true);
 	}
 
 	/**
 	 * 设置编辑关联项值 创建日期:(01-4-26 15:29:06)
 	 */
-	private void loadRelationItemValue(int startrow, int endrow, int column,
-			boolean isedit) {
+	private void loadRelationItemValue(int startrow, int endrow, int column, boolean isedit) {
 
 		if (endrow - startrow < 0)
 			return;
 
 		BillItem item = getBodyItems()[column];
 
-		if (item.getDataType() == IBillItem.UFREF
-				&& item.getMetaDataProperty() != null) {
+		if (item.getDataType() == IBillItem.UFREF && item.getMetaDataProperty() != null) {
 
-			ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(item,
-					isedit);
+			ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(item, isedit);
 
 			if (relationitem != null) {
 				// if (getValueAt(row, column) != null) {
@@ -1251,13 +1222,11 @@ public class BillModel extends AbstractTableModel implements
 				for (int row = startrow; row < endrow + 1; row++) {
 					Object o = getValueAt(row, column);
 					if (o != null && o instanceof IConstEnum)
-						ids[row - startrow] = (String) ((IConstEnum) o)
-								.getValue();
+						ids[row - startrow] = (String) ((IConstEnum) o).getValue();
 				}
 
 				// IConstEnum Value Object[]:,Key:itemkey
-				IConstEnum[] o = item.getGetBillRelationItemValue()
-						.getRelationItemValue(relationitem, ids);
+				IConstEnum[] o = item.getGetBillRelationItemValue().getRelationItemValue(relationitem, ids);
 				// if (o != null) {
 				// for (int i = 0; i < o.length; i++) {
 				// if (o[i].getValue() != null) {
@@ -1272,8 +1241,7 @@ public class BillModel extends AbstractTableModel implements
 						for (int i = 0; i < o.length; i++) {
 							if (o[i].getValue() != null) {
 								Object[] v = (Object[]) o[i].getValue();
-								setValueAt(v[row - startrow], row,
-										o[i].getName());
+								setValueAt(v[row - startrow], row, o[i].getName());
 							}
 						}
 					}
@@ -1346,8 +1314,7 @@ public class BillModel extends AbstractTableModel implements
 
 	}
 
-	public void loadLoadRelationItemValue(BillItem[] billItems, int startRow,
-			int endRow) {
+	public void loadLoadRelationItemValue(BillItem[] billItems, int startRow, int endRow) {
 
 		int erow = endRow;
 		int srow = startRow;
@@ -1377,9 +1344,8 @@ public class BillModel extends AbstractTableModel implements
 	// 如果列中有重复主键，记录该列的行号
 	Map<String, List<Integer>> keyListMapByBatch = new HashMap<String, List<Integer>>();
 
-	//多页签批处理准备数据
-	public void prepareLoadLoadRelationItemValues(
-			MetaDataGetBillModelRelationItemValue gvs) {
+	// 多页签批处理准备数据
+	public void prepareLoadLoadRelationItemValues(MetaDataGetBillModelRelationItemValue gvs) {
 		valuemapByBatch.clear();
 		keyListMapByBatch.clear();
 		int erow = getRowCount() - 1;
@@ -1391,17 +1357,15 @@ public class BillModel extends AbstractTableModel implements
 		if (srow < 0) {
 			srow = 0;
 		}
-        BillItem[] billItems = getBodyItems();
-		
+		BillItem[] billItems = getBodyItems();
+
 		int m = 0;
 		for (int col = 0; col < billItems.length; col++) {
 			BillItem item = billItems[col];
 
-			if (item.getDataType() == IBillItem.UFREF
-					&& item.getMetaDataProperty() != null) {
+			if (item.getDataType() == IBillItem.UFREF && item.getMetaDataProperty() != null) {
 
-				ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(
-						item, false);
+				ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(item, false);
 
 				if (relationitem != null) {
 
@@ -1414,8 +1378,7 @@ public class BillModel extends AbstractTableModel implements
 
 					for (int row = srow; row <= erow; row++) {
 						// Object o = getValueAt(row, col);
-						Object o = getValueAt(row,
-								getBodyColByKey(billItems[col].getKey()));
+						Object o = getValueAt(row, getBodyColByKey(billItems[col].getKey()));
 						if (o != null && o instanceof IConstEnum) {
 							if (((IConstEnum) o).getName() == null) {
 								rowMapList.add(null);
@@ -1438,17 +1401,16 @@ public class BillModel extends AbstractTableModel implements
 					if (pkList.size() > 0 && pkList.size() != (erow - srow + 1)) {
 
 						for (int i = 0; i < relationitem.size(); i++) {
-							keyListMapByBatch.put(relationitem.get(i).getName(),
-									rowMapList);
+							keyListMapByBatch.put(relationitem.get(i).getName(), rowMapList);
 						}
 					}
 					String[] ids = pkList.toArray(new String[0]);
 					if (ids.length > 0) {
-						gvs.addRelationItemByModel(this,item, relationitem, ids);
+						gvs.addRelationItemByModel(this, item, relationitem, ids);
 						// gvs.addRelationItem(item, relationitem, ids);
 						if (!(item.getGetBillRelationItemValue() instanceof MetaDataGetBillRelationItemValue)) {
-							valuemapByBatch.put(m, item.getGetBillRelationItemValue()
-									.getRelationItemValue(relationitem, ids));
+							valuemapByBatch.put(m,
+									item.getGetBillRelationItemValue().getRelationItemValue(relationitem, ids));
 						}
 
 						m++;
@@ -1457,10 +1419,10 @@ public class BillModel extends AbstractTableModel implements
 				}
 			}
 		}
-		
 
 	}
-	//多页签批处理给关联项赋值。
+
+	// 多页签批处理给关联项赋值。
 	public void setLoadLoadRelationItemValuesToModel(IConstEnum[] o) {
 		int erow = getRowCount() - 1;
 		int srow = 0;
@@ -1471,11 +1433,11 @@ public class BillModel extends AbstractTableModel implements
 		if (srow < 0) {
 			srow = 0;
 		}
-		
+
 		if (o == null) {
 			return;
 		}
-        setNeedCalculate(false);
+		setNeedCalculate(false);
 		for (int i = 0; i < o.length; i++) {
 			if (valuemapByBatch.get(i) != null) {
 				o[i] = valuemapByBatch.get(i)[0];
@@ -1491,8 +1453,7 @@ public class BillModel extends AbstractTableModel implements
 							// 如果有重复主键的行，用行号重新定位
 							List<Integer> list = keyListMapByBatch.get(o[i].getName());
 							if (list.get(row - srow) != null) {
-								setValueAt(v[list.get(row - srow)], row,
-										o[i].getName());
+								setValueAt(v[list.get(row - srow)], row, o[i].getName());
 							} else {
 								setValueAt(null, row, o[i].getName());
 							}
@@ -1506,29 +1467,27 @@ public class BillModel extends AbstractTableModel implements
 			}
 		}
 		setNeedCalculate(true);
-	
+
 	}
 
 	/**
 	 * 如果itemkeys==null,认为是全部列 2013-1-29 对有重复主键的列，合并重复主键
 	 **/
 
-	public void loadLoadRelationItemValue(int startRow, int endRow,
-			String[] itemkeys) {
+	public void loadLoadRelationItemValue(int startRow, int endRow, String[] itemkeys) {
 		BillItem[] billItems = null;
-        if(itemkeys == null){
-        	billItems = getBodyItems();
-        }else{
-        	billItems =  getBillItems(itemkeys);
-        }
-		
+		if (itemkeys == null) {
+			billItems = getBodyItems();
+		} else {
+			billItems = getBillItems(itemkeys);
+		}
+
 		loadLoadRelationItemValue(billItems, startRow, endRow);
 	}
 
 	// 关联项取值
-	private void getRelationItemValues(BillItem[] billItems, int erow,
-			int srow, MetaDataGetBillModelRelationItemValue gvs,
-			Map<Integer, IConstEnum[]> valuemap,
+	private void getRelationItemValues(BillItem[] billItems, int erow, int srow,
+			MetaDataGetBillModelRelationItemValue gvs, Map<Integer, IConstEnum[]> valuemap,
 			Map<String, List<Integer>> keyListMap) {
 
 		// BillItem[] billItems = getBillItems(itemkeys);
@@ -1540,11 +1499,9 @@ public class BillModel extends AbstractTableModel implements
 		for (int col = 0; col < billItems.length; col++) {
 			BillItem item = billItems[col];
 
-			if (item.getDataType() == IBillItem.UFREF
-					&& item.getMetaDataProperty() != null) {
+			if (item.getDataType() == IBillItem.UFREF && item.getMetaDataProperty() != null) {
 
-				ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(
-						item, false);
+				ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(item, false);
 
 				if (relationitem != null) {
 
@@ -1557,8 +1514,7 @@ public class BillModel extends AbstractTableModel implements
 
 					for (int row = srow; row <= erow; row++) {
 						// Object o = getValueAt(row, col);
-						Object o = getValueAt(row,
-								getBodyColByKey(billItems[col].getKey()));
+						Object o = getValueAt(row, getBodyColByKey(billItems[col].getKey()));
 						if (o != null && o instanceof IConstEnum) {
 							if (((IConstEnum) o).getName() == null) {
 								rowMapList.add(null);
@@ -1581,8 +1537,7 @@ public class BillModel extends AbstractTableModel implements
 					if (pkList.size() > 0 && pkList.size() != (erow - srow + 1)) {
 
 						for (int i = 0; i < relationitem.size(); i++) {
-							keyListMap.put(relationitem.get(i).getName(),
-									rowMapList);
+							keyListMap.put(relationitem.get(i).getName(), rowMapList);
 						}
 					}
 					String[] ids = pkList.toArray(new String[0]);
@@ -1590,8 +1545,7 @@ public class BillModel extends AbstractTableModel implements
 						gvs.addRelationItem(item, relationitem, ids);
 						// gvs.addRelationItem(item, relationitem, ids);
 						if (!(item.getGetBillRelationItemValue() instanceof MetaDataGetBillRelationItemValue)) {
-							valuemap.put(m, item.getGetBillRelationItemValue()
-									.getRelationItemValue(relationitem, ids));
+							valuemap.put(m, item.getGetBillRelationItemValue().getRelationItemValue(relationitem, ids));
 						}
 
 						m++;
@@ -1603,15 +1557,13 @@ public class BillModel extends AbstractTableModel implements
 	}
 
 	// 关联项值赋给Model
-	private void setRelationValueToModel(int erow, int srow,
-			MetaDataGetBillModelRelationItemValue gvs,
-			Map<Integer, IConstEnum[]> valuemap,
-			Map<String, List<Integer>> keyListMap) {
+	private void setRelationValueToModel(int erow, int srow, MetaDataGetBillModelRelationItemValue gvs,
+			Map<Integer, IConstEnum[]> valuemap, Map<String, List<Integer>> keyListMap) {
 		IConstEnum[] o = gvs.getRelationItemValues();
 		if (o == null) {
 			return;
 		}
-		//处理参照不显示的问题
+		// 处理参照不显示的问题
 		o = dealRefValue4Task2CommissionType(o);
 		for (int i = 0; i < o.length; i++) {
 			if (valuemap.get(i) != null) {
@@ -1628,8 +1580,7 @@ public class BillModel extends AbstractTableModel implements
 							// 如果有重复主键的行，用行号重新定位
 							List<Integer> list = keyListMap.get(o[i].getName());
 							if (list.get(row - srow) != null) {
-								setValueAt(v[list.get(row - srow)], row,
-										o[i].getName());
+								setValueAt(v[list.get(row - srow)], row, o[i].getName());
 							} else {
 								setValueAt(null, row, o[i].getName());
 							}
@@ -1645,88 +1596,85 @@ public class BillModel extends AbstractTableModel implements
 	}
 
 	private IConstEnum[] dealRefValue4Task2CommissionType(IConstEnum[] o) {
-		if(o==null||o.length <= 0){
+		if (o == null || o.length <= 0) {
 			return o;
 		}
-		if(this.bodys!=null&&this.bodys[0]!=null
-				&&this.bodys[0].getContainmentObject()!=null
-				&&this.bodys[0].getContainmentObject() instanceof AggTaskHVO){
-			try{
-				//找到所有参照<reffield,<refPk,refName>>
-				Map<String,Map<String,String>> refNamePkMap = new HashMap();
-				//与之对应的参照顺序
-				Map<String,Object[]> realPksMap = new HashMap();
-				
-				for(IConstEnum constEnum : o){
-					if(constEnum!=null && constEnum.getName()!=null){
+		if (this.bodys != null && this.bodys[0] != null && this.bodys[0].getContainmentObject() != null
+				&& this.bodys[0].getContainmentObject() instanceof AggTaskHVO) {
+			try {
+				// 找到所有参照<reffield,<refPk,refName>>
+				Map<String, Map<String, String>> refNamePkMap = new HashMap();
+				// 与之对应的参照顺序
+				Map<String, Object[]> realPksMap = new HashMap();
+
+				for (IConstEnum constEnum : o) {
+					if (constEnum != null && constEnum.getName() != null) {
 						String itemKey = constEnum.getName();
-						if(itemKey.equals("pk_commission_h.pk_maincategory_ID")){
-							//产品大类
-							addItem(refNamePkMap,constEnum,"pk_maincategory",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.pk_subcategory_ID")){
-							//二级分类
-							addItem(refNamePkMap,constEnum,"pk_subcategory",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.pk_commissiontype_ID")){
-							//委托单类型 	pk_commissiontype
-							addItem(refNamePkMap,constEnum,"pk_commissiontype",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.codeprefix_ID")){
-							//显示名称	委托单编码前缀 项目主键	codeprefix
-							addItem(refNamePkMap,constEnum,"codeprefix",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.pk_lastcategory_ID")){
-							//显示名称	三级分类 项目主键	pk_lastcategory
-							addItem(refNamePkMap,constEnum,"pk_lastcategory",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.reportformat_ID")){
-							//显示名称	报告格式 项目主键	reportformat
-							addItem(refNamePkMap,constEnum,"reportformat",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.reportlang_ID")){
-							//显示名称	报告语言 项目主键	reportlang
-							addItem(refNamePkMap,constEnum,"reportlang",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.sampledealtype_ID")){
-							//显示名称	检后样品处理 项目主键	sampledealtype
-							addItem(refNamePkMap,constEnum,"sampledealtype",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.productproperty_ID")){
-							//显示名称	产品属性 项目主键	productproperty
-							addItem(refNamePkMap,constEnum,"productproperty",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.customertype_ID")){
-							//显示名称	客户类型 项目主键	customertype
-							addItem(refNamePkMap,constEnum,"customertype",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.testrequirement_ID")){
-							//显示名称	测试需求 项目主键	testrequirement
-							addItem(refNamePkMap,constEnum,"testrequirement",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.checkingproperty_ID")){
-							//显示名称	检测性质 项目主键	checkingproperty
-							addItem(refNamePkMap,constEnum,"checkingproperty",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.identificationtype_ID")){
-							//显示名称	产品鉴定类型 项目主键	identificationtype
-							addItem(refNamePkMap,constEnum,"identificationtype",realPksMap);
-						}else if(itemKey.equals("pk_commission_h.certificationtype_ID")){
-							//显示名称	认证类型 项目主键	certificationtype
-							addItem(refNamePkMap,constEnum,"certificationtype",realPksMap);
+						if (itemKey.equals("pk_commission_h.pk_maincategory_ID")) {
+							// 产品大类
+							addItem(refNamePkMap, constEnum, "pk_maincategory", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.pk_subcategory_ID")) {
+							// 二级分类
+							addItem(refNamePkMap, constEnum, "pk_subcategory", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.pk_commissiontype_ID")) {
+							// 委托单类型 pk_commissiontype
+							addItem(refNamePkMap, constEnum, "pk_commissiontype", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.codeprefix_ID")) {
+							// 显示名称 委托单编码前缀 项目主键 codeprefix
+							addItem(refNamePkMap, constEnum, "codeprefix", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.pk_lastcategory_ID")) {
+							// 显示名称 三级分类 项目主键 pk_lastcategory
+							addItem(refNamePkMap, constEnum, "pk_lastcategory", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.reportformat_ID")) {
+							// 显示名称 报告格式 项目主键 reportformat
+							addItem(refNamePkMap, constEnum, "reportformat", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.reportlang_ID")) {
+							// 显示名称 报告语言 项目主键 reportlang
+							addItem(refNamePkMap, constEnum, "reportlang", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.sampledealtype_ID")) {
+							// 显示名称 检后样品处理 项目主键 sampledealtype
+							addItem(refNamePkMap, constEnum, "sampledealtype", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.productproperty_ID")) {
+							// 显示名称 产品属性 项目主键 productproperty
+							addItem(refNamePkMap, constEnum, "productproperty", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.customertype_ID")) {
+							// 显示名称 客户类型 项目主键 customertype
+							addItem(refNamePkMap, constEnum, "customertype", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.testrequirement_ID")) {
+							// 显示名称 测试需求 项目主键 testrequirement
+							addItem(refNamePkMap, constEnum, "testrequirement", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.checkingproperty_ID")) {
+							// 显示名称 检测性质 项目主键 checkingproperty
+							addItem(refNamePkMap, constEnum, "checkingproperty", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.identificationtype_ID")) {
+							// 显示名称 产品鉴定类型 项目主键 identificationtype
+							addItem(refNamePkMap, constEnum, "identificationtype", realPksMap);
+						} else if (itemKey.equals("pk_commission_h.certificationtype_ID")) {
+							// 显示名称 认证类型 项目主键 certificationtype
+							addItem(refNamePkMap, constEnum, "certificationtype", realPksMap);
 						}
 					}
 				}
-				o = NCLocator.getInstance().lookup(ICommissionMaintain.class)
-						.getRefName(o,refNamePkMap,realPksMap);
+				o = NCLocator.getInstance().lookup(ICommissionMaintain.class).getRefName(o, refNamePkMap, realPksMap);
 				return o;
-			}catch(Exception e){
+			} catch (Exception e) {
 				Logger.error(e.getCause());
 			}
 		}
 		return o;
 	}
-	
 
-	private static void addItem(Map<String, Map<String,String>> refNamePk,
-			IConstEnum constEnum,String reffield,Map<String,Object[]> realPksMap) {
+	private static void addItem(Map<String, Map<String, String>> refNamePk, IConstEnum constEnum, String reffield,
+			Map<String, Object[]> realPksMap) {
 		Object[] pks = (Object[]) constEnum.getValue();
 		realPksMap.put(reffield, pks);
 		if (pks != null && pks.length > 0) {
 			for (Object pk : pks) {
 				if (pk != null) {
 					if (refNamePk.get(reffield) == null) {
-						refNamePk.put(reffield, new HashMap<String,String>());
+						refNamePk.put(reffield, new HashMap<String, String>());
 					}
-					refNamePk.get(reffield).put(String.valueOf(pk),null);
+					refNamePk.get(reffield).put(String.valueOf(pk), null);
 				}
 			}
 		}
@@ -1789,8 +1737,7 @@ public class BillModel extends AbstractTableModel implements
 	/*
 	 * IConstEnum Value metadatapath:,Name:itemkey
 	 */
-	protected ArrayList<IConstEnum> getMetaDataRelationItems(BillItem item,
-			boolean isediting) {
+	protected ArrayList<IConstEnum> getMetaDataRelationItems(BillItem item, boolean isediting) {
 
 		if (item.getDataType() != IBillItem.UFREF)
 			return null;
@@ -1818,16 +1765,14 @@ public class BillModel extends AbstractTableModel implements
 		// itemkey,访问路径:AAAA=B.A,BBBB=B.B
 		// 编辑关联项
 		if (item.getMetaDataRelation() != null && isediting) {
-			IConstEnum[] ies = BillUtil.getConstEnumByString(item
-					.getMetaDataRelation());
+			IConstEnum[] ies = BillUtil.getConstEnumByString(item.getMetaDataRelation());
 
 			for (int i = 0; i < ies.length; i++) {
 
 				BillItem ritem = getItemByKey(ies[i].getName());
 
 				if (ies[i].getValue() != null) {
-					if (!addRefRelationItem(ics, ritem,
-							(String) ies[i].getValue())) {
+					if (!addRefRelationItem(ics, ritem, (String) ies[i].getValue())) {
 						ics.add(ies[i]);
 					}
 				}
@@ -1840,10 +1785,8 @@ public class BillModel extends AbstractTableModel implements
 				BillItem ritem = item.getRelationItem().get(i);
 
 				if (ritem.getMetaDataAccessPath() != null) {
-					if (!addRefRelationItem(ics, ritem,
-							ritem.getMetaDataAccessPath())) {
-						IConstEnum ic = new DefaultConstEnum(
-								ritem.getMetaDataAccessPath(), ritem.getKey());
+					if (!addRefRelationItem(ics, ritem, ritem.getMetaDataAccessPath())) {
+						IConstEnum ic = new DefaultConstEnum(ritem.getMetaDataAccessPath(), ritem.getKey());
 						ics.add(ic);
 					}
 				}
@@ -1858,19 +1801,16 @@ public class BillModel extends AbstractTableModel implements
 
 	}
 
-	private boolean addRefRelationItem(ArrayList<IConstEnum> ics,
-			BillItem ritem, String path) {
+	private boolean addRefRelationItem(ArrayList<IConstEnum> ics, BillItem ritem, String path) {
 
 		if (ritem.getDataType() == IBillItem.UFREF) {
 			IConstEnum ic = null;
-			ic = new DefaultConstEnum(path, ritem.getKey()
-					+ IBillItem.ID_SUFFIX);
+			ic = new DefaultConstEnum(path, ritem.getKey() + IBillItem.ID_SUFFIX);
 			ics.add(ic);
 			// UFREF处理
 			String showattname = getRefItemShowAttributeName(ritem);
 			if (showattname != null) {
-				ic = new DefaultConstEnum(path + "." + showattname,
-						ritem.getKey());
+				ic = new DefaultConstEnum(path + "." + showattname, ritem.getKey());
 				ics.add(ic);
 				return true;
 			}
@@ -1881,21 +1821,21 @@ public class BillModel extends AbstractTableModel implements
 
 	private String getRefItemShowAttributeName(BillItem item) {
 		String showattname = null;
-//这里为什么要判断是否共享页签显示才返回显示名称或编码？，否则就显示主键了
-//为解决这个问题：60070401 入职登记（证件类型字段） ，列表界面默认不显示的参照类型字段，如果再项目设置设置为显示，则显示主键。
-		
-		if (item.getDataType() == IBillItem.UFREF && (item.isShow()||item.isShareShow())){
-//		if (item.getDataType() == IBillItem.UFREF && item.isShareShow()) {
-			//不显示的字段，会加载关联项，有一个场景，如果有不正确的值付给了某个字段pk_org付了pk_group的值，结果 加载关联项会把pk_org值清空。
-			//所有功能注册中组织类型为集团的档案节点在新增时第一个字段输入值后在去给其它字段选中则报错,这个就是pk_org原来不加载关联项现在加载但没有值清空了。
-			
-//		if(item.getDataType() == IBillItem.UFREF){
+		// 这里为什么要判断是否共享页签显示才返回显示名称或编码？，否则就显示主键了
+		// 为解决这个问题：60070401 入职登记（证件类型字段） ，列表界面默认不显示的参照类型字段，如果再项目设置设置为显示，则显示主键。
+
+		if (item.getDataType() == IBillItem.UFREF && (item.isShow() || item.isShareShow())) {
+			// if (item.getDataType() == IBillItem.UFREF && item.isShareShow())
+			// {
+			// 不显示的字段，会加载关联项，有一个场景，如果有不正确的值付给了某个字段pk_org付了pk_group的值，结果
+			// 加载关联项会把pk_org值清空。
+			// 所有功能注册中组织类型为集团的档案节点在新增时第一个字段输入值后在去给其它字段选中则报错,这个就是pk_org原来不加载关联项现在加载但没有值清空了。
+
+			// if(item.getDataType() == IBillItem.UFREF){
 			if (item.isRefReturnCode())
-				showattname = item.getMetaDataProperty()
-						.getBDCodeAttributeName();
+				showattname = item.getMetaDataProperty().getBDCodeAttributeName();
 			else
-				showattname = item.getMetaDataProperty()
-						.getBDNameAttributeName();
+				showattname = item.getMetaDataProperty().getBDNameAttributeName();
 		}
 		return showattname;
 	}
@@ -1924,7 +1864,8 @@ public class BillModel extends AbstractTableModel implements
 	public void execEditFormulas(int row) {
 		formulaProcessor.execEditFormulas(row, row, false);
 	}
-	public void execEditFormulasByRows(int beginRow,int endRow) {
+
+	public void execEditFormulasByRows(int beginRow, int endRow) {
 		formulaProcessor.execEditFormulas(beginRow, endRow, false);
 	}
 
@@ -1938,8 +1879,7 @@ public class BillModel extends AbstractTableModel implements
 	/**
 	 * 执行公式,将结果直接赋给VO,不显示到界面! 创建日期:(01-4-26 15:29:06)
 	 */
-	public void execFormulasWithVO(CircularlyAccessibleValueObject[] VOs,
-			String[] formulas) {
+	public void execFormulasWithVO(CircularlyAccessibleValueObject[] VOs, String[] formulas) {
 		formulaProcessor.execFormulasWithVO(VOs, formulas);
 	}
 
@@ -2002,10 +1942,8 @@ public class BillModel extends AbstractTableModel implements
 	/*
 	 * if formulas is not null, itemkeys ignore;
 	 */
-	public boolean execValidateForumlas(String[] formulas, String[] itemkeys,
-			int[] rows) {
-		return getFormulaProcessor().execValidateForumlas(formulas, itemkeys,
-				rows);
+	public boolean execValidateForumlas(String[] formulas, String[] itemkeys, int[] rows) {
+		return getFormulaProcessor().execValidateForumlas(formulas, itemkeys, rows);
 	}
 
 	/**
@@ -2085,8 +2023,7 @@ public class BillModel extends AbstractTableModel implements
 		if (strKey == null)
 			return -1;
 		try {
-			if ((htBodyItems != null)
-					&& (htBodyItems.containsKey(strKey = strKey.trim())))
+			if ((htBodyItems != null) && (htBodyItems.containsKey(strKey = strKey.trim())))
 				return ((Integer) htBodyItems.get(strKey)).intValue();
 		} catch (Exception e) {
 			Logger.debug(e.getMessage());
@@ -2132,8 +2069,7 @@ public class BillModel extends AbstractTableModel implements
 	 * 得到以选择的VO数组
 	 */
 
-	public CircularlyAccessibleValueObject[] getBodySelectedVOs(
-			String bodyVOName) {
+	public CircularlyAccessibleValueObject[] getBodySelectedVOs(String bodyVOName) {
 		return getBodySelectedVOs(bodyVOName, -1);
 	}
 
@@ -2141,15 +2077,13 @@ public class BillModel extends AbstractTableModel implements
 	 * 得到以选择的VO数组
 	 */
 
-	public CircularlyAccessibleValueObject[] getBodySelectedVOs(
-			String bodyVOName, int count) {
+	public CircularlyAccessibleValueObject[] getBodySelectedVOs(String bodyVOName, int count) {
 		try {
 			Class<?> bodyVOClass = Class.forName(bodyVOName);
-			Vector<CircularlyAccessibleValueObject> vBodyVOs = getSelectedVector(
-					bodyVOName, count, false)[0];
+			Vector<CircularlyAccessibleValueObject> vBodyVOs = getSelectedVector(bodyVOName, count, false)[0];
 			if (vBodyVOs != null) {
-				CircularlyAccessibleValueObject[] bodyVOs = (CircularlyAccessibleValueObject[]) Array
-						.newInstance(bodyVOClass, vBodyVOs.size());
+				CircularlyAccessibleValueObject[] bodyVOs = (CircularlyAccessibleValueObject[]) Array.newInstance(
+						bodyVOClass, vBodyVOs.size());
 				vBodyVOs.copyInto(bodyVOs);
 				return bodyVOs;
 			}
@@ -2162,8 +2096,7 @@ public class BillModel extends AbstractTableModel implements
 	/*
 	 * 得到已选择的VO数组
 	 */
-	ArrayList<Object[]> getBodySelectedVOsAndRowNos(String bodyVOName,
-			int count, boolean hasRowNumber) {
+	ArrayList<Object[]> getBodySelectedVOsAndRowNos(String bodyVOName, int count, boolean hasRowNumber) {
 		Vector[] vecs = getSelectedVector(bodyVOName, count, hasRowNumber);
 		if (vecs == null || vecs.length == 0)
 			return null;
@@ -2183,14 +2116,13 @@ public class BillModel extends AbstractTableModel implements
 	 * 得到变化的VO数组
 	 */
 
-	public CircularlyAccessibleValueObject[] getBodyValueChangeVOs(
-			String bodyVOName) {
+	public CircularlyAccessibleValueObject[] getBodyValueChangeVOs(String bodyVOName) {
 		try {
 			Class<?> bodyVOClass = Class.forName(bodyVOName);
 			Vector<CircularlyAccessibleValueObject> vBodyVOs = getValueChangeVector(bodyVOName);
 			if (vBodyVOs != null) {
-				CircularlyAccessibleValueObject[] bodyVOs = (CircularlyAccessibleValueObject[]) Array
-						.newInstance(bodyVOClass, vBodyVOs.size());
+				CircularlyAccessibleValueObject[] bodyVOs = (CircularlyAccessibleValueObject[]) Array.newInstance(
+						bodyVOClass, vBodyVOs.size());
 				vBodyVOs.copyInto(bodyVOs);
 				return bodyVOs;
 			}
@@ -2213,8 +2145,7 @@ public class BillModel extends AbstractTableModel implements
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				for (int j = 0; j < getBodyItems().length; j++) {
 					BillItem item = getBodyItems()[j];
-					if (item.getMetaDataProperty() != null
-							&& item.getIDColName() == null) {
+					if (item.getMetaDataProperty() != null && item.getIDColName() == null) {
 						Object aValue = rowVector.elementAt(j);
 						aValue = item.converType(aValue);
 						map.put(item.getMetaDataAccessPath(), aValue);
@@ -2230,8 +2161,7 @@ public class BillModel extends AbstractTableModel implements
 				HashMap<String, Object> map = new HashMap<String, Object>();
 				for (int j = 0; j < getBodyItems().length; j++) {
 					BillItem item = getBodyItems()[j];
-					if (item.getMetaDataProperty() != null
-							&& item.getIDColName() == null) {
+					if (item.getMetaDataProperty() != null && item.getIDColName() == null) {
 						Object aValue = getValueAt(i, j);
 						aValue = item.converType(aValue);
 						map.put(item.getMetaDataAccessPath(), aValue);
@@ -2286,8 +2216,7 @@ public class BillModel extends AbstractTableModel implements
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		for (int j = 0; j < getBodyItems().length; j++) {
 			BillItem item = getBodyItems()[j];
-			if (item.getMetaDataProperty() != null
-					&& item.getIDColName() == null) {
+			if (item.getMetaDataProperty() != null && item.getIDColName() == null) {
 				Object aValue = getValueAt(row, j);
 				aValue = item.converType(aValue);
 				map.put(item.getMetaDataAccessPath(), aValue);
@@ -2316,8 +2245,7 @@ public class BillModel extends AbstractTableModel implements
 		try {
 			Vector<GeneralSuperVO> vBodyVOs = getValueChangeVector(initVO);
 			if (vBodyVOs != null) {
-				GeneralSuperVO[] bodyVOs = GeneralSuperVO.createVOArray(initVO,
-						vBodyVOs.size(), true);
+				GeneralSuperVO[] bodyVOs = GeneralSuperVO.createVOArray(initVO, vBodyVOs.size(), true);
 				vBodyVOs.copyInto(bodyVOs);
 				return bodyVOs;
 			}
@@ -2331,11 +2259,10 @@ public class BillModel extends AbstractTableModel implements
 	 * 得到行VO
 	 */
 
-	public CircularlyAccessibleValueObject getBodyValueRowVO(int row,
-			String bodyVOName) {
+	public CircularlyAccessibleValueObject getBodyValueRowVO(int row, String bodyVOName) {
 		try {
-			CircularlyAccessibleValueObject bodyRowVO = (CircularlyAccessibleValueObject) Class
-					.forName(bodyVOName).newInstance();
+			CircularlyAccessibleValueObject bodyRowVO = (CircularlyAccessibleValueObject) Class.forName(bodyVOName)
+					.newInstance();
 			// for (int j = 0; j < getBodyItems().length; j++) {
 			// BillItem item = getBodyItems()[j];
 			// Object aValue = getValueAt(row, j);
@@ -2362,15 +2289,15 @@ public class BillModel extends AbstractTableModel implements
 		}
 		return null;
 	}
-	//通过界面显示的值得到一个值对象。例如参照类型，得到的是界面显示的Code或者Name，而不是PK。
-	//应用于特定的场景，慎用。
-	public CircularlyAccessibleValueObject getBodyValueRowVOByVisualValue(int row,
-			String bodyVOName) {
+
+	// 通过界面显示的值得到一个值对象。例如参照类型，得到的是界面显示的Code或者Name，而不是PK。
+	// 应用于特定的场景，慎用。
+	public CircularlyAccessibleValueObject getBodyValueRowVOByVisualValue(int row, String bodyVOName) {
 		try {
-			CircularlyAccessibleValueObject bodyRowVO = (CircularlyAccessibleValueObject) Class
-					.forName(bodyVOName).newInstance();
-			
-			getBodyRowVO(row, bodyRowVO,false);
+			CircularlyAccessibleValueObject bodyRowVO = (CircularlyAccessibleValueObject) Class.forName(bodyVOName)
+					.newInstance();
+
+			getBodyRowVO(row, bodyRowVO, false);
 			// 设置状态
 			switch (getRowState(row)) {
 			case ADD:
@@ -2422,8 +2349,8 @@ public class BillModel extends AbstractTableModel implements
 		try {
 			Class<?> bodyVOClass = Class.forName(bodyVOName);
 			int length = getRowCount();
-			CircularlyAccessibleValueObject[] bodyVOs = (CircularlyAccessibleValueObject[]) Array
-					.newInstance(bodyVOClass, length);
+			CircularlyAccessibleValueObject[] bodyVOs = (CircularlyAccessibleValueObject[]) Array.newInstance(
+					bodyVOClass, length);
 			for (int i = 0; i < getRowCount(); i++) {
 				// bodyVOs[i] = (CircularlyAccessibleValueObject)
 				// Class.forName(bodyVOName).newInstance();
@@ -2685,8 +2612,7 @@ public class BillModel extends AbstractTableModel implements
 	/**
 	 * 返回已选择行VO向量
 	 */
-	private Vector[] getSelectedVector(String bodyVOName, int number,
-			boolean hasRowNumber) {
+	private Vector[] getSelectedVector(String bodyVOName, int number, boolean hasRowNumber) {
 		Vector<CircularlyAccessibleValueObject> bodyVOs = new Vector<CircularlyAccessibleValueObject>();
 		Vector<Integer> rowNumber = hasRowNumber ? new Vector<Integer>() : null;
 		try {
@@ -2721,29 +2647,27 @@ public class BillModel extends AbstractTableModel implements
 	}
 
 	private void getBodyRowVO(int row, CircularlyAccessibleValueObject bodyVO) {
-		getBodyRowVO(row,bodyVO,true);
+		getBodyRowVO(row, bodyVO, true);
 	}
-	
-	private void getBodyRowVO(int row, CircularlyAccessibleValueObject bodyVO,boolean isConvertValue) {
+
+	private void getBodyRowVO(int row, CircularlyAccessibleValueObject bodyVO, boolean isConvertValue) {
 		for (int j = 0; j < getBodyItems().length; j++) {
 			BillItem item = getBodyItems()[j];
 			Object aValue = getValueAt(row, j);
-			if (!isConvertValue && aValue instanceof DefaultConstEnum){
+			if (!isConvertValue && aValue instanceof DefaultConstEnum) {
 				IConstEnum e = (IConstEnum) aValue;
 				aValue = e.getName();
-				
-			}else{
+
+			} else {
 				aValue = item.converType(aValue);
 			}
-			
+
 			setValue2BodyVO(bodyVO, item, aValue);
 		}
 	}
 
-	private void setValue2BodyVO(CircularlyAccessibleValueObject bodyVO,
-			BillItem item, Object aValue) {
-		if (aValue != null && item.getDataType() == IBillItem.MULTILANGTEXT
-				&& aValue instanceof MultiLangText) {
+	private void setValue2BodyVO(CircularlyAccessibleValueObject bodyVO, BillItem item, Object aValue) {
+		if (aValue != null && item.getDataType() == IBillItem.MULTILANGTEXT && aValue instanceof MultiLangText) {
 			MultiLangText mlt = (MultiLangText) aValue;
 
 			bodyVO.setAttributeValue(item.getKey(), mlt.getText());
@@ -2813,8 +2737,7 @@ public class BillModel extends AbstractTableModel implements
 
 			for (int i = 0; i < getSortColumns().size(); i++) {
 
-				String itemkey = getBodyItems()[getSortColumns().get(i)
-						.getColumn()].getKey();
+				String itemkey = getBodyItems()[getSortColumns().get(i).getColumn()].getKey();
 				itemkeys.add(itemkey);
 
 			}
@@ -2908,8 +2831,7 @@ public class BillModel extends AbstractTableModel implements
 			String sv;
 			if (getBodyItems()[column].getDataType() == BillItem.BOOLEAN)
 				if (aValue != null && aValue instanceof UFBoolean) {
-					aValue = Boolean.valueOf(((UFBoolean) aValue)
-							.booleanValue());
+					aValue = Boolean.valueOf(((UFBoolean) aValue).booleanValue());
 				}
 			if (aValue instanceof String) {
 				sv = ((String) aValue).trim();
@@ -2933,8 +2855,7 @@ public class BillModel extends AbstractTableModel implements
 	/**
 	 * 返回已变化行VO向量
 	 */
-	protected Vector<CircularlyAccessibleValueObject> getValueChangeVector(
-			String bodyVOName) {
+	protected Vector<CircularlyAccessibleValueObject> getValueChangeVector(String bodyVOName) {
 		Vector<CircularlyAccessibleValueObject> bodyVOs = new Vector<CircularlyAccessibleValueObject>();
 		try {
 			if (vDeleteRow != null) {
@@ -2997,8 +2918,7 @@ public class BillModel extends AbstractTableModel implements
 		Vector<GeneralSuperVO> bodyVOs = new Vector<GeneralSuperVO>();
 		if (vDeleteRow != null) {
 			for (int i = 0; i < vDeleteRow.size(); i++) {
-				GeneralSuperVO bodyVO = GeneralSuperVO.createVOArray(initVO, 1,
-						false)[0];
+				GeneralSuperVO bodyVO = GeneralSuperVO.createVOArray(initVO, 1, false)[0];
 				// Vector rowVector = (Vector) vDeleteRow.elementAt(i);
 				// for (int j = 0; j < getBodyItems().length; j++) {
 				// BillItem item = getBodyItems()[j];
@@ -3014,8 +2934,7 @@ public class BillModel extends AbstractTableModel implements
 		}
 		for (int i = 0; i < getRowCount(); i++) {
 			if (getRowState(i) != NORMAL) {
-				GeneralSuperVO bodyVO = GeneralSuperVO.createVOArray(initVO, 1,
-						false)[0];
+				GeneralSuperVO bodyVO = GeneralSuperVO.createVOArray(initVO, 1, false)[0];
 				// for (int j = 0; j < getBodyItems().length; j++) {
 				// BillItem item = getBodyItems()[j];
 				// Object aValue = getValueAt(i, j);
@@ -3083,8 +3002,7 @@ public class BillModel extends AbstractTableModel implements
 
 		BillModelCellEditableController editableController = getCellEditableController();
 		if (editableController != null) {
-			editable = editableController.isCellEditable(editable, row,
-					getBodyItems()[col].getKey());
+			editable = editableController.isCellEditable(editable, row, getBodyItems()[col].getKey());
 		}
 		return editable;
 	}
@@ -3254,8 +3172,7 @@ public class BillModel extends AbstractTableModel implements
 			BillItem item = getBodyItems()[column];
 			if (btl == null) {
 				for (int i = 0; i < getRowCount(); i++) {
-					if (isRowSelectMode()
-							&& !(getRowAttribute(i).getRowState() == SELECTED))
+					if (isRowSelectMode() && !(getRowAttribute(i).getRowState() == SELECTED))
 						continue;
 					Object o = getValueAt(i, column);
 					if (o != null && total == null) {
@@ -3271,10 +3188,9 @@ public class BillModel extends AbstractTableModel implements
 			}
 			if (total != null) {
 				int digit = 0;
-				if (item.getDataType() == BillItem.DECIMAL
-						|| item.getDataType() == BillItem.MONEY) {
-//					 digit = 0 - item.getDecimalDigits();
-					//卡片、列表界面主数量、数量合计行上的数据没有取最大精度,于晓龙 
+				if (item.getDataType() == BillItem.DECIMAL || item.getDataType() == BillItem.MONEY) {
+					// digit = 0 - item.getDecimalDigits();
+					// 卡片、列表界面主数量、数量合计行上的数据没有取最大精度,于晓龙
 					digit = 0 - item.getMaxDecimalDigit();
 				}
 				aValue = total.setScale(digit, UFDouble.ROUND_HALF_UP);
@@ -3403,8 +3319,8 @@ public class BillModel extends AbstractTableModel implements
 		//
 		setSortIndex(null);
 		getRowNOTableModel().setNumRows(getRowCount());
-		newRowsAdded(new TableModelEvent(this, 0, getRowCount() - 1,
-				TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
+		newRowsAdded(new TableModelEvent(this, 0, getRowCount() - 1, TableModelEvent.ALL_COLUMNS,
+				TableModelEvent.INSERT));
 	}
 
 	/**
@@ -3493,11 +3409,12 @@ public class BillModel extends AbstractTableModel implements
 	protected void setBodyObjectByMetaData(NCObject[] bodys) {
 		setBodyObjectByMetaData(bodys, true, true);
 	}
-	
-	protected void setBodyObjectByMetaData(NCObject[] bodys, boolean isFireTableRowInsertedEvent,boolean isLoadLoadRelationValues) {
+
+	protected void setBodyObjectByMetaData(NCObject[] bodys, boolean isFireTableRowInsertedEvent,
+			boolean isLoadLoadRelationValues) {
 		boolean isFire = this.isFireTableRowInsertedEvent;
 		this.isFireTableRowInsertedEvent = isFireTableRowInsertedEvent;
-		
+
 		this.bodys = bodys;
 		clearBodyData();
 		if (bodys == null || bodys.length == 0)
@@ -3514,8 +3431,8 @@ public class BillModel extends AbstractTableModel implements
 				setBodyRowObjectModelByMetaData(bodys[i], i);
 			}
 			isFirstSetBodyDataVO = false;
-			if (isLoadLoadRelationValues){
-			loadLoadRelationItemValue();
+			if (isLoadLoadRelationValues) {
+				loadLoadRelationItemValue();
 			}
 
 		} catch (Exception ex) {
@@ -3529,14 +3446,13 @@ public class BillModel extends AbstractTableModel implements
 		setChangeTable(true);
 		fireTableChanged(new TableModelEvent(this));
 		// isFirstSetBodyDataVO = false;
-		
+
 		// 恢复旧值
 		this.isFireTableRowInsertedEvent = isFire;
 
 	}
 
-	protected void setBodyObjectByMetaData(NCObject[] bodys,
-			boolean isFireTableRowInsertedEvent) {
+	protected void setBodyObjectByMetaData(NCObject[] bodys, boolean isFireTableRowInsertedEvent) {
 		setBodyObjectByMetaData(bodys, isFireTableRowInsertedEvent, true);
 	}
 
@@ -3585,8 +3501,7 @@ public class BillModel extends AbstractTableModel implements
 				// 本实体属性
 				if (item.getIDColName() == null) {
 
-					aValue = o.getAttributeValue(item.getMetaDataProperty()
-							.getAttribute());
+					aValue = o.getAttributeValue(item.getMetaDataProperty().getAttribute());
 					if (aValue != null) {
 						setBillItemDecimalByType(o, row, item);
 					}
@@ -3622,23 +3537,19 @@ public class BillModel extends AbstractTableModel implements
 		if (item.getDecimalListener() != null) {
 			String source = item.getDecimalListener().getSource();
 			Object pkValue = o.getAttributeValue(source);
-			if (pkValue != null){
-				
-				 if ( item.getDecimalListener() instanceof IBillModelDecimalListener3) {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, pkValue),
-			              ((IBillModelDecimalListener3) item.getDecimalListener())
-			                  .getRoundingModeFromSource( row, pkValue));
-			          }
-			     else {
-			          item.setDecimalDigits(
-			              item.getDecimalListener().getDecimalFromSource( row, pkValue));
-			     }
+			if (pkValue != null) {
 
-//				item.setDecimalDigits(item.getDecimalListener()
-//						.getDecimalFromSource(row, pkValue));
-				
-				
+				if (item.getDecimalListener() instanceof IBillModelDecimalListener3) {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, pkValue),
+							((IBillModelDecimalListener3) item.getDecimalListener()).getRoundingModeFromSource(row,
+									pkValue));
+				} else {
+					item.setDecimalDigits(item.getDecimalListener().getDecimalFromSource(row, pkValue));
+				}
+
+				// item.setDecimalDigits(item.getDecimalListener()
+				// .getDecimalFromSource(row, pkValue));
+
 			}
 		}
 	}
@@ -3650,26 +3561,21 @@ public class BillModel extends AbstractTableModel implements
 		setImportBodyDataVO(bodyVOs, true, null);
 	}
 
-	protected void setImportBodyDataVO(
-			CircularlyAccessibleValueObject[] bodyVOs,
-			boolean isExecEditFormulas, BillActionListener addaction,
-			boolean isPK) {
+	protected void setImportBodyDataVO(CircularlyAccessibleValueObject[] bodyVOs, boolean isExecEditFormulas,
+			BillActionListener addaction, boolean isPK) {
 		setImportBodyDataVOImpl(bodyVOs, isExecEditFormulas, addaction, isPK);
 	}
 
-	protected void setImportBodyDataVO(
-			CircularlyAccessibleValueObject[] bodyVOs,
-			boolean isExecEditFormulas, BillActionListener addaction) {
+	protected void setImportBodyDataVO(CircularlyAccessibleValueObject[] bodyVOs, boolean isExecEditFormulas,
+			BillActionListener addaction) {
 		setImportBodyDataVOImpl(bodyVOs, isExecEditFormulas, addaction, false);
 	}
 
 	/**
 	 * 设置表体数据. 创建日期:(01-2-23 14:22:07)
 	 */
-	private void setImportBodyDataVOImpl(
-			CircularlyAccessibleValueObject[] bodyVOs,
-			boolean isExecEditFormulas, BillActionListener addaction,
-			boolean isPK) {
+	private void setImportBodyDataVOImpl(CircularlyAccessibleValueObject[] bodyVOs, boolean isExecEditFormulas,
+			BillActionListener addaction, boolean isPK) {
 
 		// clearBodyData();
 		if (bodyVOs == null || bodyVOs.length == 0)
@@ -3729,24 +3635,17 @@ public class BillModel extends AbstractTableModel implements
 				isCellEditable(item);
 
 				String pk = null;
-				if (item.getDataType() == IBillItem.DECIMAL
-						|| item.getDataType() == IBillItem.MONEY) {
-					this.setBillItemDecimalByVO(item, this.getRowCount() - 1,
-							bodyVOs[i]);
+				if (item.getDataType() == IBillItem.DECIMAL || item.getDataType() == IBillItem.MONEY) {
+					this.setBillItemDecimalByVO(item, this.getRowCount() - 1, bodyVOs[i]);
 				} else if (item.getDataType() == IBillItem.MULTILANGTEXT) {
 					if (!(aValue instanceof MultiLangText)) {
 						String name = (String) aValue;
-						String name2 = (String) bodyVOs[i]
-								.getAttributeValue(key + "2");
-						String name3 = (String) bodyVOs[i]
-								.getAttributeValue(key + "3");
+						String name2 = (String) bodyVOs[i].getAttributeValue(key + "2");
+						String name3 = (String) bodyVOs[i].getAttributeValue(key + "3");
 
-						String name4 = (String) bodyVOs[i]
-								.getAttributeValue(key + "4");
-						String name5 = (String) bodyVOs[i]
-								.getAttributeValue(key + "5");
-						String name6 = (String) bodyVOs[i]
-								.getAttributeValue(key + "6");
+						String name4 = (String) bodyVOs[i].getAttributeValue(key + "4");
+						String name5 = (String) bodyVOs[i].getAttributeValue(key + "5");
+						String name6 = (String) bodyVOs[i].getAttributeValue(key + "6");
 
 						MultiLangText mlt = null;
 						if (name != null || name2 != null || name3 != null) {
@@ -3797,15 +3696,12 @@ public class BillModel extends AbstractTableModel implements
 					// this.getBodyColByKey(key));
 					int column = this.getColumnIndex(item);
 					if (!item.isShow() || column == -1) {
-						setValueAt(aValue, this.getRowCount() - 1,
-								getBodyColByKey(item.getKey()));
-						setItemRelationValueAt(aValue, this.getRowCount() - 1,
-								item);
+						setValueAt(aValue, this.getRowCount() - 1, getBodyColByKey(item.getKey()));
+						setItemRelationValueAt(aValue, this.getRowCount() - 1, item);
 
 					} else {
-						this.getBillScrollPane().setValueAt(item,
-								this.getRowCount() - 1,
-								this.getColumnIndex(item), aValue, pk);
+						this.getBillScrollPane().setValueAt(item, this.getRowCount() - 1, this.getColumnIndex(item),
+								aValue, pk);
 					}
 
 				}
@@ -3818,8 +3714,9 @@ public class BillModel extends AbstractTableModel implements
 
 		// loadLoadRelationItemValue();
 		// 编辑和显示公式都要执行。2011-3-3
-//		loadEditRelationItemValue();
-		//2015-5-14修改 ，上面赋值逻辑中已经包含了加载编辑关联项，不用重复调用，重复调用也会有覆盖值的问题（否则，设置了编辑关联项的item将无法导入数据）
+		// loadEditRelationItemValue();
+		// 2015-5-14修改
+		// ，上面赋值逻辑中已经包含了加载编辑关联项，不用重复调用，重复调用也会有覆盖值的问题（否则，设置了编辑关联项的item将无法导入数据）
 		loadLoadRelationItemValue();
 
 		setNeedCalculate(needCalculate);
@@ -3844,19 +3741,14 @@ public class BillModel extends AbstractTableModel implements
 			return false;
 		}
 		// 编辑前事件
-		return this
-				.getBillScrollPane()
-				.getTable()
-				.isBeforeEditEventAllowEdit(this.getRowCount() - 1, colIndex,
-						null);
+		return this.getBillScrollPane().getTable().isBeforeEditEventAllowEdit(this.getRowCount() - 1, colIndex, null);
 	}
 
 	protected int getColumnIndex(BillItem item) {
 		int colIndex = -1;
 		try {
 
-			colIndex = this.getBillScrollPane().getTable().getColumnModel()
-					.getColumnIndex(item.getName());
+			colIndex = this.getBillScrollPane().getTable().getColumnModel().getColumnIndex(item.getName());
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -3880,10 +3772,8 @@ public class BillModel extends AbstractTableModel implements
 		if (newItems != null) {
 			for (int i = 0; i < newItems.length; i++) {
 				htBodyItems.put(newItems[i].getKey(), Integer.valueOf(i));
-				if (newItems[i].getDataType() == IBillItem.UFREF
-						|| newItems[i].getDataType() == IBillItem.COMBO) {
-					htBodyItems.put(newItems[i].getKey() + IBillItem.ID_SUFFIX,
-							Integer.valueOf(i));
+				if (newItems[i].getDataType() == IBillItem.UFREF || newItems[i].getDataType() == IBillItem.COMBO) {
+					htBodyItems.put(newItems[i].getKey() + IBillItem.ID_SUFFIX, Integer.valueOf(i));
 				}
 
 				// if(newItems[i].getIDColName() != null &&
@@ -3905,8 +3795,7 @@ public class BillModel extends AbstractTableModel implements
 			for (int i = 0; i < newItems.length; i++) {
 				BillItem item = newItems[i];
 				if (item != null) {
-					if (item.getIDColName() != null
-							&& !item.getKey().equals(item.getIDColName())) {
+					if (item.getIDColName() != null && !item.getKey().equals(item.getIDColName())) {
 						BillItem iditem = htBillItems.get(item.getIDColName());
 						if (iditem != null)
 							iditem.addRelationItem(item);
@@ -3931,8 +3820,7 @@ public class BillModel extends AbstractTableModel implements
 	/**
 	 * 设置表体行数据. 创建日期:(01-2-23 14:22:07)
 	 */
-	private void setBodyRowVOModel(CircularlyAccessibleValueObject bodyRowVO,
-			int row) {
+	private void setBodyRowVOModel(CircularlyAccessibleValueObject bodyRowVO, int row) {
 		if (bodyRowVO == null)
 			return;
 		Object aValue;
@@ -3977,8 +3865,7 @@ public class BillModel extends AbstractTableModel implements
 				String name5 = (String) bodyRowVO.getAttributeValue(key + "5");
 				String name6 = (String) bodyRowVO.getAttributeValue(key + "6");
 
-				if (name != null || name2 != null || name3 != null
-						|| name4 != null || name5 != null || name6 != null) {
+				if (name != null || name2 != null || name3 != null || name4 != null || name5 != null || name6 != null) {
 					MultiLangText mlt = new MultiLangText();
 
 					mlt.setText(name);
@@ -4019,8 +3906,7 @@ public class BillModel extends AbstractTableModel implements
 			BillItem ritem = item.getRelationItem().get(j);
 
 			if (ritem.getDataType() == IBillItem.UFREF) {
-				int column = getBodyColByKey(item.getRelationItem().get(j)
-						.getKey());
+				int column = getBodyColByKey(item.getRelationItem().get(j).getKey());
 
 				if (column >= 0) {
 					Object o = getValueAt(row, column);
@@ -4031,11 +3917,9 @@ public class BillModel extends AbstractTableModel implements
 
 						if (aValue != null && aValue.toString().length() > 0) {
 							if (o != null && o instanceof IConstEnum)
-								aValue = new DefaultConstEnum(aValue,
-										((IConstEnum) o).getName());
+								aValue = new DefaultConstEnum(aValue, ((IConstEnum) o).getName());
 							else
-								aValue = new DefaultConstEnum(aValue,
-										(String) aValue);
+								aValue = new DefaultConstEnum(aValue, (String) aValue);
 						} else {
 							aValue = null;
 						}
@@ -4045,7 +3929,7 @@ public class BillModel extends AbstractTableModel implements
 					setValueAt(aValue, row, column);
 				}
 			}
-			if(aValue==null){
+			if (aValue == null) {
 				int column = getBodyColByKey(item.getRelationItem().get(j).getKey());
 				setValueAt(aValue, row, column);
 			}
@@ -4055,10 +3939,8 @@ public class BillModel extends AbstractTableModel implements
 	/**
 	 * 设置表体数据. 创建日期:(01-2-23 14:22:07)
 	 */
-	public void setBodyRowVOs(CircularlyAccessibleValueObject[] bodyVOs,
-			int[] rows) {
-		if (bodyVOs == null || bodyVOs.length == 0 || rows == null
-				|| bodyVOs.length != rows.length)
+	public void setBodyRowVOs(CircularlyAccessibleValueObject[] bodyVOs, int[] rows) {
+		if (bodyVOs == null || bodyVOs.length == 0 || rows == null || bodyVOs.length != rows.length)
 			return;
 		// rows = convertIntoModelRow(rows);
 		int rowcount = getRowCount();
@@ -4172,11 +4054,11 @@ public class BillModel extends AbstractTableModel implements
 	}
 
 	public void clearCellShowWarning(int row, String key) {
-		 if(null!=getRowAttribute(row)){
-			   getRowAttribute(row).clearCellShowWarning(key);
-			  }
+		if (null != getRowAttribute(row)) {
+			getRowAttribute(row).clearCellShowWarning(key);
+		}
 
-//		getRowAttribute(row).clearCellShowWarning(key);
+		// getRowAttribute(row).clearCellShowWarning(key);
 	}
 
 	public void setCellHigh(int row, String strKey, int height) {
@@ -4193,8 +4075,7 @@ public class BillModel extends AbstractTableModel implements
 	@SuppressWarnings("unchecked")
 	public void setDataVector(Vector newData) {
 		if (newData == null)
-			throw new IllegalArgumentException(
-					"setDataVector() - Null parameter");
+			throw new IllegalArgumentException("setDataVector() - Null parameter");
 
 		// 清除数据
 		dataVector = new Vector(0);
@@ -4216,8 +4097,8 @@ public class BillModel extends AbstractTableModel implements
 			vRowAttrib.add(ra);
 		}
 
-		newRowsAdded(new TableModelEvent(this, 0, getRowCount() - 1,
-				TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
+		newRowsAdded(new TableModelEvent(this, 0, getRowCount() - 1, TableModelEvent.ALL_COLUMNS,
+				TableModelEvent.INSERT));
 	}
 
 	/**
@@ -4411,8 +4292,7 @@ public class BillModel extends AbstractTableModel implements
 			ra.setRowState(state);
 
 			if (rowStateChangeListener != null) {
-				RowStateChangeEvent event = new RowStateChangeEvent(this, row,
-						oldstats, state);
+				RowStateChangeEvent event = new RowStateChangeEvent(this, row, oldstats, state);
 				rowStateChangeListener.valueChanged(event);
 			}
 
@@ -4455,8 +4335,7 @@ public class BillModel extends AbstractTableModel implements
 		}
 		// }
 		if (rowStateChangeListener != null) {
-			RowStateChangeEvent event = new RowStateChangeEvent(this, startrow,
-					endrow, oldstats, state);
+			RowStateChangeEvent event = new RowStateChangeEvent(this, startrow, endrow, oldstats, state);
 			rowStateChangeListener.valueChanged(event);
 		}
 		if (isRowSelectMode())
@@ -4556,8 +4435,7 @@ public class BillModel extends AbstractTableModel implements
 	 * @param sortPrepareListener
 	 *            The sortPrepareListener to set.
 	 */
-	public void setSortPrepareListener(
-			IBillModelSortPrepareListener sortPrepareListener) {
+	public void setSortPrepareListener(IBillModelSortPrepareListener sortPrepareListener) {
 		this.sortPrepareListener = sortPrepareListener;
 	}
 
@@ -4574,16 +4452,17 @@ public class BillModel extends AbstractTableModel implements
 	public void setValueAt(Object aValue, int row, int column) {
 		setValueAtModel(aValue, row, column);
 	}
-	
+
 	/**
 	 * 设置单元值(带有精度值)
+	 * 
 	 * @param aValue
 	 * @param row
 	 * @param column
 	 * @param digits
 	 */
-	public void setValueAt(Object aValue, int row, int column,int digits) {
-		setValueAtModel(aValue, row, column,digits);
+	public void setValueAt(Object aValue, int row, int column, int digits) {
+		setValueAtModel(aValue, row, column, digits);
 	}
 
 	public void setValueAt(Object aValue, int row, String strKey) {
@@ -4594,13 +4473,11 @@ public class BillModel extends AbstractTableModel implements
 
 			BillItem item = getBodyItems()[col];
 			Object o = getValueAt(row, col);
-			if (isImporting() && item.getBillItemSetValueListener() != null
-					&& isRemainingOldValue(aValue, o, item)) {
+			if (isImporting() && item.getBillItemSetValueListener() != null && isRemainingOldValue(aValue, o, item)) {
 				return;
 			}
 
-			if (aValue != null && item.getDataType() == IBillItem.UFREF
-					&& !(aValue instanceof IConstEnum)) {
+			if (aValue != null && item.getDataType() == IBillItem.UFREF && !(aValue instanceof IConstEnum)) {
 
 				if (isNull(o)) {
 
@@ -4613,12 +4490,10 @@ public class BillModel extends AbstractTableModel implements
 				} else {
 					if (strKey.endsWith(IBillItem.ID_SUFFIX)) {
 
-						aValue = new DefaultConstEnum(aValue,
-								((IConstEnum) o).getName());
+						aValue = new DefaultConstEnum(aValue, ((IConstEnum) o).getName());
 
 					} else {
-						aValue = new DefaultConstEnum(
-								((IConstEnum) o).getValue(), aValue.toString());
+						aValue = new DefaultConstEnum(((IConstEnum) o).getValue(), aValue.toString());
 					}
 				}
 			}
@@ -4628,14 +4503,16 @@ public class BillModel extends AbstractTableModel implements
 			setItemRelationValueAt(aValue, row, item);
 		}
 	}
+
 	/**
 	 * 带精度值的列设值
+	 * 
 	 * @param aValue
 	 * @param row
 	 * @param strKey
 	 * @param digits
 	 */
-	public void setValueAt(Object aValue, int row, String strKey,int digits) {
+	public void setValueAt(Object aValue, int row, String strKey, int digits) {
 
 		int col = getBodyColByKey(strKey);
 
@@ -4643,13 +4520,11 @@ public class BillModel extends AbstractTableModel implements
 
 			BillItem item = getBodyItems()[col];
 			Object o = getValueAt(row, col);
-			if (isImporting() && item.getBillItemSetValueListener() != null
-					&& isRemainingOldValue(aValue, o, item)) {
+			if (isImporting() && item.getBillItemSetValueListener() != null && isRemainingOldValue(aValue, o, item)) {
 				return;
 			}
 
-			if (aValue != null && item.getDataType() == IBillItem.UFREF
-					&& !(aValue instanceof IConstEnum)) {
+			if (aValue != null && item.getDataType() == IBillItem.UFREF && !(aValue instanceof IConstEnum)) {
 
 				if (isNull(o)) {
 
@@ -4662,26 +4537,22 @@ public class BillModel extends AbstractTableModel implements
 				} else {
 					if (strKey.endsWith(IBillItem.ID_SUFFIX)) {
 
-						aValue = new DefaultConstEnum(aValue,
-								((IConstEnum) o).getName());
+						aValue = new DefaultConstEnum(aValue, ((IConstEnum) o).getName());
 
 					} else {
-						aValue = new DefaultConstEnum(
-								((IConstEnum) o).getValue(), aValue.toString());
+						aValue = new DefaultConstEnum(((IConstEnum) o).getValue(), aValue.toString());
 					}
 				}
 			}
 
-			setValueAt(aValue, row, col,digits);
+			setValueAt(aValue, row, col, digits);
 
 			setItemRelationValueAt(aValue, row, item);
 		}
 	}
 
-	private boolean isRemainingOldValue(Object newValue, Object oldValue,
-			BillItem item) {
-		return !item.getBillItemSetValueListener().isReplaceByNewValue(this,
-				item, newValue, oldValue);
+	private boolean isRemainingOldValue(Object newValue, Object oldValue, BillItem item) {
+		return !item.getBillItemSetValueListener().isReplaceByNewValue(this, item, newValue, oldValue);
 
 	}
 
@@ -4709,8 +4580,8 @@ public class BillModel extends AbstractTableModel implements
 		BillItem item = getBodyItems()[column];
 		// Vector rowVector = (Vector) dataVector.elementAt(row);
 		Vector rowVector = getRowVectorAtModel(row);
-		//什么情况下能为空
-		if (rowVector == null){
+		// 什么情况下能为空
+		if (rowVector == null) {
 			return;
 		}
 		int datatype = item.getDataType();
@@ -4720,10 +4591,8 @@ public class BillModel extends AbstractTableModel implements
 		if (aValue != null) {
 
 			// 修改小数精度
-			if (!isFirstSetBodyDataVO
-					&& !isIgnoreScaleWhenSetValue()
-					&& (item.getDataType() == IBillItem.DECIMAL || item
-							.getDataType() == IBillItem.MONEY)) {
+			if (!isFirstSetBodyDataVO && !isIgnoreScaleWhenSetValue()
+					&& (item.getDataType() == IBillItem.DECIMAL || item.getDataType() == IBillItem.MONEY)) {
 				// -----为设置精度增加的代码，对于小数的增加如下监听------------------
 				setBillItemDecimalByRow(item, row);
 				// aValue = BillUtil.getFormatUFDouble((UFDouble)aValue,
@@ -4810,32 +4679,30 @@ public class BillModel extends AbstractTableModel implements
 		// 计算合计
 		if (isNeedCalculate()) {
 			if (item.isTotal()
-					&& (datatype == BillItem.INTEGER
-							|| datatype == BillItem.DECIMAL || item
-							.getDataType() == IBillItem.MONEY))
+					&& (datatype == BillItem.INTEGER || datatype == BillItem.DECIMAL || item.getDataType() == IBillItem.MONEY))
 				reCalcurate(column);
 		}
 		if (isChangeTable())
 			fireTableChanged(new TableModelEvent(this, row, row, column));
 	}
-	
-	
+
 	/**
 	 * 设置单元值(带精度值)
+	 * 
 	 * @param aValue
 	 * @param row
 	 * @param column
 	 * @param digits
 	 */
 	@SuppressWarnings("unchecked")
-	void setValueAtModel(Object aValue, int row, int column,int digits) {
+	void setValueAtModel(Object aValue, int row, int column, int digits) {
 		if (row < 0 || column < 0)
 			return;
 		BillItem item = getBodyItems()[column];
 		// Vector rowVector = (Vector) dataVector.elementAt(row);
 		Vector rowVector = getRowVectorAtModel(row);
-		//什么情况下能为空
-		if (rowVector == null){
+		// 什么情况下能为空
+		if (rowVector == null) {
 			return;
 		}
 		int datatype = item.getDataType();
@@ -4845,12 +4712,10 @@ public class BillModel extends AbstractTableModel implements
 		if (aValue != null) {
 
 			// 修改小数精度
-			if (!isFirstSetBodyDataVO
-					&& !isIgnoreScaleWhenSetValue()
-					&& (item.getDataType() == IBillItem.DECIMAL || item
-							.getDataType() == IBillItem.MONEY)) {
+			if (!isFirstSetBodyDataVO && !isIgnoreScaleWhenSetValue()
+					&& (item.getDataType() == IBillItem.DECIMAL || item.getDataType() == IBillItem.MONEY)) {
 				// -----为设置精度增加的代码，对于小数的增加如下监听------------------
-				setBillItemDecimalByRow(item, row,digits);
+				setBillItemDecimalByRow(item, row, digits);
 				// aValue = BillUtil.getFormatUFDouble((UFDouble)aValue,
 				// digits);
 			}
@@ -4863,15 +4728,12 @@ public class BillModel extends AbstractTableModel implements
 		// 计算合计
 		if (isNeedCalculate()) {
 			if (item.isTotal()
-					&& (datatype == BillItem.INTEGER
-							|| datatype == BillItem.DECIMAL || item
-							.getDataType() == IBillItem.MONEY))
+					&& (datatype == BillItem.INTEGER || datatype == BillItem.DECIMAL || item.getDataType() == IBillItem.MONEY))
 				reCalcurate(column);
 		}
 		if (isChangeTable())
 			fireTableChanged(new TableModelEvent(this, row, row, column));
 	}
-	
 
 	void setValueAtModel(Object aValue, int row, String strKey) {
 		int col = getBodyColByKey(strKey);
@@ -4937,8 +4799,7 @@ public class BillModel extends AbstractTableModel implements
 		// 获取比较类型
 		Comparator<?> cp = new MutiColumnComparator(items);
 
-		SortUtils.sort(dataVector, getSortObjectList(), getSortObjectArray(),
-				noldrow, cp);
+		SortUtils.sort(dataVector, getSortObjectList(), getSortObjectArray(), noldrow, cp);
 
 		getRowNOTableModel().fireTableDataChanged();
 
@@ -4950,12 +4811,10 @@ public class BillModel extends AbstractTableModel implements
 			bsl.afterSort(itemkey);
 		}
 
-		EventListener[] ls = afterSortListener
-				.getListeners(BillSortListener2.class);
+		EventListener[] ls = afterSortListener.getListeners(BillSortListener2.class);
 
 		int currentrow = -1;
-		if (getBillScrollPane() != null && noldrow != null
-				&& noldrow.length > 0)
+		if (getBillScrollPane() != null && noldrow != null && noldrow.length > 0)
 			currentrow = noldrow[0];
 
 		for (int i = 0; i < ls.length; i++) {
@@ -5139,8 +4998,7 @@ public class BillModel extends AbstractTableModel implements
 		return cellEditableController;
 	}
 
-	public void setCellEditableController(
-			BillModelCellEditableController cellEditableController) {
+	public void setCellEditableController(BillModelCellEditableController cellEditableController) {
 		this.cellEditableController = cellEditableController;
 	}
 
@@ -5178,8 +5036,7 @@ public class BillModel extends AbstractTableModel implements
 		ArrayList<List> sortObject = new ArrayList<List>();
 		sortObject.add(vRowAttrib);
 
-		EventListener[] ls = sortRelaObjectListener
-				.getListeners(IBillRelaSortListener.class);
+		EventListener[] ls = sortRelaObjectListener.getListeners(IBillRelaSortListener.class);
 		for (int i = 0; i < ls.length; i++) {
 			List o = (List) ((IBillRelaSortListener) ls[i]).getRelaSortObject();
 			if (o != null && o.size() != 0)
@@ -5197,11 +5054,9 @@ public class BillModel extends AbstractTableModel implements
 
 		ArrayList<Object[]> sortObject = new ArrayList<Object[]>();
 
-		EventListener[] ls = sortRelaObjectListener
-				.getListeners(IBillRelaSortListener2.class);
+		EventListener[] ls = sortRelaObjectListener.getListeners(IBillRelaSortListener2.class);
 		for (int i = 0; i < ls.length; i++) {
-			Object[] o = (Object[]) ((IBillRelaSortListener2) ls[i])
-					.getRelaSortObjectArray();
+			Object[] o = (Object[]) ((IBillRelaSortListener2) ls[i]).getRelaSortObjectArray();
 			if (o != null)
 				sortObject.add(o);
 		}
@@ -5244,8 +5099,7 @@ public class BillModel extends AbstractTableModel implements
 		this.rowSelectMode = rowSelectMode;
 	}
 
-	public void addRowStateChangeEventListener(
-			IBillModelRowStateChangeEventListener l) {
+	public void addRowStateChangeEventListener(IBillModelRowStateChangeEventListener l) {
 		this.rowStateChangeListener = l;
 	}
 
@@ -5257,8 +5111,7 @@ public class BillModel extends AbstractTableModel implements
 		return this.rowStateChangeListener;
 	}
 
-	public void addHeadRowStateChangeEventListener(
-			IBillModelHeadRowStateChangeEventListener l) {
+	public void addHeadRowStateChangeEventListener(IBillModelHeadRowStateChangeEventListener l) {
 		this.headRowStateChangeListener = l;
 	}
 
@@ -5511,16 +5364,14 @@ public class BillModel extends AbstractTableModel implements
 		BillItem[] items = getBodyItems();
 		for (int i = 0; i < items.length; i++) {
 			BillItem item = items[i];
-			if (item.getDataType() == IBillItem.UFREF
-					&& item.getMetaDataProperty() != null) {
+			if (item.getDataType() == IBillItem.UFREF && item.getMetaDataProperty() != null) {
 				loadEditRelationItemValue(0, getRowCount() - 1, item.getKey());
 			}
 		}
 	}
 
 	protected void setBodyRowsObjectByMetaData(NCObject[] os, int[] rows) {
-		if (ArrayUtils.isEmpty(os) || ArrayUtils.isEmpty(rows)
-				|| os.length != rows.length)
+		if (ArrayUtils.isEmpty(os) || ArrayUtils.isEmpty(rows) || os.length != rows.length)
 			return;
 		for (int i = 0; i < rows.length; i++) {
 			setBodyRowObjectModelByMetaData(os[i], rows[i]);
@@ -5541,11 +5392,9 @@ public class BillModel extends AbstractTableModel implements
 		for (int col = 0; col < getBodyItems().length; col++) {
 			BillItem item = getBodyItems()[col];
 
-			if (item.getDataType() == IBillItem.UFREF
-					&& item.getMetaDataProperty() != null) {
+			if (item.getDataType() == IBillItem.UFREF && item.getMetaDataProperty() != null) {
 
-				ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(
-						item, false);
+				ArrayList<IConstEnum> relationitem = getMetaDataRelationItems(item, false);
 
 				if (relationitem != null) {
 
@@ -5558,8 +5407,7 @@ public class BillModel extends AbstractTableModel implements
 					}
 					gvs.addRelationItem(item, relationitem, ids);
 					if (!(item.getGetBillRelationItemValue() instanceof MetaDataGetBillRelationItemValue)) {
-						valuemap.put(m, item.getGetBillRelationItemValue()
-								.getRelationItemValue(relationitem, ids));
+						valuemap.put(m, item.getGetBillRelationItemValue().getRelationItemValue(relationitem, ids));
 					}
 					m++;
 
