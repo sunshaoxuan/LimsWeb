@@ -140,7 +140,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			//
 			// set 修改人
 			if (null != agghvo && agghvo.getParentVO() != null) {
-
+				
 				String pk_user = billFormEditor.getModel().getContext().getPk_loginUser();
 				agghvo.getParentVO().setModifier(pk_user);
 			}
@@ -192,15 +192,15 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			String pk_commissiontype = aggvo.getParentVO().getPk_commissiontype();
 			if (pk_commissiontype != null) {
 				IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
-
+				
 				try {
 					typeName = (String) iUAPQueryBS.executeQuery(" select NAME "
 							+ " from NC_PROJ_TYPE WHERE ISENABLE=1 " + " and PK_PROJ_TYPE = '" + pk_commissiontype
 							+ "'", new ColumnProcessor());
 				} catch (BusinessException e) {
 					e.printStackTrace();
-				}
-
+				}  
+				
 			}
 		}
 		return typeName;
@@ -330,12 +330,19 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			ITaskMaintain ITaskMaintain = (ITaskMaintain) NCLocator.getInstance().lookup(ITaskMaintain.class);
 			AggTaskHVO newVO = new AggTaskHVO();
 			TaskHVO parentVO = new TaskHVO();
-
+			
 			parentVO.setBillno(commissionHVO.getBillno());
 			parentVO.setPk_commission_h(commissionHVO.getPk_commission_h());
 			parentVO.setPk_group(commissionHVO.getPk_group());
 			parentVO.setPk_org(commissionHVO.getPk_org());
 			parentVO.setPk_org_v(commissionHVO.getPk_org_v());
+            parentVO.setCreator(commissionHVO.getCreator());
+            parentVO.setCreationtime(commissionHVO.getCreationtime());
+            parentVO.setModifier(commissionHVO.getModifier());
+            parentVO.setModifiedtime(commissionHVO.getModifiedtime());
+            parentVO.setLastmaketime(commissionHVO.getLastmaketime());
+            parentVO.setApprover(null);
+            parentVO.setBillmaker(commissionHVO.getModifier());
 			parentVO.setApprovestatus(-1);
 
 			newVO.setParent(parentVO);
@@ -383,7 +390,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
 		Set<String> templatesSet = new HashSet();
-
+		
 		// 先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
 		// 清空时,不清空此模板包含的字段
 		if (templates != null && templates.length > 0) {
@@ -394,10 +401,10 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 				if (!templatesSet.contains(temp)) {
 					billCardPanel.getHeadItem(temp).setValue(null);
 				}
-
+				
 			}
 		}
-
+		
 		billCardPanel.hideHeadItem(allTemplateFields);
 		if (templates == null) {
 			templates = allTemplateFields;
