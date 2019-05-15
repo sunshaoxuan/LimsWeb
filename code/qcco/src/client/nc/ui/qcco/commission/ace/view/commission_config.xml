@@ -323,7 +323,7 @@
 		<property name="model" ref="bmModel"></property>
 		<property name="templateContainer" ref="templateContainer" />
 		<property name="nodekey" value="bt"></property>
-		<property name="showOrgPanel" value="true" />
+		<property name="showOrgPanel" value="false" />
 		<!-- 是否自动增行 -->
 		<property name="autoAddLine" value="false" />
 		<!-- 表体行操作按钮注册，与表体右键菜单保持一致 -->
@@ -545,6 +545,10 @@
 				<ref bean="editTaskAction" />
 				<ref bean="separatorAction" />
 				<ref bean="previewActionGroup" />
+				<ref bean="separatorAction" />
+				<ref bean="changeAction" />
+				<ref bean="separatorAction" />
+				<ref bean="confirmAction" />
 			</list>
 		</property>
 	</bean>
@@ -569,6 +573,10 @@
 				<ref bean="editTaskAction" />
 				<ref bean="separatorAction" />
 				<ref bean="previewActionGroup" />
+				<ref bean="separatorAction" />
+				<ref bean="changeAction" />
+				<ref bean="separatorAction" />
+				<ref bean="confirmAction" />
 			</list>
 		</property>
 
@@ -598,12 +606,24 @@
 		<property name="model" ref="bmModel" />
 		<property name="interceptor" ref="showCardInterceptor" />
 	</bean>
-
+	<!-- 编辑按钮 -->
 	<bean id="editAction" class="nc.ui.qcco.commission.action.CommissionEditAction">
 		<property name="model" ref="bmModel" />
 		<property name="interceptor" ref="showCardInterceptor" />
 		<property name="mainGrandPanel" ref="MainGrandbillForm" />
 	</bean>
+	
+	<!-- 变更按钮 -->
+	<bean id="changeAction" class="nc.ui.qcco.commission.action.ChangeAction">
+		<property name="model" ref="bmModel" />
+		<property name="interceptor" ref="showCardInterceptor" />
+		<property name="mainGrandPanel" ref="MainGrandbillForm" />
+	</bean>
+
+	<!-- 确认按钮 -->
+	<bean id="confirmAction" class="nc.ui.qcco.commission.action.ConfirmAction">
+	</bean>
+	
 	<!-- 删除按钮 -->
 	<bean id="deleteAction" class="nc.ui.qcco.commission.action.CommissionDeleteAction">
 		<property name="model"><ref bean="bmModel"/></property>

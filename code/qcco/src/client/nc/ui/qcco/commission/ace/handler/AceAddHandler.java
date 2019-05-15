@@ -70,6 +70,8 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 			ExceptionUtils.wrappBusinessException(ex.getMessage());
 		}
 		panel.setHeadItem("pk_commissiontype", defaultType);
+		panel.getHeadItem("pk_commissiontype").setEnabled(true);
+		panel.getHeadItem("pk_commissiontype").setEdit(true);
 		panel.setHeadItem("codeprefix", pk_prefix);
 		panel.setHeadItem("pk_owner", pk_psnorg);
 		panel.setHeadItem("pk_payer", pk_psnorg);

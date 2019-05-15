@@ -2,8 +2,11 @@ package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import nc.bs.framework.common.NCLocator;
@@ -11,11 +14,8 @@ import nc.bs.uif2.BusinessExceptionAdapter;
 import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
-import nc.desktop.ui.WorkbenchEnvironment;
-import nc.itf.qcco.ICommissionMaintain;
 import nc.itf.qcco.ITaskMaintain;
 import nc.itf.uap.IUAPQueryBS;
-import nc.jdbc.framework.processor.BeanListProcessor;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.bill.BillCardPanel;
@@ -23,9 +23,9 @@ import nc.ui.pub.linkoperate.LinkEditData;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel;
-import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.commission.ace.handler.CommissionShowTemplate;
+import nc.ui.qcco.commission.model.MainSubBillModel;
 import nc.ui.uap.sf.SFClientUtil;
 import nc.ui.uif2.IShowMsgConstant;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
@@ -35,11 +35,16 @@ import nc.util.mmf.framework.gc.GCClientBillCombinServer;
 import nc.util.mmf.framework.gc.GCClientBillToServer;
 import nc.util.mmf.framework.gc.GCPseudoColUtil;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.VOStatus;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.qcco.commission.CommissionCVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskHVO;
+
+import org.apache.commons.lang.StringUtils;
 
 public class CommissionSaveAction extends DifferentVOSaveAction {
 
@@ -94,43 +99,113 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			this.getMainGrandModel().clearBufferData();
 		} else if (this.getModel().getUiState() == UIState.EDIT) {
 			GCPseudoColUtil.getInstance().setPseudoColInfo(agghvo);
-			//set 修改人
-			if(null != agghvo && agghvo.getParentVO()!=null){
-				
+			// 变更态时收集变化项目
+			CommissionCVO[] newCVOs = null;
+			if (((MainSubBillModel) this.getModel()).isChangeStatus()) {
+				Map<String, String> newValue = new HashMap<String, String>();
+				// testaim
+				newValue.put("testaim", (String) agghvo.getParentVO().getTestaim());
+				// progressneed
+				newValue.put("progressneed", (String) agghvo.getParentVO().getProgressneed());
+				// sampledealtype
+				newValue.put("sampledealtype", (String) agghvo.getParentVO().getSampledealtype());
+				// productproperty
+				newValue.put("productproperty", (String) agghvo.getParentVO().getProductproperty());
+				// customername
+				newValue.put("customername", (String) agghvo.getParentVO().getCustomername());
+				// customertype
+				newValue.put("customertype", (String) agghvo.getParentVO().getCustomertype());
+				// testrequirement
+				newValue.put("testrequirement", (String) agghvo.getParentVO().getTestrequirement());
+				// checkingproperty
+				newValue.put("checkingproperty", (String) agghvo.getParentVO().getCheckingproperty());
+				// productline
+				newValue.put("productline", (String) agghvo.getParentVO().getProductline());
+				// batchnumber
+				newValue.put("batchnumber", (String) agghvo.getParentVO().getBatchnumber());
+				// productdate
+				newValue.put("productdate", agghvo.getParentVO().getProductdate() == null ? "" : agghvo.getParentVO()
+						.getProductdate().toString());
+				// batchserial
+				newValue.put("batchserial", (String) agghvo.getParentVO().getBatchserial());
+				// identificationtype
+				newValue.put("identificationtype", (String) agghvo.getParentVO().getIdentificationtype());
+				// certificationtype
+				newValue.put("certificationtype", (String) agghvo.getParentVO().getCertificationtype());
+				// itemnumber
+				newValue.put("itemnumber", (String) agghvo.getParentVO().getItemnumber());
+				newCVOs = getChangedVOs(((MainSubBillModel) this.getModel()).getOldValue(), newValue,
+						agghvo.getPrimaryKey());
+			}
+			//
+			// set 修改人
+			if (null != agghvo && agghvo.getParentVO() != null) {
+
 				String pk_user = billFormEditor.getModel().getContext().getPk_loginUser();
 				agghvo.getParentVO().setModifier(pk_user);
+			}
+			if (newCVOs.length > 0) {
+				agghvo.setChildren(CommissionCVO.class, newCVOs);
 			}
 			doEditSave(agghvo);
 			this.getMainGrandModel().clearBufferData();
 		}
 		String typeName = loadTemplet(agghvo);
-		if(null != typeName){
-			changeTemplet(typeName,this.billFormEditor.getBillCardPanel());
+		if (null != typeName) {
+			changeTemplet(typeName, this.billFormEditor.getBillCardPanel());
 		}
+		// 由变更状态返回时设置状态
+		((MainSubBillModel) this.getModel()).setChangeStatus(false);
+		((MainSubBillModel) this.getModel()).resetBillFormEnableState();
+		//
 		billForm.showMeUp();
 		showSuccessInfo();
 	}
 
-	private String loadTemplet(AggCommissionHVO aggvo){
+	private CommissionCVO[] getChangedVOs(Map<String, String> oldValue, Map<String, String> newValue,
+			String pk_commission_h) {
+		List<CommissionCVO> retVOs = new ArrayList<CommissionCVO>();
+		if (oldValue != null && newValue != null && oldValue.size() > 0 && newValue.size() > 0) {
+			for (Entry<String, String> value : oldValue.entrySet()) {
+				if (newValue.containsKey(value.getKey())) {
+					if (!StringUtils.equals(newValue.get(value.getKey()), value.getKey())) {
+						CommissionCVO cvo = new CommissionCVO();
+						cvo.setPk_commission_h(pk_commission_h);
+						cvo.setItemname(value.getKey());
+						cvo.setOldvalue(value.getValue());
+						cvo.setNewvalue(newValue.get(value.getKey()));
+						cvo.setStatus(VOStatus.NEW);
+						cvo.setModifier(billFormEditor.getModel().getContext().getPk_loginUser());
+						cvo.setModifiedtime(new UFDateTime());
+
+						retVOs.add(cvo);
+					}
+				}
+			}
+		}
+		return retVOs.toArray(new CommissionCVO[0]);
+	}
+
+	private String loadTemplet(AggCommissionHVO aggvo) {
 		String typeName = null;
-		if(aggvo!=null && aggvo.getParentVO()!=null && aggvo.getParentVO().getPk_commissiontype()!=null){
+		if (aggvo != null && aggvo.getParentVO() != null && aggvo.getParentVO().getPk_commissiontype() != null) {
 			String pk_commissiontype = aggvo.getParentVO().getPk_commissiontype();
-			if(pk_commissiontype!=null){
-				IUAPQueryBS iUAPQueryBS = (IUAPQueryBS)NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());   
-				
+			if (pk_commissiontype != null) {
+				IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
+
 				try {
-					typeName = (String)iUAPQueryBS. executeQuery(
-							" select NAME "
-							+ " from NC_PROJ_TYPE WHERE ISENABLE=1 "
-							+ " and PK_PROJ_TYPE = '"+pk_commissiontype+"'",new ColumnProcessor());
+					typeName = (String) iUAPQueryBS.executeQuery(" select NAME "
+							+ " from NC_PROJ_TYPE WHERE ISENABLE=1 " + " and PK_PROJ_TYPE = '" + pk_commissiontype
+							+ "'", new ColumnProcessor());
 				} catch (BusinessException e) {
 					e.printStackTrace();
-				}  
-				
+				}
+
 			}
 		}
 		return typeName;
 	}
+
 	@Override
 	protected void doAddSave(Object value) throws Exception {
 		IBill[] clientVOs = { (IBill) value };
@@ -152,9 +227,9 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 						"是否跳转到新的任务单?")) {
 			LinkEditData data = new LinkEditData();
 			data.setBillID(pk_task_h);
-			//TODO 当已经打开节点时,可以调转到编辑态... 
+			// TODO 当已经打开节点时,可以调转到编辑态...
 			SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
-			/*SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);*/
+			/* SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data); */
 		}
 
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
@@ -192,11 +267,11 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
 		getModel().setUiState(UIState.NOT_EDIT);
-		//getMainGrandModel().directlyUpdate(clientVOs[0]);
+		// getMainGrandModel().directlyUpdate(clientVOs[0]);
 		List<AggCommissionHVO> clientVOsList = new ArrayList();
-		for(IBill bill : clientVOs){
-			if(bill instanceof AggCommissionHVO){
-				clientVOsList.add((AggCommissionHVO)bill);
+		for (IBill bill : clientVOs) {
+			if (bill instanceof AggCommissionHVO) {
+				clientVOsList.add((AggCommissionHVO) bill);
 			}
 		}
 		getMainGrandModel().getMainModel().initModel(clientVOsList.toArray(new AggCommissionHVO[0]));
@@ -205,9 +280,9 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 						"是否跳转到新的任务单?")) {
 			LinkEditData data = new LinkEditData();
 			data.setBillID(pk_task_h);
-			//TODO 当已经打开节点时,可以调转到编辑态... 
+			// TODO 当已经打开节点时,可以调转到编辑态...
 			SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
-			/*SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);*/
+			/* SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data); */
 		}
 	}
 
@@ -215,11 +290,11 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		if (bills != null && bills.length >= 0) {
 			List<AggCommissionHVO> deleteList = new ArrayList();
 			for (IBill bill : bills) {
-				if (bill != null && bill instanceof AggCommissionHVO&& bill.getParent() != null) {
+				if (bill != null && bill instanceof AggCommissionHVO && bill.getParent() != null) {
 					deleteList.add(((AggCommissionHVO) bill));
 				}
 			}
-			//删除就的任务单
+			// 删除就的任务单
 			ITaskMaintain ITaskMaintain = (ITaskMaintain) NCLocator.getInstance().lookup(ITaskMaintain.class);
 			ITaskMaintain.deleteOldList(deleteList);
 		}
@@ -255,7 +330,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			ITaskMaintain ITaskMaintain = (ITaskMaintain) NCLocator.getInstance().lookup(ITaskMaintain.class);
 			AggTaskHVO newVO = new AggTaskHVO();
 			TaskHVO parentVO = new TaskHVO();
-			
+
 			parentVO.setBillno(commissionHVO.getBillno());
 			parentVO.setPk_commission_h(commissionHVO.getPk_commission_h());
 			parentVO.setPk_group(commissionHVO.getPk_group());
@@ -302,34 +377,35 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			}
 		}
 	}
-	private void changeTemplet(String typeName,BillCardPanel billCardPanel){
+
+	private void changeTemplet(String typeName, BillCardPanel billCardPanel) {
 
 		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
 		Set<String> templatesSet = new HashSet();
-		
-		//先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
-		//清空时,不清空此模板包含的字段
-		if(templates!=null && templates.length > 0){
-			for(String tmp : templates){
+
+		// 先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
+		// 清空时,不清空此模板包含的字段
+		if (templates != null && templates.length > 0) {
+			for (String tmp : templates) {
 				templatesSet.add(tmp);
 			}
-			for(String temp : allTemplateFields){
-				if(!templatesSet.contains(temp)){
+			for (String temp : allTemplateFields) {
+				if (!templatesSet.contains(temp)) {
 					billCardPanel.getHeadItem(temp).setValue(null);
 				}
-				
+
 			}
 		}
-		
+
 		billCardPanel.hideHeadItem(allTemplateFields);
-		if(templates == null){
+		if (templates == null) {
 			templates = allTemplateFields;
 		}
 		billCardPanel.showHeadItem(templates);
-		
-	
+
 	}
+
 	public MainGrandModel getMainGrandModel() {
 		return mainGrandModel;
 	}

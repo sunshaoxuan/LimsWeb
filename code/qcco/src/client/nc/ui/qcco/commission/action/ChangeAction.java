@@ -2,11 +2,15 @@ package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
 
-import nc.ui.pubapp.uif2app.actions.CancelAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.qcco.commission.model.MainSubBillModel;
+import nc.ui.uif2.actions.EditAction;
 
-public class CommissionCancelAction extends CancelAction {
+public class ChangeAction extends EditAction {
+	/**
+	 * serial no
+	 */
+	private static final long serialVersionUID = 6398003887713048604L;
 	private CardGrandPanelComposite mainGrandPanel;
 
 	public CardGrandPanelComposite getMainGrandPanel() {
@@ -17,15 +21,18 @@ public class CommissionCancelAction extends CancelAction {
 		this.mainGrandPanel = mainGrandPanel;
 	}
 
+	public ChangeAction() {
+		setBtnName("变更");
+		setCode("ChangeAction");
+	}
+
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
 		super.doAction(e);
 
-		// 由变更状态返回时设置状态
-		((MainSubBillModel) this.getModel()).setChangeStatus(false);
+		((MainSubBillModel) this.getModel()).setChangeStatus(true);
 		((MainSubBillModel) this.getModel()).resetBillFormEnableState();
-		//
-		mainGrandPanel.showMeUp();
+		((MainSubBillModel) this.getModel()).cacheOldValues();
 	}
 
 }
