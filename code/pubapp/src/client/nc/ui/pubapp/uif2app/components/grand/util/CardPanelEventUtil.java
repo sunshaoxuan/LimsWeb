@@ -250,15 +250,7 @@ public class CardPanelEventUtil {
 					// on 2019-03-06
 					UserDefineRefUtils.refreshBillCardGrandDefRefs(grandBillForm, grandTabCode, grandObjectList);
 					// init auditInfo
-					Object aggvo = mainGrandPanel.getModel().getSelectedData();
-					if (aggvo != null && aggvo instanceof AggCommissionHVO) {
-						UserDefineRefUtils.refreshBillCardAuditInfo(grandBillForm.getBillCardPanel().getBillData(),
-								(AggCommissionHVO) aggvo);
-					}
-					if (aggvo != null && aggvo instanceof AggTaskHVO) {
-						UserDefineRefUtils.refreshBillCardAuditInfoTask(grandBillForm.getBillCardPanel().getBillData(),
-								(AggTaskHVO) aggvo);
-					}
+					
 
 					setGrandToFormStausIsEdit(grandBillForm, grandTabCode, grandObjectList);
 				} else {
@@ -267,7 +259,18 @@ public class CardPanelEventUtil {
 			} else {
 				grandBillForm.getBillCardPanel().getBillData().clearViewData();
 			}
+			//Tank 2019年5月16日00:36:59 修复孙表没数据就没有审计信息的bug
+			Object aggvo = mainGrandPanel.getModel().getSelectedData();
+			if (aggvo != null && aggvo instanceof AggCommissionHVO) {
+				UserDefineRefUtils.refreshBillCardAuditInfo(grandBillForm.getBillCardPanel().getBillData(),
+						(AggCommissionHVO) aggvo);
+			}
+			if (aggvo != null && aggvo instanceof AggTaskHVO) {
+				UserDefineRefUtils.refreshBillCardAuditInfoTask(grandBillForm.getBillCardPanel().getBillData(),
+						(AggTaskHVO) aggvo);
+			}
 		}
+		
 	}
 
 	/**

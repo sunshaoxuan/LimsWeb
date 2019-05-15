@@ -261,6 +261,13 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			parentVO.setPk_group(commissionHVO.getPk_group());
 			parentVO.setPk_org(commissionHVO.getPk_org());
 			parentVO.setPk_org_v(commissionHVO.getPk_org_v());
+			parentVO.setCreator(commissionHVO.getCreator());
+			parentVO.setCreationtime(commissionHVO.getCreationtime());
+			parentVO.setModifier(commissionHVO.getModifier());
+			parentVO.setModifiedtime(commissionHVO.getModifiedtime());
+			parentVO.setLastmaketime(commissionHVO.getLastmaketime());
+			parentVO.setApprover(null);
+			parentVO.setBillmaker(commissionHVO.getModifier());
 			parentVO.setApprovestatus(-1);
 
 			newVO.setParent(parentVO);
