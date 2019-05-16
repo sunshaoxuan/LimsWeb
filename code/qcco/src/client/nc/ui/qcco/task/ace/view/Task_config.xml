@@ -292,7 +292,11 @@
 					<property name="grandCard" ref="sunbillFormEditor1" />			
 				</bean>
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyDelLineAction" />
+				<bean class="nc.ui.qcco.task.action.TaskBodyDelLineAction" >
+						<constructor-arg ref="billFormEditor" />
+						<constructor-arg ref="sunbillFormEditor1" />
+				</bean>
+					
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyPasteLineAction" >
 					<property name="clearItems">
@@ -597,6 +601,8 @@
 				<ref bean="fileupload" />
 				<ref bean="separatorAction" />
 				<ref bean="previewActionGroup" />
+				<ref bean="writeBackLims" />
+				
 			</list>
 		</property>
 	</bean>
@@ -631,6 +637,8 @@
 				<ref bean="fileupload" />
 				<ref bean="separatorAction" />
 				<ref bean="previewActionGroup" />
+				<ref bean="separatorAction" />
+				<ref bean="writeBackLims" />
 			</list>
 		</property>
 
@@ -912,6 +920,15 @@
 
 	<!--======= 动作：[newActions] [取消审批] ===========-->
 	<bean id="uNApproveScriptAction" class="nc.ui.pubapp.uif2app.actions.pflow.UNApproveScriptAction">
+		<property name="model"><ref bean="manageAppModel"/></property>
+		<property name="editor"><ref bean="billFormEditor"/></property>
+		<property name="billType" value="QC08" />
+		<property name="filledUpInFlow" value="true" />
+		<property name="actionName" value="UNAPPROVE" />
+		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
+	</bean>
+	<!--======= 动作：[newActions] [回写LIMS] ===========-->
+	<bean id="writeBackLims" class="nc.ui.qcco.task.action.WriteBackLims">
 		<property name="model"><ref bean="manageAppModel"/></property>
 		<property name="editor"><ref bean="billFormEditor"/></property>
 		<property name="billType" value="QC08" />
