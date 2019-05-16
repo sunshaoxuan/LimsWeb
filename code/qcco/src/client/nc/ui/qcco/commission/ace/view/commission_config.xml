@@ -544,11 +544,15 @@
 				<ref bean="separatorAction" />
 				<ref bean="editTaskAction" />
 				<ref bean="separatorAction" />
-				<ref bean="previewActionGroup" />
+				<!--ref bean="previewActionGroup" /-->
+				<ref bean="quotationAction" />
+				<ref bean="payDemandAction" />
+				<ref bean="officialReportAction" />
+				<ref bean="satisfactionAction" />
 				<ref bean="separatorAction" />
 				<ref bean="changeAction" />
 				<ref bean="separatorAction" />
-				<ref bean="confirmAction" />
+				<!-- ref bean="confirmAction" /-->
 			</list>
 		</property>
 	</bean>
@@ -572,11 +576,15 @@
 				<ref bean="separatorAction" />
 				<ref bean="editTaskAction" />
 				<ref bean="separatorAction" />
-				<ref bean="previewActionGroup" />
+				<!-- ref bean="previewActionGroup" /-->
+				<ref bean="quotationAction" />
+				<ref bean="payDemandAction" />
+				<ref bean="officialReportAction" />
+				<ref bean="satisfactionAction" />
 				<ref bean="separatorAction" />
 				<ref bean="changeAction" />
 				<ref bean="separatorAction" />
-				<ref bean="confirmAction" />
+				<!-- ref bean="confirmAction" /-->
 			</list>
 		</property>
 

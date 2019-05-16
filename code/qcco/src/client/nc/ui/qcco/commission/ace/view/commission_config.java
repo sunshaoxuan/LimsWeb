@@ -1192,11 +1192,16 @@ public class commission_config extends AbstractJavaBeanDefinition {
 		list.add(getPrintMenuAction());
 		list.add(getSeparatorAction());
 		list.add(getEditTaskAction());
-		list.add(getPreviewActionGroup());
+		list.add(getSeparatorAction());
+		// list.add(getPreviewActionGroup());
+		list.add(getQuotationAction());
+		list.add(getPayDemandAction());
+		list.add(getOfficialReportAction());
+		list.add(getSatisfactionAction());
 		list.add(getSeparatorAction());
 		list.add(getChangeAction());
 		list.add(getSeparatorAction());
-		list.add(getConfirmAction());
+		// list.add(getConfirmAction());
 		return list;
 	}
 
@@ -1228,11 +1233,15 @@ public class commission_config extends AbstractJavaBeanDefinition {
 		list.add(getSeparatorAction());
 		list.add(getEditTaskAction());
 		list.add(getSeparatorAction());
-		list.add(getPreviewActionGroup());
+		// list.add(getPreviewActionGroup());
+		list.add(getQuotationAction());
+		list.add(getPayDemandAction());
+		list.add(getOfficialReportAction());
+		list.add(getSatisfactionAction());
 		list.add(getSeparatorAction());
 		list.add(getChangeAction());
 		list.add(getSeparatorAction());
-		list.add(getConfirmAction());
+		// list.add(getConfirmAction());
 		return list;
 	}
 

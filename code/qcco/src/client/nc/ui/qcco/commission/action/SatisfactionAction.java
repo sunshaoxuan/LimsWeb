@@ -2,51 +2,55 @@ package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
 
-import nc.bs.framework.common.NCLocator;
-import nc.bs.logging.Logger;
-import nc.itf.uap.IUAPQueryBS;
-import nc.jdbc.framework.processor.ColumnProcessor;
-import nc.ui.qcco.commission.ace.view.WebBrowser;
+import nc.ui.qcco.commission.ace.view.ConfirmDialog;
 import nc.ui.uif2.NCAction;
+import nc.ui.uif2.UIState;
 import nc.ui.uif2.model.AbstractAppModel;
+import nc.vo.pub.SuperVO;
+import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 
 public class SatisfactionAction extends NCAction {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1L;
 
-
-
 	public SatisfactionAction() {
 		setBtnName("满意度评价");
 		setCode("satisfaction");
 	}
-	
+
 	protected AbstractAppModel model = null;
-	
-	
 
 	public AbstractAppModel getModel() {
 		return model;
 	}
 
-
-
 	public void setModel(AbstractAppModel model) {
 		this.model = model;
-	}
-
-	@Override
-	protected boolean isActionEnable() {
-		return false;
+		this.model.addAppEventListener(this);
 	}
 
 	@Override
 	public void doAction(ActionEvent paramActionEvent) throws Exception {
-		
+		ConfirmDialog dlg = (ConfirmDialog) ConfirmDialog.showSelectDlg(this.getModel().getContext().getEntranceUI(),
+				"满意度评价", "请选择评价内容", new String[] { "非常满意", "比较满意", "满意", "不满意" }, 4);
 
+		if (dlg.getResult() == ConfirmDialog.ID_OK) {
+
+		}
 	}
 
+	protected boolean isActionEnable() {
+		AbstractBill aggVO = (AbstractBill) this.getModel().getSelectedData();
+		if (aggVO == null) {
+			return false;
+		}
+		SuperVO hvo = (SuperVO) aggVO.getParentVO();
+		if (hvo == null) {
+			return false;
+		}
+		return this.getModel().getUiState() == UIState.NOT_EDIT;
+	}
 }

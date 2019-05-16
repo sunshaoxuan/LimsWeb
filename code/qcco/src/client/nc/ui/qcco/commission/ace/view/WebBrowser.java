@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Text;
 public class WebBrowser {
 	public static void open(String url, String title) {
 		Display display = new Display();
-		Shell shell = new Shell(display, SWT.CLOSE | SWT.MIN);
+		Shell shell = new Shell(display, SWT.MIN | SWT.CLOSE | SWT.APPLICATION_MODAL);
 		shell.setText(title);
 		shell.setSize(800, 600);
 		final Text text = new Text(shell, SWT.BORDER);
