@@ -771,7 +771,7 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 			if (ss == null) {
 				Map<String, String> conditionmaps = new HashMap<>();
 				conditionmaps.put("productcate", productcate.replace(" ", ""));
-				conditionmaps.put("productstard", productstard.replace(" ", ""));
+				conditionmaps.put("productstard", productstard == null?null:productstard.replace(" ", ""));
 				List<TaskBodyVO> taskvos = getListbody(conditionmaps);
 				ss = taskvos.toArray(new TaskBodyVO[0]);
 			}
