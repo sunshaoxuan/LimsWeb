@@ -41,4 +41,8 @@ public interface ITaskMaintain {
 	 * @param deleteList
 	 */
 	public void deleteOldList(List<AggCommissionHVO> deleteList)throws BusinessException;
+	/**
+	 * 
+	 */
+	public void writeBackLims(AggTaskHVO aggvo)throws BusinessException;
 }

@@ -137,6 +137,14 @@ private BaseDAO dao = null;
 		}
 
 	}
+	/**
+	 * ªÿ–¥limsœµÕ≥
+	 */
+	@Override
+	public void writeBackLims(AggTaskHVO aggvo) throws BusinessException {
+		// TODO Auto-generated method stub
+		
+	}
 
 	
 	

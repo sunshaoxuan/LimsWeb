@@ -226,6 +226,22 @@ public class CardPanelEventUtil {
 		CircularlyAccessibleValueObject[] childBodyVos = MainGrandUtil
 				.getBodyVOsByTabCode(mainForm, currentbodyTabCode);
 		if (childBodyVos == null || childBodyVos.length == 0) {
+			//Tank 2019年5月16日00:36:59 修复孙表没数据就没有审计信息的bug
+			Object aggvo = mainGrandPanel.getModel().getSelectedData();
+			Object grandBillFormObj = mainGrandPanel.getMaingrandrelationship().getBodyTabTOGrandCardComposite()
+					.get(currentbodyTabCode);
+			if(grandBillFormObj!=null){
+				BillForm grandBillForm = (BillForm) grandBillFormObj;
+				if (aggvo != null && aggvo instanceof AggCommissionHVO) {
+					UserDefineRefUtils.refreshBillCardAuditInfo(grandBillForm.getBillCardPanel().getBillData(),
+							(AggCommissionHVO) aggvo);
+				}
+				if (aggvo != null && aggvo instanceof AggTaskHVO) {
+					UserDefineRefUtils.refreshBillCardAuditInfoTask(grandBillForm.getBillCardPanel().getBillData(),
+							(AggTaskHVO) aggvo);
+				}
+			}
+			
 			return;
 		}
 		Object grandBillFormObj = mainGrandPanel.getMaingrandrelationship().getBodyTabTOGrandCardComposite()
