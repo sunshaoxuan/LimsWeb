@@ -477,7 +477,9 @@
 				<bean class="nc.ui.pubapp.uif2app.event.EventHandlerGroup">
 					<property name="event" value="nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent" />
 					<property name="handler">
-						<bean class="nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler" />
+						<bean class="nc.ui.qcco.task.ace.handler.GrandBodyBeforeEditHandler" >
+						<property name="mainBillForm" ref="billFormEditor" />						
+						</bean>
 					</property>
 				</bean>
 				<!-- nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent -->
