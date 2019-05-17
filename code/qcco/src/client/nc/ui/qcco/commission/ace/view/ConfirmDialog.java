@@ -1506,9 +1506,10 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 		Object returnObject = null;
 		int returnKeyCode = dlg.showModal();
 		// 恢复当前节点号
-		if (returnKeyCode == ID_OK || returnKeyCode == ID_YES || returnKeyCode == ID_CONFIRM
-				|| returnKeyCode == ID_REJECT) {
+		if (returnKeyCode == ID_OK || returnKeyCode == ID_YES) {
 			returnObject = dlg.getInputValue();
+		} else if (returnKeyCode == ID_CONFIRM || returnKeyCode == ID_REJECT) {
+			returnObject = new Object[] { returnKeyCode, dlg.getInputValue() };
 		}
 		dlg.destroy();
 		return returnObject;

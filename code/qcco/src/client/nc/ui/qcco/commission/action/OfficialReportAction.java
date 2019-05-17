@@ -47,15 +47,17 @@ public class OfficialReportAction extends NCAction {
 				url = "http://404";
 			}
 
-			ConfirmDialog dlg = (ConfirmDialog) ConfirmDialog.showInputDlg(
-					this.getModel().getContext().getEntranceUI(), ConfirmDialog.CONFIRM_REJECT_PREVIEW, "正式报告预览",
-					"请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
-			if (dlg.getResult() == ConfirmDialog.ID_CONFIRM) {
+			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
+					ConfirmDialog.CONFIRM_REJECT_PREVIEW, "正式报告预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
 
-			} else if (dlg.getResult() == ConfirmDialog.ID_REJECT) {
+			int rtnID = (Integer) value[0];
+			String txtMessage = (String) value[1];
+
+			if (rtnID == ConfirmDialog.ID_CONFIRM) {
+
+			} else if (rtnID == ConfirmDialog.ID_REJECT) {
 
 			}
-
 		} catch (Exception e) {
 			Logger.error(e.getCause());
 

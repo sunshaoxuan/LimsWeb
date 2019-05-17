@@ -47,13 +47,15 @@ public class PayDemandAction extends NCAction {
 				url = "http://404";
 			}
 
-			ConfirmDialog dlg = (ConfirmDialog) ConfirmDialog.showInputDlg(
-					this.getModel().getContext().getEntranceUI(), ConfirmDialog.CONFIRM_REJECT_PREVIEW, "收费单预览",
-					"请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
+			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
+					ConfirmDialog.CONFIRM_REJECT_PREVIEW, "收费单预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
 
-			if (dlg.getResult() == ConfirmDialog.ID_CONFIRM) {
+			int rtnID = (Integer) value[0];
+			String txtMessage = (String) value[1];
 
-			} else if (dlg.getResult() == ConfirmDialog.ID_REJECT) {
+			if (rtnID == ConfirmDialog.ID_CONFIRM) {
+
+			} else if (rtnID == ConfirmDialog.ID_REJECT) {
 
 			}
 

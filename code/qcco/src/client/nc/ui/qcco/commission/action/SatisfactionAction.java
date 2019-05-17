@@ -34,12 +34,9 @@ public class SatisfactionAction extends NCAction {
 
 	@Override
 	public void doAction(ActionEvent paramActionEvent) throws Exception {
-		ConfirmDialog dlg = (ConfirmDialog) ConfirmDialog.showSelectDlg(this.getModel().getContext().getEntranceUI(),
-				"满意度评价", "请选择评价内容", new String[] { "非常满意", "比较满意", "满意", "不满意" }, 4);
+		String value = (String) ConfirmDialog.showSelectDlg(this.getModel().getContext().getEntranceUI(), "满意度评价",
+				"请选择评价内容", new String[] { "非常满意", "比较满意", "满意", "不满意" }, 4);
 
-		if (dlg.getResult() == ConfirmDialog.ID_OK) {
-
-		}
 	}
 
 	protected boolean isActionEnable() {

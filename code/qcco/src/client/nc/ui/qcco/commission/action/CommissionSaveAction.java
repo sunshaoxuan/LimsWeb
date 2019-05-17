@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Vector;
 
 import nc.bs.framework.common.NCLocator;
 import nc.bs.uif2.BusinessExceptionAdapter;
@@ -17,6 +18,7 @@ import nc.bs.uif2.validation.ValidationException;
 import nc.itf.qcco.ITaskMaintain;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pub.linkoperate.LinkEditData;
@@ -26,6 +28,13 @@ import nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.commission.ace.handler.CommissionShowTemplate;
 import nc.ui.qcco.commission.model.MainSubBillModel;
+import nc.ui.qcco.commission.refmodel.CustomerTypeRefModel;
+import nc.ui.qcco.commission.refmodel.ProductAuthTypeRefModel;
+import nc.ui.qcco.commission.refmodel.ProductPropertyRefModel;
+import nc.ui.qcco.commission.refmodel.RatainHandleRefModel;
+import nc.ui.qcco.commission.refmodel.SafeTypeRefModel;
+import nc.ui.qcco.commission.refmodel.TestRequirementRefModel;
+import nc.ui.qcco.commission.refmodel.TestTypeRefModel;
 import nc.ui.uap.sf.SFClientUtil;
 import nc.ui.uif2.IShowMsgConstant;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
@@ -102,50 +111,67 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			// 变更态时收集变化项目
 			CommissionCVO[] newCVOs = null;
 			if (((MainSubBillModel) this.getModel()).isChangeStatus()) {
+				AbstractRefModel refModel = null;
+				Vector matchValue = null;
 				Map<String, String> newValue = new HashMap<String, String>();
 				// testaim
-				newValue.put("testaim", (String) agghvo.getParentVO().getTestaim());
+				newValue.put("测试目的", (String) agghvo.getParentVO().getTestaim());
 				// progressneed
-				newValue.put("progressneed", (String) agghvo.getParentVO().getProgressneed());
+				newValue.put("进度要求", (String) agghvo.getParentVO().getProgressneed());
 				// sampledealtype
-				newValue.put("sampledealtype", (String) agghvo.getParentVO().getSampledealtype());
+				refModel = new RatainHandleRefModel();
+				matchValue = refModel.matchPkData(agghvo.getParentVO().getSampledealtype());
+				newValue.put("检后样品处理", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 				// productproperty
-				newValue.put("productproperty", (String) agghvo.getParentVO().getProductproperty());
+				refModel = new ProductPropertyRefModel();
+				matchValue = refModel.matchPkData(agghvo.getParentVO().getProductproperty());
+				newValue.put("产品属性", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 				// customername
-				newValue.put("customername", (String) agghvo.getParentVO().getCustomername());
+				newValue.put("客户名称", (String) agghvo.getParentVO().getCustomername());
 				// customertype
-				newValue.put("customertype", (String) agghvo.getParentVO().getCustomertype());
+				refModel = new CustomerTypeRefModel();
+				matchValue = refModel.matchPkData(agghvo.getParentVO().getCustomertype());
+				newValue.put("客户类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 				// testrequirement
-				newValue.put("testrequirement", (String) agghvo.getParentVO().getTestrequirement());
+				refModel = new TestRequirementRefModel();
+				matchValue = refModel.matchPkData(agghvo.getParentVO().getTestrequirement());
+				newValue.put("测试需求", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 				// checkingproperty
-				newValue.put("checkingproperty", (String) agghvo.getParentVO().getCheckingproperty());
+				refModel = new TestTypeRefModel();
+				matchValue = refModel.matchPkData(agghvo.getParentVO().getCheckingproperty());
+				newValue.put("检测性质", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 				// productline
-				newValue.put("productline", (String) agghvo.getParentVO().getProductline());
+				newValue.put("生产产线", (String) agghvo.getParentVO().getProductline());
 				// batchnumber
-				newValue.put("batchnumber", (String) agghvo.getParentVO().getBatchnumber());
+				newValue.put("生产批量", (String) agghvo.getParentVO().getBatchnumber());
 				// productdate
-				newValue.put("productdate", agghvo.getParentVO().getProductdate() == null ? "" : agghvo.getParentVO()
+				newValue.put("生产日期", agghvo.getParentVO().getProductdate() == null ? "" : agghvo.getParentVO()
 						.getProductdate().toString());
 				// batchserial
-				newValue.put("batchserial", (String) agghvo.getParentVO().getBatchserial());
+				newValue.put("生产批号", (String) agghvo.getParentVO().getBatchserial());
 				// identificationtype
-				newValue.put("identificationtype", (String) agghvo.getParentVO().getIdentificationtype());
+				refModel = new ProductAuthTypeRefModel();
+				matchValue = refModel.matchPkData(agghvo.getParentVO().getIdentificationtype());
+				newValue.put("产品鉴定类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 				// certificationtype
-				newValue.put("certificationtype", (String) agghvo.getParentVO().getCertificationtype());
+				refModel = new SafeTypeRefModel();
+				matchValue = refModel.matchPkData(agghvo.getParentVO().getCertificationtype());
+				newValue.put("认证类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 				// itemnumber
-				newValue.put("itemnumber", (String) agghvo.getParentVO().getItemnumber());
+				newValue.put("项目号", (String) agghvo.getParentVO().getItemnumber());
 				newCVOs = getChangedVOs(((MainSubBillModel) this.getModel()).getOldValue(), newValue,
 						agghvo.getPrimaryKey());
 			}
 			//
 			// set 修改人
 			if (null != agghvo && agghvo.getParentVO() != null) {
-				
+
 				String pk_user = billFormEditor.getModel().getContext().getPk_loginUser();
 				agghvo.getParentVO().setModifier(pk_user);
 			}
-			if (newCVOs.length > 0) {
-				agghvo.setChildren(CommissionCVO.class, newCVOs);
+			if (newCVOs != null && newCVOs.length > 0) {
+				// agghvo.setChildren(CommissionCVO.class, newCVOs);
+				agghvo.setChildrenVO(newCVOs);
 			}
 			doEditSave(agghvo);
 			this.getMainGrandModel().clearBufferData();
@@ -166,19 +192,22 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			String pk_commission_h) {
 		List<CommissionCVO> retVOs = new ArrayList<CommissionCVO>();
 		if (oldValue != null && newValue != null && oldValue.size() > 0 && newValue.size() > 0) {
+			int row = 1;
 			for (Entry<String, String> value : oldValue.entrySet()) {
 				if (newValue.containsKey(value.getKey())) {
-					if (!StringUtils.equals(newValue.get(value.getKey()), value.getKey())) {
+					if (!(newValue == null && oldValue == null)
+							&& !StringUtils.equals(newValue.get(value.getKey()), value.getKey())) {
 						CommissionCVO cvo = new CommissionCVO();
 						cvo.setPk_commission_h(pk_commission_h);
+						cvo.setRowno(String.valueOf(row));
 						cvo.setItemname(value.getKey());
 						cvo.setOldvalue(value.getValue());
 						cvo.setNewvalue(newValue.get(value.getKey()));
 						cvo.setStatus(VOStatus.NEW);
 						cvo.setModifier(billFormEditor.getModel().getContext().getPk_loginUser());
 						cvo.setModifiedtime(new UFDateTime());
-
 						retVOs.add(cvo);
+						row++;
 					}
 				}
 			}
@@ -192,15 +221,15 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			String pk_commissiontype = aggvo.getParentVO().getPk_commissiontype();
 			if (pk_commissiontype != null) {
 				IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
-				
+
 				try {
 					typeName = (String) iUAPQueryBS.executeQuery(" select NAME "
 							+ " from NC_PROJ_TYPE WHERE ISENABLE=1 " + " and PK_PROJ_TYPE = '" + pk_commissiontype
 							+ "'", new ColumnProcessor());
 				} catch (BusinessException e) {
 					e.printStackTrace();
-				}  
-				
+				}
+
 			}
 		}
 		return typeName;
@@ -330,19 +359,19 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			ITaskMaintain ITaskMaintain = (ITaskMaintain) NCLocator.getInstance().lookup(ITaskMaintain.class);
 			AggTaskHVO newVO = new AggTaskHVO();
 			TaskHVO parentVO = new TaskHVO();
-			
+
 			parentVO.setBillno(commissionHVO.getBillno());
 			parentVO.setPk_commission_h(commissionHVO.getPk_commission_h());
 			parentVO.setPk_group(commissionHVO.getPk_group());
 			parentVO.setPk_org(commissionHVO.getPk_org());
 			parentVO.setPk_org_v(commissionHVO.getPk_org_v());
-            parentVO.setCreator(commissionHVO.getCreator());
-            parentVO.setCreationtime(commissionHVO.getCreationtime());
-            parentVO.setModifier(commissionHVO.getModifier());
-            parentVO.setModifiedtime(commissionHVO.getModifiedtime());
-            parentVO.setLastmaketime(commissionHVO.getLastmaketime());
-            parentVO.setApprover(null);
-            parentVO.setBillmaker(commissionHVO.getModifier());
+			parentVO.setCreator(commissionHVO.getCreator());
+			parentVO.setCreationtime(commissionHVO.getCreationtime());
+			parentVO.setModifier(commissionHVO.getModifier());
+			parentVO.setModifiedtime(commissionHVO.getModifiedtime());
+			parentVO.setLastmaketime(commissionHVO.getLastmaketime());
+			parentVO.setApprover(null);
+			parentVO.setBillmaker(commissionHVO.getModifier());
 			parentVO.setApprovestatus(-1);
 
 			newVO.setParent(parentVO);
@@ -390,7 +419,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		String[] templates = CommissionShowTemplate.getTemplateByName(typeName);
 		String[] allTemplateFields = CommissionShowTemplate.getTemplateWithAllField();
 		Set<String> templatesSet = new HashSet();
-		
+
 		// 先把模板字段设为null,如果是模板之外的,不清,反正是全部显示
 		// 清空时,不清空此模板包含的字段
 		if (templates != null && templates.length > 0) {
@@ -401,10 +430,10 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 				if (!templatesSet.contains(temp)) {
 					billCardPanel.getHeadItem(temp).setValue(null);
 				}
-				
+
 			}
 		}
-		
+
 		billCardPanel.hideHeadItem(allTemplateFields);
 		if (templates == null) {
 			templates = allTemplateFields;

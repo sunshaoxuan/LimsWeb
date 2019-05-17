@@ -2,12 +2,21 @@ package nc.ui.qcco.commission.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import nc.bs.pubapp.utils.UserDefineRefUtils;
+import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pubapp.uif2app.model.BillManageModel;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillListView;
 import nc.ui.qcco.commission.ace.view.CommissionGrandBillForm;
+import nc.ui.qcco.commission.refmodel.CustomerTypeRefModel;
+import nc.ui.qcco.commission.refmodel.ProductAuthTypeRefModel;
+import nc.ui.qcco.commission.refmodel.ProductPropertyRefModel;
+import nc.ui.qcco.commission.refmodel.RatainHandleRefModel;
+import nc.ui.qcco.commission.refmodel.SafeTypeRefModel;
+import nc.ui.qcco.commission.refmodel.TestRequirementRefModel;
+import nc.ui.qcco.commission.refmodel.TestTypeRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.qcco.commission.AggCommissionHVO;
@@ -48,79 +57,81 @@ public class MainSubBillModel extends BillManageModel {
 	}
 
 	public void cacheOldValues() {
+		AbstractRefModel refModel = null;
+		Vector matchValue = null;
 		// testaim
 		getOldValue().put(
-				"testaim",
+				"测试目的",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("testaim").getValueObject());
 		// progressneed
 		getOldValue().put(
-				"progressneed",
+				"进度要求",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("progressneed").getValueObject());
 		// sampledealtype
-		getOldValue().put(
-				"sampledealtype",
-				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
-						.getHeadItem("sampledealtype").getValueObject());
+		refModel = new RatainHandleRefModel();
+		matchValue = refModel.matchPkData((String) ((ShowUpableBillForm) getBillFormView().getMainPanel())
+				.getBillCardPanel().getHeadItem("sampledealtype").getValueObject());
+		getOldValue().put("检后样品处理", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 		// productproperty
-		getOldValue().put(
-				"productproperty",
-				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
-						.getHeadItem("productproperty").getValueObject());
+		refModel = new ProductPropertyRefModel();
+		matchValue = refModel.matchPkData((String) ((ShowUpableBillForm) getBillFormView().getMainPanel())
+				.getBillCardPanel().getHeadItem("productproperty").getValueObject());
+		getOldValue().put("产品属性", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 		// customername
 		getOldValue().put(
-				"customername",
+				"客户名称",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("customername").getValueObject());
 		// customertype
-		getOldValue().put(
-				"customertype",
-				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
-						.getHeadItem("customertype").getValueObject());
+		refModel = new CustomerTypeRefModel();
+		matchValue = refModel.matchPkData((String) ((ShowUpableBillForm) getBillFormView().getMainPanel())
+				.getBillCardPanel().getHeadItem("customertype").getValueObject());
+		getOldValue().put("客户类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 		// testrequirement
-		getOldValue().put(
-				"testrequirement",
-				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
-						.getHeadItem("testrequirement").getValueObject());
+		refModel = new TestRequirementRefModel();
+		matchValue = refModel.matchPkData((String) ((ShowUpableBillForm) getBillFormView().getMainPanel())
+				.getBillCardPanel().getHeadItem("testrequirement").getValueObject());
+		getOldValue().put("测试需求", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 		// checkingproperty
-		getOldValue().put(
-				"checkingproperty",
-				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
-						.getHeadItem("checkingproperty").getValueObject());
+		refModel = new TestTypeRefModel();
+		matchValue = refModel.matchPkData((String) ((ShowUpableBillForm) getBillFormView().getMainPanel())
+				.getBillCardPanel().getHeadItem("checkingproperty").getValueObject());
+		getOldValue().put("检测性质", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 		// productline
 		getOldValue().put(
-				"productline",
+				"生产产线",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("productline").getValueObject());
 		// batchnumber
 		getOldValue().put(
-				"batchnumber",
+				"生产批量",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("batchnumber").getValueObject());
 		// productdate
 		getOldValue().put(
-				"productdate",
+				"生产日期",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("productdate").getValueObject());
 		// batchserial
 		getOldValue().put(
-				"batchserial",
+				"生产批号",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("batchserial").getValueObject());
 		// identificationtype
-		getOldValue().put(
-				"identificationtype",
-				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
-						.getHeadItem("identificationtype").getValueObject());
+		refModel = new ProductAuthTypeRefModel();
+		matchValue = refModel.matchPkData((String) ((ShowUpableBillForm) getBillFormView().getMainPanel())
+				.getBillCardPanel().getHeadItem("identificationtype").getValueObject());
+		getOldValue().put("产品鉴定类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 		// certificationtype
-		getOldValue().put(
-				"certificationtype",
-				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
-						.getHeadItem("certificationtype").getValueObject());
+		refModel = new SafeTypeRefModel();
+		matchValue = refModel.matchPkData((String) ((ShowUpableBillForm) getBillFormView().getMainPanel())
+				.getBillCardPanel().getHeadItem("certificationtype").getValueObject());
+		getOldValue().put("认证类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
 		// itemnumber
 		getOldValue().put(
-				"itemnumber",
+				"项目号",
 				(String) ((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel()
 						.getHeadItem("itemnumber").getValueObject());
 	}
