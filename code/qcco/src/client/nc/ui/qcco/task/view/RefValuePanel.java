@@ -240,9 +240,9 @@ public class RefValuePanel extends UIDialog implements
 					return;
 				}
 				for (RefValueVO taskBodyVO : RefValueVOsAllocatVO) {
-					if (reportLang.equals("1")) {
+					if (null!=reportLang && reportLang.equals("1")) {
 						selectedstr = taskBodyVO.getEngname();
-					}else if (reportLang.equals("2")) {
+					}else if (null!=reportLang && reportLang.equals("2")) {
 						selectedstr = taskBodyVO.getChinaname();
 					}
 				}
