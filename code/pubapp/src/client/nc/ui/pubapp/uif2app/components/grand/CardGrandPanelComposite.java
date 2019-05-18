@@ -112,6 +112,8 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 			if(((BillForm)mainPanel).getBillCardPanel().getBillModel().getBodyColByKey("runorder")>=0){
 				((BillForm)mainPanel).getBillCardPanel().getBillModel().sortByColumn("runorder", true);
 			}
+			//º”‘ÿƒ£∞Â
+			CardPanelEventUtil.loadHeadItem(this);
 			
 		}
 		CardPanelEventUtil.grandModelInit(this);
