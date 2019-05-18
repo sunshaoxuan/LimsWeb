@@ -12,7 +12,7 @@ import nc.vo.pubapp.pattern.model.meta.entity.vo.VOMetaFactory;
  * <p>
  * 此處添加累的描述信息
  * </p>
- * 創建日期:2019/5/5
+ * 創建日期:2019/5/18
  * 
  * @author yonyouBQ
  * @version NCPrj ??
@@ -98,7 +98,7 @@ public class TaskSVO extends SuperVO {
         Dr = dr;
     }
 	/**
-	 * 屬性 pk_task_s的Getter方法.屬性名：測試條件主鍵 創建日期:2019/5/5
+	 * 屬性 pk_task_s的Getter方法.屬性名：測試條件主鍵 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -107,7 +107,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_task_s的Setter方法.屬性名：測試條件主鍵 創建日期:2019/5/5
+	 * 屬性pk_task_s的Setter方法.屬性名：測試條件主鍵 創建日期:2019/5/18
 	 * 
 	 * @param newPk_task_s
 	 *            java.lang.String
@@ -117,7 +117,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_testconditionitem的Getter方法.屬性名：測試條件項 創建日期:2019/5/5
+	 * 屬性 pk_testconditionitem的Getter方法.屬性名：測試條件項 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -126,7 +126,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_testconditionitem的Setter方法.屬性名：測試條件項 創建日期:2019/5/5
+	 * 屬性pk_testconditionitem的Setter方法.屬性名：測試條件項 創建日期:2019/5/18
 	 * 
 	 * @param newPk_testconditionitem
 	 *            java.lang.String
@@ -136,7 +136,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 conditionstatus的Getter方法.屬性名：狀態 創建日期:2019/5/5
+	 * 屬性 conditionstatus的Getter方法.屬性名：狀態 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -145,7 +145,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性conditionstatus的Setter方法.屬性名：狀態 創建日期:2019/5/5
+	 * 屬性conditionstatus的Setter方法.屬性名：狀態 創建日期:2019/5/18
 	 * 
 	 * @param newConditionstatus
 	 *            java.lang.String
@@ -155,7 +155,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 isoptional的Getter方法.屬性名：是否可選 創建日期:2019/5/5
+	 * 屬性 isoptional的Getter方法.屬性名：是否可選 創建日期:2019/5/18
 	 * 
 	 * @return nc.vo.pub.lang.UFBoolean
 	 */
@@ -174,7 +174,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 isallow_out的Getter方法.屬性名：是否可報告 創建日期:2019/5/5
+	 * 屬性 isallow_out的Getter方法.屬性名：是否可報告 創建日期:2019/5/18
 	 * 
 	 * @return nc.vo.pub.lang.UFBoolean
 	 */
@@ -183,7 +183,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性isallow_out的Setter方法.屬性名：是否可報告 創建日期:2019/5/5
+	 * 屬性isallow_out的Setter方法.屬性名：是否可報告 創建日期:2019/5/18
 	 * 
 	 * @param newIsallow_out
 	 *            nc.vo.pub.lang.UFBoolean
@@ -193,7 +193,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_instrument的Getter方法.屬性名：儀器 創建日期:2019/5/5
+	 * 屬性 pk_instrument的Getter方法.屬性名：儀器 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -202,7 +202,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_instrument的Setter方法.屬性名：儀器 創建日期:2019/5/5
+	 * 屬性pk_instrument的Setter方法.屬性名：儀器 創建日期:2019/5/18
 	 * 
 	 * @param newPk_instrument
 	 *            java.lang.String
@@ -212,7 +212,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_valuetype的Getter方法.屬性名：值類型 創建日期:2019/5/5
+	 * 屬性 pk_valuetype的Getter方法.屬性名：值類型 創建日期:2019/5/18
 	 * 
 	 * @return nc.vo.bd.defdoc.DefdocVO
 	 */
@@ -221,7 +221,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性pk_valuetype的Setter方法.屬性名：值類型 創建日期:2019/5/5
+	 * 屬性pk_valuetype的Setter方法.屬性名：值類型 創建日期:2019/5/18
 	 * 
 	 * @param newPk_valuetype
 	 *            nc.vo.bd.defdoc.DefdocVO
@@ -231,7 +231,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 valueways的Getter方法.屬性名：取值方式 創建日期:2019/5/5
+	 * 屬性 valueways的Getter方法.屬性名：取值方式 創建日期:2019/5/18
 	 * 
 	 * @return nc.vo.qcco.task.ValueWaysEnum
 	 */
@@ -240,7 +240,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性valueways的Setter方法.屬性名：取值方式 創建日期:2019/5/5
+	 * 屬性valueways的Setter方法.屬性名：取值方式 創建日期:2019/5/18
 	 * 
 	 * @param newValueways
 	 *            nc.vo.qcco.task.ValueWaysEnum
@@ -250,7 +250,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 textvalue的Getter方法.屬性名：文本值 創建日期:2019/5/5
+	 * 屬性 textvalue的Getter方法.屬性名：文本值 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -259,7 +259,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性textvalue的Setter方法.屬性名：文本值 創建日期:2019/5/5
+	 * 屬性textvalue的Setter方法.屬性名：文本值 創建日期:2019/5/18
 	 * 
 	 * @param newTextvalue
 	 *            java.lang.String
@@ -269,26 +269,26 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 pk_refvalue的Getter方法.屬性名：參照值 創建日期:2019/5/5
+	 * 屬性 pk_refvalue的Getter方法.屬性名：參照值 創建日期:2019/5/18
 	 * 
-	 * @return nc.vo.bd.defdoc.DefdocVO
+	 * @return java.lang.String
 	 */
 	public String getPk_refvalue() {
 		return this.pk_refvalue;
 	}
 
 	/**
-	 * 屬性pk_refvalue的Setter方法.屬性名：參照值 創建日期:2019/5/5
+	 * 屬性pk_refvalue的Setter方法.屬性名：參照值 創建日期:2019/5/18
 	 * 
 	 * @param newPk_refvalue
-	 *            nc.vo.bd.defdoc.DefdocVO
+	 *            java.lang.String
 	 */
 	public void setPk_refvalue(String pk_refvalue) {
 		this.pk_refvalue = pk_refvalue;
 	}
 
 	/**
-	 * 屬性 unit的Getter方法.屬性名：單位 創建日期:2019/5/5
+	 * 屬性 unit的Getter方法.屬性名：單位 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -297,7 +297,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性unit的Setter方法.屬性名：單位 創建日期:2019/5/5
+	 * 屬性unit的Setter方法.屬性名：單位 創建日期:2019/5/18
 	 * 
 	 * @param newUnit
 	 *            java.lang.String
@@ -307,7 +307,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 formatted_entry的Getter方法.屬性名：格式化值 創建日期:2019/5/5
+	 * 屬性 formatted_entry的Getter方法.屬性名：格式化值 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -316,7 +316,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性formatted_entry的Setter方法.屬性名：格式化值 創建日期:2019/5/5
+	 * 屬性formatted_entry的Setter方法.屬性名：格式化值 創建日期:2019/5/18
 	 * 
 	 * @param newFormatted_entry
 	 *            java.lang.String
@@ -326,7 +326,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 min_limit的Getter方法.屬性名：最小值 創建日期:2019/5/5
+	 * 屬性 min_limit的Getter方法.屬性名：最小值 創建日期:2019/5/18
 	 * 
 	 * @return nc.vo.pub.lang.UFDouble
 	 */
@@ -335,7 +335,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性min_limit的Setter方法.屬性名：最小值 創建日期:2019/5/5
+	 * 屬性min_limit的Setter方法.屬性名：最小值 創建日期:2019/5/18
 	 * 
 	 * @param newMin_limit
 	 *            nc.vo.pub.lang.UFDouble
@@ -345,7 +345,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 max_limit的Getter方法.屬性名：最大值 創建日期:2019/5/5
+	 * 屬性 max_limit的Getter方法.屬性名：最大值 創建日期:2019/5/18
 	 * 
 	 * @return nc.vo.pub.lang.UFDouble
 	 */
@@ -354,7 +354,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性max_limit的Setter方法.屬性名：最大值 創建日期:2019/5/5
+	 * 屬性max_limit的Setter方法.屬性名：最大值 創建日期:2019/5/18
 	 * 
 	 * @param newMax_limit
 	 *            nc.vo.pub.lang.UFDouble
@@ -364,7 +364,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 englishdescription的Getter方法.屬性名：英文說明 創建日期:2019/5/5
+	 * 屬性 englishdescription的Getter方法.屬性名：英文說明 創建日期:2019/5/18
 	 * 
 	 * @return java.lang.String
 	 */
@@ -373,7 +373,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性englishdescription的Setter方法.屬性名：英文說明 創建日期:2019/5/5
+	 * 屬性englishdescription的Setter方法.屬性名：英文說明 創建日期:2019/5/18
 	 * 
 	 * @param newEnglishdescription
 	 *            java.lang.String
@@ -383,7 +383,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 生成上層主鍵的Getter方法.屬性名：上層主鍵 創建日期:2019/5/5
+	 * 屬性 生成上層主鍵的Getter方法.屬性名：上層主鍵 創建日期:2019/5/18
 	 * 
 	 * @return String
 	 */
@@ -392,7 +392,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性生成上層主鍵的Setter方法.屬性名：上層主鍵 創建日期:2019/5/5
+	 * 屬性生成上層主鍵的Setter方法.屬性名：上層主鍵 創建日期:2019/5/18
 	 * 
 	 * @param newPk_task_b
 	 *            String
@@ -402,7 +402,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性 生成時間戳的Getter方法.屬性名：時間戳 創建日期:2019/5/5
+	 * 屬性 生成時間戳的Getter方法.屬性名：時間戳 創建日期:2019/5/18
 	 * 
 	 * @return nc.vo.pub.lang.UFDateTime
 	 */
@@ -411,7 +411,7 @@ public class TaskSVO extends SuperVO {
 	}
 
 	/**
-	 * 屬性生成時間戳的Setter方法.屬性名：時間戳 創建日期:2019/5/5
+	 * 屬性生成時間戳的Setter方法.屬性名：時間戳 創建日期:2019/5/18
 	 * 
 	 * @param newts
 	 *            nc.vo.pub.lang.UFDateTime
