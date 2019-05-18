@@ -267,11 +267,11 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										.setBodyValueAt(3, row, "valueways", "pk_task_s");
 									}
 									//文本值
-									if(reportType.equals("1")){
+									if(null!= reportType && reportType.equals("1")){
 										//yingwen
 										this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue", "pk_task_s");
-									}else if(reportType.equals("2")) {
+									}else if(null!= reportType && reportType.equals("2")) {
 										this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("c_default_value"), row, "textvalue", "pk_task_s");
 									}
@@ -349,11 +349,11 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										.setBodyValueAt(3, row, "valueways", "pk_task_s");
 									}
 									//文本值
-									if(reportType.equals("1")){
+									if(null!= reportType && reportType.equals("1")){
 										//yingwen
 										this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue", "pk_task_s");
-									}else if(reportType.equals("2")) {
+									}else if(null!= reportType && reportType.equals("2")) {
 										this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("c_default_value"), row, "textvalue", "pk_task_s");
 									}

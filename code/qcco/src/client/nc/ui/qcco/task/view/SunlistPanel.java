@@ -510,7 +510,7 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 				projectCateField = new UITextField();
 				projectCateField.setName("projectCateField");
 				projectCateField.setBounds(570, 48, 150, 50);
-				projectCateField.setText(productcate.replace(" ", ""));
+				projectCateField.setText(productcate==null?null:productcate.replace(" ", ""));
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -770,7 +770,7 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 
 			if (ss == null) {
 				Map<String, String> conditionmaps = new HashMap<>();
-				conditionmaps.put("productcate", productcate.replace(" ", ""));
+				conditionmaps.put("productcate", productcate ==null?null:productcate.replace(" ", ""));
 				conditionmaps.put("productstard", productstard == null?null:productstard.replace(" ", ""));
 				List<TaskBodyVO> taskvos = getListbody(conditionmaps);
 				ss = taskvos.toArray(new TaskBodyVO[0]);
