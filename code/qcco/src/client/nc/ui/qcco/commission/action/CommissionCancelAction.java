@@ -23,7 +23,7 @@ public class CommissionCancelAction extends CancelAction {
 
 		// 由变更状态返回时设置状态
 		((MainSubBillModel) this.getModel()).setChangeStatus(false);
-		((MainSubBillModel) this.getModel()).resetBillFormEnableState();
+		// ((MainSubBillModel) this.getModel()).resetBillFormEnableState();
 		//
 		mainGrandPanel.showMeUp();
 	}

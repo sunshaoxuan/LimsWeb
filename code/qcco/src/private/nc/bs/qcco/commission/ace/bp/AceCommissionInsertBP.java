@@ -3,7 +3,7 @@ package nc.bs.qcco.commission.ace.bp;
 import nc.bs.qcco.commission.plugin.bpplugin.CommissionPluginPoint;
 import nc.impl.pubapp.pattern.rule.IRule;
 import nc.impl.pubapp.pattern.rule.processer.AroundProcesser;
-import nc.util.mmpub.dpub.gc.GCInsertBPTemplate;
+import nc.util.mmf.framework.gc.GCInsertBPTemplate;
 import nc.vo.qcco.commission.AggCommissionHVO;
 
 /**
@@ -13,8 +13,7 @@ public class AceCommissionInsertBP {
 
 	public AggCommissionHVO[] insert(AggCommissionHVO[] bills) {
 
-		GCInsertBPTemplate<AggCommissionHVO> bp = new GCInsertBPTemplate<AggCommissionHVO>(
-				CommissionPluginPoint.INSERT);
+		GCInsertBPTemplate<AggCommissionHVO> bp = new GCInsertBPTemplate<AggCommissionHVO>(CommissionPluginPoint.INSERT);
 		this.addBeforeRule(bp.getAroundProcesser());
 		this.addAfterRule(bp.getAroundProcesser());
 		/*

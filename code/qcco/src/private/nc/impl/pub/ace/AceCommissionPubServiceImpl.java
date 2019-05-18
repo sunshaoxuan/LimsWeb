@@ -1,7 +1,6 @@
 package nc.impl.pub.ace;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +19,6 @@ import nc.bs.qcco.commission.ace.bp.AceCommissionInsertBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionSendApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionUnApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionUnSendApproveBP;
-import nc.bs.qcco.commission.ace.bp.AceCommissionUpdateBP;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pubapp.pattern.data.bill.BillLazyQuery;
 import nc.impl.pubapp.pattern.data.bill.tool.BillTransferTool;
@@ -39,6 +37,7 @@ import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
+import nc.vo.qcco.commission.CommissionCVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.commission.CommissionRVO;
 
@@ -67,14 +66,13 @@ public abstract class AceCommissionPubServiceImpl {
 			// return transferTool.getBillForToClient(retvos);
 			// 处理ts问题
 			dealTs(retvos);
-			
+
 			return retvos;
 		} catch (Exception e) {
 			ExceptionUtils.marsh(e);
 		}
 		return null;
 	}
-	
 
 	/**
 	 * 孙表存储时,要造成ts不一致的问题
@@ -170,47 +168,50 @@ public abstract class AceCommissionPubServiceImpl {
 	// 修改
 	public AggCommissionHVO[] pubupdateBills(AggCommissionHVO[] vos) throws BusinessException {
 		AggCommissionHVO[] vosClone = vos.clone();
-		//删除原vo
+		// 删除原vo
 		deleteOldVO(vos);
 		AggCommissionHVO[] vosNew = deal2New(vosClone);
-		//处理审计信息
-		dealPub(vosNew,vos);
+		// 处理审计信息
+		dealPub(vosNew, vos);
 		return pubinsertBills(vosNew, null);
 	}
+
 	/**
 	 * delete
+	 * 
 	 * @param vos
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	private void deleteOldVO(AggCommissionHVO[] vos) throws BusinessException {
 		Set<String> deletePks = new HashSet();
-		for(AggCommissionHVO vo : vos){
+		for (AggCommissionHVO vo : vos) {
 			deletePks.add(vo.getPrimaryKey());
 		}
-		//子表删除
+		// 子表删除
 		getDao().deleteByPKs(CommissionHVO.class, deletePks.toArray(new String[0]));
-		
+
 		InSQLCreator insql = new InSQLCreator();
-        String deletePksInSQL = insql.getInSQL(deletePks.toArray(new String[0]));
-		//子表切换
-		getDao().executeUpdate("update qc_commission_b set dr = 0 where PK_COMMISSION_h in ("+deletePksInSQL+")");
-		//孙表切换
-		getDao().executeUpdate("update qc_commission_r set dr = 0 where pk_commission_r in ( "
-        +" select pk_commission_r from qc_commission_r r "
-        +" left join qc_commission_b b on b.PK_COMMISSION_b = r.PK_COMMISSION_b "
-        +" where b.PK_COMMISSION_h in("+deletePksInSQL+") ) ");
-		
+		String deletePksInSQL = insql.getInSQL(deletePks.toArray(new String[0]));
+		// 子表切换
+		getDao().executeUpdate("update qc_commission_b set dr = 0 where PK_COMMISSION_h in (" + deletePksInSQL + ")");
+		// 孙表切换
+		getDao().executeUpdate(
+				"update qc_commission_r set dr = 0 where pk_commission_r in ( "
+						+ " select pk_commission_r from qc_commission_r r "
+						+ " left join qc_commission_b b on b.PK_COMMISSION_b = r.PK_COMMISSION_b "
+						+ " where b.PK_COMMISSION_h in(" + deletePksInSQL + ") ) ");
+
 	}
 
-	private void dealPub(AggCommissionHVO[] vosNew,AggCommissionHVO[] vosOld) {
-		if(null == vosNew || null == vosOld){
-			return ;
+	private void dealPub(AggCommissionHVO[] vosNew, AggCommissionHVO[] vosOld) {
+		if (null == vosNew || null == vosOld) {
+			return;
 		}
-		for(int i = 0 ; i<vosNew.length ;i++){
-			if(vosNew[i]!=null && vosOld[i]!=null){
+		for (int i = 0; i < vosNew.length; i++) {
+			if (vosNew[i] != null && vosOld[i] != null) {
 				CommissionHVO newVO = vosNew[i].getParentVO();
 				CommissionHVO oldVO = vosOld[i].getParentVO();
-				if(newVO!=null && oldVO != null){
+				if (newVO != null && oldVO != null) {
 					UFDateTime ts = new UFDateTime();
 					newVO.setTs(ts);
 					newVO.setCreationtime(oldVO.getCreationtime());
@@ -225,30 +226,31 @@ public abstract class AceCommissionPubServiceImpl {
 
 	/**
 	 * 包装成一个新数据
+	 * 
 	 * @param Bills
-	 * @throws DAOException 
+	 * @throws DAOException
 	 */
-	private AggCommissionHVO[] deal2New (AggCommissionHVO[] Bills) throws DAOException{
-		if(Bills!=null){
-			for(AggCommissionHVO aggvo : Bills){
-				if(aggvo!=null && aggvo.getChildren(CommissionBVO.class)!=null&&aggvo.getParentVO()!=null){
+	private AggCommissionHVO[] deal2New(AggCommissionHVO[] Bills) throws DAOException {
+		if (Bills != null) {
+			for (AggCommissionHVO aggvo : Bills) {
+				if (aggvo != null && aggvo.getChildren(CommissionBVO.class) != null && aggvo.getParentVO() != null) {
 					aggvo.getParentVO().setTs(null);
 					aggvo.getParentVO().setPk_commission_h(null);
 					aggvo.getParentVO().setStatus(2);
 					aggvo.getParentVO().setCreator(null);
 					aggvo.getParentVO().setCreationtime(null);
 					aggvo.getParentVO().setModifiedtime(null);
-					//aggvo.getParentVO().setModifier(null);
-					CommissionBVO[] bvos = (CommissionBVO[])(aggvo.getChildren(CommissionBVO.class));
-					for(CommissionBVO bvo : bvos){
-						if(bvo!=null ){
+					// aggvo.getParentVO().setModifier(null);
+					CommissionBVO[] bvos = (CommissionBVO[]) (aggvo.getChildren(CommissionBVO.class));
+					for (CommissionBVO bvo : bvos) {
+						if (bvo != null) {
 							bvo.setPk_commission_h(null);
 							bvo.setPk_commission_b(null);
 							bvo.setTs(null);
 							bvo.setStatus(2);
-							if(bvo.getPk_commission_r()!=null){
-								for(CommissionRVO rvo : bvo.getPk_commission_r()){
-									if(rvo!=null){
+							if (bvo.getPk_commission_r() != null) {
+								for (CommissionRVO rvo : bvo.getPk_commission_r()) {
+									if (rvo != null) {
 										rvo.setPk_commission_b(null);
 										rvo.setPk_commission_r(null);
 										rvo.setTs(null);
@@ -256,6 +258,15 @@ public abstract class AceCommissionPubServiceImpl {
 									}
 								}
 							}
+						}
+					}
+					CommissionCVO[] cvos = (CommissionCVO[]) (aggvo.getChildren(CommissionCVO.class));
+					for (CommissionCVO cvo : cvos) {
+						if (cvo != null) {
+							cvo.setPk_commission_h(null);
+							cvo.setPk_commission_c(null);
+							cvo.setTs(null);
+							cvo.setStatus(2);
 						}
 					}
 				}

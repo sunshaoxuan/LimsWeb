@@ -48,7 +48,7 @@ public class QuotationAction extends NCAction {
 			}
 
 			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
-					ConfirmDialog.CONFIRM_REJECT_PREVIEW, "报价单预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
+					ConfirmDialog.CONFIRM_PREVIEW, "报价单预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
 
 			int rtnID = (Integer) value[0];
 			String txtMessage = (String) value[1];

@@ -44,6 +44,7 @@ import nc.util.mmf.framework.gc.GCClientBillCombinServer;
 import nc.util.mmf.framework.gc.GCClientBillToServer;
 import nc.util.mmf.framework.gc.GCPseudoColUtil;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.ISuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
@@ -109,69 +110,27 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		} else if (this.getModel().getUiState() == UIState.EDIT) {
 			GCPseudoColUtil.getInstance().setPseudoColInfo(agghvo);
 			// 变更态时收集变化项目
-			CommissionCVO[] newCVOs = null;
+			ISuperVO[] originVos = agghvo.getChildren(CommissionCVO.class);
+			List<CommissionCVO> allVos = new ArrayList<CommissionCVO>();
+			if (originVos != null && originVos.length > 0) {
+				for (ISuperVO ovo : originVos) {
+					ovo.setAttributeValue("pk_commission_h", agghvo.getPrimaryKey());
+					ovo.setStatus(VOStatus.UNCHANGED);
+					allVos.add((CommissionCVO) ovo);
+				}
+			}
+
 			if (((MainSubBillModel) this.getModel()).isChangeStatus()) {
-				AbstractRefModel refModel = null;
-				Vector matchValue = null;
-				Map<String, String> newValue = new HashMap<String, String>();
-				// testaim
-				newValue.put("测试目的", (String) agghvo.getParentVO().getTestaim());
-				// progressneed
-				newValue.put("进度要求", (String) agghvo.getParentVO().getProgressneed());
-				// sampledealtype
-				refModel = new RatainHandleRefModel();
-				matchValue = refModel.matchPkData(agghvo.getParentVO().getSampledealtype());
-				newValue.put("检后样品处理", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
-				// productproperty
-				refModel = new ProductPropertyRefModel();
-				matchValue = refModel.matchPkData(agghvo.getParentVO().getProductproperty());
-				newValue.put("产品属性", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
-				// customername
-				newValue.put("客户名称", (String) agghvo.getParentVO().getCustomername());
-				// customertype
-				refModel = new CustomerTypeRefModel();
-				matchValue = refModel.matchPkData(agghvo.getParentVO().getCustomertype());
-				newValue.put("客户类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
-				// testrequirement
-				refModel = new TestRequirementRefModel();
-				matchValue = refModel.matchPkData(agghvo.getParentVO().getTestrequirement());
-				newValue.put("测试需求", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
-				// checkingproperty
-				refModel = new TestTypeRefModel();
-				matchValue = refModel.matchPkData(agghvo.getParentVO().getCheckingproperty());
-				newValue.put("检测性质", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
-				// productline
-				newValue.put("生产产线", (String) agghvo.getParentVO().getProductline());
-				// batchnumber
-				newValue.put("生产批量", (String) agghvo.getParentVO().getBatchnumber());
-				// productdate
-				newValue.put("生产日期", agghvo.getParentVO().getProductdate() == null ? "" : agghvo.getParentVO()
-						.getProductdate().toString());
-				// batchserial
-				newValue.put("生产批号", (String) agghvo.getParentVO().getBatchserial());
-				// identificationtype
-				refModel = new ProductAuthTypeRefModel();
-				matchValue = refModel.matchPkData(agghvo.getParentVO().getIdentificationtype());
-				newValue.put("产品鉴定类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
-				// certificationtype
-				refModel = new SafeTypeRefModel();
-				matchValue = refModel.matchPkData(agghvo.getParentVO().getCertificationtype());
-				newValue.put("认证类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
-				// itemnumber
-				newValue.put("项目号", (String) agghvo.getParentVO().getItemnumber());
-				newCVOs = getChangedVOs(((MainSubBillModel) this.getModel()).getOldValue(), newValue,
-						agghvo.getPrimaryKey());
+				collectCVOs(agghvo, allVos);
 			}
 			//
 			// set 修改人
 			if (null != agghvo && agghvo.getParentVO() != null) {
-
 				String pk_user = billFormEditor.getModel().getContext().getPk_loginUser();
 				agghvo.getParentVO().setModifier(pk_user);
 			}
-			if (newCVOs != null && newCVOs.length > 0) {
-				// agghvo.setChildren(CommissionCVO.class, newCVOs);
-				agghvo.setChildrenVO(newCVOs);
+			if (allVos != null && allVos.size() > 0) {
+				agghvo.setChildrenVO(allVos.toArray(new CommissionCVO[0]));
 			}
 			doEditSave(agghvo);
 			this.getMainGrandModel().clearBufferData();
@@ -188,15 +147,68 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		showSuccessInfo();
 	}
 
-	private CommissionCVO[] getChangedVOs(Map<String, String> oldValue, Map<String, String> newValue,
-			String pk_commission_h) {
+	private void collectCVOs(AggCommissionHVO agghvo, List<CommissionCVO> allVos) {
+		AbstractRefModel refModel = null;
+		Vector matchValue = null;
+		Map<String, String> newValue = new HashMap<String, String>();
+		int row = allVos.size() + 1;
+		// testaim
+		newValue.put("测试目的", (String) agghvo.getParentVO().getTestaim());
+		// progressneed
+		newValue.put("进度要求", (String) agghvo.getParentVO().getProgressneed());
+		// sampledealtype
+		refModel = new RatainHandleRefModel();
+		matchValue = refModel.matchPkData(agghvo.getParentVO().getSampledealtype());
+		newValue.put("检后样品处理", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
+		// productproperty
+		refModel = new ProductPropertyRefModel();
+		matchValue = refModel.matchPkData(agghvo.getParentVO().getProductproperty());
+		newValue.put("产品属性", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
+		// customername
+		newValue.put("客户名称", (String) agghvo.getParentVO().getCustomername());
+		// customertype
+		refModel = new CustomerTypeRefModel();
+		matchValue = refModel.matchPkData(agghvo.getParentVO().getCustomertype());
+		newValue.put("客户类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
+		// testrequirement
+		refModel = new TestRequirementRefModel();
+		matchValue = refModel.matchPkData(agghvo.getParentVO().getTestrequirement());
+		newValue.put("测试需求", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
+		// checkingproperty
+		refModel = new TestTypeRefModel();
+		matchValue = refModel.matchPkData(agghvo.getParentVO().getCheckingproperty());
+		newValue.put("检测性质", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
+		// productline
+		newValue.put("生产产线", (String) agghvo.getParentVO().getProductline());
+		// batchnumber
+		newValue.put("生产批量", (String) agghvo.getParentVO().getBatchnumber());
+		// productdate
+		newValue.put("生产日期", agghvo.getParentVO().getProductdate() == null ? "" : agghvo.getParentVO().getProductdate()
+				.toString());
+		// batchserial
+		newValue.put("生产批号", (String) agghvo.getParentVO().getBatchserial());
+		// identificationtype
+		refModel = new ProductAuthTypeRefModel();
+		matchValue = refModel.matchPkData(agghvo.getParentVO().getIdentificationtype());
+		newValue.put("产品鉴定类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
+		// certificationtype
+		refModel = new SafeTypeRefModel();
+		matchValue = refModel.matchPkData(agghvo.getParentVO().getCertificationtype());
+		newValue.put("认证类型", (String) (matchValue == null ? null : ((Vector) matchValue.get(0)).get(1)));
+		// itemnumber
+		newValue.put("项目号", (String) agghvo.getParentVO().getItemnumber());
+		allVos.addAll(getChangedVOs(((MainSubBillModel) this.getModel()).getOldValue(), newValue,
+				agghvo.getPrimaryKey(), row));
+	}
+
+	private List<CommissionCVO> getChangedVOs(Map<String, String> oldValue, Map<String, String> newValue,
+			String pk_commission_h, int row) {
 		List<CommissionCVO> retVOs = new ArrayList<CommissionCVO>();
 		if (oldValue != null && newValue != null && oldValue.size() > 0 && newValue.size() > 0) {
-			int row = 1;
 			for (Entry<String, String> value : oldValue.entrySet()) {
 				if (newValue.containsKey(value.getKey())) {
-					if (!(newValue == null && oldValue == null)
-							&& !StringUtils.equals(newValue.get(value.getKey()), value.getKey())) {
+					if (value.getValue() != null && newValue.get(value.getKey()) != null
+							&& !StringUtils.equals(newValue.get(value.getKey()), value.getValue())) {
 						CommissionCVO cvo = new CommissionCVO();
 						cvo.setPk_commission_h(pk_commission_h);
 						cvo.setRowno(String.valueOf(row));
@@ -212,7 +224,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 				}
 			}
 		}
-		return retVOs.toArray(new CommissionCVO[0]);
+		return retVOs;
 	}
 
 	private String loadTemplet(AggCommissionHVO aggvo) {

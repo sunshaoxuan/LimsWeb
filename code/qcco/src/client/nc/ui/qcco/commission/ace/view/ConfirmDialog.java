@@ -102,6 +102,8 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 	public final static int YES_YESTOALL_NO_NOTOALL_CANCEL_OPTION = 6;
 
 	public final static int CONFIRM_REJECT_PREVIEW = 7;
+
+	public final static int CONFIRM_PREVIEW = 8;
 	//
 	public final static int ID_YESTOALL = 16;
 
@@ -301,6 +303,7 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 			setResult(ID_YES);
 			break;
 		case CONFIRM_REJECT_PREVIEW:
+		case CONFIRM_PREVIEW:
 			setResult(ID_CONFIRM);
 			break;
 		case OK_OPTION:
@@ -331,7 +334,7 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 	}
 
 	private void btn3_ActionPerformed() {
-		if (m_nType == CONFIRM_REJECT_PREVIEW) {
+		if (m_nType == CONFIRM_REJECT_PREVIEW || m_nType == CONFIRM_PREVIEW) {
 			WebBrowser.open(strURL, getTitle());
 		} else {
 			setResult(ID_CANCEL);
@@ -342,7 +345,7 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 	}
 
 	private void btn4_ActionPerformed() {
-		if (m_nType == CONFIRM_REJECT_PREVIEW) {
+		if (m_nType == CONFIRM_REJECT_PREVIEW || m_nType == CONFIRM_PREVIEW) {
 			setResult(ID_CANCEL);
 		} else {
 			setResult(ID_YESTOALL);
@@ -1063,7 +1066,7 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 				if (m_nType == OK_CANCEL_OPTION || m_nType == YES_NO_CANCEL_OPTION
 						|| m_nType == YES_YESTOALL_NO_CANCEL_OPTION || m_nType == YES_YESTOALL_NO_NOTOALL_CANCEL_OPTION)
 					index = 2;
-			} else if (m_nType == CONFIRM_REJECT_PREVIEW) {
+			} else if (m_nType == CONFIRM_REJECT_PREVIEW || m_nType == CONFIRM_PREVIEW) {
 				index = 4;
 			} else {
 				index = getShortKey().indexOf(String.valueOf(e.getKeyChar()).toUpperCase());
@@ -1442,6 +1445,15 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 			dlg.getUIButton3().setVisible(true);
 			dlg.setShortKey("YNV");
 			break;
+		case CONFIRM_PREVIEW:
+			dlg.getUIButton1().setText("确认(Y)");
+			dlg.getUIButton1().setVisible(true);
+			dlg.getUIButton2().setText("驳回(N)");
+			dlg.getUIButton2().setVisible(false);
+			dlg.getUIButton3().setText("预览(V)");
+			dlg.getUIButton3().setVisible(true);
+			dlg.setShortKey("YNV");
+			break;
 		case OK_OPTION:
 			dlg.getUIButton1().setText(
 					nc.ui.ml.NCLangRes.getInstance().getStrByID("_Beans", "UPP_Beans-000021")/*
@@ -1646,6 +1658,15 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 			dlg.getUIButton1().setVisible(true);
 			dlg.getUIButton2().setText("驳回(N)");
 			dlg.getUIButton2().setVisible(true);
+			dlg.getUIButton3().setText("预览(V)");
+			dlg.getUIButton3().setVisible(true);
+			dlg.setShortKey("YNV");
+			break;
+		case CONFIRM_PREVIEW:
+			dlg.getUIButton1().setText("确认(Y)");
+			dlg.getUIButton1().setVisible(true);
+			dlg.getUIButton2().setText("驳回(N)");
+			dlg.getUIButton2().setVisible(false);
 			dlg.getUIButton3().setText("预览(V)");
 			dlg.getUIButton3().setVisible(true);
 			dlg.setShortKey("YNV");
@@ -1961,6 +1982,15 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 			dlg.getUIButton1().setVisible(true);
 			dlg.getUIButton2().setText("驳回(N)");
 			dlg.getUIButton2().setVisible(true);
+			dlg.getUIButton3().setText("预览(V)");
+			dlg.getUIButton3().setVisible(true);
+			dlg.setShortKey("YNV");
+			break;
+		case CONFIRM_PREVIEW:
+			dlg.getUIButton1().setText("确认(Y)");
+			dlg.getUIButton1().setVisible(true);
+			dlg.getUIButton2().setText("驳回(N)");
+			dlg.getUIButton2().setVisible(false);
 			dlg.getUIButton3().setText("预览(V)");
 			dlg.getUIButton3().setVisible(true);
 			dlg.setShortKey("YNV");
@@ -2340,6 +2370,15 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 			dlg.getUIButton1().setVisible(true);
 			dlg.getUIButton2().setText("驳回(N)");
 			dlg.getUIButton2().setVisible(true);
+			dlg.getUIButton3().setText("预览(V)");
+			dlg.getUIButton3().setVisible(true);
+			dlg.setShortKey("YNV");
+			break;
+		case CONFIRM_PREVIEW:
+			dlg.getUIButton1().setText("确认(Y)");
+			dlg.getUIButton1().setVisible(true);
+			dlg.getUIButton2().setText("驳回(N)");
+			dlg.getUIButton2().setVisible(false);
 			dlg.getUIButton3().setText("预览(V)");
 			dlg.getUIButton3().setVisible(true);
 			dlg.setShortKey("YNV");

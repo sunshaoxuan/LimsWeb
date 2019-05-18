@@ -38,7 +38,9 @@ public class AggCommissionHVO extends AbstractBill {
 		List<CircularlyAccessibleValueObject> rtn = new ArrayList<CircularlyAccessibleValueObject>();
 		for (IVOMeta childMeta : childMetas) {
 			ISuperVO[] vos = getChildren(childMeta);
-			rtn.addAll(Arrays.asList(vos));
+			if (vos != null) {
+				rtn.addAll(Arrays.asList(vos));
+			}
 		}
 
 		return rtn.toArray(new CircularlyAccessibleValueObject[0]);

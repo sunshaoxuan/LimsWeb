@@ -603,6 +603,7 @@
 				<ref bean="fileupload" />
 				<ref bean="separatorAction" />
 				<ref bean="previewActionGroup" />
+				<ref bean="separatorAction" />
 				<ref bean="writeBackLims" />
 				
 			</list>
@@ -930,7 +931,7 @@
 		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
 	</bean>
 	<!--======= ¶¯×÷£º[newActions] [»ØÐ´LIMS] ===========-->
-	<bean id="writeBackLims" class="nc.ui.qcco.task.action.WriteBackLims">
+	<bean id="writeBackLims" class="nc.ui.qcco.task.action.WriteBackLimsAction">
 		<property name="model"><ref bean="manageAppModel"/></property>
 		<property name="editor"><ref bean="billFormEditor"/></property>
 		<property name="billType" value="QC08" />

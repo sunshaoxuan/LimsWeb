@@ -11,9 +11,9 @@ import nc.ui.pubapp.uif2app.actions.pflow.ScriptPFlowAction;
 import nc.vo.qcco.task.AggTaskHVO;
 
 
-public class WriteBackLims extends ScriptPFlowAction {
+public class WriteBackLimsAction extends ScriptPFlowAction {
 
-	public WriteBackLims(){
+	public WriteBackLimsAction(){
 		setBtnName("»ØÐ´LIMS");
 		setCode("writebacklims");
 	}
