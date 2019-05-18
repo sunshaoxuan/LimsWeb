@@ -153,7 +153,7 @@ public class UserDefineRefUtils {
 		int row = grandListView.getBillListPanel().getBodyBillModel().getRowCount();
 		for (int i = 0; i < row; i++) {
 			CircularlyAccessibleValueObject vo = grandListView.getBillListPanel().getBodyBillModel()
-					.getBodyValueRowVOByVisualValue(i, grandVOList.get(0).getClass().getName());
+			.getBodyValueRowVO(row, grandVOList.get(0).getClass().getName());
 			try {
 				SuperVO superVO = (SuperVO) getSuperVOByPK(grandVOList, vo.getPrimaryKey());
 				for (BillItem billItem : grandListView.getBillListPanel().getBodyBillModel().getBodyItems()) {

@@ -302,7 +302,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								"select  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
 										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE,NC_TESTLIST_COMP.c_en_default_value, "
 										+ " NC_TESTLIST_COMP.MIN_LIMIT,NC_TESTLIST_COMP.MAX_LIMIT,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
-										+ " nc_result_type.pk_result_type,NC_RESULT_TYPE.nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP,NC_COMPONENT_table, "
+										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP,NC_COMPONENT_table, "
 										+ " NC_RESULT_TYPE,analysis,NC_UNITS_TYPE where NC_ANALYSIS_NAME = (select TRIM(NC_ANALYSIS_NAME) NC_ANALYSIS_NAME "
 										+ " from nc_analysis_list nal2 where nal2.name in (select distinct nal.nc_test_condition from "
 										+ " nc_analysis_list nal , nc_task_addunion nta where nal.nc_analysis_name = nta.nc_task_addname "
