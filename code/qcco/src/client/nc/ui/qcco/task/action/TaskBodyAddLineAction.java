@@ -289,6 +289,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								&& this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "textvalue") == null) {
 							this.getGrandCard().getBillCardPanel()
 									.setBodyValueAt("未录入", row, "conditionstatus", "pk_task_s");
+						}else{
+							this.getGrandCard().getBillCardPanel()
+							.setBodyValueAt("已录入", row, "conditionstatus", "pk_task_s");
 						}
 					}
 				}
@@ -397,6 +400,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								&& this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "textvalue") == null) {
 							this.getGrandCard().getBillCardPanel()
 									.setBodyValueAt("未录入", row, "conditionstatus", "pk_task_s");
+						}else{
+							this.getGrandCard().getBillCardPanel()
+							.setBodyValueAt("已录入", row, "conditionstatus", "pk_task_s");
 						}
 					}
 				}
