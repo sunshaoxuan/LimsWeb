@@ -13,20 +13,7 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
 		
 
-		/*if ("valueways".equals(e.getKey())) {
-			if (e.getValue() != null) {
-				if ((int)e.getValue() == 1) {
-					e.getBillCardPanel().getBodyItem("pk_refvalue").setEdit(false);
-					e.getBillCardPanel().getBodyItem("textvalue").setEdit(true);
-				}else if((int)e.getValue() == 2) {
-					e.getBillCardPanel().getBodyItem("pk_refvalue").setEdit(true);
-					e.getBillCardPanel().getBodyItem("textvalue").setEdit(false);
-				}else {
-					e.getBillCardPanel().getBodyItem("textvalue").setEdit(false);
-					e.getBillCardPanel().getBodyItem("pk_refvalue").setEdit(false);
-				}
-			}
-		}else if ("textvalue".equals(e.getKey())){
+		if ("textvalue".equals(e.getKey())){
 			if (e.getValue() != null) {
 				e.getBillCardPanel().setBodyValueAt("ÒÑÐÞ¸Ä", e.getRow(), "conditionstatus");
 			}else {
@@ -38,7 +25,7 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 			}else {
 				e.getBillCardPanel().setBodyValueAt("Î´Â¼Èë", e.getRow(), "conditionstatus");
 			}
-		}*/
+		}
 		
 	}
 }

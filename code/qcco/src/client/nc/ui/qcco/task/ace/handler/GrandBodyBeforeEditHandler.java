@@ -58,6 +58,8 @@ public void handleAppEvent(CardBodyBeforeEditEvent e) {
 						String strvalue = refValuePanel.getSelectedstr();
 						e.getBillCardPanel()
 						.setBodyValueAt(strvalue, e.getRow(), "pk_refvalue", "pk_task_s");
+							e.getBillCardPanel().setBodyValueAt("ÒÑÐÞ¸Ä", e.getRow(), "conditionstatus","pk_task_s");
+						
 						
 					}
 				} catch (DAOException e1) {
