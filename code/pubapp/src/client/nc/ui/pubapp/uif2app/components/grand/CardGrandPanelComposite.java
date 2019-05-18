@@ -56,6 +56,7 @@ import nc.vo.uif2.AppStatusRegisteryCallback;
 /**
  * 主子孙卡片界面
  */
+ 
 public class CardGrandPanelComposite extends GrandPanelComposite {
 
 	private static final long serialVersionUID = 3909667539006135048L;
