@@ -337,7 +337,7 @@ public class RefValuePanel extends UIDialog implements
 		try {
 			List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
 					.executeQuery(
-							"select distinct nc_list_code,c_en_value,c_cont_value from nc_list_entry;",
+							"select distinct nc_list_code,c_en_value,c_cont_value from nc_list_entry where c_en_value is not null and c_cont_value is not null;",
 							new MapListProcessor());
 
 			if (null != custlist && custlist.size() > 0) {
