@@ -31,6 +31,7 @@ import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskSVO;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.IVOMeta;
 import nc.vo.pub.SuperVO;
@@ -196,10 +197,57 @@ public abstract class AceTaskPubServiceImpl {
 				}
 			}
 			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
-			this.persistent(fullGrandVOs, originGrandVOs);
+			String pk_task_b = null;
+			for (IVOMeta vo : fullGrandVOs.keySet()) {
+				//fullGrandVOs.get(vo);
+				for(ISuperVO voss:fullGrandVOs.get(vo)){
+					pk_task_b = voss.getAttributeValue("pk_task_b")== null?null:String.valueOf(voss.getAttributeValue("pk_task_b"));
+				}
+			}
 			
-			AceTaskUpdateBP bp = new AceTaskUpdateBP();
-			AggTaskHVO[] retBills = bp.update(fullBills, originBills);
+			if(pk_task_b != null){
+				
+				this.persistent(fullGrandVOs, originGrandVOs);
+				
+				AceTaskUpdateBP bp = new AceTaskUpdateBP();
+				AggTaskHVO[] retBills = bp.update(fullBills, originBills);
+			}else {
+				
+				AceTaskUpdateBP bp = new AceTaskUpdateBP();
+				AggTaskHVO[] retBills = bp.update(fullBills, originBills);
+				List<ISuperVO> lists = new ArrayList<>();
+				List<ISuperVO> listr = new ArrayList<>();
+				for (int i = 0; i < retBills.length; i++) {
+					TaskBVO[] childrenVO = (TaskBVO[])(retBills[i].getChildrenVO());
+					for (TaskBVO childrenVOs : childrenVO) {
+						TaskSVO[] taskSVO =childrenVOs.getPk_task_s();
+						if(null != taskSVO&& taskSVO.length>0){
+							for (TaskSVO taskSVO2 : taskSVO) {
+								taskSVO2.setPk_task_b(childrenVOs.getPk_task_b());
+								lists.add(taskSVO2);
+							}
+						}
+						TaskRVO[] taskRVO =childrenVOs.getPk_task_r();
+						if(null != taskRVO&& taskRVO.length>0){
+							for (TaskRVO taskRVO2 : taskRVO) {
+								taskRVO2.setPk_task_b(childrenVOs.getPk_task_b());
+								listr.add(taskRVO2);
+							}
+						}
+					}
+					
+				}
+				for (IVOMeta vo : fullGrandVOs.keySet()) {
+					if(vo.getEntityName().equals("qcco.task_s")){
+						fullGrandVOs.put(vo, lists);
+					}else {
+						fullGrandVOs.put(vo, listr);
+					}
+					
+					
+				}
+				this.persistent(fullGrandVOs, originGrandVOs);
+			}
 			
 			return aggvos;
 		} catch (Exception e) {
