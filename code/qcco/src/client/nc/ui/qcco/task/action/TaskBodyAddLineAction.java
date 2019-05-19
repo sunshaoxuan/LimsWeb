@@ -198,11 +198,12 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			if (taskHBodyVO.getTestlistName().equals("_NA")) {
 				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
-								"select  cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,cmp.RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
+								"select  cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
 										+ "cmp.MAXIMUM,cmp.C_EN_DEFAULT_Value,ana.INSTRUMENT, cmp.pk_list_table from nc_component_table cmp "
 										+ "inner join analysis ana on cmp.analysis = ana.name"
 										+ " left join NC_UNITS_TYPE "
-										+ " on cmp.pk_units_type=NC_UNITS_TYPE.pk_units_type where analysis in"
+										+ " on cmp.pk_units_type=NC_UNITS_TYPE.pk_units_type left join NC_RESULT_TYPE "
+										+ " on NC_RESULT_TYPE.pk_result_type=cmp.pk_result_type where analysis in"
 										+ " (select TRIM(NC_TASK_ADDNAME) "
 										+ "NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"
 										+ taskHBodyVO.getUnique() + "') ", new MapListProcessor());
@@ -226,10 +227,14 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										.setBodyValueAt(
 												map.get("reportable").equals("T") ? UFBoolean.TRUE : UFBoolean.FALSE,
 												row, "isallow_out", "pk_task_s");
-							} else if (refValue.getKey().equals("result_type")) {
+							} else if (refValue.getKey().equals("pk_result_type")) {
 								this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(map.get("result_type"), row, "pk_valuetype", "pk_task_s");
-							}else if (refValue.getKey().equals("units")) {
+										.setBodyValueAt(map.get("pk_result_type"), row, "pk_valuetype", "pk_task_s");
+							}
+							 else if (refValue.getKey().equals("nc_result_namecn")) {
+									this.getGrandCard().getBillCardPanel()
+											.setBodyValueAt(map.get("nc_result_namecn"), row, "valuetype", "pk_task_s");
+								}else if (refValue.getKey().equals("units")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("units"), row, "unit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_defvalue_value")) {
