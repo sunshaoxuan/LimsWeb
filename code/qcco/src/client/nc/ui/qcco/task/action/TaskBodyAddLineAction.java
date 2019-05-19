@@ -10,6 +10,7 @@ import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.actions.BodyAddLineAction;
 import nc.ui.pubapp.uif2app.view.BillForm;
@@ -50,6 +51,12 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 	public void doAction() {
 		// TODO Auto-generated method stub
 		try {
+			String tablecode=this.getGrandCard()
+			.getBillCardPanel().getBodyPanel().getTableCode();
+			if(!tablecode.equals("pk_task_s")){
+				MessageDialog.showErrorDlg(this.getCardPanel(), "提示", "请将孙表切换到详细测试条件页签！");
+				return;
+			}
 			String pk_commission_h = super.getCardPanel().getHeadItem("pk_commission_h").getValue();
 			String pk_task_h = super.getCardPanel().getHeadItem("pk_task_h").getValue();
 			String reportType = getReportType(pk_commission_h);//1是中文，2是英文
