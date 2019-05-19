@@ -38,7 +38,7 @@ public class TaskBVO extends SuperVO {
 	/**
 	 * ÐÐÌ–
 	 */
-	public String rowno;
+	public Integer rowno;
 	/**
 	 * œyÔ‡½Y¹ûÃû·Q
 	 */
@@ -264,7 +264,7 @@ public class TaskBVO extends SuperVO {
 	 * 
 	 * @return java.lang.String
 	 */
-	public String getRowno() {
+	public Integer getRowno() {
 		return this.rowno;
 	}
 
@@ -274,7 +274,7 @@ public class TaskBVO extends SuperVO {
 	 * @param newRowno
 	 *            java.lang.String
 	 */
-	public void setRowno(String rowno) {
+	public void setRowno(Integer rowno) {
 		this.rowno = rowno;
 	}
 
