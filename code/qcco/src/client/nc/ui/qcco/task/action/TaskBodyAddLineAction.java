@@ -259,7 +259,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										.setBodyValueAt(map.get("instrument"), row, "instrument", "pk_task_s");
 							} else if (refValue.getKey().equals("pk_list_table")) {
 								if(map.get("pk_list_table") == null){
-									if(map.get("c_en_default_value")!= null && map.get("c_default_value") !=null){
+									if(map.get("c_en_default_value")== null && map.get("c_default_value") ==null){
 										this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(1, row, "valueways", "pk_task_s");
 									}else {
@@ -344,7 +344,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										.setBodyValueAt(map.get("pk_result_type"), row, "pk_valuetype", "pk_task_s");
 							} else if (refValue.getKey().equals("pk_list_table")) {
 								if(map.get("pk_list_table") == null){
-									if(map.get("c_en_default_value")!= null && map.get("c_default_value") !=null){
+									if(map.get("c_en_default_value")== null && map.get("c_default_value") ==null){
 										this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(1, row, "valueways", "pk_task_s");
 									}else {
