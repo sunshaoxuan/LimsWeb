@@ -64,7 +64,8 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 	public void handleAppEvent(CardBodyBeforeEditEvent e) {
 		if ("sampleallocation".equals(e.getKey())) {
 			try {
-				if(!this.getGrandCard().getTabCode().equals("pk_task_r")){
+				if(!this.getGrandCard()
+						.getBillCardPanel().getBodyPanel().getTableCode().equals("pk_task_r")){
 					MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "提示", "请将孙表切换到试验后参数页签");
 					return;
 				}
