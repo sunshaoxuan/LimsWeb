@@ -64,7 +64,8 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 	public void handleAppEvent(CardBodyBeforeEditEvent e) {
 		if ("sampleallocation".equals(e.getKey())) {
 			try {
-				if(!this.getGrandCard().getTabCode().equals("pk_task_r")){
+				if (!this.getGrandCard().getBillCardPanel().getBodyTabbedPane().getSelectedTableCode()
+						.equals("pk_task_r")) {
 					MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "提示", "请将孙表切换到试验后参数页签");
 					return;
 				}
@@ -122,7 +123,6 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					// e.setValue();
 
 					// 根据条件查询实验后参数
-					
 					generateGrandLines(e, Alist, pk_commission_h);
 				}
 
@@ -221,8 +221,6 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 				this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
 			}
 			if (refList != null && refList.size() > 0) {
-				
-				
 				for (Map<String, Object> refRow : refList) {
 
 					this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").addLine();
