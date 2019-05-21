@@ -156,33 +156,34 @@ public class TaskBVO extends SuperVO {
 	 */
 	public UFDateTime ts;
 
-    public Integer Dr;
-    public TaskRVO[] pk_task_r;
-    public TaskSVO[] pk_task_s;
+	public Integer Dr;
+	public TaskRVO[] pk_task_r;
+	public TaskSVO[] pk_task_s;
 
-    public TaskSVO[] getPk_task_s() {
-        return pk_task_s;
-    }
+	public TaskSVO[] getPk_task_s() {
+		return pk_task_s;
+	}
 
-    public void setPk_task_s(TaskSVO[] pk_task_s) {
-        this.pk_task_s = pk_task_s;
-    }
+	public void setPk_task_s(TaskSVO[] pk_task_s) {
+		this.pk_task_s = pk_task_s;
+	}
 
-    public Integer getDr() {
-        return Dr;
-    }
+	public Integer getDr() {
+		return Dr;
+	}
 
-    public void setDr(Integer dr) {
-        Dr = dr;
-    }
+	public void setDr(Integer dr) {
+		Dr = dr;
+	}
 
-    public void setPk_task_r(TaskRVO[] originGrandvos) {
-        pk_task_r = originGrandvos;
-    }
+	public void setPk_task_r(TaskRVO[] originGrandvos) {
+		pk_task_r = originGrandvos;
+	}
 
-    public TaskRVO[] getPk_task_r() {
-        return pk_task_r;
-    }
+	public TaskRVO[] getPk_task_r() {
+		return pk_task_r;
+	}
+
 	/**
 	 * 屬性 pk_task_b的Getter方法.屬性名：任務行主鍵 創建日期:2019/5/5
 	 * 

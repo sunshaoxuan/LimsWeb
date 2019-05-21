@@ -8,11 +8,14 @@ import nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel;
 import nc.ui.pubapp.uif2app.model.BillManageModel;
 import nc.ui.uif2.IShowMsgConstant;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
+import nc.ui.uif2.UIState;
 import nc.ui.uif2.actions.ActionInitializer;
 import nc.ui.uif2.components.CommonConfirmDialogUtils;
+import nc.vo.pub.SuperVO;
+import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.task.AggTaskHVO;
 
-public class TaskDeleteAction extends nc.ui.pubapp.uif2app.actions.pflow.DeleteScriptAction{
+public class TaskDeleteAction extends nc.ui.pubapp.uif2app.actions.pflow.DeleteScriptAction {
 	/**
 	 * nc.ui.pubapp.uif2app.actions.DeleteAction
 	 */
@@ -20,20 +23,18 @@ public class TaskDeleteAction extends nc.ui.pubapp.uif2app.actions.pflow.DeleteS
 	private MainGrandModel mainGrandModel;
 	private BillManageModel model;
 	private ISingleBillService<AggTaskHVO> singleBillService;
-	
+
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
-		if (4 == CommonConfirmDialogUtils.showConfirmDeleteDialog(getModel()
-				.getContext().getEntranceUI())) {
+		if (4 == CommonConfirmDialogUtils.showConfirmDeleteDialog(getModel().getContext().getEntranceUI())) {
 			Object value = this.getMainGrandModel().getDeleteAggVO();
-			Object object = this.getSingleBillService().operateBill(
-					(AggTaskHVO) value);
+			Object object = this.getSingleBillService().operateBill((AggTaskHVO) value);
 			this.getModel().directlyDelete(object);
 			this.getMainGrandModel().directlyDelete(object);
 			this.showSuccessInfo();
 		}
 	}
-	
+
 	public TaskDeleteAction() {
 		super();
 		ActionInitializer.initializeAction(this, IActionCode.DELETE);
@@ -42,7 +43,7 @@ public class TaskDeleteAction extends nc.ui.pubapp.uif2app.actions.pflow.DeleteS
 	protected void showSuccessInfo() {
 		ShowStatusBarMsgUtil.showStatusBarMsg(IShowMsgConstant.getDelSuccessInfo(), getModel().getContext());
 	}
-	
+
 	public ISingleBillService<AggTaskHVO> getSingleBillService() {
 		return singleBillService;
 	}
@@ -54,14 +55,29 @@ public class TaskDeleteAction extends nc.ui.pubapp.uif2app.actions.pflow.DeleteS
 	public MainGrandModel getMainGrandModel() {
 		return mainGrandModel;
 	}
+
 	public void setMainGrandModel(MainGrandModel mainGrandModel) {
 		this.mainGrandModel = mainGrandModel;
 	}
-	
+
 	public BillManageModel getModel() {
 		return model;
 	}
+
 	public void setModel(BillManageModel model) {
 		this.model = model;
+		this.model.addAppEventListener(this);
+	}
+
+	protected boolean isActionEnable() {
+		AbstractBill aggVO = (AbstractBill) this.getModel().getSelectedData();
+		if (aggVO == null) {
+			return false;
+		}
+		SuperVO hvo = (SuperVO) aggVO.getParentVO();
+		if (hvo == null) {
+			return false;
+		}
+		return this.getModel().getUiState() == UIState.NOT_EDIT;
 	}
 }

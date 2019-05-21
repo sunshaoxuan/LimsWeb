@@ -20,11 +20,8 @@ import nc.ui.uif2.ShowStatusBarMsgUtil;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFBoolean;
 import nc.vo.qcco.task.TaskHBodyVO;
-import nc.vo.qcco.task.ValueWaysEnum;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 public class TaskBodyAddLineAction extends BodyAddLineAction {
 	private ShowUpableBillForm grandCard;
@@ -51,15 +48,14 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 	public void doAction() {
 		// TODO Auto-generated method stub
 		try {
-			String tablecode=this.getGrandCard()
-			.getBillCardPanel().getBodyPanel().getTableCode();
-			if(!tablecode.equals("pk_task_s")){
+			String tablecode = this.getGrandCard().getBillCardPanel().getBodyPanel().getTableCode();
+			if (!tablecode.equals("pk_task_s")) {
 				MessageDialog.showErrorDlg(this.getCardPanel(), "提示", "请将孙表切换到详细测试条件页签！");
 				return;
 			}
 			String pk_commission_h = super.getCardPanel().getHeadItem("pk_commission_h").getValue();
 			String pk_task_h = super.getCardPanel().getHeadItem("pk_task_h").getValue();
-			String reportType = getReportType(pk_commission_h);//1是中文，2是英文
+			String reportType = getReportType(pk_commission_h);// 1是中文，2是英文
 			SunlistPanel sunlistPanel = new SunlistPanel(pk_commission_h);
 			if (sunlistPanel.showModal() == 1) {
 				pklists = sunlistPanel.getPklist();
@@ -95,7 +91,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									"pk_task_h");
 
 							// 生成孙表测试条件
-							insertTestCondition(pklists.get(i),reportType);
+							insertTestCondition(pklists.get(i), reportType);
 
 						}
 						rowno = this.getCardPanel().getRowCount();
@@ -118,21 +114,19 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		try {
 
 			// for (TaskHBodyVO taskHBodyVO:pklists) {
-			
-				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
-						.executeQuery("select RP_REPORT_CODE from QC_COMMISSION_H left join NC_REPORT_LANG "
-								+ "on NC_REPORT_LANG.pk_report_lang=qc_commission_h.REPORTLANG"
-								+ " where pk_commission_h='"+pk_commission_h+"'"
-								, new MapListProcessor());
-				for (Map<String, String> map : custlist) {
-					reportCode = map.get("rp_report_code");
-				}
-	}catch(Exception e){
-		e.printStackTrace();
+
+			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS.executeQuery(
+					"select RP_REPORT_CODE from QC_COMMISSION_H left join NC_REPORT_LANG "
+							+ "on NC_REPORT_LANG.pk_report_lang=qc_commission_h.REPORTLANG"
+							+ " where pk_commission_h='" + pk_commission_h + "'", new MapListProcessor());
+			for (Map<String, String> map : custlist) {
+				reportCode = map.get("rp_report_code");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return reportCode;
 	}
-	
 
 	@Override
 	protected void afterLineInsert(int index) {
@@ -191,7 +185,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void insertTestCondition(TaskHBodyVO taskHBodyVO,String reportType) {
+	private void insertTestCondition(TaskHBodyVO taskHBodyVO, String reportType) {
 		/*
 		 * List<String>list_NA = new ArrayList<>(); List<String>nolist_NA = new
 		 * ArrayList<>();
@@ -237,11 +231,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							} else if (refValue.getKey().equals("pk_result_type")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("pk_result_type"), row, "pk_valuetype", "pk_task_s");
-							}
-							 else if (refValue.getKey().equals("nc_result_namecn")) {
-									this.getGrandCard().getBillCardPanel()
-											.setBodyValueAt(map.get("nc_result_namecn"), row, "valuetype", "pk_task_s");
-								}else if (refValue.getKey().equals("units")) {
+							} else if (refValue.getKey().equals("nc_result_namecn")) {
+								this.getGrandCard().getBillCardPanel()
+										.setBodyValueAt(map.get("nc_result_namecn"), row, "valuetype", "pk_task_s");
+							} else if (refValue.getKey().equals("units")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("units"), row, "unit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_defvalue_value")) {
@@ -270,30 +263,34 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("instrument"), row, "instrument", "pk_task_s");
 							} else if (refValue.getKey().equals("pk_list_table")) {
-								if(map.get("pk_list_table") == null){
-									if(map.get("c_en_default_value")== null && map.get("c_default_value") ==null){
+								if (map.get("pk_list_table") == null) {
+									if (map.get("c_en_default_value") == null || map.get("c_default_value") == null) {
 										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(1, row, "valueways", "pk_task_s");
-									}else {
+												.setBodyValueAt(1, row, "valueways", "pk_task_s");
+									} else {
 										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(3, row, "valueways", "pk_task_s");
+												.setBodyValueAt(3, row, "valueways", "pk_task_s");
 									}
-									//文本值
-									if(null!= reportType && reportType.equals("1")){
-										//yingwen
-										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue", "pk_task_s");
-									}else if(null!= reportType && reportType.equals("2")) {
-										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(map.get("c_default_value"), row, "textvalue", "pk_task_s");
+									// 文本值
+									if (null != reportType && reportType.equals("1")) {
+										// yingwen
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue",
+														"pk_task_s");
+									} else if (null != reportType && reportType.equals("2")) {
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_default_value"), row, "textvalue",
+														"pk_task_s");
 									}
-								}else {
+								} else {
 									this.getGrandCard().getBillCardPanel()
-									.setBodyValueAt(2, row, "valueways", "pk_task_s");
-									//参照值
-									String refvalue = getRefValue(map.get("pk_list_table"),reportType);
+											.setBodyValueAt(2, row, "valueways", "pk_task_s");
+									// 参照值
+									String refvalue = getRefValue(map.get("pk_list_table"), reportType);
 									this.getGrandCard().getBillCardPanel()
-									.setBodyValueAt(refvalue, row, "pk_refvalue", "pk_task_s");
+											.setBodyValueAt(refvalue, row, "pk_refvalue", "pk_task_s");
 								}
 							}
 						}
@@ -301,9 +298,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								&& this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "textvalue") == null) {
 							this.getGrandCard().getBillCardPanel()
 									.setBodyValueAt("未录入", row, "conditionstatus", "pk_task_s");
-						}else{
+						} else {
 							this.getGrandCard().getBillCardPanel()
-							.setBodyValueAt("已录入", row, "conditionstatus", "pk_task_s");
+									.setBodyValueAt("已录入", row, "conditionstatus", "pk_task_s");
 						}
 					}
 				}
@@ -313,9 +310,13 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 						.executeQuery(
 								"select  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
 										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE,NC_TESTLIST_COMP.c_en_default_value, "
-										+ " NC_TESTLIST_COMP.MIN_LIMIT,NC_TESTLIST_COMP.MAX_LIMIT,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
-										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP,NC_COMPONENT_table, "
-										+ " NC_RESULT_TYPE,analysis,NC_UNITS_TYPE where NC_ANALYSIS_NAME = (select TRIM(NC_ANALYSIS_NAME) NC_ANALYSIS_NAME "
+										+ " NC_COMPONENT_table.minimum, NC_COMPONENT_table.maximum,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
+										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP"
+										+ " LEFT JOIN NC_COMPONENT_table ON NC_TESTLIST_COMP.NC_ANALYSIS_NAME = NC_COMPONENT_table.ANALYSIS AND NC_TESTLIST_COMP.NC_TLC_COMPONENT = NC_COMPONENT_table.NAME "
+										+ " LEFT JOIN NC_RESULT_TYPE ON NC_COMPONENT_table.pk_result_type = NC_RESULT_TYPE.pk_result_type "
+										+ " LEFT JOIN analysis ON NC_COMPONENT_table.analysis = analysis.name "
+										+ " LEFT JOIN NC_UNITS_TYPE ON nc_component_table.pk_units_type=NC_UNITS_TYPE.pk_units_type "
+										+ " where NC_ANALYSIS_NAME = (select TRIM(NC_ANALYSIS_NAME) NC_ANALYSIS_NAME "
 										+ " from nc_analysis_list nal2 where nal2.name in (select distinct nal.nc_test_condition from "
 										+ " nc_analysis_list nal , nc_task_addunion nta where nal.nc_analysis_name = nta.nc_task_addname "
 										+ " and pk_task_addunion='"
@@ -323,12 +324,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										+ "' )) AND NC_TESTLIST_NAME = (select TRIM(NC_TESTLIST_NAME) NC_TESTLIST_NAME "
 										+ " from nc_task_addunion where pk_task_addunion='"
 										+ taskHBodyVO.getUnique()
-										+ "' ) and NC_TESTLIST_COMP.NC_ANALYSIS_NAME = "
-										+ " NC_COMPONENT_table.ANALYSIS and NC_TESTLIST_COMP.NC_TLC_COMPONENT = NC_COMPONENT_table.NAME "
-										+ " and NC_COMPONENT_table.pk_result_type= NC_RESULT_TYPE.pk_result_type and "
-										+ " NC_COMPONENT_table.analysis = analysis.name "
-										+ " and nc_component_table.pk_units_type=NC_UNITS_TYPE.pk_units_type",
-								new MapListProcessor());
+										+ "' ) ", new MapListProcessor());
 				if (custlists != null && custlists.size() > 0) {
 					for (Map<String, String> map : custlists) {
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_s").addLine();
@@ -355,33 +351,37 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("pk_result_type"), row, "pk_valuetype", "pk_task_s");
 							} else if (refValue.getKey().equals("pk_list_table")) {
-								if(map.get("pk_list_table") == null){
-									if(map.get("c_en_default_value")== null && map.get("c_default_value") ==null){
+								if (map.get("pk_list_table") == null) {
+									if (map.get("c_en_default_value") == null || map.get("c_default_value") == null) {
 										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(1, row, "valueways", "pk_task_s");
-									}else {
+												.setBodyValueAt(1, row, "valueways", "pk_task_s");
+									} else {
 										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(3, row, "valueways", "pk_task_s");
+												.setBodyValueAt(3, row, "valueways", "pk_task_s");
 									}
-									//文本值
-									if(null!= reportType && reportType.equals("1")){
-										//yingwen
-										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue", "pk_task_s");
-									}else if(null!= reportType && reportType.equals("2")) {
-										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(map.get("c_default_value"), row, "textvalue", "pk_task_s");
+									// 文本值
+									if (null != reportType && reportType.equals("1")) {
+										// yingwen
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue",
+														"pk_task_s");
+									} else if (null != reportType && reportType.equals("2")) {
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_default_value"), row, "textvalue",
+														"pk_task_s");
 									}
-								}else {
+								} else {
 									this.getGrandCard().getBillCardPanel()
-									.setBodyValueAt(2, row, "valueways", "pk_task_s");
-									//参照值
-									String refvalue = getRefValue(map.get("pk_list_table"),reportType);
+											.setBodyValueAt(2, row, "valueways", "pk_task_s");
+									// 参照值
+									String refvalue = getRefValue(map.get("pk_list_table"), reportType);
 									this.getGrandCard().getBillCardPanel()
-									.setBodyValueAt(refvalue, row, "pk_refvalue", "pk_task_s");
+											.setBodyValueAt(refvalue, row, "pk_refvalue", "pk_task_s");
 								}
-								
-					} else if (refValue.getKey().equals("units")) {
+
+							} else if (refValue.getKey().equals("units")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(StringUtils.trim(map.get("units")), row, "unit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_defvalue_value")) {
@@ -389,10 +389,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										.getBillCardPanel()
 										.setBodyValueAt(map.get("c_defvalue_value"), row, "formatted_entry",
 												"pk_task_s");
-							} else if (refValue.getKey().equals("min_limit")) {
+							} else if (refValue.getKey().equals("minimum")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("minimum"), row, "min_limit", "pk_task_s");
-							} else if (refValue.getKey().equals("max_limit")) {
+							} else if (refValue.getKey().equals("maximum")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("maximum"), row, "max_limit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_en_default_value")) {
@@ -412,9 +412,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								&& this.getGrandCard().getBillCardPanel().getBodyValueAt(row, "textvalue") == null) {
 							this.getGrandCard().getBillCardPanel()
 									.setBodyValueAt("未录入", row, "conditionstatus", "pk_task_s");
-						}else{
+						} else {
 							this.getGrandCard().getBillCardPanel()
-							.setBodyValueAt("已录入", row, "conditionstatus", "pk_task_s");
+									.setBodyValueAt("已录入", row, "conditionstatus", "pk_task_s");
 						}
 					}
 				}
@@ -432,26 +432,29 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		}
 	}
 
-	private String getRefValue(String str,String reportType) {
+	private String getRefValue(String str, String reportType) {
 		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 		String refvalue = null;
 		try {
 
 			// for (TaskHBodyVO taskHBodyVO:pklists) {
-			
-				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
-						.executeQuery("SELECT pk_list_entry, c_en_value,c_cont_value FROM nc_list_entry WHERE pk_list_table =( SELECT    pk_list_table FROM  nc_testlist_comp WHERE   pk_testlist_comp = '"+str+"') AND trim(nc_list_name) = (  SELECT   trim(c_default_value) "
-								+ " FROM nc_testlist_comp WHERE  pk_testlist_comp = '"+str+"');"
-								, new MapListProcessor());
-				for (Map<String, String> map : custlist) {
-					if(reportType.equals("1")){
-						refvalue = map.get("c_en_value");
-					}else if (reportType.equals("2")) {
-						refvalue = map.get("c_cont_value");
-					}
+
+			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
+					.executeQuery(
+							"SELECT pk_list_entry, c_en_value,c_cont_value FROM nc_list_entry WHERE pk_list_table =( SELECT    pk_list_table FROM  nc_testlist_comp WHERE   pk_testlist_comp = '"
+									+ str
+									+ "') AND trim(nc_list_name) = (  SELECT   trim(c_default_value) "
+									+ " FROM nc_testlist_comp WHERE  pk_testlist_comp = '" + str + "');",
+							new MapListProcessor());
+			for (Map<String, String> map : custlist) {
+				if (reportType.equals("1")) {
+					refvalue = map.get("c_en_value");
+				} else if (reportType.equals("2")) {
+					refvalue = map.get("c_cont_value");
 				}
-	}catch(Exception e){
-		e.printStackTrace();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return refvalue;
 	}

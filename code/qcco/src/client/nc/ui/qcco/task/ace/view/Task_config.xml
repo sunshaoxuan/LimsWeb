@@ -602,7 +602,9 @@
 				<!--¸½¼þÉÏ´« -->
 				<ref bean="fileupload" />
 				<ref bean="separatorAction" />
-				<ref bean="previewActionGroup" />
+				<ref bean="quotationAction" />
+				<ref bean="payDemandAction" />
+				<ref bean="officialReportAction" />
 				<ref bean="separatorAction" />
 				<ref bean="writeBackLims" />
 				
@@ -639,7 +641,9 @@
 				<ref bean="pFApproveStatusInfoAction" />
 				<ref bean="fileupload" />
 				<ref bean="separatorAction" />
-				<ref bean="previewActionGroup" />
+				<ref bean="quotationAction" />
+				<ref bean="payDemandAction" />
+				<ref bean="officialReportAction" />
 				<ref bean="separatorAction" />
 				<ref bean="writeBackLims" />
 			</list>
@@ -813,7 +817,7 @@
 				<ref bean="quotationAction" />
 				<ref bean="payDemandAction" />
 				<ref bean="officialReportAction" />
-				<ref bean="satisfactionAction" />
+				<!-- ref bean="satisfactionAction" /-->
 			</list>
 		</property>
 	</bean>

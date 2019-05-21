@@ -261,12 +261,14 @@ public abstract class AceCommissionPubServiceImpl {
 						}
 					}
 					CommissionCVO[] cvos = (CommissionCVO[]) (aggvo.getChildren(CommissionCVO.class));
-					for (CommissionCVO cvo : cvos) {
-						if (cvo != null) {
-							cvo.setPk_commission_h(null);
-							cvo.setPk_commission_c(null);
-							cvo.setTs(null);
-							cvo.setStatus(2);
+					if (cvos != null && cvos.length > 0) {
+						for (CommissionCVO cvo : cvos) {
+							if (cvo != null) {
+								cvo.setPk_commission_h(null);
+								cvo.setPk_commission_c(null);
+								cvo.setTs(null);
+								cvo.setStatus(2);
+							}
 						}
 					}
 				}

@@ -18,23 +18,23 @@ import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskSVO;
 
 public class WriteBackLimsUtils {
-	public final static String LIMS_PK_HEAD = "NAME"; // project.NAME
+	public final static String[] LIMS_PK_HEAD = new String[] { "PROJECT", "NAME" }; // project.NAME
 
-	public final static String LIMS_PK_SAMPLE = "SEQ_NUM"; // C_PROJ_LOGIN_SAMPLE.SEQ_NUM
-	public final static String LIMS_FK_SAMPLE = "PROJECT";// C_PROJ_LOGIN_SAMPLE.PROJECT
+	public final static String[] LIMS_PK_SAMPLE = new String[] { "C_PROJ_LOGIN_SAMPLE", "SEQ_NUM" }; // C_PROJ_LOGIN_SAMPLE.SEQ_NUM
+	public final static String[] LIMS_FK_SAMPLE = new String[] { "C_PROJ_LOGIN_SAMPLE", "PROJECT" };// C_PROJ_LOGIN_SAMPLE.PROJECT
 
-	public final static String LIMS_PK_BEFORE = "SEQ_NUM"; // C_PROJ_PARA_A.SEQ_NUM
-	public final static String LIMS_FK_BEFORE = "PROJECT"; // C_PROJ_PARA_A.PROJECT
+	public final static String[] LIMS_PK_BEFORE = new String[] { "C_PROJ_PARA_A", "SEQ_NUM" }; // C_PROJ_PARA_A.SEQ_NUM
+	public final static String[] LIMS_FK_BEFORE = new String[] { "C_PROJ_PARA_A", "PROJECT" }; // C_PROJ_PARA_A.PROJECT
 
-	public final static String LIMS_PK_TASK = "SEQ_NUM"; // c_proj_task.SEQ_NUM
-	public final static String LIMS_FK_TASK = "PROJECT"; // c_proj_task.PROJECT
+	public final static String[] LIMS_PK_TASK = new String[] { "c_proj_task", "SEQ_NUM" }; // c_proj_task.SEQ_NUM
+	public final static String[] LIMS_FK_TASK = new String[] { "c_proj_task", "PROJECT" }; // c_proj_task.PROJECT
 
-	public final static String LIMS_PK_CONDITION = "RESULT_NUMBER"; // result.RESULT_NUMBER
-	public final static String LIMS_FK_CONDITION_TASK = "TEST_NUMBER"; // result.TEST_NUMBER
-	public final static String LIMS_FK_CONDITION_SAMPLE = "SAMPLE_NUMBER"; // result.SAMPLE_NUMBER
+	public final static String[] LIMS_PK_CONDITION = new String[] { "result", "RESULT_NUMBER" }; // result.RESULT_NUMBER
+	public final static String[] LIMS_FK_CONDITION_TASK = new String[] { "result", "TEST_NUMBER" }; // result.TEST_NUMBER
+	public final static String[] LIMS_FK_CONDITION_SAMPLE = new String[] { "result", "SAMPLE_NUMBER" }; // result.SAMPLE_NUMBER
 
-	public final static String LIMS_PK_AFTER = "SEQ_NUM"; // c_proj_task_para_b.SEQ_NUM
-	public final static String LIMS_FK_AFTER = "TASK_SEQ_NUM";// c_proj_task_para_b.TASK_SEQ_NUM
+	public final static String[] LIMS_PK_AFTER = new String[] { "c_proj_task_para_b", "SEQ_NUM" }; // c_proj_task_para_b.SEQ_NUM
+	public final static String[] LIMS_FK_AFTER = new String[] { "c_proj_task_para_b", "TASK_SEQ_NUM" };// c_proj_task_para_b.TASK_SEQ_NUM
 
 	// 委托单
 	private Map<String, String> headMapping; // qc_commission_h
@@ -115,7 +115,7 @@ public class WriteBackLimsUtils {
 	}
 
 	private String getHeadInsertSQL(String[] lists) {
-		// TODO 自動產生的方法 Stub
+		String insertSQL = "INSERT INTO PROJECT";
 		return null;
 	}
 

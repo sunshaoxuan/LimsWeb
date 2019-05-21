@@ -64,7 +64,8 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 	public void handleAppEvent(CardBodyBeforeEditEvent e) {
 		if ("sampleallocation".equals(e.getKey())) {
 			try {
-				if(!this.getGrandCard().getTabCode().equals("pk_task_r")){
+				if (!this.getGrandCard().getBillCardPanel().getBodyTabbedPane().getSelectedTableCode()
+						.equals("pk_task_r")) {
 					MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "提示", "请将孙表切换到试验后参数页签");
 					return;
 				}
@@ -122,7 +123,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					// e.setValue();
 
 					// 根据条件查询实验后参数
-					
+
 					generateGrandLines(e, Alist, pk_commission_h);
 				}
 
@@ -221,8 +222,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 				this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
 			}
 			if (refList != null && refList.size() > 0) {
-				
-				
+
 				for (Map<String, Object> refRow : refList) {
 
 					this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").addLine();
@@ -258,8 +258,11 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 							this.getGrandCard().getBillCardPanel()
 									.setBodyValueAt(refValue.getValue(), row, "pk_valuetype", "pk_task_r");
 						} else if (refValue.getKey().equals("nc_result_namecn")) {
-							this.getGrandCard().getBillCardPanel()
-									.setBodyValueAt(refValue.getValue()==null?"":refValue.getValue().toString().replace(" ", ""), row, "valuetype", "pk_task_r");
+							this.getGrandCard()
+									.getBillCardPanel()
+									.setBodyValueAt(
+											refValue.getValue() == null ? "" : refValue.getValue().toString()
+													.replace(" ", ""), row, "valuetype", "pk_task_r");
 						} else if (refValue.getKey().equals("nc_result_code")) {
 							resultCode = (String) refValue.getValue();
 						} else if (refValue.getKey().equals("nc_result_namecn")) {
@@ -280,14 +283,20 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					}
 					if (!StringUtils.isEmpty(resultCode) && !StringUtils.isEmpty(resultName)) {
 						IConstEnum aValue = new DefaultConstEnum(resultName, resultName);
-						this.getGrandCard().getBillCardPanel()
-								.setBodyValueAt(aValue.getValue()==null?"":aValue.getValue().toString().replace(" ", ""), row, "valuetype", "pk_task_r");
+						this.getGrandCard()
+								.getBillCardPanel()
+								.setBodyValueAt(
+										aValue.getValue() == null ? "" : aValue.getValue().toString().replace(" ", ""),
+										row, "valuetype", "pk_task_r");
 					}
 
 					if (!StringUtils.isEmpty(refCode) && !StringUtils.isEmpty(refName)) {
 						IConstEnum aValue = new DefaultConstEnum(refName, refName);
-						this.getGrandCard().getBillCardPanel()
-								.setBodyValueAt(aValue.getValue()==null?"":aValue.getValue().toString().replace(" ", ""), row, "component", "pk_task_r");
+						this.getGrandCard()
+								.getBillCardPanel()
+								.setBodyValueAt(
+										aValue.getValue() == null ? "" : aValue.getValue().toString().replace(" ", ""),
+										row, "component", "pk_task_r");
 					}
 
 					this.getGrandCard().getBillCardPanel()

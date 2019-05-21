@@ -1300,7 +1300,9 @@ public class Task_config extends AbstractJavaBeanDefinition {
 		list.add(getPFApproveStatusInfoAction());
 		list.add(getFileupload());
 		list.add(getSeparatorAction());
-		list.add(getPreviewActionGroup());
+		list.add(getFlowCardAction());
+		list.add(getTaskStatusAction());
+		list.add(getSampleProgressAction());
 		list.add(getSeparatorAction());
 		list.add(getWriteBackLims());
 		return list;
@@ -1344,7 +1346,9 @@ public class Task_config extends AbstractJavaBeanDefinition {
 		list.add(getPFApproveStatusInfoAction());
 		list.add(getFileupload());
 		list.add(getSeparatorAction());
-		list.add(getPreviewActionGroup());
+		list.add(getFlowCardAction());
+		list.add(getTaskStatusAction());
+		list.add(getSampleProgressAction());
 		list.add(getSeparatorAction());
 		list.add(getWriteBackLims());
 		return list;
@@ -1646,44 +1650,33 @@ public class Task_config extends AbstractJavaBeanDefinition {
 		return list;
 	}
 
-	public nc.ui.qcco.task.action.QuotationAction getQuotationAction() {
-		if (context.get("quotationAction") != null)
-			return (nc.ui.qcco.task.action.QuotationAction) context.get("quotationAction");
-		nc.ui.qcco.task.action.QuotationAction bean = new nc.ui.qcco.task.action.QuotationAction();
-		context.put("quotationAction", bean);
+	public nc.ui.qcco.task.action.FlowCardAction getFlowCardAction() {
+		if (context.get("flowCardAction") != null)
+			return (nc.ui.qcco.task.action.FlowCardAction) context.get("flowCardAction");
+		nc.ui.qcco.task.action.FlowCardAction bean = new nc.ui.qcco.task.action.FlowCardAction();
+		context.put("flowCardAction", bean);
 		bean.setModel(getManageAppModel());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
-	public nc.ui.qcco.task.action.PayDemandAction getPayDemandAction() {
-		if (context.get("payDemandAction") != null)
-			return (nc.ui.qcco.task.action.PayDemandAction) context.get("payDemandAction");
-		nc.ui.qcco.task.action.PayDemandAction bean = new nc.ui.qcco.task.action.PayDemandAction();
-		context.put("payDemandAction", bean);
+	public nc.ui.qcco.task.action.TaskStatusAction getTaskStatusAction() {
+		if (context.get("taskStatusAction") != null)
+			return (nc.ui.qcco.task.action.TaskStatusAction) context.get("taskStatusAction");
+		nc.ui.qcco.task.action.TaskStatusAction bean = new nc.ui.qcco.task.action.TaskStatusAction();
+		context.put("taskStatusAction", bean);
 		bean.setModel(getManageAppModel());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
 		return bean;
 	}
 
-	public nc.ui.qcco.task.action.OfficialReportAction getOfficialReportAction() {
-		if (context.get("officialReportAction") != null)
-			return (nc.ui.qcco.task.action.OfficialReportAction) context.get("officialReportAction");
-		nc.ui.qcco.task.action.OfficialReportAction bean = new nc.ui.qcco.task.action.OfficialReportAction();
-		context.put("officialReportAction", bean);
-		bean.setModel(getManageAppModel());
-		setBeanFacotryIfBeanFacatoryAware(bean);
-		invokeInitializingBean(bean);
-		return bean;
-	}
-
-	public nc.ui.qcco.task.action.SatisfactionAction getSatisfactionAction() {
-		if (context.get("satisfactionAction") != null)
-			return (nc.ui.qcco.task.action.SatisfactionAction) context.get("satisfactionAction");
-		nc.ui.qcco.task.action.SatisfactionAction bean = new nc.ui.qcco.task.action.SatisfactionAction();
-		context.put("satisfactionAction", bean);
+	public nc.ui.qcco.task.action.SampleProgressAction getSampleProgressAction() {
+		if (context.get("sampleProgressAction") != null)
+			return (nc.ui.qcco.task.action.SampleProgressAction) context.get("sampleProgressAction");
+		nc.ui.qcco.task.action.SampleProgressAction bean = new nc.ui.qcco.task.action.SampleProgressAction();
+		context.put("sampleProgressAction", bean);
 		bean.setModel(getManageAppModel());
 		setBeanFacotryIfBeanFacatoryAware(bean);
 		invokeInitializingBean(bean);
@@ -1705,10 +1698,9 @@ public class Task_config extends AbstractJavaBeanDefinition {
 
 	private List getManagedList23() {
 		List list = new ArrayList();
-		list.add(getQuotationAction());
-		list.add(getPayDemandAction());
-		list.add(getOfficialReportAction());
-		list.add(getSatisfactionAction());
+		list.add(getFlowCardAction());
+		list.add(getTaskStatusAction());
+		list.add(getSampleProgressAction());
 		return list;
 	}
 
