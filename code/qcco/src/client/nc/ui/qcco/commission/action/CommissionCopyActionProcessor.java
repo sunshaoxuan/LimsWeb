@@ -30,10 +30,11 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 	@Override
 	public void processVOAfterCopy(AggCommissionHVO billVO, LoginContext context) {
 		processHeadVO(billVO, context);
-		processBodyVO(billVO);
+		//子表和孙表的关联通过主键,所以在保存的时候在清除
+		/*processBodyVO(billVO);*/
 	}
 
-	private void processBodyVO(AggCommissionHVO billVO) {
+	public static void processBodyVO(AggCommissionHVO billVO) {
 		CircularlyAccessibleValueObject[] childVOs = billVO.getAllChildrenVO();
 
 		if (childVOs != null && childVOs.length > 0) {

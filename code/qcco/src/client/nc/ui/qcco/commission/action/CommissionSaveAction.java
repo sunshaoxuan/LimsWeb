@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import nc.bs.framework.common.NCLocator;
+import nc.bs.logging.Logger;
 import nc.bs.uif2.BusinessExceptionAdapter;
 import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
@@ -264,7 +265,8 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		if (getService() == null) {
 			throw new BusinessException("service不能为空。");
 		}
-
+		//复制保存也会到这里,此时先清除掉子表的主键
+		deal4CopyAdd(lightVOs);
 		afterUpdateVOs = getService().insert(lightVOs);
 		String pk_task_h = createNewTask(afterUpdateVOs);
 		if (pk_task_h != null
@@ -281,6 +283,24 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 
 		getModel().setUiState(UIState.NOT_EDIT);
 		getMainGrandModel().directlyAdd(clientVOs[0]);
+	}
+
+	private void deal4CopyAdd(IBill[] bills) {
+		for (IBill bill : bills) {
+			if (bill != null && bill.getParent() != null) {
+				try {
+					AggCommissionHVO hvo = (AggCommissionHVO)bill;
+					CommissionCopyActionProcessor.processBodyVO(hvo);
+				} catch (Exception e) {
+					Logger.error(e.getMessage());
+				}
+			} else {
+				continue;
+			}
+			
+		}
+		
+		
 	}
 
 	@Override
