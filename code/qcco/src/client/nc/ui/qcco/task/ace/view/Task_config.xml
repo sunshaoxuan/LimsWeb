@@ -582,7 +582,7 @@
 				<ref bean="addAction" />
 				<ref bean="editAction" />
 				<ref bean="deleteAction" />
-				<ref bean="copyAction" />
+				<!-- ef bean="copyAction" /-->
 				<ref bean="separatorAction" />
 				<ref bean="queryAction" />
 				<ref bean="refreshAction" />
@@ -622,7 +622,7 @@
 				<ref bean="addAction" />
 				<ref bean="editAction" />
 				<ref bean="deleteAction" />
-				<ref bean="copyAction" />
+				<!-- ef bean="copyAction" /-->
 				<ref bean="separatorAction" />
 				<ref bean="queryAction" />
 				<ref bean="cardRefreshAction" />

@@ -1281,7 +1281,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 		list.add(getAddAction());
 		list.add(getEditAction());
 		list.add(getDeleteAction());
-		list.add(getCopyAction());
+		// list.add(getCopyAction());
 		list.add(getSeparatorAction());
 		list.add(getQueryAction());
 		list.add(getRefreshAction());
@@ -1327,7 +1327,7 @@ public class Task_config extends AbstractJavaBeanDefinition {
 		list.add(getAddAction());
 		list.add(getEditAction());
 		list.add(getDeleteAction());
-		list.add(getCopyAction());
+		// list.add(getCopyAction());
 		list.add(getSeparatorAction());
 		list.add(getQueryAction());
 		list.add(getCardRefreshAction());

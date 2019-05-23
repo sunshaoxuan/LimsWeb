@@ -510,7 +510,7 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 				projectCateField = new UITextField();
 				projectCateField.setName("projectCateField");
 				projectCateField.setBounds(570, 48, 150, 50);
-				projectCateField.setText(productcate==null?null:productcate.replace(" ", ""));
+				projectCateField.setText(productcate == null ? null : productcate.replace(" ", ""));
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -593,7 +593,7 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 					+ "on trim(c.nc_task_addname) = trim(NC_TASK_ADDUNION.nc_task_name) WHERE 1=1 ";
 			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("projectType")
 					&& conditionmaps.get("projectType") != "") {
-				sql += "and nc_task_type like '" + conditionmaps.get("projectType") + "'";
+				sql += "and nc_task_type like '%" + conditionmaps.get("projectType") + "%'";
 			}
 
 			if (null != conditionmaps && conditionmaps.size() > 0 && null != conditionmaps.get("scope")
@@ -770,8 +770,8 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 
 			if (ss == null) {
 				Map<String, String> conditionmaps = new HashMap<>();
-				conditionmaps.put("productcate", productcate ==null?null:productcate.replace(" ", ""));
-				conditionmaps.put("productstard", productstard == null?null:productstard.replace(" ", ""));
+				conditionmaps.put("productcate", productcate == null ? null : productcate.replace(" ", ""));
+				conditionmaps.put("productstard", productstard == null ? null : productstard.replace(" ", ""));
 				List<TaskBodyVO> taskvos = getListbody(conditionmaps);
 				ss = taskvos.toArray(new TaskBodyVO[0]);
 			}

@@ -29,6 +29,7 @@ import nc.md.persist.framework.IMDPersistenceQueryService;
 import nc.md.persist.framework.IMDPersistenceService;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.IVOMeta;
 import nc.vo.pub.SuperVO;
@@ -113,14 +114,14 @@ public abstract class AceCommissionPubServiceImpl {
 					"pk_commission_h in(" + commissionInSQL + ")");
 			if (lists.size() > 0) {
 				for (AggCommissionHVO vo : vos) {
-					SuperVO[] bvos = (SuperVO[]) vo.getChildrenVO();
+					CircularlyAccessibleValueObject[] bvos = (CircularlyAccessibleValueObject[]) vo.getChildrenVO();
 					for (CommissionHVO hvo : lists) {
 						vo.getParentVO().setTs(hvo.getTs());
 						if (null != hvo.getAttributeValue("pk_commission_h")
 								&& vo.getParentVO().getAttributeValue("pk_commission_h") != null
 								&& hvo.getAttributeValue("pk_commission_h").equals(
 										vo.getParentVO().getAttributeValue("pk_commission_h"))) {
-							for (SuperVO bvo : bvos) {
+							for (CircularlyAccessibleValueObject bvo : bvos) {
 								((CommissionBVO) bvo).setTs(hvo.getTs());
 								CommissionRVO[] rvos = ((CommissionBVO) bvo).getPk_commission_r();
 								if (null != rvos) {

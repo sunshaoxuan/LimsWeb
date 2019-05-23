@@ -679,6 +679,10 @@
 		<property name="model" ref="bmModel" />
 		<property name="interceptor" ref="showCardInterceptor" />
 		<property name="editor" ref="billForm" />
+		<property name="copyActionProcessor">
+			<bean
+				class="nc.ui.qcco.commission.action.CommissionCopyActionProcessor"></bean>
+		</property>
 	</bean>
 
 	<!--  ²éÑ¯°´Å¥ 

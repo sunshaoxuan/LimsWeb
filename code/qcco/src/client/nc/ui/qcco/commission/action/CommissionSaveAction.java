@@ -139,10 +139,14 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		if (null != typeName) {
 			changeTemplet(typeName, this.billFormEditor.getBillCardPanel());
 		}
+
 		// 由变更状态返回时设置状态
-		((MainSubBillModel) this.getModel()).setChangeStatus(false);
-		((MainSubBillModel) this.getModel()).resetBillFormEnableState();
+		if (((MainSubBillModel) this.getModel()).isChangeStatus()) {
+			((MainSubBillModel) this.getModel()).setChangeStatus(false);
+			((MainSubBillModel) this.getModel()).resetBillFormEnableState();
+		}
 		//
+
 		billForm.showMeUp();
 		showSuccessInfo();
 	}
