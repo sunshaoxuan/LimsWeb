@@ -810,13 +810,14 @@ public class MainGrandAssist {
         // 处理界面删除的带有PK的孙表VO
         for (CircularlyAccessibleValueObject lastDeleteGrandVo : lastDeleteGrandVos) {
             try {
-                if (lastDeleteGrandVo.getPrimaryKey() != null) {
+            	lastDeleteGrandVo.getAttributeValue("precolumn");
+                //if (lastDeleteGrandVo.getPrimaryKey() != null) {
                     if (lastDeleteGrandVo.getStatus() == VOStatus.DELETED) {
                         lastDelGrandVosList.add(lastDeleteGrandVo);
                     }
-                }
+                //}
             }
-            catch (BusinessException e) {
+            catch (Exception e) {
                 Logger.error(e.getMessage(), e);
             }
         }
