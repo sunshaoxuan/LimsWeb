@@ -1,6 +1,7 @@
 package nc.ui.qcco.task.action;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,6 +9,7 @@ import java.util.Vector;
 
 import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
+import nc.hr.utils.InSQLCreator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.beans.MessageDialog;
@@ -22,6 +24,7 @@ import nc.vo.pub.lang.UFBoolean;
 import nc.vo.qcco.task.TaskHBodyVO;
 
 import org.apache.commons.lang.StringUtils;
+import org.docx4j.docProps.variantTypes.Array;
 
 public class TaskBodyAddLineAction extends BodyAddLineAction {
 	private ShowUpableBillForm grandCard;
@@ -197,6 +200,24 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 			// for (TaskHBodyVO taskHBodyVO:pklists) {
 			if (taskHBodyVO.getTestlistName().equals("_NA")) {
+				//select TRIM(NC_TASK_ADDNAME) NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"taskHBodyVO.getUnique() + "'""
+				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS
+						.executeQuery("select TRIM(NC_TASK_ADDNAME) NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"+taskHBodyVO.getUnique() + "'", new MapListProcessor());
+				List<String> strlist = new ArrayList();
+				if(null != custlists && custlists.size()>0){
+					for (Map<String, String> map : custlists) {
+						if (map.get("nc_task_addname")!=null 
+								&& map.get("nc_task_addname").toString().substring(map.get("nc_task_addname").toString().length()-2, map.get("nc_task_addname").toString().length()).equals("_A")) {
+							String newVlaue = map.get("nc_task_addname").toString().substring(0, map.get("nc_task_addname").toString().length()-2);
+							strlist.add(newVlaue);
+						}else if (map.get("nc_task_addname")!=null && map.get("nc_task_addname").toString().substring(map.get("nc_task_addname").toString().length()-1, map.get("nc_task_addname").toString().length()).equals("A")) {
+							String newVlaue = map.get("nc_task_addname").toString().substring(0, map.get("nc_task_addname").toString().length()-1);
+							strlist.add(newVlaue);
+						}
+					}
+				}
+				InSQLCreator insql = new InSQLCreator();
+				String string = insql.getInSQL((strlist==null || strlist.size() <=0)?null:strlist.toArray(new String[0]));
 				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
 								"select  cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
@@ -205,9 +226,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										+ " left join NC_UNITS_TYPE "
 										+ " on cmp.pk_units_type=NC_UNITS_TYPE.pk_units_type left join NC_RESULT_TYPE "
 										+ " on NC_RESULT_TYPE.pk_result_type=cmp.pk_result_type where analysis in"
-										+ " (select TRIM(NC_TASK_ADDNAME) "
-										+ "NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"
-										+ taskHBodyVO.getUnique() + "') ", new MapListProcessor());
+										+ " ("+string+") ", new MapListProcessor());
 				if (custlist != null && custlist.size() > 0) {
 					for (Map<String, String> map : custlist) {
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_s").addLine();
