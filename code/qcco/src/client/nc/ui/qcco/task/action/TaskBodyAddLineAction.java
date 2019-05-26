@@ -27,7 +27,6 @@ import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.task.TaskHBodyVO;
 
 import org.apache.commons.lang.StringUtils;
-import org.docx4j.docProps.variantTypes.Array;
 
 public class TaskBodyAddLineAction extends BodyAddLineAction {
 	private ShowUpableBillForm grandCard;
@@ -103,8 +102,8 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 						rowno = this.getCardPanel().getRowCount();
 					}
 					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b")
-							.delLine(new int[] { rowno-1 });
-				}else if(pklists != null && pklists.size() == 1) {
+							.delLine(new int[] { rowno - 1 });
+				} else if (pklists != null && pklists.size() == 1) {
 					super.doAction();
 					/*
 					 * super.getCardPanel().setBodyValueAt(String.valueOf(super
@@ -113,29 +112,26 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 					 */
 					/*
 					 * super.getCardPanel().setBodyValueAt(super.getCardPanel
-					 * ().getRowCount(), this.getCardPanel().getRowCount() -
-					 * 1, "taskcode");
+					 * ().getRowCount(), this.getCardPanel().getRowCount() - 1,
+					 * "taskcode");
 					 */
 
-					
-						super.getCardPanel().setBodyValueAt(pklists.get(0).getReportName(),
-								this.getCardPanel().getRowCount() - 1, "testitem");
-						super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultname(),
-								this.getCardPanel().getRowCount() - 1, "standardclause");
-						super.getCardPanel().setBodyValueAt(pklists.get(0).getProjectName(),
-								this.getCardPanel().getRowCount() - 1, "pk_testresultname");
-						super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultshortname(),
-								this.getCardPanel().getRowCount() - 1, "testresultshortname");
-						super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
-								this.getCardPanel().getRowCount() - 1, "runorder");
+					super.getCardPanel().setBodyValueAt(pklists.get(0).getReportName(),
+							this.getCardPanel().getRowCount() - 1, "testitem");
+					super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultname(),
+							this.getCardPanel().getRowCount() - 1, "standardclause");
+					super.getCardPanel().setBodyValueAt(pklists.get(0).getProjectName(),
+							this.getCardPanel().getRowCount() - 1, "pk_testresultname");
+					super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultshortname(),
+							this.getCardPanel().getRowCount() - 1, "testresultshortname");
+					super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
+							this.getCardPanel().getRowCount() - 1, "runorder");
 
-						super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1,
-								"pk_task_h");
+					super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1, "pk_task_h");
 
-						// 生成孙表测试条件
-						insertTestCondition(pklists.get(0), reportType);
+					// 生成孙表测试条件
+					insertTestCondition(pklists.get(0), reportType);
 
-					
 				}
 			}
 		} catch (DAOException e) {
@@ -235,34 +231,47 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 			// for (TaskHBodyVO taskHBodyVO:pklists) {
 			if (taskHBodyVO.getTestlistName().equals("_NA")) {
-				//select TRIM(NC_TASK_ADDNAME) NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"taskHBodyVO.getUnique() + "'""
-				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS
-						.executeQuery("select TRIM(NC_TASK_ADDNAME) NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"+taskHBodyVO.getUnique() + "'", new MapListProcessor());
+				// select TRIM(NC_TASK_ADDNAME) NC_TASK_ADDNAME from
+				// nc_task_addunion where pk_task_addunion
+				// ='"taskHBodyVO.getUnique() + "'""
+				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS.executeQuery(
+						"select TRIM(NC_TASK_ADDNAME) NC_TASK_ADDNAME from nc_task_addunion where pk_task_addunion ='"
+								+ taskHBodyVO.getUnique() + "'", new MapListProcessor());
 				List<String> strlist = new ArrayList();
-				if(null != custlists && custlists.size()>0){
+				if (null != custlists && custlists.size() > 0) {
 					for (Map<String, String> map : custlists) {
-						if (map.get("nc_task_addname")!=null 
-								&& map.get("nc_task_addname").toString().substring(map.get("nc_task_addname").toString().length()-2, map.get("nc_task_addname").toString().length()).equals("_A")) {
-							String newVlaue = map.get("nc_task_addname").toString().substring(0, map.get("nc_task_addname").toString().length()-2);
+						if (map.get("nc_task_addname") != null
+								&& map.get("nc_task_addname")
+										.toString()
+										.substring(map.get("nc_task_addname").toString().length() - 2,
+												map.get("nc_task_addname").toString().length()).equals("_A")) {
+							String newVlaue = map.get("nc_task_addname").toString()
+									.substring(0, map.get("nc_task_addname").toString().length() - 2);
 							strlist.add(newVlaue);
-						}else if (map.get("nc_task_addname")!=null && map.get("nc_task_addname").toString().substring(map.get("nc_task_addname").toString().length()-1, map.get("nc_task_addname").toString().length()).equals("A")) {
-							String newVlaue = map.get("nc_task_addname").toString().substring(0, map.get("nc_task_addname").toString().length()-1);
+						} else if (map.get("nc_task_addname") != null
+								&& map.get("nc_task_addname")
+										.toString()
+										.substring(map.get("nc_task_addname").toString().length() - 1,
+												map.get("nc_task_addname").toString().length()).equals("A")) {
+							String newVlaue = map.get("nc_task_addname").toString()
+									.substring(0, map.get("nc_task_addname").toString().length() - 1);
 							strlist.add(newVlaue);
 						}
 					}
 				}
 				InSQLCreator insql = new InSQLCreator();
-				String string = insql.getInSQL((strlist==null || strlist.size() <=0)?null:strlist.toArray(new String[0]));
+				String string = insql.getInSQL((strlist == null || strlist.size() <= 0) ? null : strlist
+						.toArray(new String[0]));
 				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
 								"select trim(ana.name) as ananame,trim(cmp.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,"
-								+ " cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
+										+ " cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
 										+ "cmp.MAXIMUM,cmp.C_EN_DEFAULT_Value,ana.INSTRUMENT, cmp.pk_list_table from nc_component_table cmp "
 										+ "inner join analysis ana on cmp.analysis = ana.name"
 										+ " left join NC_UNITS_TYPE "
 										+ " on cmp.pk_units_type=NC_UNITS_TYPE.pk_units_type left join NC_RESULT_TYPE "
 										+ " on NC_RESULT_TYPE.pk_result_type=cmp.pk_result_type where analysis in"
-										+ " ("+string+") ", new MapListProcessor());
+										+ " (" + string + ") ", new MapListProcessor());
 				if (custlist != null && custlist.size() > 0) {
 					for (Map<String, String> map : custlist) {
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_s").addLine();
@@ -289,17 +298,20 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							} else if (refValue.getKey().equals("nc_result_namecn")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("nc_result_namecn"), row, "valuetype", "pk_task_s");
-							}else if (refValue.getKey().equals("nc_result_code")) {
-								//格式化值
-								if(map.get("nc_result_code")!=null && map.get("nc_result_code").equals("6")){
-									String formatValue = getFormatValue(map.get("ananame"),map.get("nc_component_name"),custlist);
-									if(formatValue != null){
+							} else if (refValue.getKey().equals("nc_result_code")) {
+								// 格式化值
+								if (map.get("nc_result_code") != null && map.get("nc_result_code").equals("6")) {
+									String formatValue = getFormatValue(map.get("ananame"),
+											map.get("nc_component_name"), custlist);
+									if (formatValue != null) {
 										UFDouble code = Calculator.evalExp(formatValue);
-										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(String.valueOf(code), row, "formatted_entry", "pk_task_s");
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(String.valueOf(code), row, "formatted_entry",
+														"pk_task_s");
 									}
 								}
-					}  else if (refValue.getKey().equals("units")) {
+							} else if (refValue.getKey().equals("units")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("units"), row, "unit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_defvalue_value")) {
@@ -352,7 +364,12 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								} else {
 									this.getGrandCard().getBillCardPanel()
 											.setBodyValueAt(2, row, "valueways", "pk_task_s");
-									this.getGrandCard().getBillCardPanel().setBodyValueAt(map.get("pk_list_table"), row, "pk_value_type", "pk_task_s");
+									this.getGrandCard()
+											.getBillCardPanel()
+											.setBodyValueAt(map.get("pk_list_table"), row, "pk_value_type", "pk_task_s");
+									this.getGrandCard()
+											.getBillCardPanel()
+											.setBodyValueAt(map.get("pk_list_table"), row, "pk_list_table", "pk_task_s");
 									// 参照值
 									String refvalue = getRefValue(map.get("pk_list_table"), reportType);
 									this.getGrandCard().getBillCardPanel()
@@ -416,17 +433,20 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							} else if (refValue.getKey().equals("pk_result_type")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("pk_result_type"), row, "pk_valuetype", "pk_task_s");
-							}else if (refValue.getKey().equals("nc_result_code")) {
-								//格式化值
-								if(map.get("nc_result_code")!=null && map.get("nc_result_code").equals("6")){
-									String formatValue = getFormatValue(map.get("ananame"),map.get("nc_component_name"),custlists);
-									if(formatValue != null){
+							} else if (refValue.getKey().equals("nc_result_code")) {
+								// 格式化值
+								if (map.get("nc_result_code") != null && map.get("nc_result_code").equals("6")) {
+									String formatValue = getFormatValue(map.get("ananame"),
+											map.get("nc_component_name"), custlists);
+									if (formatValue != null) {
 										UFDouble code = Calculator.evalExp(formatValue);
-										this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(String.valueOf(code), row, "formatted_entry", "pk_task_s");
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(String.valueOf(code), row, "formatted_entry",
+														"pk_task_s");
 									}
 								}
-					} else if (refValue.getKey().equals("pk_list_table")) {
+							} else if (refValue.getKey().equals("pk_list_table")) {
 								if (map.get("pk_list_table") == null) {
 									if (map.get("c_en_default_value") == null || map.get("c_default_value") == null) {
 										this.getGrandCard().getBillCardPanel()
@@ -511,67 +531,65 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 	private String getFormatValue(String name, String nc_component_name, List<Map<String, String>> custlist) {
 		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 		try {
-			//获取公式
-			List<Map<String, String>> formats = (List<Map<String, String>>) iUAPQueryBS
-					.executeQuery(
-							"select cast(source_code as varchar(1000)) AS calc from calculation "
-							+ "where trim(analysis)='"+name+"' and trim(component) ='"+nc_component_name+"'", new MapListProcessor());
-			if(null == formats || formats.size() <= 0 ){
+			// 获取公式
+			List<Map<String, String>> formats = (List<Map<String, String>>) iUAPQueryBS.executeQuery(
+					"select cast(source_code as varchar(1000)) AS calc from calculation " + "where trim(analysis)='"
+							+ name + "' and trim(component) ='" + nc_component_name + "'", new MapListProcessor());
+			if (null == formats || formats.size() <= 0) {
 				return null;
 			}
 			String calc = null;
 			for (Map<String, String> map : formats) {
 				calc = map.get("calc");
-				if(null == calc){
+				if (null == calc) {
 					return null;
 				}
-				//String string = calc.toString().split("return")[0];
+				// String string = calc.toString().split("return")[0];
 				String[] strings = calc.toString().split("\n");
-				
-				String str1=null;
-				String str2= null; 
+
+				String str1 = null;
+				String str2 = null;
 				for (String string : strings) {
-					if(!string.contains("return")){
+					if (!string.toUpperCase().contains("RETURN")) {
 						String[] str = string.split("=");
-						if(str1 != null && str[1].contains(str1)){
-							calc = str[1].replace(str1, "("+str2+")");
-						}else {
+						if (str1 != null && str[1].contains(str1)) {
+							calc = str[1].replace(str1, "(" + str2 + ")");
+						} else {
 							calc = str[1];
 						}
 						str1 = str[0];
 						str2 = str[1];
 					}
 				}
-				
+
 			}
-			
-			//获取条件项
-			List<Map<String, String>> items = (List<Map<String, String>>) iUAPQueryBS
-					.executeQuery(
-							"select name,attribute_1 as item from calc_variables "
-							+ "where trim(analysis)='"+name+"' and trim(component) ='"+nc_component_name+"'", new MapListProcessor());
-			if(null == items || items.size()<=0){
+
+			// 获取条件项
+			List<Map<String, String>> items = (List<Map<String, String>>) iUAPQueryBS.executeQuery(
+					"select name,attribute_1 as item from calc_variables " + "where trim(analysis)='" + name
+							+ "' and trim(component) ='" + nc_component_name + "'", new MapListProcessor());
+			if (null == items || items.size() <= 0) {
 				return null;
 			}
-			Map<String,String> strmap = new HashMap<String, String>();
+			Map<String, String> strmap = new HashMap<String, String>();
 			for (Map<String, String> map : items) {
 				for (Map<String, String> maps : custlist) {
-					if(map.get("item")!=null && map.get("item").equals(maps.get("name"))){
-						if(maps.get("pk_list_table")==null){
-							//文本值
+					if (map.get("item") != null && map.get("item").equals(maps.get("name"))) {
+						if (maps.get("pk_list_table") == null) {
+							// 文本值
 							strmap.put(map.get("name"), maps.get("c_default_value"));
-						}else{
-							//参照值
-							strmap.put(map.get("name"), getRefValue(maps.get("pk_list_table"),"2"));
+						} else {
+							// 参照值
+							strmap.put(map.get("name"), getRefValue(maps.get("pk_list_table"), "2"));
 						}
 					}
 				}
 				map.get("name");
 			}
-			
+
 			for (String str : strmap.keySet()) {
-				if(calc != null && calc.contains(str)){
-					calc = calc.replace(str, strmap.get(str)==null?"0":strmap.get(str));
+				if (calc != null && calc.contains(str)) {
+					calc = calc.replace(str, strmap.get(str) == null ? "0" : strmap.get(str));
 				}
 			}
 			return calc;

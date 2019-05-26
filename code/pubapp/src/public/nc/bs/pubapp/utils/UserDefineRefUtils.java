@@ -94,7 +94,7 @@ public class UserDefineRefUtils {
 	public static void refreshBillCardGrandDefRefs(BillForm grandBillForm, String tabCode, List<Object> grandVOList) {
 		int row = grandBillForm.getBillCardPanel().getBillModel().getRowCount();
 		for (Object obj : grandVOList) {
-			String rowno =  (String) ((SuperVO) obj).getAttributeValue("rowno");
+			String rowno = (String) ((SuperVO) obj).getAttributeValue("rowno");
 		}
 		for (int i = 0; i < row; i++) {
 			CircularlyAccessibleValueObject vo = grandBillForm.getBillCardPanel().getBillModel()
@@ -113,8 +113,8 @@ public class UserDefineRefUtils {
 						UserDefineRefUtils.refreshItemRefValue(superVO,
 								grandBillForm.getBillCardPanel().getBillTable(tabCode), i, billItem, true);
 					}
-				}else {
-					//因为任务单的孙表都无primaryKey，因此走以下方法，如影响其他功能，则可，单独判断测试条件和试验后参数孙表。
+				} else {
+					// 因为任务单的孙表都无primaryKey，因此走以下方法，如影响其他功能，则可，单独判断测试条件和试验后参数孙表。
 					SuperVO superVO = (SuperVO) grandVOList.get(i);
 					for (BillItem billItem : grandBillForm.getBillCardPanel().getBillModel().getBodyItems()) {
 
@@ -167,10 +167,10 @@ public class UserDefineRefUtils {
 	}
 
 	public static void refreshBillListGrandDefRefs(BillListView grandListView, List<Object> grandVOList) {
-		int row = grandListView.getBillListPanel().getBodyBillModel().getRowCount();
-		for (int i = 0; i < row; i++) {
+		int row = grandListView.getBillListPanel().getBodyBillModel().getRowCount() - 1;
+		for (int i = 0; i <= row; i++) {
 			CircularlyAccessibleValueObject vo = grandListView.getBillListPanel().getBodyBillModel()
-			.getBodyValueRowVO(row, grandVOList.get(0).getClass().getName());
+					.getBodyValueRowVO(row, grandVOList.get(0).getClass().getName());
 			try {
 				SuperVO superVO = (SuperVO) getSuperVOByPK(grandVOList, vo.getPrimaryKey());
 				for (BillItem billItem : grandListView.getBillListPanel().getBodyBillModel().getBodyItems()) {

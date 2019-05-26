@@ -80,6 +80,11 @@ public class TaskSVO extends SuperVO {
 	 * 英文說明
 	 */
 	public String englishdescription;
+
+	/**
+	 * 参照类型
+	 */
+	public String pk_list_table;
 	/**
 	 * 上層單據主鍵
 	 */
@@ -88,15 +93,16 @@ public class TaskSVO extends SuperVO {
 	 * 時間戳
 	 */
 	public UFDateTime ts;
-    public Integer Dr;
+	public Integer Dr;
 
-    public Integer getDr() {
-        return Dr;
-    }
+	public Integer getDr() {
+		return Dr;
+	}
 
-    public void setDr(Integer dr) {
-        Dr = dr;
-    }
+	public void setDr(Integer dr) {
+		Dr = dr;
+	}
+
 	/**
 	 * 屬性 pk_task_s的Getter方法.屬性名：測試條件主鍵 創建日期:2019/5/18
 	 * 
@@ -424,9 +430,18 @@ public class TaskSVO extends SuperVO {
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("qcco.task_s");
 	}
-    @Override
-    public String getParentPKFieldName() {
-        // TODO Auto-generated method stub
-        return "pk_task_b";
-    }
+
+	@Override
+	public String getParentPKFieldName() {
+		// TODO Auto-generated method stub
+		return "pk_task_b";
+	}
+
+	public String getPk_list_table() {
+		return pk_list_table;
+	}
+
+	public void setPk_list_table(String pk_list_table) {
+		this.pk_list_table = pk_list_table;
+	}
 }
