@@ -21,6 +21,7 @@ import nc.ui.qcco.task.view.SunlistPanel;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFBoolean;
+import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.task.TaskHBodyVO;
 
 import org.apache.commons.lang.StringUtils;
@@ -265,13 +266,13 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								this.getGrandCard()
 										.getBillCardPanel()
 										.setBodyValueAt(
-												Integer.parseInt(map.get("minimum") == null ? "0" : map.get("minimum")),
+												new UFDouble(map.get("minimum") == null ? "0" : map.get("minimum")),
 												row, "min_limit", "pk_task_s");
 							} else if (refValue.getKey().equals("maximum")) {
 								this.getGrandCard()
 										.getBillCardPanel()
 										.setBodyValueAt(
-												Integer.parseInt(map.get("maximum") == null ? "0" : map.get("maximum")),
+												new UFDouble(map.get("maximum") == null ? "0" : map.get("maximum")),
 												row, "max_limit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_en_default_value")) {
 								this.getGrandCard()
@@ -306,6 +307,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								} else {
 									this.getGrandCard().getBillCardPanel()
 											.setBodyValueAt(2, row, "valueways", "pk_task_s");
+									this.getGrandCard().getBillCardPanel().setBodyValueAt(map.get("pk_list_table"), row, "pk_value_type", "pk_task_s");
 									// ≤Œ’’÷µ
 									String refvalue = getRefValue(map.get("pk_list_table"), reportType);
 									this.getGrandCard().getBillCardPanel()
