@@ -8,6 +8,7 @@ import javax.swing.KeyStroke;
 
 import nc.bs.uif2.validation.IValidationService;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
+import nc.ui.pubapp.uif2app.actions.RefreshSingleAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
@@ -30,6 +31,16 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction {
 	private MainGrandModel mainGrandModel;
 	private CardGrandPanelComposite billForm;
 	private ShowUpableBillForm billFormEditor;
+	
+	private RefreshSingleAction refresh;
+
+	public RefreshSingleAction getRefresh() {
+		return refresh;
+	}
+
+	public void setRefresh(RefreshSingleAction refresh) {
+		this.refresh = refresh;
+	}
 
 	// private IDataOperationService service;
 
@@ -81,7 +92,7 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction {
 			doEditSave(agghvo);
 			this.getMainGrandModel().clearBufferData();
 		}
-
+		refresh.doAction(e);
 		showSuccessInfo();
 	}
 

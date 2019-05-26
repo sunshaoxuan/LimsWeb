@@ -66,8 +66,10 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			try {
 				if (!this.getGrandCard().getBillCardPanel().getBodyTabbedPane().getSelectedTableCode()
 						.equals("pk_task_r")) {
-					MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "提示", "请将孙表切换到试验后参数页签");
-					return;
+					//MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "提示", "请将孙表切换到试验后参数页签");
+					this.getGrandCard().getBillCardPanel().getBodyTabbedPane().setSelectedIndex(1);
+					//getGrandCard().getBillCardPanel().getTabbedPane(1).setSelectedIndex(1);
+					//return;
 				}
 				String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 				if (null == pk_commission_h) {

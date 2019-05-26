@@ -99,6 +99,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 	public void doAction(ActionEvent e) throws Exception {
 		this.billFormEditor.getBillCardPanel().stopEditing();
 		AggCommissionHVO agghvo = (AggCommissionHVO) this.getBillForm().getValue();
+		AggCommissionHVO agghvo2 = (AggCommissionHVO) getModel().getSelectedData();
 		if (null == agghvo) {
 			return;
 		}

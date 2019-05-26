@@ -816,7 +816,7 @@ public class MainGrandAssist {
                         lastDelGrandVosList.add(lastDeleteGrandVo);
                     }
                 //}
-            }
+                }
             catch (Exception e) {
                 Logger.error(e.getMessage(), e);
             }

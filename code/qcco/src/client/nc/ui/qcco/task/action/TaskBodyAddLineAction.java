@@ -53,8 +53,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		try {
 			String tablecode = this.getGrandCard().getBillCardPanel().getBodyPanel().getTableCode();
 			if (!tablecode.equals("pk_task_s")) {
-				MessageDialog.showErrorDlg(this.getCardPanel(), "提示", "请将孙表切换到详细测试条件页签！");
-				return;
+				/*MessageDialog.showErrorDlg(this.getCardPanel(), "提示", "请将孙表切换到详细测试条件页签！");
+				return;*/
+				this.getGrandCard().getBillCardPanel().getBodyTabbedPane().setSelectedIndex(0);
+				//getGrandCard().getBillCardPanel().getTabbedPane(0).setSelectedIndex(1);
 			}
 			String pk_commission_h = super.getCardPanel().getHeadItem("pk_commission_h").getValue();
 			String pk_task_h = super.getCardPanel().getHeadItem("pk_task_h").getValue();
@@ -95,7 +97,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 							// 生成孙表测试条件
 							insertTestCondition(pklists.get(i), reportType);
-
+							
 						}
 						rowno = this.getCardPanel().getRowCount();
 					}
@@ -206,7 +208,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				List<String> strlist = new ArrayList();
 				if(null != custlists && custlists.size()>0){
 					for (Map<String, String> map : custlists) {
-						if (map.get("nc_task_addname")!=null 
+						if (map.get("nc_task_addname")!=null
 								&& map.get("nc_task_addname").toString().substring(map.get("nc_task_addname").toString().length()-2, map.get("nc_task_addname").toString().length()).equals("_A")) {
 							String newVlaue = map.get("nc_task_addname").toString().substring(0, map.get("nc_task_addname").toString().length()-2);
 							strlist.add(newVlaue);

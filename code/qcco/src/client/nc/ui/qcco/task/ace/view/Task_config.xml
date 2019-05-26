@@ -711,6 +711,7 @@
 		<property name="billFormEditor" ref="billFormEditor" />
 		<property name="billForm" ref="MainGrandbillFormEditor" />
 		<property name="validationService" ref="validateService" />
+		<property name="refresh" ref="cardRefreshAction"/>
 		
 		<property name="exceptionHandler"><ref bean="exceptionHandler" /></property>
 	</bean>
