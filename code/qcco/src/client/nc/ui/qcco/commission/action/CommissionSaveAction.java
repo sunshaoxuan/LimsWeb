@@ -99,7 +99,6 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 	public void doAction(ActionEvent e) throws Exception {
 		this.billFormEditor.getBillCardPanel().stopEditing();
 		AggCommissionHVO agghvo = (AggCommissionHVO) this.getBillForm().getValue();
-		AggCommissionHVO agghvo2 = (AggCommissionHVO) getModel().getSelectedData();
 		if (null == agghvo) {
 			return;
 		}
@@ -144,7 +143,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 
 		// 由变更状态返回时设置状态
 		if (((MainSubBillModel) this.getModel()).isChangeStatus()) {
-			((MainSubBillModel) this.getModel()).setChangeStatus(false);
+			//((MainSubBillModel) this.getModel()).setChangeStatus(false);
 			((MainSubBillModel) this.getModel()).resetBillFormEnableState();
 		}
 		//
@@ -318,18 +317,26 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		IBill[] afterUpdateVOs = null;
 
 		String pk_task_h = null;
-
+		boolean isChangeStatus = ((MainSubBillModel) this.getModel()).isChangeStatus();
 		if (getService() == null) {
 			throw new BusinessException("service不能为空。");
 		}
-		if (MessageDialog.ID_YES == MessageDialog.showYesNoDlg(billFormEditor.getBillCardPanel(), "注意!",
-				"修改委托单会删除已有的任务单,并生成新任务单,是否继续?")) {
-			deleteOldTask(lightVOs);
+		if(isChangeStatus){
+			//变更的时候,只更新任务单,不更新任务单(只更新任务单的引用)
 			afterUpdateVOs = getService().update(lightVOs);
-			pk_task_h = createNewTask(afterUpdateVOs);
-		} else {
-			return;
+			//更新引用,不重建数据
+			updateNewTask(afterUpdateVOs,lightVOs);
+		}else{
+			if (MessageDialog.ID_YES == MessageDialog.showYesNoDlg(billFormEditor.getBillCardPanel(), "注意!",
+					"修改委托单会删除已有的任务单,并生成新任务单,是否继续?")) {
+				deleteOldTask(lightVOs);
+				afterUpdateVOs = getService().update(lightVOs);
+				pk_task_h = createNewTask(afterUpdateVOs);
+			} else {
+				return;
+			}
 		}
+		
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
 		getModel().setUiState(UIState.NOT_EDIT);
@@ -350,6 +357,57 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 			SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
 			/* SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data); */
 		}
+	}
+	/**
+	 * 更新任务单的引用,因为委托单修改的时候会删除原有的单据而重新生成
+	 * @param bills
+	 * @throws BusinessException 
+	 */
+	private void updateNewTask(IBill[] bills,IBill[] oldBills) throws BusinessException {
+		if (bills == null || bills.length <= 0 ||oldBills== null || oldBills.length<=0) {
+			return ;
+		}
+		//委托单号->委托单旧pk
+		Map<String,String> no2PkMap = new HashMap(); 
+		//先整理一下旧vo
+		for(IBill bill : oldBills){
+			CommissionHVO commissionHVO = null;
+			if (bill != null && bill.getParent() != null) {
+				try {
+					commissionHVO = (CommissionHVO) (bill.getParent());
+					no2PkMap.put(commissionHVO.getBillno(), commissionHVO.getPk_commission_h());
+				} catch (Exception e) {
+					commissionHVO = null;
+				}
+			} else {
+				continue;
+			}
+			if (null == commissionHVO) {
+				throw new BusinessException("未找到委托单主表消息!");
+			}
+		}
+		
+		for (IBill bill : bills) {
+			CommissionHVO commissionHVO = null;
+			if (bill != null && bill.getParent() != null) {
+				try {
+					commissionHVO = (CommissionHVO) (bill.getParent());
+				} catch (Exception e) {
+					commissionHVO = null;
+				}
+			} else {
+				continue;
+			}
+			if (null == commissionHVO) {
+				throw new BusinessException("未找到委托单主表消息!");
+			}
+			ITaskMaintain ITaskMaintain = (ITaskMaintain) NCLocator.getInstance().lookup(ITaskMaintain.class);
+
+			ITaskMaintain.updateCommissionReference(commissionHVO.getPk_commission_h(),no2PkMap.get(commissionHVO.getBillno()));
+			
+		}
+		
+		
 	}
 
 	private void deleteOldTask(IBill[] bills) throws BusinessException {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
+import nc.bs.dao.DAOException;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
 import nc.ui.querytemplate.querytree.IQueryScheme;
@@ -143,6 +144,13 @@ private BaseDAO dao = null;
 	@Override
 	public void writeBackLims(AggTaskHVO aggvo) throws BusinessException {
 		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateCommissionReference(String pk_commission_h,String old_pk_commission_h) throws BusinessException {
+		String sql = "update qc_task_h set pk_commission_h = '"+pk_commission_h
+				+"' where pk_commission_h = '"+old_pk_commission_h+"'";
+		getDao().executeUpdate(sql);
 		
 	}
 
