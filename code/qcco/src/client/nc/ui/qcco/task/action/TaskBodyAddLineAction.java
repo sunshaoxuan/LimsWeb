@@ -111,7 +111,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			e.printStackTrace();
 		}
 		// Éú³É±àºÅ
-		//doSortAndReCode();
+		doSortAndReCode();
 	}
 
 	private String getReportType(String pk_commission_h) {
