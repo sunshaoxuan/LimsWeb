@@ -22,6 +22,7 @@ public void handleAppEvent(CardBodyBeforeEditEvent e) {
 	String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 		if ("textvalue".equals(e.getKey())) {
 			Integer valueways =e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways")== null ?null: (Integer) e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
+			e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_valuetype");
 			if(null == valueways){
 				MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "错误", "取值方式不能为空。"); 
 				e.setReturnValue(true);
@@ -31,11 +32,23 @@ public void handleAppEvent(CardBodyBeforeEditEvent e) {
 				e.setReturnValue(true);
 				return;
 			}else if (valueways == 2) {
-				e.setReturnValue(false);
-				return;
+				if("1ECB651A37664C76B6C9".equals(e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_valuetype"))){
+					e.setReturnValue(true);
+					return;
+				}else {
+					
+					e.setReturnValue(false);
+					return;
+				}
 			}else  {
-				e.setReturnValue(false);
-				return;
+				if("1ECB651A37664C76B6C9".equals(e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_valuetype"))){
+					e.setReturnValue(true);
+					return;
+				}else {
+					
+					e.setReturnValue(false);
+					return;
+				}
 			}
 			
 		}
@@ -51,9 +64,9 @@ public void handleAppEvent(CardBodyBeforeEditEvent e) {
 				return;
 			}else if (valueways ==2) {
 				e.setReturnValue(true);
-				
+				String pk_list_table = e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_list_table") ==null?null:(String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_list_table");
 				try {
-					RefValuePanel refValuePanel = new RefValuePanel(pk_commission_h);
+					RefValuePanel refValuePanel = new RefValuePanel(pk_commission_h,pk_list_table);
 					if (refValuePanel.showModal() == 1) {
 						String strvalue = refValuePanel.getSelectedstr();
 						e.getBillCardPanel()
