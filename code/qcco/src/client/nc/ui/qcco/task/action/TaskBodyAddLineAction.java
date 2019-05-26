@@ -65,7 +65,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			SunlistPanel sunlistPanel = new SunlistPanel(pk_commission_h);
 			if (sunlistPanel.showModal() == 1) {
 				pklists = sunlistPanel.getPklist();
-				if (pklists != null && pklists.size() > 0) {
+				if (pklists != null && pklists.size() > 1) {
 					int rowno = 0;
 					for (int i = 0; i <= pklists.size(); i++) {
 
@@ -103,7 +103,39 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 						rowno = this.getCardPanel().getRowCount();
 					}
 					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b")
-							.delLine(new int[] { rowno - 1 });
+							.delLine(new int[] { rowno-1 });
+				}else if(pklists != null && pklists.size() == 1) {
+					super.doAction();
+					/*
+					 * super.getCardPanel().setBodyValueAt(String.valueOf(super
+					 * .getCardPanel().getRowCount()),
+					 * this.getCardPanel().getRowCount() - 1, "rowno");
+					 */
+					/*
+					 * super.getCardPanel().setBodyValueAt(super.getCardPanel
+					 * ().getRowCount(), this.getCardPanel().getRowCount() -
+					 * 1, "taskcode");
+					 */
+
+					
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getReportName(),
+								this.getCardPanel().getRowCount() - 1, "testitem");
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultname(),
+								this.getCardPanel().getRowCount() - 1, "standardclause");
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getProjectName(),
+								this.getCardPanel().getRowCount() - 1, "pk_testresultname");
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultshortname(),
+								this.getCardPanel().getRowCount() - 1, "testresultshortname");
+						super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
+								this.getCardPanel().getRowCount() - 1, "runorder");
+
+						super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1,
+								"pk_task_h");
+
+						// 生成孙表测试条件
+						insertTestCondition(pklists.get(0), reportType);
+
+					
 				}
 			}
 		} catch (DAOException e) {
@@ -111,7 +143,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			e.printStackTrace();
 		}
 		// 生成编号
-		//doSortAndReCode();
+		doSortAndReCode();
 	}
 
 	private String getReportType(String pk_commission_h) {
@@ -539,9 +571,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			
 			for (String str : strmap.keySet()) {
 				if(calc != null && calc.contains(str)){
-					//calc = calc.replace(str, strmap.get(str));
 					calc = calc.replace(str, strmap.get(str)==null?"0":strmap.get(str));
-					
 				}
 			}
 			return calc;
