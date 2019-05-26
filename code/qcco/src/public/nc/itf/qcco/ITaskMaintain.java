@@ -45,4 +45,11 @@ public interface ITaskMaintain {
 	 * 
 	 */
 	public void writeBackLims(AggTaskHVO aggvo)throws BusinessException;
+	/**
+	 * 委托单变更的时候会变化主键,需要更新任务单上的主键
+	 * @param pk_commission_h
+	 * @param old_pk_commission_h
+	 * @throws BusinessException 
+	 */
+	public void updateCommissionReference(String pk_commission_h,String old_pk_commission_h) throws BusinessException;
 }
