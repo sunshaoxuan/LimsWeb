@@ -539,7 +539,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			
 			for (String str : strmap.keySet()) {
 				if(calc != null && calc.contains(str)){
-					calc = calc.replace(str, strmap.get(str));
+					//calc = calc.replace(str, strmap.get(str));
+					calc = calc.replace(str, strmap.get(str)==null?"0":strmap.get(str));
+					
 				}
 			}
 			return calc;
