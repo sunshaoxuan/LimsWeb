@@ -594,7 +594,7 @@
 				<ref bean="approveScriptAction" />
 				<ref bean="uNApproveScriptAction" />
 				<ref bean="separatorAction" />
-				<ref bean="linkQueryAction" />
+				<!-- <ref bean="linkQueryAction" /> -->
 				<ref bean="separatorAction" />
 				<ref bean="outputAction" />
 				<ref bean="separatorAction" />
@@ -606,7 +606,7 @@
 				<ref bean="payDemandAction" />
 				<ref bean="officialReportAction" />
 				<ref bean="separatorAction" />
-				<ref bean="writeBackLims" />
+				<!-- <ref bean="writeBackLims" /> -->
 				
 			</list>
 		</property>
@@ -634,7 +634,7 @@
 				<ref bean="approveScriptAction" />
 				<ref bean="uNApproveScriptAction" />
 				<ref bean="separatorAction" />
-				<ref bean="linkQueryAction" />
+				<!-- <ref bean="linkQueryAction" /> -->
 				<ref bean="separatorAction" />
 				<ref bean="outputAction" />
 				<ref bean="separatorAction" />
@@ -645,7 +645,7 @@
 				<ref bean="payDemandAction" />
 				<ref bean="officialReportAction" />
 				<ref bean="separatorAction" />
-				<ref bean="writeBackLims" />
+				<!-- <ref bean="writeBackLims" /> -->
 			</list>
 		</property>
 

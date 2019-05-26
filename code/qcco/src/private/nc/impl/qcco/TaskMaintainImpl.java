@@ -9,6 +9,7 @@ import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
+import nc.ui.qcco.task.utils.WriteBackLimsUtils;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -143,6 +144,13 @@ private BaseDAO dao = null;
 	 */
 	@Override
 	public void writeBackLims(AggTaskHVO aggvo) throws BusinessException {
+		if(null == aggvo || aggvo.getParentVO()==null || aggvo.getParentVO().getPk_commission_h()==null){
+			throw new BusinessException("单据信息为空");
+		}
+		String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
+		//获取回写的sql
+		String[] insertSqls = new WriteBackLimsUtils().getInsertLIMSSQL(pk_commission_h);
+		
 		// TODO Auto-generated method stub
 		
 	}
