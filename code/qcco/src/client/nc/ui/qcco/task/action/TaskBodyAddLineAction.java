@@ -111,7 +111,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			e.printStackTrace();
 		}
 		// Éú³É±àºÅ
-		doSortAndReCode();
+		//doSortAndReCode();
 	}
 
 	private String getReportType(String pk_commission_h) {
@@ -493,12 +493,22 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				if(null == calc){
 					return null;
 				}
-				String string = calc.toString().split("return")[0];
-				String[] str = string.split("=");
-				if(str.length >2){
-					return null;
-				}else{
-					calc = str[1];
+				//String string = calc.toString().split("return")[0];
+				String[] strings = calc.toString().split("\n");
+				
+				String str1=null;
+				String str2= null; 
+				for (String string : strings) {
+					if(!string.contains("return")){
+						String[] str = string.split("=");
+						if(str1 != null && str[1].contains(str1)){
+							calc = str[1].replace(str1, "("+str2+")");
+						}else {
+							calc = str[1];
+						}
+						str1 = str[0];
+						str2 = str[1];
+					}
 				}
 				
 			}
