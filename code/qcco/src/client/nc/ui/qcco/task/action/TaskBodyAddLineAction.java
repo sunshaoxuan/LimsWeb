@@ -2,6 +2,7 @@ package nc.ui.qcco.task.action;
 
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,6 +19,7 @@ import nc.ui.pubapp.uif2app.actions.BodyAddLineAction;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.task.view.SunlistPanel;
+import nc.ui.qcco.utils.Calculator;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFBoolean;
@@ -54,10 +56,8 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		try {
 			String tablecode = this.getGrandCard().getBillCardPanel().getBodyPanel().getTableCode();
 			if (!tablecode.equals("pk_task_s")) {
-				/*MessageDialog.showErrorDlg(this.getCardPanel(), "提示", "请将孙表切换到详细测试条件页签！");
-				return;*/
-				this.getGrandCard().getBillCardPanel().getBodyTabbedPane().setSelectedIndex(0);
-				//getGrandCard().getBillCardPanel().getTabbedPane(0).setSelectedIndex(1);
+				MessageDialog.showErrorDlg(this.getCardPanel(), "提示", "请将孙表切换到详细测试条件页签！");
+				return;
 			}
 			String pk_commission_h = super.getCardPanel().getHeadItem("pk_commission_h").getValue();
 			String pk_task_h = super.getCardPanel().getHeadItem("pk_task_h").getValue();
@@ -65,7 +65,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			SunlistPanel sunlistPanel = new SunlistPanel(pk_commission_h);
 			if (sunlistPanel.showModal() == 1) {
 				pklists = sunlistPanel.getPklist();
-				if (pklists != null && pklists.size() > 0) {
+				if (pklists != null && pklists.size() > 1) {
 					int rowno = 0;
 					for (int i = 0; i <= pklists.size(); i++) {
 
@@ -98,12 +98,44 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 							// 生成孙表测试条件
 							insertTestCondition(pklists.get(i), reportType);
-							
+
 						}
 						rowno = this.getCardPanel().getRowCount();
 					}
 					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b")
-							.delLine(new int[] { rowno - 1 });
+							.delLine(new int[] { rowno-1 });
+				}else if(pklists != null && pklists.size() == 1) {
+					super.doAction();
+					/*
+					 * super.getCardPanel().setBodyValueAt(String.valueOf(super
+					 * .getCardPanel().getRowCount()),
+					 * this.getCardPanel().getRowCount() - 1, "rowno");
+					 */
+					/*
+					 * super.getCardPanel().setBodyValueAt(super.getCardPanel
+					 * ().getRowCount(), this.getCardPanel().getRowCount() -
+					 * 1, "taskcode");
+					 */
+
+					
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getReportName(),
+								this.getCardPanel().getRowCount() - 1, "testitem");
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultname(),
+								this.getCardPanel().getRowCount() - 1, "standardclause");
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getProjectName(),
+								this.getCardPanel().getRowCount() - 1, "pk_testresultname");
+						super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultshortname(),
+								this.getCardPanel().getRowCount() - 1, "testresultshortname");
+						super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
+								this.getCardPanel().getRowCount() - 1, "runorder");
+
+						super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1,
+								"pk_task_h");
+
+						// 生成孙表测试条件
+						insertTestCondition(pklists.get(0), reportType);
+
+					
 				}
 			}
 		} catch (DAOException e) {
@@ -209,7 +241,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				List<String> strlist = new ArrayList();
 				if(null != custlists && custlists.size()>0){
 					for (Map<String, String> map : custlists) {
-						if (map.get("nc_task_addname")!=null
+						if (map.get("nc_task_addname")!=null 
 								&& map.get("nc_task_addname").toString().substring(map.get("nc_task_addname").toString().length()-2, map.get("nc_task_addname").toString().length()).equals("_A")) {
 							String newVlaue = map.get("nc_task_addname").toString().substring(0, map.get("nc_task_addname").toString().length()-2);
 							strlist.add(newVlaue);
@@ -223,7 +255,8 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				String string = insql.getInSQL((strlist==null || strlist.size() <=0)?null:strlist.toArray(new String[0]));
 				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
-								"select  cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
+								"select trim(ana.name) as ananame,trim(cmp.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,"
+								+ " cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
 										+ "cmp.MAXIMUM,cmp.C_EN_DEFAULT_Value,ana.INSTRUMENT, cmp.pk_list_table from nc_component_table cmp "
 										+ "inner join analysis ana on cmp.analysis = ana.name"
 										+ " left join NC_UNITS_TYPE "
@@ -256,7 +289,17 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							} else if (refValue.getKey().equals("nc_result_namecn")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("nc_result_namecn"), row, "valuetype", "pk_task_s");
-							} else if (refValue.getKey().equals("units")) {
+							}else if (refValue.getKey().equals("nc_result_code")) {
+								//格式化值
+								if(map.get("nc_result_code")!=null && map.get("nc_result_code").equals("6")){
+									String formatValue = getFormatValue(map.get("ananame"),map.get("nc_component_name"),custlist);
+									if(formatValue != null){
+										UFDouble code = Calculator.evalExp(formatValue);
+										this.getGrandCard().getBillCardPanel()
+										.setBodyValueAt(String.valueOf(code), row, "formatted_entry", "pk_task_s");
+									}
+								}
+					}  else if (refValue.getKey().equals("units")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("units"), row, "unit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_defvalue_value")) {
@@ -331,7 +374,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			} else {
 				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
-								"select  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
+								"select trim(analysis.name) as ananame,trim(NC_COMPONENT_table.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
 										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE,NC_TESTLIST_COMP.c_en_default_value, "
 										+ " NC_COMPONENT_table.minimum, NC_COMPONENT_table.maximum,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
 										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP"
@@ -373,7 +416,17 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							} else if (refValue.getKey().equals("pk_result_type")) {
 								this.getGrandCard().getBillCardPanel()
 										.setBodyValueAt(map.get("pk_result_type"), row, "pk_valuetype", "pk_task_s");
-							} else if (refValue.getKey().equals("pk_list_table")) {
+							}else if (refValue.getKey().equals("nc_result_code")) {
+								//格式化值
+								if(map.get("nc_result_code")!=null && map.get("nc_result_code").equals("6")){
+									String formatValue = getFormatValue(map.get("ananame"),map.get("nc_component_name"),custlists);
+									if(formatValue != null){
+										UFDouble code = Calculator.evalExp(formatValue);
+										this.getGrandCard().getBillCardPanel()
+										.setBodyValueAt(String.valueOf(code), row, "formatted_entry", "pk_task_s");
+									}
+								}
+					} else if (refValue.getKey().equals("pk_list_table")) {
 								if (map.get("pk_list_table") == null) {
 									if (map.get("c_en_default_value") == null || map.get("c_default_value") == null) {
 										this.getGrandCard().getBillCardPanel()
@@ -453,6 +506,80 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private String getFormatValue(String name, String nc_component_name, List<Map<String, String>> custlist) {
+		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
+		try {
+			//获取公式
+			List<Map<String, String>> formats = (List<Map<String, String>>) iUAPQueryBS
+					.executeQuery(
+							"select cast(source_code as varchar(1000)) AS calc from calculation "
+							+ "where trim(analysis)='"+name+"' and trim(component) ='"+nc_component_name+"'", new MapListProcessor());
+			if(null == formats || formats.size() <= 0 ){
+				return null;
+			}
+			String calc = null;
+			for (Map<String, String> map : formats) {
+				calc = map.get("calc");
+				if(null == calc){
+					return null;
+				}
+				//String string = calc.toString().split("return")[0];
+				String[] strings = calc.toString().split("\n");
+				
+				String str1=null;
+				String str2= null; 
+				for (String string : strings) {
+					if(!string.contains("return")){
+						String[] str = string.split("=");
+						if(str1 != null && str[1].contains(str1)){
+							calc = str[1].replace(str1, "("+str2+")");
+						}else {
+							calc = str[1];
+						}
+						str1 = str[0];
+						str2 = str[1];
+					}
+				}
+				
+			}
+			
+			//获取条件项
+			List<Map<String, String>> items = (List<Map<String, String>>) iUAPQueryBS
+					.executeQuery(
+							"select name,attribute_1 as item from calc_variables "
+							+ "where trim(analysis)='"+name+"' and trim(component) ='"+nc_component_name+"'", new MapListProcessor());
+			if(null == items || items.size()<=0){
+				return null;
+			}
+			Map<String,String> strmap = new HashMap<String, String>();
+			for (Map<String, String> map : items) {
+				for (Map<String, String> maps : custlist) {
+					if(map.get("item")!=null && map.get("item").equals(maps.get("name"))){
+						if(maps.get("pk_list_table")==null){
+							//文本值
+							strmap.put(map.get("name"), maps.get("c_default_value"));
+						}else{
+							//参照值
+							strmap.put(map.get("name"), getRefValue(maps.get("pk_list_table"),"2"));
+						}
+					}
+				}
+				map.get("name");
+			}
+			
+			for (String str : strmap.keySet()) {
+				if(calc != null && calc.contains(str)){
+					calc = calc.replace(str, strmap.get(str)==null?"0":strmap.get(str));
+				}
+			}
+			return calc;
+		} catch (BusinessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private String getRefValue(String str, String reportType) {
