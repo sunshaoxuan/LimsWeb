@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +64,7 @@ import nc.ui.pub.bill.BillEditEvent;
 import nc.ui.pub.bill.BillListData;
 import nc.ui.pub.bill.BillListPanel;
 import nc.ui.pub.formula.ui.InputHandler.insert_break;
+import nc.ui.qcco.commission.refmodel.ListTableRefModel;
 import nc.ui.qcco.commission.refmodel.SampleAllocationRefModel;
 import nc.ui.qcco.commission.refmodel.UnitTypeRefModel;
 import nc.ui.qcco.task.utils.StringOrderUtils;
@@ -72,7 +75,7 @@ import nc.vo.qcco.task.TaskBodyVO;
 import nc.vo.trade.bdinfo.BaseDocVO;
 
 public class RefValuePanel extends UIDialog implements
-		nc.ui.pub.bill.BillEditListener2, ActionListener {
+		nc.ui.pub.bill.BillEditListener2, ActionListener, PropertyChangeListener {
 	private BillListPanel billListHeadPanel = null;
 	private BillCardPanel billListBodyPanel = null;
 	private static final long serialVersionUID = 1L;
@@ -84,7 +87,7 @@ public class RefValuePanel extends UIDialog implements
 	private JPanel ivjUIDialogContentPane1;
 
 	private UIPanel ivjUIPanel1 = null;
-	private JTextField projectTypeField = null;// 项目类型
+	private UIRefPane projectTypeField = null;// 项目类型
 	private UILabel projectTypeLabel = null;// 项目类型
 
 	private UIButton btnOKtop = null;// 确定按钮
@@ -98,8 +101,17 @@ public class RefValuePanel extends UIDialog implements
 	private String[] strs;
 	private String beforesample;
 	private String reportLang;
+	private String pk_list_table;
 	
 	
+
+	public String getPk_list_table() {
+		return pk_list_table;
+	}
+
+	public void setPk_list_table(String pk_list_table) {
+		this.pk_list_table = pk_list_table;
+	}
 
 	public String getReportLang() {
 		return reportLang;
@@ -141,8 +153,9 @@ public class RefValuePanel extends UIDialog implements
 		this.projectType = projectType;
 	}
 
-	public RefValuePanel(String pk_commission_h) throws DAOException {
+	public RefValuePanel(String pk_commission_h,String pk_list_table) throws DAOException {
 		this.reportLang = getReportLangs(pk_commission_h);
+		this.pk_list_table = pk_list_table;
 		initialize();
 	}
 
@@ -170,7 +183,7 @@ public class RefValuePanel extends UIDialog implements
 	private void initialize() {
 		 this.setTitle("请选择参照");
 		this.setLayout(new BorderLayout());
-		this.setSize(new Dimension(410, 460));
+		this.setSize(new Dimension(440, 520));
 		this.setContentPane(getUIDialogContentPane());
 
 	}
@@ -257,7 +270,25 @@ public class RefValuePanel extends UIDialog implements
 		} else if (e.getSource().equals(getCancelButton())) {
 			setResult(UIDialog.ID_CANCEL);
 			dispose();
+		}else if (e.getSource() == this.getBtnOKtop()) {
+			onButtonOKtopClicked();
 		}
+	}
+
+	private void onButtonOKtopClicked() {
+		String[] pk_list_tables = projectTypeField.getValueObj()==null?null:(String[])projectTypeField.getValueObj();
+		if (null != pk_list_tables) {
+			for (String string : pk_list_tables) {
+				pk_list_table = string;
+			}
+		}
+		ivjUIDialogContentPane=null;
+		ivjUIDialogContentPane1=null;
+		billListHeadPanel=null;
+		this.getContentPane().hide();
+		initialize();
+
+		
 	}
 
 	private JPanel getUIDialogContentPane1() {
@@ -266,16 +297,79 @@ public class RefValuePanel extends UIDialog implements
 			ivjUIDialogContentPane1.setName("ivjUIDialogContentPane1");
 			ivjUIDialogContentPane1.setLayout(null);
 			// ivjUIDialogContentPane1.setLayout(new BorderLayout());
-			//getUIDialogContentPane1().add(getUIPanel1());
+			getUIDialogContentPane1().add(getUIPanel1());
 			getUIDialogContentPane1().add(getBillListHeadPanel());
 		}
 		return ivjUIDialogContentPane1;
 	}
 
 	
-	
-	
+	/**
+	 * 
+	 * @return
+	 */
+	private UIPanel getUIPanel1() {
+		if (ivjUIPanel1 == null) {
+			try {
+				ivjUIPanel1 = new UIPanel();
+				ivjUIPanel1.setName("ivjUIPanel1");
+				ivjUIPanel1.setLayout(null);
+				ivjUIPanel1.add(getSampleNameLabel());
+				ivjUIPanel1.add(getSampleNameField());
+				ivjUIPanel1.add(getBtnOKtop());
+				ivjUIPanel1.setBounds(50, 10, 300, 40);
+			} catch (Throwable ivjExc) {
+				handleException(ivjExc);
+			}
+		}
+		return ivjUIPanel1;
+	}
 
+	
+	private UILabel getSampleNameLabel() {
+		if (projectTypeLabel == null) {
+			try {
+				projectTypeLabel = new UILabel();
+				projectTypeLabel.setName("projectTypeLabel");
+				projectTypeLabel.setText("参照选择");
+				projectTypeLabel.setBounds(0, 5, 80, 30);
+			} catch (Throwable ivjExc) {
+				handleException(ivjExc);
+			}
+		}
+		return projectTypeLabel;
+	}
+
+	private UIRefPane getSampleNameField() {
+		if (projectTypeField == null) {
+			projectTypeField = new UIRefPane();
+			projectTypeField.setRefModel(new ListTableRefModel());
+			projectTypeField.setVisible(true);
+			projectTypeField.setBounds(70, 8, 150, 50);
+			projectTypeField.setButtonFireEvent(true);
+			projectTypeField.addPropertyChangeListener(this);
+			projectTypeField.setMultiSelectedEnabled(false);
+			projectTypeField.getRefModel().setMutilLangNameRef(false);
+		}
+		return projectTypeField;
+	}
+	private UIButton getBtnOKtop() {
+		if (btnOKtop == null) {
+			try {
+				btnOKtop = new UIButton();
+				btnOKtop.setName("btnOKtop");
+				btnOKtop.setText("确定");
+				btnOKtop.addActionListener(this);
+				btnOKtop.setBounds(250, 8, 50, 25);
+				btnOKtop.registerKeyboardAction(this, KeyStroke.getKeyStroke(
+						KeyEvent.VK_Y, InputEvent.ALT_MASK),
+						JComponent.WHEN_IN_FOCUSED_WINDOW);
+			} catch (Throwable ivjExc) {
+				handleException(ivjExc);
+			}
+		}
+		return btnOKtop;
+	}
 	private void handleException(Throwable exception) {
 		Logger.error("--------- 未捕捉到的异常 ---------");
 		MessageDialog.showErrorDlg(this, null, exception.getMessage());
@@ -306,7 +400,7 @@ public class RefValuePanel extends UIDialog implements
 			billListHeadPanel.loadTemplet("1001ZZ1000000000480B");
 			billListHeadPanel.setVisible(true);
 			billListHeadPanel.setEnabled(true);
-			billListHeadPanel.setBounds(10, 10, 385, 400);
+			billListHeadPanel.setBounds(10, 60, 420, 390);
 
 			billListHeadPanel.setMultiSelect(true);
 			List<RefValueVO> lists = getListDatas();
@@ -333,11 +427,14 @@ public class RefValuePanel extends UIDialog implements
 				IUAPQueryBS.class.getName());
 
 		List<RefValueVO> lists = new ArrayList<>();
-
+		String sql = "select distinct trim(nc_list_code)as nc_list_code,c_en_value,c_cont_value from nc_list_entry where c_en_value is not null and c_cont_value is not null";
+		if(pk_list_table != null){
+			sql += " and pk_list_table ='"+pk_list_table+"'";
+		}
 		try {
 			List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
 					.executeQuery(
-							"select distinct nc_list_code,c_en_value,c_cont_value from nc_list_entry where c_en_value is not null and c_cont_value is not null;",
+							sql, 
 							new MapListProcessor());
 
 			if (null != custlist && custlist.size() > 0) {
@@ -355,6 +452,12 @@ public class RefValuePanel extends UIDialog implements
 			e.printStackTrace();
 		}
 		return lists;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
