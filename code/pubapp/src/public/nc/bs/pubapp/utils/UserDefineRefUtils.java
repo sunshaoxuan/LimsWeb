@@ -1,8 +1,12 @@
 package nc.bs.pubapp.utils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
+import nc.bs.framework.common.NCLocator;
+import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.beans.UITable;
@@ -207,7 +211,8 @@ public class UserDefineRefUtils {
 			if (rowItem.getComponent() instanceof UIRefPane) {
 				UIRefPane pane = (UIRefPane) rowItem.getComponent();
 				AbstractRefModel refModel = pane.getRefModel();
-				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null) {
+				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null && !rowItem.getKey().equals("pk_component")) {
+					
 					Vector refvls = refModel.matchData(refModel.getPkFieldCode(),
 							(String) vo.getAttributeValue(rowItem.getKey()));
 					if (null != refvls) {
@@ -219,6 +224,36 @@ public class UserDefineRefUtils {
 							}
 						}
 					}
+				}else if(rowItem.getKey().equals("pk_component")){
+					//单独查询pk_component的参照
+					String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
+					if (pk_component == null) {
+						return ;
+					}
+					IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
+					try {
+						List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
+								.executeQuery(
+										"select TEST_INIT_CODE, TEST_INIT_NAME, PK_TEST_INIT ,resulttype.NC_RESULT_NAMECN "
+										+ " from NC_TEST_INIT init  inner join NC_BASEN_TYPE type1 on (init.NC_ENSTARD = type1.NC_BBASEN_NAME  ) left join nc_result_type resulttype"
+										+ " on init.PK_RESULT_TYPE = resulttype.PK_RESULT_TYPE where pk_test_init='"+pk_component+"' ", new MapListProcessor());
+						
+						String val=null;
+						for (Map<String, Object> map : custlist) {
+							val = map.get("test_init_name")==null?null:map.get("test_init_name").toString();
+						}
+						for (int col = 0; col < uiTable.getColumnCount(); col++) {
+							if (uiTable.getColumnName(col).equals(rowItem.getName())) {
+								uiTable.setValueAt(val, row, col);
+							}
+						}
+					
+					} catch (BusinessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+						
+					
 				}
 			}
 		}
