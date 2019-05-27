@@ -7,33 +7,45 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import nc.bs.dao.BaseDAO;
+import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionHVO;
+import nc.vo.qcco.commission.CommissionRVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskSVO;
 
 public class WriteBackLimsUtils {
-	public final static String[] LIMS_PK_HEAD = new String[] { "PROJECT", "NAME" }; // project.NAME
-
-	public final static String[] LIMS_PK_SAMPLE = new String[] { "C_PROJ_LOGIN_SAMPLE", "SEQ_NUM" }; // C_PROJ_LOGIN_SAMPLE.SEQ_NUM
+	private BaseDAO baseDao = new BaseDAO();
+	//lims主键
+	public static Map<Class<?>,String>LIMS_PK_MAP;
+	{
+		LIMS_PK_MAP = new HashMap<>();
+		LIMS_PK_MAP.put(CommissionHVO.class,"PROJECT.NAME");
+		LIMS_PK_MAP.put(CommissionBVO.class,"C_PROJ_LOGIN_SAMPLE.SEQ_NUM");
+		LIMS_PK_MAP.put(CommissionRVO.class,"C_PROJ_PARA_A.SEQ_NUM");
+		
+		LIMS_PK_MAP.put(TaskBVO.class,"c_proj_task.SEQ_NUM");
+		LIMS_PK_MAP.put(TaskSVO.class,"result.RESULT_NUMBER");
+		LIMS_PK_MAP.put(TaskRVO.class,"c_proj_task_para_b.SEQ_NUM");
+		
+	}
+	
 	public final static String[] LIMS_FK_SAMPLE = new String[] { "C_PROJ_LOGIN_SAMPLE", "PROJECT" };// C_PROJ_LOGIN_SAMPLE.PROJECT
 
-	public final static String[] LIMS_PK_BEFORE = new String[] { "C_PROJ_PARA_A", "SEQ_NUM" }; // C_PROJ_PARA_A.SEQ_NUM
 	public final static String[] LIMS_FK_BEFORE = new String[] { "C_PROJ_PARA_A", "PROJECT" }; // C_PROJ_PARA_A.PROJECT
 
-	public final static String[] LIMS_PK_TASK = new String[] { "c_proj_task", "SEQ_NUM" }; // c_proj_task.SEQ_NUM
 	public final static String[] LIMS_FK_TASK = new String[] { "c_proj_task", "PROJECT" }; // c_proj_task.PROJECT
 
-	public final static String[] LIMS_PK_CONDITION = new String[] { "result", "RESULT_NUMBER" }; // result.RESULT_NUMBER
 	public final static String[] LIMS_FK_CONDITION_TASK = new String[] { "result", "TEST_NUMBER" }; // result.TEST_NUMBER
 	public final static String[] LIMS_FK_CONDITION_SAMPLE = new String[] { "result", "SAMPLE_NUMBER" }; // result.SAMPLE_NUMBER
 
-	public final static String[] LIMS_PK_AFTER = new String[] { "c_proj_task_para_b", "SEQ_NUM" }; // c_proj_task_para_b.SEQ_NUM
 	public final static String[] LIMS_FK_AFTER = new String[] { "c_proj_task_para_b", "TASK_SEQ_NUM" };// c_proj_task_para_b.TASK_SEQ_NUM
 
 	// 委托单
@@ -45,6 +57,19 @@ public class WriteBackLimsUtils {
 	private Map<String, String> bodyTaskMapping; // qc_task_b
 	private Map<String, String> grandConditionMapping; // qc_task_s
 	private Map<String, String> grandAfterMapping; // qc_task_r
+	
+	//记录每个vo的上层主键
+	public static Map<Class<?>,String> FATHER_PK_KEY_MAP;
+	{
+		FATHER_PK_KEY_MAP = new HashMap();
+
+		FATHER_PK_KEY_MAP.put(CommissionHVO.class, null);
+		FATHER_PK_KEY_MAP.put(CommissionBVO.class, "pk_commission_h");
+		FATHER_PK_KEY_MAP.put(CommissionRVO.class, "pk_commission_b");
+		FATHER_PK_KEY_MAP.put(TaskBVO.class, "pk_task_h");
+		FATHER_PK_KEY_MAP.put(TaskSVO.class, "pk_task_b");
+		FATHER_PK_KEY_MAP.put(TaskRVO.class, "pk_task_b");
+	}
 
 	/**
 	 * 取委托单/任务单回写LIMS的插入SQL
@@ -55,71 +80,208 @@ public class WriteBackLimsUtils {
 	 */
 	public String[] getInsertLIMSSQL(String pk_commission_h) throws BusinessException {
 		List<String> sqlList = new ArrayList<String>();
-
+		//主子孙对应的数据量--用来校验
+		Map<Class<?>,Integer> class2NumMap = new HashMap<>();
 		String[] lists = null;
-		String headCond = "pk_commission_h = '" + pk_commission_h + "'";
+
+		//存储nc中的pk和lims系统的pk的对应关系
+		Map<String,Object> ncPK2LimsPkMap = new HashMap<>();
+		String headCond = "pk_commission_h = '" + pk_commission_h + "' and dr = 0 ";
 		// 委托单表头
-		lists = getInsertSQLByMap(getHeadMapping(), CommissionHVO.class, headCond);
-		sqlList.add(getHeadInsertSQL(lists));
-
+		lists = getInsertSQLByMap(getHeadMapping(), CommissionHVO.class, headCond,ncPK2LimsPkMap);
+		if(lists==null || lists.length < 1){
+			throw new BusinessException("委托单主档回写失败!");
+		}
+		class2NumMap.put(CommissionHVO.class, lists.length-1);
+		sqlList.addAll(getHeadInsertSQL(lists));
+		
 		// 样品行
-		lists = getInsertSQLByMap(getHeadMapping(), CommissionBVO.class, headCond);
-		sqlList.add(getSampleInsertSQL(lists));
-
+		lists = getInsertSQLByMap(getBodySampleMapping(), CommissionBVO.class, headCond,ncPK2LimsPkMap);
+		class2NumMap.put(CommissionBVO.class, lists.length-1);
+		sqlList.addAll(getSampleInsertSQL(lists));
+		
 		// 实验前参数
-		String subCondition = "pk_commission_b in (select pk_commission_b from qc_commission_b where " + headCond + ")";
-		lists = getInsertSQLByMap(getHeadMapping(), CommissionBVO.class, subCondition);
-		sqlList.add(getBeforeInsertSQL(lists));
+		String subCondition = "pk_commission_b in (select pk_commission_b from qc_commission_b where " 
+				+ headCond + ") and dr = 0 ";
+		lists = getInsertSQLByMap(getGrandAfterMapping(), CommissionRVO.class, subCondition,ncPK2LimsPkMap);
+		if(lists!=null && class2NumMap.get(CommissionBVO.class) <=0 &&lists.length > 0){
+			throw new BusinessException("委托单孙表[实验前参数]发现无效数据,请联系数据管理员.");
+		}
+		class2NumMap.put(CommissionRVO.class, lists.length-1);
+		sqlList.addAll(getBeforeInsertSQL(lists));
 
+		
 		// 任务行
-		subCondition = "pk_task_h in (select pk_task_h from qc_task_h where " + headCond + ")";
+		subCondition = "pk_task_h in (select pk_task_h from qc_task_h where " + headCond + ") and dr = 0 ";
 		//
-		lists = getInsertSQLByMap(getHeadMapping(), TaskBVO.class, subCondition);
-		sqlList.add(getTaskInsertSQL(lists));
-
+		lists = getInsertSQLByMap(getBodyTaskMapping(), TaskBVO.class, subCondition,ncPK2LimsPkMap);
+		class2NumMap.put(TaskBVO.class, lists.length-1);
+		sqlList.addAll(getTaskInsertSQL(lists));
+	
+		
 		// 实验条件
 		subCondition = "pk_task_b in (select pk_task_b from qc_task_b where "
-				+ " pk_task_h in (select pk_task_h from qc_task_h where " + headCond + " ))";
-		lists = getInsertSQLByMap(getHeadMapping(), TaskSVO.class, subCondition);
-		sqlList.add(getConditionInsertSQL(lists));
+				+ " pk_task_h in (select pk_task_h from qc_task_h where " + headCond + " ) and dr = 0 ) and dr = 0 ";
+		lists = getInsertSQLByMap(getGrandConditionMapping(), TaskSVO.class, subCondition,ncPK2LimsPkMap);
+		if(lists!=null && class2NumMap.get(TaskBVO.class) <=0 &&lists.length > 0){
+			throw new BusinessException("任务单孙表[实验条件]发现无效数据,请联系数据管理员.");
+		}
+		class2NumMap.put(TaskSVO.class, lists.length-1);
+		sqlList.addAll(getConditionInsertSQL(lists));
 
+		
 		// 实验后参数
 		subCondition = "pk_task_b in (select pk_task_b from qc_task_b where "
-				+ " pk_task_h in (select pk_task_h from qc_task_h where " + headCond + " ))";
-		lists = getInsertSQLByMap(getHeadMapping(), TaskRVO.class, subCondition);
-		sqlList.add(getAfterInsertSQL(lists));
+				+ " pk_task_h in (select pk_task_h from qc_task_h where " + headCond + " ) and dr = 0 ) and dr = 0 ";
+		lists = getInsertSQLByMap(getGrandAfterMapping(), TaskRVO.class, subCondition,ncPK2LimsPkMap);
+		if(lists!=null && class2NumMap.get(TaskBVO.class) <=0 &&lists.length > 0){
+			throw new BusinessException("任务单孙表[实验后参数]发现无效数据,请联系数据管理员.");
+		}
+		class2NumMap.put(TaskRVO.class, lists.length-1);
+		sqlList.addAll(getAfterInsertSQL(lists));
 
+		
 		return sqlList.toArray(new String[0]);
 	}
 
-	private String getAfterInsertSQL(String[] lists) {
-		// TODO 自動產生的方法 Stub
-		return null;
+	/**
+	 * 实验后参数
+	 * @param lists
+	 * @param ncPK2LimsPk 
+	 * @param fatherPkList 
+	 * @param selfPkList 
+	 * @return
+	 */
+	private List<String> getAfterInsertSQL(String[] lists) {
+		List<String> rsList = new ArrayList();
+		if(lists!=null && lists.length > 1){
+			StringBuilder sqlSB = new StringBuilder();
+			for(int i = 1;i<lists.length;i++){
+				sqlSB.append("INSERT INTO c_proj_task_para_b").append("(").append(lists[0]).append(")  values (");
+				sqlSB.append(lists[i]);
+				sqlSB.append(" ) ");
+				rsList.add(sqlSB.toString());
+				sqlSB.delete(0, sqlSB.length());
+			}
+		}
+		return rsList;
 	}
 
-	private String getConditionInsertSQL(String[] lists) {
-		// TODO 自動產生的方法 Stub
-		return null;
+	/**
+	 * 实验条件
+	 * @param lists
+	 * @param ncPK2LimsPk 
+	 * @param fatherPkList 
+	 * @param selfPkList 
+	 * @return
+	 */
+	private List<String> getConditionInsertSQL(String[] lists) {
+		List<String> rsList = new ArrayList();
+		if(lists!=null && lists.length > 1){
+			StringBuilder sqlSB = new StringBuilder();
+			for(int i = 1;i<lists.length;i++){
+				sqlSB.append("INSERT INTO result").append("(").append(lists[0]).append(")  values (");
+				sqlSB.append(lists[i]);
+				sqlSB.append(" ) ");
+				rsList.add(sqlSB.toString());
+				sqlSB.delete(0, sqlSB.length());
+			}
+		}
+		return rsList;
 	}
 
-	private String getTaskInsertSQL(String[] lists) {
-		// TODO 自動產生的方法 Stub
-		return null;
+	/**
+	 * 任务行
+	 * @param lists
+	 * @param ncPK2LimsPk 
+	 * @param fatherPkList 
+	 * @param selfPkList 
+	 * @return
+	 */
+	private List<String> getTaskInsertSQL(String[] lists) {
+		List<String> rsList = new ArrayList();
+		if(lists!=null && lists.length > 1){
+			StringBuilder sqlSB = new StringBuilder();
+			for(int i = 1;i<lists.length;i++){
+				sqlSB.append("INSERT INTO c_proj_task").append("(").append(lists[0]).append(")  values (");
+				sqlSB.append(lists[i]);
+				sqlSB.append(" ) ");
+				rsList.add(sqlSB.toString());
+				sqlSB.delete(0, sqlSB.length());
+			}
+		}
+		return rsList;
 	}
 
-	private String getBeforeInsertSQL(String[] lists) {
-		// TODO 自動產生的方法 Stub
-		return null;
+	/**
+	 * 实验前参数
+	 * @param lists
+	 * @param ncPK2LimsPk 
+	 * @param fatherPkList 
+	 * @param selfPkList 
+	 * @return
+	 */
+	private List<String> getBeforeInsertSQL(String[] lists) {
+		List<String> rsList = new ArrayList();
+		if(lists!=null && lists.length > 1){
+			StringBuilder sqlSB = new StringBuilder();
+			for(int i = 1;i<lists.length;i++){
+				sqlSB.append("INSERT INTO C_PROJ_PARA_A").append("(").append(lists[0]).append(")  values (");
+				sqlSB.append(lists[i]);
+				sqlSB.append(" ) ");
+				rsList.add(sqlSB.toString());
+				sqlSB.delete(0, sqlSB.length());
+			}
+		}
+		return rsList;
 	}
-
-	private String getSampleInsertSQL(String[] lists) {
-		// TODO 自動產生的方法 Stub
-		return null;
+	
+	/**
+	 * 样品行
+	 * @param lists
+	 * @param ncPK2LimsPk 
+	 * @param fatherPkList 
+	 * @param selfPkList 
+	 * @return
+	 */
+	private List<String> getSampleInsertSQL(String[] lists) {
+		List<String> rsList = new ArrayList();
+		if(lists!=null && lists.length > 1){
+			StringBuilder sqlSB = new StringBuilder();
+			for(int i = 1;i<lists.length;i++){
+				sqlSB.append("INSERT INTO C_PROJ_LOGIN_SAMPLE").append("(").append(lists[0]).append(")  values (");
+				sqlSB.append(lists[i]);
+				sqlSB.append(" ) ");
+				rsList.add(sqlSB.toString());
+				sqlSB.delete(0, sqlSB.length());
+			}
+		}
+		return rsList;
 	}
-
-	private String getHeadInsertSQL(String[] lists) {
-		String insertSQL = "INSERT INTO PROJECT";
-		return null;
+	
+	/**
+	 * 委托单表头
+	 * @param lists
+	 * @param ncPK2LimsPk 
+	 * @param fatherPkList 
+	 * @param selfPkList 
+	 * @return
+	 */
+	private List<String> getHeadInsertSQL(String[] lists) {
+		List<String> rsList = new ArrayList();
+		if(lists!=null && lists.length > 1){
+			//先 生成好pk
+			
+			StringBuilder sqlSB = new StringBuilder();
+			for(int i = 1;i<lists.length;i++){
+				sqlSB.append("INSERT INTO PROJECT").append("(").append(lists[0]).append(")  values (");
+				sqlSB.append(lists[i]);
+				sqlSB.append(" ) ");
+				rsList.add(sqlSB.toString());
+				sqlSB.delete(0, sqlSB.length());
+			}
+		}
+		return rsList;
 	}
 
 	/**
@@ -129,47 +291,64 @@ public class WriteBackLimsUtils {
 	 * @param clazz
 	 * @param pkname
 	 * @param pkvalue
+	 * @param ncPK2LimsPkMap ncpk和lims系统pk对应关系
 	 * @return fieldValues[0]: 字段名片断<br />
 	 *         fieldValues[1-n]：值片断
 	 * @throws BusinessException
 	 */
-	private String[] getInsertSQLByMap(Map<String, String> fieldMap, Class<?> clazz, String condition)
+	private String[] getInsertSQLByMap(Map<String, String> fieldMap, Class<?> clazz, 
+			String condition,Map<String,Object> ncPK2LimsPkMap)
 			throws BusinessException {
+		
 		//用于某个字段的值,一行数据对应array中的一行
-		String[] fieldValues = null;
+		StringBuilder[] fieldValues = null;
 		IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-		Collection<?> srcData = query.retrieveByClause(clazz, condition);
+		List<?> srcData = (List<?>)query.retrieveByClause(clazz, condition);
+		List<Integer> pkList = null;
+		if(CommissionHVO.class!=clazz){
+			//预申请pk-出来委托单之外
+			pkList = getPrePk(clazz,srcData.size());
+		}
+		
+		fieldValues = new StringBuilder[srcData.size() + 1];
 		//用于拼接字段名
-		String insertFields = "";
+		StringBuilder insertFields = new StringBuilder();
 		//进行列循环
 		for (Entry<String, String> map : fieldMap.entrySet()) {
 			String fieldName = map.getKey();
 
-			String field = null;
-			field = getWriteBackFields( map.getValue());
-			/*if (map.getValue().contains(";")) {
+			String[] fields = null;
+			if (map.getValue().contains(";")) {
 				fields = getWriteBackFields(map.getValue().split(";"));
 			} else {
 				fields = getWriteBackFields(new String[] { map.getValue() });
-			}*/
-			//times是处理一对多关系的,目前恒为1,
-			//int times = fields.length;
-			/*for (String field : fields) {
-				insertFields += field + ",";
-			}*/
-			insertFields = field;
+			}
+			//times是处理一对多关系的
+			int times = fields.length;
+			for (String field : fields) {
+				insertFields.append(field).append(",");
+			}
+			
 			if (srcData != null && srcData.size() > 0) {
-				fieldValues = new String[srcData.size() + 1];
+				
 				int row = 1;
 				for (Object data : srcData) {
 					ISuperVO vo = (ISuperVO) data;
-					String fieldValue = String.valueOf(vo.getAttributeValue(fieldName));
-					if(fieldValues[row]!=null){
-						fieldValues[row] += "'" + fieldValue + "',";
-					}else{
-						fieldValues[row] = "'" + fieldValue + "',";
+					Object fieldValue = vo.getAttributeValue(fieldName);
+					if(null == fieldValues[row]){
+						fieldValues[row] = new StringBuilder();
 					}
-					
+					for(int j = 0 ; j<times;j++){
+						if(fieldValue!=null){
+							if(fieldValue instanceof Integer){
+								fieldValues[row].append(fieldValue).append(",") ;
+							}else{
+								fieldValues[row] .append("'").append(String.valueOf(fieldValue)).append("',") ;
+							}
+						}else{
+							fieldValues[row].append("null").append(",");
+						}
+					}
 					row++;
 				}
 			}
@@ -178,15 +357,63 @@ public class WriteBackLimsUtils {
 		if (srcData != null && srcData.size() > 0) {
 			fieldValues[0] = insertFields;
 		}
-		return fieldValues;
+		String[] rsString = null;
+		if(fieldValues!=null){
+			rsString = new String[fieldValues.length];
+			for(int i = 0;i<fieldValues.length ;i++){
+				if(CommissionHVO.class!=clazz){
+					//写入主键(只支持单主键,要多主键,需要参考上面的字段添加逻辑)
+					if(0==i){
+						fieldValues[i].append(getWriteBackFields(new String[] {LIMS_PK_MAP.get(clazz)})[0]);
+					}else{
+						fieldValues[i].append(pkList.get(i));
+						//记录主键
+						ncPK2LimsPkMap.put(((ISuperVO)srcData.get(i)).getPrimaryKey(), pkList.get(i));
+					}
+					
+				}else{
+					fieldValues[i].setLength(fieldValues[i].length()-1);
+				}
+				
+				rsString[i] = fieldValues[i].toString();
+			}
+			
+		}
+		return rsString;
+	}
+	
+	/**
+	 * 根据实体和实体数量申请lims的pk
+	 * @param clazz
+	 * @param size
+	 * @return
+	 * @throws DAOException 
+	 */
+	private List<Integer> getPrePk(Class<?> clazz, int size) throws DAOException {
+		List<Integer> rs = new ArrayList<>();
+		//获取表
+		String tableName = null;
+		if(LIMS_PK_MAP.get(clazz)!=null){
+			tableName = LIMS_PK_MAP.get(clazz).split("\\.")[0];
+		}
+		if(tableName!=null){
+			String sql = "select count(*) from "+tableName;
+			Integer startNum = (Integer)baseDao.executeQuery(sql, new ColumnProcessor());
+			if(startNum!=null && startNum >= 0){
+				for(int i = 1;i<=size;i++){
+					rs.add(startNum+i);
+				}
+			}
+		}
+		return rs;
 	}
 
-	private String getWriteBackFields(String field) {
-		/*List<String> fieldList = new ArrayList<String>();
+	private String[] getWriteBackFields(String[] splitFields) {
+		List<String> fieldList = new ArrayList<String>();
 		for (String field : splitFields) {
 			fieldList.add(field.split("\\.")[1]);
-		}*/
-		return field.split("\\.")[1];
+		}
+		return fieldList.toArray(new String[0]);
 	}
 
 	public Map<String, String> getHeadMapping() {
@@ -235,7 +462,10 @@ public class WriteBackLimsUtils {
 
 		return headMapping;
 	}
-
+/**
+ * 委托单子表
+ * @return
+ */
 	public Map<String, String> getBodySampleMapping() {
 		if (bodySampleMapping == null) {
 			bodySampleMapping = new HashMap<String, String>();
@@ -312,7 +542,10 @@ public class WriteBackLimsUtils {
 
 		return grandConditionMapping;
 	}
-
+	/**
+	 * 委托单孙表
+	 * @return
+	 */
 	public Map<String, String> getGrandAfterMapping() {
 		if (grandAfterMapping == null) {
 			grandAfterMapping = new HashMap<String, String>();

@@ -84,7 +84,7 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 		UIRefPane pane = (UIRefPane) panel.getHeadItem("codeprefix").getComponent();
 		String name = pane.getRefModel().getRefNameValue();
 		SimpleDateFormat dt = new SimpleDateFormat("yyMMdd");
-		String seed = name + "-" + dt.format(new UFDate().toDate());
+		String seed = name + "-" + dt.format(new UFDate().toDate())+"-";
 
 		try {
 			maxcode = (String) query.executeQuery("select max(billno) from QC_COMMISSION_H where billno like '" + seed
