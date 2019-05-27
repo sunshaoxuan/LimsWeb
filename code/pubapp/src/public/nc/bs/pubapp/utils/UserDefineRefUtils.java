@@ -177,6 +177,14 @@ public class UserDefineRefUtils {
 					UserDefineRefUtils.refreshItemRefValue(superVO, grandListView.getBillListPanel().getBodyTable(), i,
 							billItem, true);
 				}
+				// 因为任务单的孙表都无primaryKey，因此走以下方法，如影响其他功能，则可，单独判断测试条件和试验后参数孙表。
+				if(null == superVO){
+					superVO = (SuperVO) grandVOList.get(i);
+					for (BillItem billItem : grandListView.getBillListPanel().getBodyBillModel().getBodyItems()) {
+						UserDefineRefUtils.refreshItemRefValue(superVO, grandListView.getBillListPanel().getBodyTable(), i,
+								billItem, true);
+					}
+				}
 			} catch (BusinessException e) {
 				Logger.error(e.getMessage());
 			}
