@@ -211,7 +211,8 @@ public class UserDefineRefUtils {
 			if (rowItem.getComponent() instanceof UIRefPane) {
 				UIRefPane pane = (UIRefPane) rowItem.getComponent();
 				AbstractRefModel refModel = pane.getRefModel();
-				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null && !rowItem.getKey().equals("pk_component")) {
+				
+				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null  && !refModel.getTableName().equals("NC_TEST_AFTER")) {
 					
 					Vector refvls = refModel.matchData(refModel.getPkFieldCode(),
 							(String) vo.getAttributeValue(rowItem.getKey()));
@@ -224,7 +225,7 @@ public class UserDefineRefUtils {
 							}
 						}
 					}
-				}else if(rowItem.getKey().equals("pk_component")){
+				}else if(rowItem.getKey().equals("pk_component")&&refModel.getTableName().equals("NC_TEST_AFTER")){
 					//单独查询pk_component的参照
 					String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
 					if (pk_component == null) {
@@ -234,13 +235,11 @@ public class UserDefineRefUtils {
 					try {
 						List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
 								.executeQuery(
-										"select TEST_INIT_CODE, TEST_INIT_NAME, PK_TEST_INIT ,resulttype.NC_RESULT_NAMECN "
-										+ " from NC_TEST_INIT init  inner join NC_BASEN_TYPE type1 on (init.NC_ENSTARD = type1.NC_BBASEN_NAME  ) left join nc_result_type resulttype"
-										+ " on init.PK_RESULT_TYPE = resulttype.PK_RESULT_TYPE where pk_test_init='"+pk_component+"' ", new MapListProcessor());
+										"select distinct test_after_code,trim(test_after_name) as test_after_name,PK_TEST_AFTER from NC_TEST_AFTER where PK_TEST_AFTER='"+pk_component+"' ", new MapListProcessor());
 						
 						String val=null;
 						for (Map<String, Object> map : custlist) {
-							val = map.get("test_init_name")==null?null:map.get("test_init_name").toString();
+							val = map.get("test_after_name")==null?null:map.get("test_after_name").toString();
 						}
 						for (int col = 0; col < uiTable.getColumnCount(); col++) {
 							if (uiTable.getColumnName(col).equals(rowItem.getName())) {
