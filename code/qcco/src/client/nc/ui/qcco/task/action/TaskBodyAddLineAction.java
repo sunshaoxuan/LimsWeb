@@ -55,8 +55,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		try {
 			String tablecode = this.getGrandCard().getBillCardPanel().getBodyPanel().getTableCode();
 			if (!tablecode.equals("pk_task_s")) {
-				MessageDialog.showErrorDlg(this.getCardPanel(), "提示", "请将孙表切换到详细测试条件页签！");
-				return;
+				this.getGrandCard().getBillCardPanel().getBodyTabbedPane().setSelectedIndex(0);
 			}
 			String pk_commission_h = super.getCardPanel().getHeadItem("pk_commission_h").getValue();
 			String pk_task_h = super.getCardPanel().getHeadItem("pk_task_h").getValue();
