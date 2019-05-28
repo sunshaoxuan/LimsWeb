@@ -306,7 +306,7 @@ public class WriteBackLimsUtils {
 		List<?> srcData = (List<?>)query.retrieveByClause(clazz, condition);
 		List<Integer> pkList = null;
 		if(CommissionHVO.class!=clazz){
-			//预申请pk-出来委托单之外
+			//预申请pk-出来委托单之外(委托单的主键是billNo)
 			pkList = getPrePk(clazz,srcData.size());
 		}
 		
@@ -366,12 +366,17 @@ public class WriteBackLimsUtils {
 					if(0==i){
 						fieldValues[i].append(getWriteBackFields(new String[] {LIMS_PK_MAP.get(clazz)})[0]);
 					}else{
-						fieldValues[i].append(pkList.get(i));
+						fieldValues[i].append(pkList.get(i-1));
 						//记录主键
-						ncPK2LimsPkMap.put(((ISuperVO)srcData.get(i)).getPrimaryKey(), pkList.get(i));
+						ncPK2LimsPkMap.put(((ISuperVO)srcData.get(i-1)).getPrimaryKey(), pkList.get(i-1));
 					}
 					
 				}else{
+					//委托单的主键就是他的billno
+					if(i>0){
+						ncPK2LimsPkMap.put(((ISuperVO)srcData.get(i-1)).getPrimaryKey(),
+								((ISuperVO)srcData.get(i-1)).getAttributeValue("billno"));
+					}
 					fieldValues[i].setLength(fieldValues[i].length()-1);
 				}
 				
