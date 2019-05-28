@@ -6,9 +6,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -106,24 +108,30 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					// card.getBodyValueAt(e.getRow()-1, "sampleallocation");
 					card.setBodyValueAt(testnum, e.getRow(), "samplequantity");
 					// 给孙表试验后参数赋值
-					List<String> Alist = new ArrayList<>();
+					Set<String> aSet = new HashSet();
+					
 					if (samplepanel.getSelectedstr() != null) {
 						if (samplepanel.getSelectedstr().contains("A")) {
-							Alist.add("A");
+							aSet.add("A");
 						}
 						if (samplepanel.getSelectedstr().contains("B")) {
-							Alist.add("B");
+							aSet.add("B");
 						}
 						if (samplepanel.getSelectedstr().contains("C")) {
-							Alist.add("C");
+							aSet.add("C");
 						}
 						if (samplepanel.getSelectedstr().contains("D")) {
-							Alist.add("D");
+							aSet.add("D");
 						}
+						//路过start..Ares.tank 2019年5月29日00:39:59
+						dealLineStr(aSet,samplepanel.getSelectedstr());
+						
+						//end
 						samplepanel = null;
 					}
 					// e.setValue();
-
+					List<String> Alist = new ArrayList<>();
+					Alist.addAll(aSet);
 					// 根据条件查询实验后参数
 					generateGrandLines(e, Alist, pk_commission_h);
 				}
@@ -136,6 +144,37 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			return;
 		}
 
+	}
+	/**
+	 * 处理'-'连接的情况 -
+	 * @param aSet
+	 * @param selectedstr
+	 * @throws BusinessException 
+	 */
+	private void dealLineStr(Set<String> aSet, String selectedstr) throws BusinessException {
+		if(selectedstr!=null){
+			try{
+				String[] groups = 
+						selectedstr.replaceAll("\\d+", "").replaceAll(" ", "").split("-");
+				if(groups.length > 1){
+					for(int i = 0 ;i< groups.length-1;i++){
+						//开头字母
+						char startChar = groups[i].charAt(groups[i].length()-1);
+						//结尾字母
+						char endChar = groups[i+1].charAt(0);
+						if(endChar > startChar){
+							for(int j = startChar+1;j<endChar;j++){
+								aSet.add(((char)j)+"");
+							}
+						}
+					}
+				}
+				
+			}catch(Exception e){
+				throw new BusinessException("输入错误:"+selectedstr);
+			}
+		}
+		
 	}
 
 	private List<CommissionRVO> generateGrandLines(CardBodyBeforeEditEvent e, List<String> alist, String pk_commission_h) {
