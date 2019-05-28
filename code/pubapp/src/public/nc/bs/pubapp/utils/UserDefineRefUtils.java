@@ -225,7 +225,7 @@ public class UserDefineRefUtils {
 							}
 						}
 					}
-				}else if(rowItem.getKey().equals("pk_component")&&refModel.getTableName().equals("NC_TEST_AFTER")){
+				}else if(null != rowItem && rowItem.getKey().equals("pk_component")&& null != refModel && refModel.getTableName().equals("NC_TEST_AFTER")){
 					//单独查询pk_component的参照
 					String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
 					if (pk_component == null) {

@@ -382,7 +382,7 @@ public class RefValuePanel extends UIDialog implements nc.ui.pub.bill.BillEditLi
 		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 
 		List<RefValueVO> lists = new ArrayList<>();
-		String sql = "select distinct trim(nc_list_code)as nc_list_code,c_en_value,c_cont_value from nc_list_entry where c_en_value is not null and c_cont_value is not null";
+		String sql = "select distinct trim(nc_list_code)as nc_list_code,c_en_value,value from nc_list_entry where c_en_value is not null and value is not null";
 		if (pk_list_table != null) {
 			sql += " and pk_list_table ='" + pk_list_table + "'";
 		}
@@ -394,7 +394,7 @@ public class RefValuePanel extends UIDialog implements nc.ui.pub.bill.BillEditLi
 				for (Map<String, Object> map : custlist) {
 					RefValueVO refValueVO = new RefValueVO();
 					refValueVO
-							.setChinaname(map.get("c_cont_value") == null ? null : map.get("c_cont_value").toString());
+							.setChinaname(map.get("value") == null ? null : map.get("value").toString());
 					refValueVO.setEngname(map.get("c_en_value") == null ? null : map.get("c_en_value").toString());
 					refValueVO.setCode(map.get("nc_list_code") == null ? null : map.get("nc_list_code").toString());
 					lists.add(refValueVO);
