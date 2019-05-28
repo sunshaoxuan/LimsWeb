@@ -602,9 +602,9 @@
 				<!--附件上传 -->
 				<ref bean="fileupload" />
 				<ref bean="separatorAction" />
-				<ref bean="quotationAction" />
-				<ref bean="payDemandAction" />
-				<ref bean="officialReportAction" />
+				<ref bean="flowCardAction" />
+				<ref bean="taskStatusAction" />
+				<ref bean="sampleProgressAction" />
 				<ref bean="separatorAction" />
 				<!-- <ref bean="writeBackLims" /> -->
 				
@@ -641,9 +641,9 @@
 				<ref bean="pFApproveStatusInfoAction" />
 				<ref bean="fileupload" />
 				<ref bean="separatorAction" />
-				<ref bean="quotationAction" />
-				<ref bean="payDemandAction" />
-				<ref bean="officialReportAction" />
+				<ref bean="flowCardAction" />
+				<ref bean="taskStatusAction" />
+				<ref bean="sampleProgressAction" />
 				<ref bean="separatorAction" />
 				<!-- <ref bean="writeBackLims" /> -->
 			</list>
@@ -793,20 +793,16 @@
 			</list>
 		</property>
 	</bean>
-	<!-- 报价单按钮 -->
-	<bean id="quotationAction" class="nc.ui.qcco.task.action.QuotationAction">
+	<!-- 流程卡按钮 -->
+	<bean id="flowCardAction" class="nc.ui.qcco.task.action.FlowCardAction">
 		<property name="model" ref="manageAppModel" />
 	</bean>
-	<!-- 收费单按钮 -->
-	<bean id="payDemandAction" class="nc.ui.qcco.task.action.PayDemandAction">
+	<!-- 任务状态按钮 -->
+	<bean id="taskStatusAction" class="nc.ui.qcco.task.action.TaskStatusAction">
 		<property name="model" ref="manageAppModel" />
 	</bean>
-	<!-- 正式报告按钮 -->
-	<bean id="officialReportAction" class="nc.ui.qcco.task.action.OfficialReportAction">
-		<property name="model" ref="manageAppModel" />
-	</bean>
-	<!-- 满意度评价按钮 -->
-	<bean id="satisfactionAction" class="nc.ui.qcco.task.action.SatisfactionAction">
+	<!-- 样品进展情况按钮 -->
+	<bean id="sampleProgressAction" class="nc.ui.qcco.task.action.SampleProgressAction">
 		<property name="model" ref="manageAppModel" />
 	</bean>
 <!-- 预览按钮组 -->
