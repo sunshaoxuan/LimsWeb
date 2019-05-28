@@ -10,10 +10,10 @@ import java.util.Vector;
 
 import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
+import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
-import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.actions.BodyAddLineAction;
 import nc.ui.pubapp.uif2app.view.BillForm;
@@ -29,6 +29,10 @@ import nc.vo.qcco.task.TaskHBodyVO;
 import org.apache.commons.lang.StringUtils;
 
 public class TaskBodyAddLineAction extends BodyAddLineAction {
+	/**
+	 * serial no
+	 */
+	private static final long serialVersionUID = 6402337136772163767L;
 	private ShowUpableBillForm grandCard;
 	List<TaskHBodyVO> pklists = null;
 	private BillForm mainBillForm;//
@@ -51,7 +55,6 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 	@Override
 	public void doAction() {
-		// TODO Auto-generated method stub
 		try {
 			String tablecode = this.getGrandCard().getBillCardPanel().getBodyPanel().getTableCode();
 			if (!tablecode.equals("pk_task_s")) {
@@ -68,16 +71,6 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 					for (int i = 0; i <= pklists.size(); i++) {
 
 						super.doAction();
-						/*
-						 * super.getCardPanel().setBodyValueAt(String.valueOf(super
-						 * .getCardPanel().getRowCount()),
-						 * this.getCardPanel().getRowCount() - 1, "rowno");
-						 */
-						/*
-						 * super.getCardPanel().setBodyValueAt(super.getCardPanel
-						 * ().getRowCount(), this.getCardPanel().getRowCount() -
-						 * 1, "taskcode");
-						 */
 
 						if (i != pklists.size()) {
 							super.getCardPanel().setBodyValueAt(pklists.get(i).getReportName(),
@@ -104,16 +97,6 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							.delLine(new int[] { rowno - 1 });
 				} else if (pklists != null && pklists.size() == 1) {
 					super.doAction();
-					/*
-					 * super.getCardPanel().setBodyValueAt(String.valueOf(super
-					 * .getCardPanel().getRowCount()),
-					 * this.getCardPanel().getRowCount() - 1, "rowno");
-					 */
-					/*
-					 * super.getCardPanel().setBodyValueAt(super.getCardPanel
-					 * ().getRowCount(), this.getCardPanel().getRowCount() - 1,
-					 * "taskcode");
-					 */
 
 					super.getCardPanel().setBodyValueAt(pklists.get(0).getReportName(),
 							this.getCardPanel().getRowCount() - 1, "testitem");
@@ -163,9 +146,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 	@Override
 	protected void afterLineInsert(int index) {
-		// TODO Auto-generated method stub
 		super.afterLineInsert(index);
-		// insertTestCondition(pklists.get(index));
 	}
 
 	private void doSortAndReCode() {
@@ -390,7 +371,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			} else {
 				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
-								"select trim(analysis.name) as ananame,trim(NC_COMPONENT_table.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
+								"select DISTINCT NC_TESTLIST_COMP.result_order_no, trim(analysis.name) as ananame,trim(NC_COMPONENT_table.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
 										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE,NC_TESTLIST_COMP.c_en_default_value, "
 										+ " NC_COMPONENT_table.minimum, NC_COMPONENT_table.maximum,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
 										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP"
@@ -398,15 +379,16 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										+ " LEFT JOIN NC_RESULT_TYPE ON NC_COMPONENT_table.pk_result_type = NC_RESULT_TYPE.pk_result_type "
 										+ " LEFT JOIN analysis ON NC_COMPONENT_table.analysis = analysis.name "
 										+ " LEFT JOIN NC_UNITS_TYPE ON nc_component_table.pk_units_type=NC_UNITS_TYPE.pk_units_type "
-										+ " where NC_ANALYSIS_NAME = (select TRIM(NC_ANALYSIS_NAME) NC_ANALYSIS_NAME "
+										+ " where NC_ANALYSIS_NAME = (select DISTINCT TRIM(NC_ANALYSIS_NAME) NC_ANALYSIS_NAME "
 										+ " from nc_analysis_list nal2 where nal2.name in (select distinct nal.nc_test_condition from "
 										+ " nc_analysis_list nal , nc_task_addunion nta where nal.nc_analysis_name = nta.nc_task_addname "
 										+ " and pk_task_addunion='"
 										+ taskHBodyVO.getUnique()
-										+ "' )) AND NC_TESTLIST_NAME = (select TRIM(NC_TESTLIST_NAME) NC_TESTLIST_NAME "
+										+ "' )) AND NC_TESTLIST_NAME = (select DISTINCT TRIM(NC_TESTLIST_NAME) NC_TESTLIST_NAME "
 										+ " from nc_task_addunion where pk_task_addunion='"
 										+ taskHBodyVO.getUnique()
-										+ "' ) ", new MapListProcessor());
+										+ "' ) order by cast(NC_TESTLIST_COMP.result_order_no as integer)",
+								new MapListProcessor());
 				if (custlists != null && custlists.size() > 0) {
 					for (Map<String, String> map : custlists) {
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_s").addLine();
@@ -438,11 +420,15 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									String formatValue = getFormatValue(map.get("ananame"),
 											map.get("nc_component_name"), custlists);
 									if (formatValue != null) {
-										UFDouble code = Calculator.evalExp(formatValue);
-										this.getGrandCard()
-												.getBillCardPanel()
-												.setBodyValueAt(String.valueOf(code), row, "formatted_entry",
-														"pk_task_s");
+										try {
+											UFDouble code = Calculator.evalExp(formatValue);
+											this.getGrandCard()
+													.getBillCardPanel()
+													.setBodyValueAt(String.valueOf(code), row, "formatted_entry",
+															"pk_task_s");
+										} catch (BusinessException ex) {
+											Logger.error(ex.getMessage());
+										}
 									}
 								}
 							} else if (refValue.getKey().equals("pk_list_table")) {
@@ -514,15 +500,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 					}
 				}
 			}
-
-			// }
-			// String psInSQL = insql.getInSQL(list_NA.toArray(new
-			// String[list_NA.size()]));
-			// String psInSQLs = insql.getInSQL(nolist_NA.toArray(new
-			// String[nolist_NA.size()]));
-
 		} catch (BusinessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -603,9 +581,6 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 		String refvalue = null;
 		try {
-
-			// for (TaskHBodyVO taskHBodyVO:pklists) {
-
 			List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 					.executeQuery(
 							"SELECT pk_list_entry, c_en_value,c_cont_value FROM nc_list_entry WHERE pk_list_table =( SELECT    pk_list_table FROM  nc_testlist_comp WHERE   pk_testlist_comp = '"
