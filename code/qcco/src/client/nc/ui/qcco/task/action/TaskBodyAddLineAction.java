@@ -113,7 +113,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 					// 生成孙表测试条件
 					insertTestCondition(pklists.get(0), reportType);
-
+					
+					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b").addLine();
+					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b")
+					.delLine(new int[] { this.getCardPanel().getRowCount() - 1 });
 				}
 			}
 		} catch (DAOException e) {
