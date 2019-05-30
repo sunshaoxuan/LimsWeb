@@ -113,10 +113,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 					// 生成孙表测试条件
 					insertTestCondition(pklists.get(0), reportType);
-					
+
 					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b").addLine();
 					this.getMainBillForm().getBillCardPanel().getBodyPanel("pk_task_b")
-					.delLine(new int[] { this.getCardPanel().getRowCount() - 1 });
+							.delLine(new int[] { this.getCardPanel().getRowCount() - 1 });
 				}
 			}
 		} catch (DAOException e) {
@@ -254,7 +254,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										+ " left join NC_UNITS_TYPE "
 										+ " on cmp.pk_units_type=NC_UNITS_TYPE.pk_units_type left join NC_RESULT_TYPE "
 										+ " on NC_RESULT_TYPE.pk_result_type=cmp.pk_result_type where analysis in"
-										+ " (" + string + ") ", new MapListProcessor());
+										+ " (" + string + ")  ORDER BY  ORDER_NUMBER ", new MapListProcessor());
 				if (custlist != null && custlist.size() > 0) {
 					for (Map<String, String> map : custlist) {
 						this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_s").addLine();
@@ -287,11 +287,15 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									String formatValue = getFormatValue(map.get("ananame"),
 											map.get("nc_component_name"), custlist);
 									if (formatValue != null) {
-										UFDouble code = Calculator.evalExp(formatValue);
-										this.getGrandCard()
-												.getBillCardPanel()
-												.setBodyValueAt(String.valueOf(code), row, "formatted_entry",
-														"pk_task_s");
+										try {
+											UFDouble code = Calculator.evalExp(formatValue);
+											this.getGrandCard()
+													.getBillCardPanel()
+													.setBodyValueAt(String.valueOf(code), row, "formatted_entry",
+															"pk_task_s");
+										} catch (BusinessException ex) {
+											Logger.error(ex.getMessage());
+										}
 									}
 								}
 							} else if (refValue.getKey().equals("units")) {
