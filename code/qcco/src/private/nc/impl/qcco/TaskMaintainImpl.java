@@ -9,7 +9,7 @@ import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
-import nc.ui.qcco.task.utils.WriteBackLimsUtils;
+import nc.ui.pub.qcco.task.utils.WriteBackLimsUtils;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -96,6 +96,13 @@ private BaseDAO dao = null;
 	@Override
 	public AggTaskHVO[] approve(AggTaskHVO[] clientFullVOs,
 			AggTaskHVO[] originBills) throws BusinessException {
+		if(clientFullVOs!=null && clientFullVOs.length > 0){
+			for(AggTaskHVO aggvo:clientFullVOs){
+				if(aggvo!=null){
+					writeBackLims(aggvo);
+				}
+			}
+		}
 		return super.pubapprovebills(clientFullVOs, originBills);
 	}
 
@@ -151,7 +158,11 @@ private BaseDAO dao = null;
 		//获取回写的sql
 		String[] insertSqls = new WriteBackLimsUtils().getInsertLIMSSQL(pk_commission_h);
 		
-		// TODO Auto-generated method stub
+		if(insertSqls!=null && insertSqls.length > 0){
+			for(String sql : insertSqls){
+				getDao().executeUpdate(sql);
+			}
+		}
 		
 	}
 	@Override
