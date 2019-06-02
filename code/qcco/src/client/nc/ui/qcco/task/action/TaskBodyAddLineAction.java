@@ -120,8 +120,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				}
 			}
 		} catch (DAOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.error(e.getMessage());
 		}
 		// Éú³É±àºÅ
 		doSortAndReCode();
@@ -249,7 +248,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 						.executeQuery(
 								"select trim(ana.name) as ananame,trim(cmp.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,"
 										+ " cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
-										+ "cmp.MAXIMUM,cmp.C_EN_DEFAULT_Value,ana.INSTRUMENT, cmp.pk_list_table from nc_component_table cmp "
+										+ "cmp.MAXIMUM,cmp.C_EN_DEFAULT_Value,ana.INSTRUMENT, cmp.pk_list_table, cmp.places from nc_component_table cmp "
 										+ "inner join analysis ana on cmp.analysis = ana.name"
 										+ " left join NC_UNITS_TYPE "
 										+ " on cmp.pk_units_type=NC_UNITS_TYPE.pk_units_type left join NC_RESULT_TYPE "
@@ -342,10 +341,18 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 												.getBillCardPanel()
 												.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue",
 														"pk_task_s");
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_en_default_value"), row, "formatted_entry",
+														"pk_task_s");
 									} else if (null != reportType && reportType.equals("2")) {
 										this.getGrandCard()
 												.getBillCardPanel()
 												.setBodyValueAt(map.get("c_default_value"), row, "textvalue",
+														"pk_task_s");
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_default_value"), row, "formatted_entry",
 														"pk_task_s");
 									}
 								} else {
@@ -381,7 +388,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								"select DISTINCT NC_TESTLIST_COMP.result_order_no, trim(analysis.name) as ananame,trim(NC_COMPONENT_table.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
 										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE,NC_TESTLIST_COMP.c_en_default_value, "
 										+ " NC_COMPONENT_table.minimum, NC_COMPONENT_table.maximum,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
-										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT from NC_TESTLIST_COMP"
+										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT, nc_testlist_comp.places from NC_TESTLIST_COMP"
 										+ " LEFT JOIN NC_COMPONENT_table ON NC_TESTLIST_COMP.NC_ANALYSIS_NAME = NC_COMPONENT_table.ANALYSIS AND NC_TESTLIST_COMP.NC_TLC_COMPONENT = NC_COMPONENT_table.NAME "
 										+ " LEFT JOIN NC_RESULT_TYPE ON NC_COMPONENT_table.pk_result_type = NC_RESULT_TYPE.pk_result_type "
 										+ " LEFT JOIN analysis ON NC_COMPONENT_table.analysis = analysis.name "
@@ -429,6 +436,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									if (formatValue != null) {
 										try {
 											UFDouble code = Calculator.evalExp(formatValue);
+											if (code != null) {
+												code = code.setScale(Integer.valueOf(map.get("places")),
+														UFDouble.ROUND_UP);
+											}
 											this.getGrandCard()
 													.getBillCardPanel()
 													.setBodyValueAt(String.valueOf(code), row, "formatted_entry",
@@ -454,10 +465,18 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 												.getBillCardPanel()
 												.setBodyValueAt(map.get("c_en_default_value"), row, "textvalue",
 														"pk_task_s");
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_en_default_value"), row, "formatted_entry",
+														"pk_task_s");
 									} else if (null != reportType && reportType.equals("2")) {
 										this.getGrandCard()
 												.getBillCardPanel()
 												.setBodyValueAt(map.get("c_default_value"), row, "textvalue",
+														"pk_task_s");
+										this.getGrandCard()
+												.getBillCardPanel()
+												.setBodyValueAt(map.get("c_default_value"), row, "formatted_entry",
 														"pk_task_s");
 									}
 								} else {
