@@ -61,7 +61,7 @@ public class WriteBackLimsUtils {
 		LIMS_FK_MAP = new HashMap<>();
 		LIMS_FK_MAP.put(CommissionHVO.class, null);
 		LIMS_FK_MAP.put(CommissionBVO.class, "C_PROJ_LOGIN_SAMPLE.PROJECT");
-		LIMS_FK_MAP.put(CommissionRVO.class, "C_PROJ_PARA_A.PROJECT");
+		LIMS_FK_MAP.put(CommissionRVO.class, "C_PROJ_PARA_A.proj_logsamp_seqnum");
 
 		LIMS_FK_MAP.put(TaskBVO.class, "c_proj_task.PROJECT");
 		LIMS_FK_MAP.put(TaskSVO.class, "result.SAMPLE_NUMBER");
@@ -92,6 +92,7 @@ public class WriteBackLimsUtils {
 	}
 
 	/**
+	 * 注释: 史上最垃圾代码合集,面向对象?不存在的,面向过程?行吧,面向切面?不清楚
 	 * 取委托单/任务单回写LIMS的插入SQL
 	 * 
 	 * @param pk_commission_h
@@ -107,14 +108,14 @@ public class WriteBackLimsUtils {
 		Map<String, String> taskPk2CommissionPkMap = initRelated(pk_commission_h);
 		Map<String, Object> ncPK2NCObjMap = new HashMap();
 		String[] lists = null;
-
+		List<String> projectList = new ArrayList();
 		// 存储nc中的pk和lims系统的pk的对应关系
 		Map<String, Object> ncPK2LimsPkMap = new HashMap<>();
 		String headCond = "pk_commission_h = '" + pk_commission_h
 				+ "' and dr = 0 ";
 		// 委托单表头
 		lists = getInsertSQLByMap(getHeadMapping(), CommissionHVO.class,
-				headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap);
+				headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap,projectList);
 		if (lists == null || lists.length < 1) {
 			throw new BusinessException("委托单主档回写失败!");
 		}
@@ -124,7 +125,7 @@ public class WriteBackLimsUtils {
 		}
 		// 样品行
 		lists = getInsertSQLByMap(getBodySampleMapping(), CommissionBVO.class,
-				headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap);
+				headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap,projectList);
 		class2NumMap.put(CommissionBVO.class, lists!=null?(lists.length - 1):0);
 		if (lists != null && lists.length > 0) {
 			sqlList.addAll(getSampleInsertSQL(lists));
@@ -134,7 +135,7 @@ public class WriteBackLimsUtils {
 				+ headCond + ") and dr = 0 ";
 		lists = getInsertSQLByMap(getGrandBeforeMapping(), CommissionRVO.class,
 				subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-				taskPk2CommissionPkMap);
+				taskPk2CommissionPkMap,projectList);
 		if (lists != null && class2NumMap.get(CommissionBVO.class) <= 0
 				&& lists.length > 0) {
 			throw new BusinessException("委托单孙表[实验前参数]发现无效数据,请联系数据管理员.");
@@ -150,7 +151,7 @@ public class WriteBackLimsUtils {
 		//
 		lists = getInsertSQLByMap(getBodyTaskMapping(), TaskBVO.class,
 				subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-				taskPk2CommissionPkMap);
+				taskPk2CommissionPkMap,projectList);
 		class2NumMap.put(TaskBVO.class, lists!=null?(lists.length - 1):0);
 		if (lists != null && lists.length > 0) {
 			sqlList.addAll(getTaskInsertSQL(lists));
@@ -162,7 +163,7 @@ public class WriteBackLimsUtils {
 				+ headCond + " ) and dr = 0 ) and dr = 0 ";
 		lists = getInsertSQLByMap(getGrandConditionMapping(), TaskSVO.class,
 				subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-				taskPk2CommissionPkMap);
+				taskPk2CommissionPkMap,projectList);
 		if (lists != null && class2NumMap.get(TaskBVO.class) <= 0
 				&& lists.length > 0) {
 			throw new BusinessException("任务单孙表[实验条件]发现无效数据,请联系数据管理员.");
@@ -178,7 +179,7 @@ public class WriteBackLimsUtils {
 				+ headCond + " ) and dr = 0 ) and dr = 0 ";
 		lists = getInsertSQLByMap(getGrandAfterMapping(), TaskRVO.class,
 				subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-				taskPk2CommissionPkMap);
+				taskPk2CommissionPkMap,projectList);
 		if (lists != null && class2NumMap.get(TaskBVO.class) <= 0
 				&& lists.length > 0) {
 			throw new BusinessException("任务单孙表[实验后参数]发现无效数据,请联系数据管理员.");
@@ -371,13 +372,14 @@ public class WriteBackLimsUtils {
 	 *            本次保存的所有NCOBJ
 	 * @return fieldValues[0]: 字段名片断<br />
 	 *         fieldValues[1-n]：值片断
+	 * @return project 委托单编号,用于各个表的project
 	 * @throws BusinessException
 	 */
 	private String[] getInsertSQLByMap(Map<String, String> fieldMap,
 			Class<?> clazz, String condition,
 			Map<String, Object> ncPK2LimsPkMap,
 			Map<String, Object> ncPK2NCObjMap,
-			Map<String, String> taskPk2CommissionPkMap)
+			Map<String, String> taskPk2CommissionPkMap,List<String> projectList)
 			throws BusinessException {
 
 		// 用于某个字段的值,一行数据对应array中的一行
@@ -385,9 +387,19 @@ public class WriteBackLimsUtils {
 		IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 		List<?> srcData = (List<?>) query.retrieveByClause(clazz, condition);
 		List<Integer> pkList = null;
+		
+		List<Integer> test_numberList = null;
+		List<Integer> sample_numberList = null;
+		
 		if (CommissionHVO.class != clazz) {
 			// 预申请pk-出来委托单之外(委托单的主键是billNo)
 			pkList = getPrePk(clazz, srcData.size());
+		}
+		
+		if(TaskSVO.class == clazz){
+			//任务单子表还需要申请test_number和sample_number
+			test_numberList = getPrePk("test_number","test",srcData.size());
+			sample_numberList = getPrePk("sample_number","sample",srcData.size());
 		}
 		if (null == srcData || srcData.size() <= 0) {
 			return null;
@@ -420,17 +432,27 @@ public class WriteBackLimsUtils {
 					// 处理参照
 					Object realValue = dealRefValue(clazz, fieldName,
 							unDofieldValue);
+					
 					if (null == fieldValues[row]) {
 						fieldValues[row] = new StringBuilder();
 					}
+					if(null!=realValue &&("creationtime".equals(fieldName)||"modifiedtime".equals(fieldName))){
+						realValue = "to_timestamp('"+realValue+"','yyyy-mm-dd hh24:mi:ss.ff')";}
 					for (int j = 0; j < times; j++) {
 						if (realValue != null) {
 							if (realValue instanceof Integer) {
 								fieldValues[row].append(realValue).append(",");
 							} else {
-								fieldValues[row].append("'")
-										.append(String.valueOf(realValue))
-										.append("',");
+								if("creationtime".equals(fieldName)||"modifiedtime".equals(fieldName)){
+									fieldValues[row]
+									.append(String.valueOf(realValue))
+									.append(",");
+								}else{
+									fieldValues[row].append("'")
+									.append(String.valueOf(realValue))
+									.append("',");
+								}
+								
 							}
 						} else {
 							fieldValues[row].append("null").append(",");
@@ -464,9 +486,23 @@ public class WriteBackLimsUtils {
 						fieldValues[i].append(
 								getWriteBackFields(new String[] { LIMS_PK_MAP
 										.get(clazz) })[0]).append(",");
-						fieldValues[i]
-								.append(getWriteBackFields(new String[] { LIMS_FK_MAP
-										.get(clazz) })[0]);
+						
+						if(TaskSVO.class==clazz){
+							//如果是任务单子表,需要回写testnumber和sample_number
+							fieldValues[i]
+									.append("test_number").append(",");
+							fieldValues[i]
+									.append("sample_number");
+						}else{
+							fieldValues[i]
+									.append(getWriteBackFields(new String[] { LIMS_FK_MAP
+											.get(clazz) })[0]);
+						}
+						//实验前后参数,需要另写入委托单的billno
+						if(CommissionRVO.class == clazz || TaskRVO.class == clazz){
+							fieldValues[i]
+									.append(",").append("project");
+						}
 
 					} else {   
 						// 获取上层的主键:
@@ -516,14 +552,47 @@ public class WriteBackLimsUtils {
 									.append("',");
 						}
 						
-						if (null == ncPK2LimsPkMap.get(realfatherPk)
-								|| ncPK2LimsPkMap.get(realfatherPk) instanceof Integer) {
-							// 外键
-							fieldValues[i].append(ncPK2LimsPkMap.get(realfatherPk));
-						} else {
-							// pk
-							// 外键
-							fieldValues[i].append("'").append(ncPK2LimsPkMap.get(realfatherPk)).append("'");
+						
+						
+						
+						//任务单子表需要另外会写test_number和sample_number
+						if(TaskSVO.class == clazz){
+							if (null == test_numberList.get(i - 1)
+									|| test_numberList.get(i - 1) instanceof Integer) {
+								// test_numberList
+								fieldValues[i].append(test_numberList.get(i - 1))
+										.append(",");
+							} else {
+								// test_numberList
+								fieldValues[i].append("'").append(test_numberList.get(i - 1))
+										.append("',");
+							}
+							
+							if (null == sample_numberList.get(i - 1)
+									|| sample_numberList.get(i - 1) instanceof Integer) {
+								// sample_numberList
+								fieldValues[i].append(sample_numberList.get(i - 1))
+										.append("");
+							} else {
+								// sample_numberList
+								fieldValues[i].append("'").append(sample_numberList.get(i - 1))
+										.append("'");
+							}
+						}else{
+							if (null == ncPK2LimsPkMap.get(realfatherPk)
+									|| ncPK2LimsPkMap.get(realfatherPk) instanceof Integer) {
+								// 外键
+								fieldValues[i].append(ncPK2LimsPkMap.get(realfatherPk));
+							} else {
+								// pk
+								// 外键
+								fieldValues[i].append("'").append(ncPK2LimsPkMap.get(realfatherPk)).append("'");
+							}
+						}
+						//实验前后参数,需要另写入委托单的billno
+						if(CommissionRVO.class == clazz || TaskRVO.class == clazz){
+							fieldValues[i]
+									.append(",").append("'").append(projectList.get(0)).append("'");
 						}
 						
 						// 记录主键
@@ -546,6 +615,11 @@ public class WriteBackLimsUtils {
 										.getPrimaryKey(), ((ISuperVO) srcData
 										.get(i - 1))
 										.getAttributeValue("billno"));
+						
+						projectList.add(String.valueOf(((ISuperVO) srcData
+								.get(i - 1))
+								.getAttributeValue("billno")));
+						
 						// 记录存储的obj
 						ncPK2NCObjMap
 								.put(((ISuperVO) srcData.get(i - 1))
@@ -560,15 +634,7 @@ public class WriteBackLimsUtils {
 		}
 		return rsString;
 	}
-
-	// //如果是任务单行,需要将此任务单表头主键转换成委托单主表主键
-	private String getRealFatherPk(Class<?> clazz, String fatherPk,
-			Map<String, String> taskPk2CommissionPkMap) {
-		if (TaskBVO.class == clazz) {
-			fatherPk = taskPk2CommissionPkMap.get(fatherPk);
-		}
-		return fatherPk;
-	}
+	
 
 	/**
 	 * 根据实体和实体数量申请lims的pk
@@ -586,8 +652,37 @@ public class WriteBackLimsUtils {
 		if (LIMS_PK_MAP.get(clazz) != null) {
 			tableName = LIMS_PK_MAP.get(clazz).split("\\.")[0];
 		}
+		String pkFileld = null;
+		if(TaskSVO.class == clazz){
+			pkFileld = "RESULT_NUMBER";
+		}else{
+			pkFileld = "SEQ_NUM";
+		}
 		if (tableName != null) {
-			String sql = "select count(*) from " + tableName;
+			String sql = "select MAX("+pkFileld+") from " + tableName;
+			Integer startNum = (Integer) baseDao.executeQuery(sql,
+					new ColumnProcessor());
+			if (startNum != null && startNum >= 0) {
+				for (int i = 1; i <= size; i++) {
+					rs.add(startNum + 1);
+				}
+			}
+		}
+		return rs;
+	}
+	
+	/**
+	 * 预申请pk
+	 * @param tableName
+	 * @param size
+	 * @return
+	 * @throws DAOException 
+	 */
+	private List<Integer> getPrePk(String pkFiled,String tableName, int size) throws DAOException {
+		List<Integer> rs = new ArrayList<>();
+
+		if (tableName != null) {
+			String sql = "select max("+pkFiled+")+1  from " + tableName;
 			Integer startNum = (Integer) baseDao.executeQuery(sql,
 					new ColumnProcessor());
 			if (startNum != null && startNum >= 0) {
@@ -597,6 +692,15 @@ public class WriteBackLimsUtils {
 			}
 		}
 		return rs;
+	}
+
+	// //如果是任务单行,需要将此任务单表头主键转换成委托单主表主键
+	private String getRealFatherPk(Class<?> clazz, String fatherPk,
+			Map<String, String> taskPk2CommissionPkMap) {
+		if (TaskBVO.class == clazz) {
+			fatherPk = taskPk2CommissionPkMap.get(fatherPk);
+		}
+		return fatherPk;
 	}
 
 	private String[] getWriteBackFields(String[] splitFields) {
