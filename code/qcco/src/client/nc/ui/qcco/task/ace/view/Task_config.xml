@@ -195,7 +195,7 @@
 				<!--bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" /-->
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyDelLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyPasteLineAction" >
+				<!-- bean class="nc.ui.pubapp.uif2app.actions.BodyPasteLineAction" >
 					<property name="clearItems">
 						<list>
 							<value>pk_task_r</value>
@@ -203,7 +203,7 @@
 						</list>
 					</property>
 					
-				</bean>
+				</bean-->
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction">
 					<property name="clearItems">
 						<list>
@@ -291,22 +291,22 @@
 				<property name="mainBillForm" ref="billFormEditor" />
 					<property name="grandCard" ref="sunbillFormEditor1" />			
 				</bean>
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />
+				<!-- bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" /-->
 				<bean class="nc.ui.qcco.task.action.TaskBodyDelLineAction" >
 						<constructor-arg ref="billFormEditor" />
 						<constructor-arg ref="sunbillFormEditor1" />
 				</bean>
 					
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyPasteLineAction" >
+				<!-- bean class="nc.ui.pubapp.uif2app.actions.BodyPasteLineAction" >
 					<property name="clearItems">
 						<list>
 							<value>pk_task_b</value>
 							<value>rowno</value>
 						</list>
 					</property>
-				</bean>
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction">
+				</bean-->
+				<bean class="nc.ui.qcco.task.action.TaskBodyPasteToTailAction">
 					<property name="clearItems">
 						<list>
 							<value>pk_task_b</value>

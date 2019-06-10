@@ -68,10 +68,11 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			try {
 				if (!this.getGrandCard().getBillCardPanel().getBodyTabbedPane().getSelectedTableCode()
 						.equals("pk_task_r")) {
-					//MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "提示", "请将孙表切换到试验后参数页签");
+					// MessageDialog.showErrorDlg(e.getContext().getEntranceUI(),
+					// "提示", "请将孙表切换到试验后参数页签");
 					this.getGrandCard().getBillCardPanel().getBodyTabbedPane().setSelectedIndex(1);
-					//getGrandCard().getBillCardPanel().getTabbedPane(1).setSelectedIndex(1);
-					//return;
+					// getGrandCard().getBillCardPanel().getTabbedPane(1).setSelectedIndex(1);
+					// return;
 				}
 				String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 				if (null == pk_commission_h) {
@@ -109,7 +110,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					card.setBodyValueAt(testnum, e.getRow(), "samplequantity");
 					// 给孙表试验后参数赋值
 					Set<String> aSet = new HashSet();
-					
+
 					if (samplepanel.getSelectedstr() != null) {
 						if (samplepanel.getSelectedstr().contains("A")) {
 							aSet.add("A");
@@ -123,10 +124,10 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 						if (samplepanel.getSelectedstr().contains("D")) {
 							aSet.add("D");
 						}
-						//路过start..Ares.tank 2019年5月29日00:39:59
-						dealLineStr(aSet,samplepanel.getSelectedstr());
-						
-						//end
+						// 路过start..Ares.tank 2019年5月29日00:39:59
+						dealLineStr(aSet, samplepanel.getSelectedstr());
+
+						// end
 						samplepanel = null;
 					}
 					// e.setValue();
@@ -145,36 +146,37 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 		}
 
 	}
+
 	/**
 	 * 处理'-'连接的情况 -
+	 * 
 	 * @param aSet
 	 * @param selectedstr
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	private void dealLineStr(Set<String> aSet, String selectedstr) throws BusinessException {
-		if(selectedstr!=null){
-			try{
-				String[] groups = 
-						selectedstr.replaceAll("\\d+", "").replaceAll(" ", "").split("-");
-				if(groups.length > 1){
-					for(int i = 0 ;i< groups.length-1;i++){
-						//开头字母
-						char startChar = groups[i].charAt(groups[i].length()-1);
-						//结尾字母
-						char endChar = groups[i+1].charAt(0);
-						if(endChar > startChar){
-							for(int j = startChar+1;j<endChar;j++){
-								aSet.add(((char)j)+"");
+		if (selectedstr != null) {
+			try {
+				String[] groups = selectedstr.replaceAll("\\d+", "").replaceAll(" ", "").split("-");
+				if (groups.length > 1) {
+					for (int i = 0; i < groups.length - 1; i++) {
+						// 开头字母
+						char startChar = groups[i].charAt(groups[i].length() - 1);
+						// 结尾字母
+						char endChar = groups[i + 1].charAt(0);
+						if (endChar > startChar) {
+							for (int j = startChar + 1; j < endChar; j++) {
+								aSet.add(((char) j) + "");
 							}
 						}
 					}
 				}
-				
-			}catch(Exception e){
-				throw new BusinessException("输入错误:"+selectedstr);
+
+			} catch (Exception e) {
+				throw new BusinessException("输入错误:" + selectedstr);
 			}
 		}
-		
+
 	}
 
 	private List<CommissionRVO> generateGrandLines(CardBodyBeforeEditEvent e, List<String> alist, String pk_commission_h) {
@@ -297,8 +299,11 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 							this.getGrandCard().getBillCardPanel()
 									.setBodyValueAt(refValue.getValue(), row, "pk_valuetype", "pk_task_r");
 						} else if (refValue.getKey().equals("nc_result_namecn")) {
-							this.getGrandCard().getBillCardPanel()
-									.setBodyValueAt(refValue.getValue()==null?"":refValue.getValue().toString().replace(" ", ""), row, "valuetype", "pk_task_r");
+							this.getGrandCard()
+									.getBillCardPanel()
+									.setBodyValueAt(
+											refValue.getValue() == null ? "" : refValue.getValue().toString()
+													.replace(" ", ""), row, "valuetype", "pk_task_r");
 						} else if (refValue.getKey().equals("nc_result_code")) {
 							resultCode = (String) refValue.getValue();
 						} else if (refValue.getKey().equals("nc_result_namecn")) {
@@ -319,14 +324,20 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					}
 					if (!StringUtils.isEmpty(resultCode) && !StringUtils.isEmpty(resultName)) {
 						IConstEnum aValue = new DefaultConstEnum(resultName, resultName);
-						this.getGrandCard().getBillCardPanel()
-								.setBodyValueAt(aValue.getValue()==null?"":aValue.getValue().toString().replace(" ", ""), row, "valuetype", "pk_task_r");
+						this.getGrandCard()
+								.getBillCardPanel()
+								.setBodyValueAt(
+										aValue.getValue() == null ? "" : aValue.getValue().toString().replace(" ", ""),
+										row, "valuetype", "pk_task_r");
 					}
 
 					if (!StringUtils.isEmpty(refCode) && !StringUtils.isEmpty(refName)) {
 						IConstEnum aValue = new DefaultConstEnum(refName, refName);
-						this.getGrandCard().getBillCardPanel()
-								.setBodyValueAt(aValue.getValue()==null?"":aValue.getValue().toString().replace(" ", ""), row, "component", "pk_task_r");
+						this.getGrandCard()
+								.getBillCardPanel()
+								.setBodyValueAt(
+										aValue.getValue() == null ? "" : aValue.getValue().toString().replace(" ", ""),
+										row, "component", "pk_task_r");
 					}
 
 					this.getGrandCard().getBillCardPanel()
@@ -419,7 +430,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			try {
 				btnCancel = new UIButton();
 				btnCancel.setName("btnCancel");
-				btnCancel.setText("?秏");
+				btnCancel.setText("取消");
 				btnCancel.addActionListener(this);
 				btnCancel.registerKeyboardAction(this, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK),
 						JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -430,8 +441,8 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 		return btnCancel;
 	}
 
-	private UIButton btnOK = null;// ?隅偌聽
-	private UIButton btnCancel = null;// ?秏偌聽
+	private UIButton btnOK = null;// OK
+	private UIButton btnCancel = null;// 取消
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {

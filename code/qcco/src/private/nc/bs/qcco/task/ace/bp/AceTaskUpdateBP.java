@@ -1,9 +1,10 @@
 package nc.bs.qcco.task.ace.bp;
 
 import nc.bs.qcco.task.plugin.bpplugin.TaskPluginPoint;
+import nc.bs.qcco.task.rule.TaskCheckRule;
 import nc.impl.pubapp.pattern.data.bill.template.UpdateBPTemplate;
-import nc.impl.pubapp.pattern.rule.processer.CompareAroundProcesser;
 import nc.impl.pubapp.pattern.rule.IRule;
+import nc.impl.pubapp.pattern.rule.processer.CompareAroundProcesser;
 import nc.vo.qcco.task.AggTaskHVO;
 
 /**
@@ -12,11 +13,9 @@ import nc.vo.qcco.task.AggTaskHVO;
  */
 public class AceTaskUpdateBP {
 
-	public AggTaskHVO[] update(AggTaskHVO[] bills,
-			AggTaskHVO[] originBills) {
+	public AggTaskHVO[] update(AggTaskHVO[] bills, AggTaskHVO[] originBills) {
 		// 调用修改模板
-		UpdateBPTemplate<AggTaskHVO> bp = new UpdateBPTemplate<AggTaskHVO>(
-				TaskPluginPoint.UPDATE);
+		UpdateBPTemplate<AggTaskHVO> bp = new UpdateBPTemplate<AggTaskHVO>(TaskPluginPoint.UPDATE);
 		// 执行前规则
 		this.addBeforeRule(bp.getAroundProcesser());
 		// 执行后规则
@@ -26,15 +25,17 @@ public class AceTaskUpdateBP {
 
 	private void addAfterRule(CompareAroundProcesser<AggTaskHVO> processer) {
 		// TODO 后规则
-		/*IRule<AggTaskHVO> rule = null;
-		rule = new nc.bs.pubapp.pub.rule.BillCodeCheckRule();
-		((nc.bs.pubapp.pub.rule.BillCodeCheckRule) rule).setCbilltype("QC08");
-		((nc.bs.pubapp.pub.rule.BillCodeCheckRule) rule)
-				.setCodeItem("billno");
-		((nc.bs.pubapp.pub.rule.BillCodeCheckRule) rule)
-				.setGroupItem("pk_group");
-		((nc.bs.pubapp.pub.rule.BillCodeCheckRule) rule).setOrgItem("pk_org");
-		processer.addAfterRule(rule);*/
+		/*
+		 * IRule<AggTaskHVO> rule = null; rule = new
+		 * nc.bs.pubapp.pub.rule.BillCodeCheckRule();
+		 * ((nc.bs.pubapp.pub.rule.BillCodeCheckRule)
+		 * rule).setCbilltype("QC08");
+		 * ((nc.bs.pubapp.pub.rule.BillCodeCheckRule) rule)
+		 * .setCodeItem("billno"); ((nc.bs.pubapp.pub.rule.BillCodeCheckRule)
+		 * rule) .setGroupItem("pk_group");
+		 * ((nc.bs.pubapp.pub.rule.BillCodeCheckRule)
+		 * rule).setOrgItem("pk_org"); processer.addAfterRule(rule);
+		 */
 
 	}
 
@@ -43,16 +44,19 @@ public class AceTaskUpdateBP {
 		IRule<AggTaskHVO> rule = null;
 		rule = new nc.bs.pubapp.pub.rule.FillUpdateDataRule();
 		processer.addBeforeRule(rule);
-		/*nc.impl.pubapp.pattern.rule.ICompareRule<AggTaskHVO> ruleCom = new nc.bs.pubapp.pub.rule.UpdateBillCodeRule();
-		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
-				.setCbilltype("QC08");
-		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
-				.setCodeItem("billno");
-		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
-				.setGroupItem("pk_group");
-		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
-				.setOrgItem("pk_org");
-		processer.addBeforeRule(ruleCom);*/
+		/*
+		 * nc.impl.pubapp.pattern.rule.ICompareRule<AggTaskHVO> ruleCom = new
+		 * nc.bs.pubapp.pub.rule.UpdateBillCodeRule();
+		 * ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
+		 * .setCbilltype("QC08"); ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule)
+		 * ruleCom) .setCodeItem("billno");
+		 * ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
+		 * .setGroupItem("pk_group");
+		 * ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
+		 * .setOrgItem("pk_org"); processer.addBeforeRule(ruleCom);
+		 */
+		rule = new TaskCheckRule();
+		processer.addBeforeRule(rule);
 	}
 
 }
