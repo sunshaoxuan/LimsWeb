@@ -21,6 +21,25 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 			} else {
 				e.getBillCardPanel().setBodyValueAt("Î´Â¼Èë", e.getRow(), "conditionstatus");
 			}
+		} else if("instrument".equals(e.getKey())){
+			if(e.getValue()!=null && !"".equals(e.getValue())){
+				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_instrument");
+			}
+		}
+		else if("valuetype".equals(e.getKey())){
+			if(e.getValue()!=null && !"".equals(e.getValue())){
+				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_valuetype");
+			}
+		}
+		else if("samplegroup".equals(e.getKey())){
+			if(e.getValue()!=null && !"".equals(e.getValue())){
+				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_samplegroup");
+			}
+		}
+		else if("component".equals(e.getKey())){
+			if(e.getValue()!=null && !"".equals(e.getValue())){
+				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_component");
+			}
 		}
 
 	}

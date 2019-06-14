@@ -19,16 +19,19 @@ import nc.util.mmpub.dpub.gc.GCClientBillCombinServer;
 import nc.util.mmpub.dpub.gc.GCClientBillToServer;
 import nc.util.mmpub.dpub.gc.GCPseudoColUtil;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.ISuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
+import nc.vo.qcco.task.TaskBVO;
+import nc.vo.qcco.task.TaskSVO;
 
 public class TaskSaveAction extends DifferentVOSaveAction {
 	/**
 	 * SaveAction DifferentVOSaveAction
 	 */
 	private static final long serialVersionUID = -6804039169256642670L;
-
+	private ShowUpableBillForm grandCard;// mainBillForm
 	private MainGrandModel mainGrandModel;
 	private CardGrandPanelComposite billForm;
 	private ShowUpableBillForm billFormEditor;
@@ -59,7 +62,13 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 		this.billFormEditor = billFormEditor;
 	}
 
-	
+	public ShowUpableBillForm getGrandCard() {
+		return grandCard;
+	}
+
+	public void setGrandCard(ShowUpableBillForm grandCard) {
+		this.grandCard = grandCard;
+	}
 
 	IValidationService validationService;
 
@@ -168,12 +177,40 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 		{
 			try {
 				validationService.validate(value);
+				validateGrand(value);
 			} catch (ValidationException e) {
 				throw new BusinessExceptionAdapter(e);
 			}
 		}
 	}
 	
+
+	private void validateGrand(Object value) throws BusinessExceptionAdapter{
+		// “是否可选”没勾的，都是必输项的意思，保存的时候加校验值不能为空
+		if(value!=null && value instanceof AggTaskHVO){
+			AggTaskHVO aggvo = (AggTaskHVO)value;
+			if(aggvo.getChildren(TaskBVO.class)!=null){
+				ISuperVO[] superVOs = aggvo.getChildren(TaskBVO.class);
+				if(superVOs.length > 0){
+					for(ISuperVO superVO : superVOs){
+						TaskBVO bvo = (TaskBVO)superVO;
+						if(bvo!=null && bvo.getPk_task_s()!=null && bvo.getPk_task_s().length > 0){
+							TaskSVO[] svos =  bvo.getPk_task_s();
+							for(TaskSVO svo : svos){
+								if(svo!=null && (svo.getIsoptional()==null || !(svo.getIsoptional().booleanValue())) ){
+									//必输项,文本值或参照值不能同时为空
+									if((svo.getTextvalue()==null||"".equals(svo.getTextvalue()))&&svo.getPk_refvalue()==null ){
+										throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()+"],值不能为空"));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	}
 
 	public MainGrandModel getMainGrandModel() {
 		return mainGrandModel;
