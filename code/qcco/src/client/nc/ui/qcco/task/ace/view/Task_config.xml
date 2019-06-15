@@ -317,6 +317,7 @@
 							<value>rowno</value>
 						</list>
 					</property>
+					<property name="grandCard" ref="sunbillFormEditor1" />
 				</bean>
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyLineEditAction" />
 			</list>
