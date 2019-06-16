@@ -1,5 +1,6 @@
 package nc.bs.pubapp.utils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -31,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import uap.iweb.log.Logger;
 
 public class UserDefineRefUtils {
+	private static Map<String,String> cacheMap = new HashMap<>();
 	public static void refreshBillCardHeadDefRefs(AbstractBill aggvo, BillForm billForm, int selectedRow) {
 		for (BillItem item : billForm.getBillCardPanel().getHeadItems()) {
 			if (!StringUtils.isEmpty(item.getRefType()) && item.getRefType().contains("<")) {
@@ -225,7 +227,8 @@ public class UserDefineRefUtils {
 							}
 						}
 					}
-				}else if(null != rowItem && rowItem.getKey().equals("pk_component")&& null != refModel && refModel.getTableName().equals("NC_TEST_AFTER")){
+					//改个bug tank 2019年6月16日17:13:42
+				}else if(null != rowItem && rowItem.getKey().equals("component")&& null != refModel && refModel.getTableName().equals("NC_TEST_AFTER")){
 					//单独查询pk_component的参照
 					String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
 					if (pk_component == null) {
@@ -233,14 +236,24 @@ public class UserDefineRefUtils {
 					}
 					IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 					try {
-						List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
-								.executeQuery(
-										"select distinct test_after_code,trim(test_after_name) as test_after_name,PK_TEST_AFTER from NC_TEST_AFTER where PK_TEST_AFTER='"+pk_component+"' ", new MapListProcessor());
-						
 						String val=null;
-						for (Map<String, Object> map : custlist) {
-							val = map.get("test_after_name")==null?null:map.get("test_after_name").toString();
+						if(cacheMap.containsKey(pk_component)){
+							val = cacheMap.get(pk_component);
+						}else{
+							List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
+									.executeQuery(
+											"select distinct test_after_code,trim(test_after_name) as test_after_name,PK_TEST_AFTER from NC_TEST_AFTER where PK_TEST_AFTER='"
+									+pk_component+"' ", new MapListProcessor());
+							for (Map<String, Object> map : custlist) {
+								val = map.get("test_after_name")==null?null:map.get("test_after_name").toString();
+								//设置缓存大小为10条数据 tank 2019年6月16日17:13:20
+								if(cacheMap.size() >= 100){
+									cacheMap = new HashMap<>();
+								}
+								cacheMap.put(pk_component, val);
+							}
 						}
+						
 						for (int col = 0; col < uiTable.getColumnCount(); col++) {
 							if (uiTable.getColumnName(col).equals(rowItem.getName())) {
 								uiTable.setValueAt(val, row, col);
