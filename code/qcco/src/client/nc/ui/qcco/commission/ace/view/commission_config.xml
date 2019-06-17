@@ -545,6 +545,7 @@
 				<ref bean="editTaskAction" />
 				<ref bean="separatorAction" />
 				<!--ref bean="previewActionGroup" /-->
+				<ref bean="commissionPreviewAction" />
 				<ref bean="quotationAction" />
 				<ref bean="payDemandAction" />
 				<ref bean="officialReportAction" />
@@ -577,6 +578,7 @@
 				<ref bean="editTaskAction" />
 				<ref bean="separatorAction" />
 				<!-- ref bean="previewActionGroup" /-->
+				<ref bean="commissionPreviewAction" />
 				<ref bean="quotationAction" />
 				<ref bean="payDemandAction" />
 				<ref bean="officialReportAction" />
@@ -743,6 +745,10 @@
 				<ref bean="outputAction" />
 			</list>
 		</property>
+	</bean>
+	<!-- 委托单预览按钮 -->
+	<bean id="commissionPreviewAction" class="nc.ui.qcco.commission.action.CommissionPreviewAction">
+		<property name="model" ref="bmModel" />
 	</bean>
 	<!-- 报价单按钮 -->
 	<bean id="quotationAction" class="nc.ui.qcco.commission.action.QuotationAction">

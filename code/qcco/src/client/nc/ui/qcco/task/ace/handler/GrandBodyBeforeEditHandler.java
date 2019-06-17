@@ -71,11 +71,6 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 					: (Integer) e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
 			if (null == valueways) {
 				MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "错误", "取值方式不能为空。");
-				e.setReturnValue(false);
-				return;
-			} else if (valueways == 1) {
-				e.setReturnValue(false);
-				return;
 			} else if (valueways == 2) {
 				e.setReturnValue(true);
 				String pk_list_table = e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_list_table") == null ? null
@@ -89,15 +84,11 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 
 					}
 				} catch (DAOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				return;
-			} else {
-				e.setReturnValue(false);
-				return;
 			}
-
+			e.setReturnValue(false);
+			return;
 		}
 		e.setReturnValue(true);
 	}

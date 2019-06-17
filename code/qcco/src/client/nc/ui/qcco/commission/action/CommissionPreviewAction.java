@@ -14,16 +14,10 @@ import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 
-public class QuotationAction extends NCAction {
-
-	/**
-	 * serial no
-	 */
-	private static final long serialVersionUID = -1L;
-
-	public QuotationAction() {
-		setBtnName("报价单预览");
-		setCode("quotation");
+public class CommissionPreviewAction extends NCAction {
+	public CommissionPreviewAction() {
+		setBtnName("委托单预览");
+		setCode("commissionpreview");
 	}
 
 	protected AbstractAppModel model = null;
@@ -38,12 +32,12 @@ public class QuotationAction extends NCAction {
 	}
 
 	@Override
-	public void doAction(ActionEvent paramActionEvent) throws Exception {
+	public void doAction(ActionEvent arg0) throws Exception {
 		try {
 			// 查询
 			IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 			String url = (String) iUAPQueryBS.executeQuery(
-					"select vdef1 from report_path where nc_report_type = 'QUOTE'", new ColumnProcessor());
+					"select vdef1 from report_path where nc_report_type = 'PROJ'", new ColumnProcessor());
 			if (null == url) {
 				url = "404.html";
 			} else {
@@ -53,7 +47,7 @@ public class QuotationAction extends NCAction {
 			}
 
 			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
-					ConfirmDialog.CONFIRM_PREVIEW, "报价单预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
+					ConfirmDialog.CONFIRM_PREVIEW, "委托单预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
 
 			int rtnID = (Integer) value[0];
 			String txtMessage = (String) value[1];
@@ -67,7 +61,6 @@ public class QuotationAction extends NCAction {
 		} catch (Exception e) {
 			Logger.error(e.getCause());
 		}
-
 	}
 
 	protected boolean isActionEnable() {
@@ -81,4 +74,5 @@ public class QuotationAction extends NCAction {
 		}
 		return this.getModel().getUiState() == UIState.NOT_EDIT;
 	}
+
 }

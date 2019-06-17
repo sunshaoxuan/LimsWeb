@@ -12,6 +12,7 @@ import nc.ui.uif2.UIState;
 import nc.ui.uif2.model.AbstractAppModel;
 import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.commission.AggCommissionHVO;
 
 public class PayDemandAction extends NCAction {
 
@@ -45,6 +46,10 @@ public class PayDemandAction extends NCAction {
 					"select vdef1 from report_path where nc_report_type = 'COST'", new ColumnProcessor());
 			if (null == url) {
 				url = "http://404";
+			} else {
+				AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
+				url = url.replace("%REPORT_NAME%", aggvo.getParentVO().getBillno());
+				url = url.replace("%REPORT_NO%", aggvo.getParentVO().getBillno());
 			}
 
 			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),

@@ -30,8 +30,8 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 	@Override
 	public void processVOAfterCopy(AggCommissionHVO billVO, LoginContext context) {
 		processHeadVO(billVO, context);
-		//子表和孙表的关联通过主键,所以在保存的时候在清除
-		/*processBodyVO(billVO);*/
+		// 子表和孙表的关联通过主键,所以在保存的时候在清除
+		/* processBodyVO(billVO); */
 	}
 
 	public static void processBodyVO(AggCommissionHVO billVO) {
@@ -100,7 +100,7 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 		CommissionCodePrefixRefModel refmodel = new CommissionCodePrefixRefModel();
 		String name = (String) ((Vector) refmodel.matchPkData(headVO.getCodeprefix()).get(0)).get(1);
 		SimpleDateFormat dt = new SimpleDateFormat("yyMMdd");
-		String seed = name + "-" + dt.format(new UFDate().toDate());
+		String seed = name + "-" + dt.format(new UFDate().toDate() + "-");
 
 		try {
 			maxcode = (String) query.executeQuery("select max(billno) from QC_COMMISSION_H where billno like '" + seed
@@ -115,5 +115,4 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 		headVO.setStatus(VOStatus.NEW);
 		headVO.setPk_commission_h(null);
 	}
-
 }
