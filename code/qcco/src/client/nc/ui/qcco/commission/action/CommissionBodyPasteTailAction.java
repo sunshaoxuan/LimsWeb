@@ -49,23 +49,26 @@ public class CommissionBodyPasteTailAction extends BodyPasteToTailAction {
 		//没找到选择第几行的...方法
 		//getCardPanel().getBodyPanel("pk_task_b").delLine();
 		int rowSource = getCardPanel().getBodyPanel().getTable().getSelectedRow();
-		String order = String.valueOf(getCardPanel().getBillModel().getValueAt(rowSource, "rowno")) ;
-		AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
+		String order = String.valueOf(getCardPanel().getBillModel().getValueAt(rowSource, "samplegroup")) ;
+		AggCommissionHVO aggvo = (AggCommissionHVO) this.getBillForm().getValue();
 		ISuperVO[] bodyVOs = aggvo.getChildren(CommissionBVO.class);
 		if (bodyVOs != null && bodyVOs.length > 0) {
 			List<CommissionRVO> pastedRVOs = new ArrayList<CommissionRVO>();
 			for (ISuperVO bodyvo : bodyVOs) {
-				String bodyOrder = String.valueOf(bodyvo.getAttributeValue("rowno")) ;
+				String bodyOrder = String.valueOf(bodyvo.getAttributeValue("samplegroup")) ;
 				if (bodyOrder.equals(order)) {
 					CommissionBVO bodySource = (CommissionBVO) bodyvo;
 					CommissionRVO[] taskRVOs = bodySource.getPk_commission_r();
-					for (CommissionRVO rvo : taskRVOs) {
-						CommissionRVO pvo = (CommissionRVO) rvo.clone();
-						pvo.setPk_commission_b(null);
-						pvo.setPk_commission_r(null);
-						pvo.setStatus(VOStatus.NEW);
-						pastedRVOs.add(pvo);
+					if(taskRVOs!=null){
+						for (CommissionRVO rvo : taskRVOs) {
+							CommissionRVO pvo = (CommissionRVO) rvo.clone();
+							pvo.setPk_commission_b(null);
+							pvo.setPk_commission_r(null);
+							pvo.setStatus(VOStatus.NEW);
+							pastedRVOs.add(pvo);
+						}
 					}
+					
 					// 复制出的数据有点问题,没办法添加孙表,手动复制
 					getCardPanel().getBodyPanel("pk_commission_b").addLine();
 					//updateStatus();

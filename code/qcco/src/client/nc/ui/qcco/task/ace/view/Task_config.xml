@@ -311,6 +311,7 @@
 					</property>
 				</bean-->
 				<bean class="nc.ui.qcco.task.action.TaskBodyPasteToTailAction">
+				<constructor-arg ref="MainGrandbillFormEditor"></constructor-arg>
 					<property name="clearItems">
 						<list>
 							<value>pk_task_b</value>

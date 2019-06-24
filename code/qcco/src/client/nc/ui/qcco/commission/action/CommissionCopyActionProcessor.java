@@ -100,7 +100,7 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 		CommissionCodePrefixRefModel refmodel = new CommissionCodePrefixRefModel();
 		String name = (String) ((Vector) refmodel.matchPkData(headVO.getCodeprefix()).get(0)).get(1);
 		SimpleDateFormat dt = new SimpleDateFormat("yyMMdd");
-		String seed = name + "-" + dt.format(new UFDate().toDate() + "-");
+		String seed = name + "-" + dt.format(new UFDate().toDate()) + "-";
 
 		try {
 			maxcode = (String) query.executeQuery("select max(billno) from QC_COMMISSION_H where billno like '" + seed

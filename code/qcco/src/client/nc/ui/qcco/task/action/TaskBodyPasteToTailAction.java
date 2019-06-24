@@ -6,6 +6,7 @@ import java.util.List;
 
 import nc.ui.pub.bill.BillScrollPane;
 import nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction;
+import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterRowEditEvent;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.vo.pub.CircularlyAccessibleValueObject;
@@ -23,6 +24,14 @@ public class TaskBodyPasteToTailAction extends BodyPasteToTailAction {
 	 */
 	private static final long serialVersionUID = 8292276981135372115L;
 	private ShowUpableBillForm grandCard;// mainBillForm
+	private CardGrandPanelComposite billForm;
+	public CardGrandPanelComposite getBillForm() {
+		return billForm;
+	}
+
+	public void setBillForm(CardGrandPanelComposite billForm) {
+		this.billForm = billForm;
+	}
 	public ShowUpableBillForm getGrandCard() {
 		return grandCard;
 	}
@@ -69,7 +78,7 @@ public class TaskBodyPasteToTailAction extends BodyPasteToTailAction {
 		//getCardPanel().getBodyPanel("pk_task_b").delLine();
 		int rowSource = getCardPanel().getBodyPanel().getTable().getSelectedRow();
 		Integer order = (Integer) getCardPanel().getBillModel().getValueAt(rowSource, "runorder");
-		AggTaskHVO aggvo = (AggTaskHVO) this.getModel().getSelectedData();
+		AggTaskHVO aggvo =  (AggTaskHVO)this.getBillForm().getValue();
 		ISuperVO[] bodyVOs = aggvo.getChildren(TaskBVO.class);
 		if (bodyVOs != null && bodyVOs.length > 0) {
 			List<TaskSVO> pastedSVOs = new ArrayList<TaskSVO>();
