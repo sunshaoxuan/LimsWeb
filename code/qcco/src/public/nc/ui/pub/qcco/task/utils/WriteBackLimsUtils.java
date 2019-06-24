@@ -503,7 +503,7 @@ public class WriteBackLimsUtils {
                                             .append(",");
                                 }else{
                                     fieldValues[row].append("'")
-                                            .append(String.valueOf(realValue))
+                                            .append(dealEscapse(String.valueOf(realValue)))
                                             .append("',");
                                 }
 
@@ -590,7 +590,7 @@ public class WriteBackLimsUtils {
                                             .append(",");
                                 } else {
                                     fieldValues[i].append("'")
-                                            .append(String.valueOf(realValue))
+                                            .append(dealEscapse(String.valueOf(realValue)))
                                             .append("',");
                                 }
                             }
@@ -688,6 +688,14 @@ public class WriteBackLimsUtils {
         }
         return rsString;
     }
+    private String dealEscapse(String value){
+    	if(value!=null){
+    		if(value.contains("'")){
+    			value = value.replaceAll("'", "''");
+    		}
+    	}
+    	return value;
+    }
     /**
      * 获取Insert语句片断--Sample表额外回写方法
      *
@@ -757,7 +765,7 @@ public class WriteBackLimsUtils {
                                 fieldValues[row].append(realValue).append(",");
                             } else {
                                 fieldValues[row].append("'")
-                                        .append(String.valueOf(realValue))
+                                        .append(dealEscapse(String.valueOf(realValue)))
                                         .append("',");
                             }
                         } else {
@@ -827,7 +835,7 @@ public class WriteBackLimsUtils {
                                             .append(",");
                                 } else {
                                     fieldValues[i].append("'")
-                                            .append(String.valueOf(realValue))
+                                            .append(dealEscapse(String.valueOf(realValue)))
                                             .append("',");
                                 }
                             }
