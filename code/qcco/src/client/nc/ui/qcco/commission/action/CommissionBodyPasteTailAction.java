@@ -4,11 +4,14 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterRowEditEvent;
+import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.vo.pub.ISuperVO;
+import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -52,6 +55,7 @@ public class CommissionBodyPasteTailAction extends BodyPasteToTailAction {
 		String order = String.valueOf(getCardPanel().getBillModel().getValueAt(rowSource, "samplegroup")) ;
 		AggCommissionHVO aggvo = (AggCommissionHVO) this.getBillForm().getValue();
 		ISuperVO[] bodyVOs = aggvo.getChildren(CommissionBVO.class);
+		CommissionBVO newVO = null;
 		if (bodyVOs != null && bodyVOs.length > 0) {
 			List<CommissionRVO> pastedRVOs = new ArrayList<CommissionRVO>();
 			for (ISuperVO bodyvo : bodyVOs) {
@@ -72,7 +76,8 @@ public class CommissionBodyPasteTailAction extends BodyPasteToTailAction {
 					// 复制出的数据有点问题,没办法添加孙表,手动复制
 					getCardPanel().getBodyPanel("pk_commission_b").addLine();
 					//updateStatus();
-					fillPastedBodyVO((CommissionBVO)bodySource.clone());
+					newVO = (CommissionBVO)bodySource.clone();
+					fillPastedBodyVO(newVO);
 					fillGrandPanel(taskRVOs);
 					fireEvent();
 					break;
@@ -84,6 +89,12 @@ public class CommissionBodyPasteTailAction extends BodyPasteToTailAction {
 			tgtVO.setPk_commission_r(pastedRVOs.toArray(new CommissionRVO[0]));
 			
 			//刷新操作
+			UserDefineRefUtils.refreshBillCardBodyDefRefs4SingleRow((SuperVO)newVO,(getCardPanel().getRowCount("pk_commission_b") - 1),
+					(BillForm)billForm.getMainPanel(), "pk_commission_b");
+			List<Object> svoList = new ArrayList<>();
+			//List<Object> rvoList = new ArrayList<>();
+			svoList.addAll(pastedRVOs);
+			UserDefineRefUtils.refreshBillCardGrandDefRefs(grandCard, "pk_commission_r", svoList);
 			//billForm.showMeUp();
 		}
 		
@@ -92,23 +103,23 @@ public class CommissionBodyPasteTailAction extends BodyPasteToTailAction {
 		if(null != bodySource2){
 			int row = getCardPanel().getRowCount("pk_commission_b") - 1;
 			getCardPanel().setBodyValueAt(bodySource2.getPk_productserial(), row, "pk_productserial", "pk_commission_b");
-			getCardPanel().setBodyValueAt(bodySource2.getPk_productserial(), row, "productserial", "pk_commission_b");
+			//getCardPanel().setBodyValueAt(bodySource2.getPk_productserial(), row, "productserial", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getPk_enterprisestandard(), row, "pk_enterprisestandard", "pk_commission_b");
-			getCardPanel().setBodyValueAt(bodySource2.getPk_enterprisestandard(), row, "enterprisestandard", "pk_commission_b");
+			//getCardPanel().setBodyValueAt(bodySource2.getPk_enterprisestandard(), row, "enterprisestandard", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getTypeno(), row, "typeno", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getPk_productspec(), row, "pk_productspec", "pk_commission_b");
-			getCardPanel().setBodyValueAt(bodySource2.getPk_productspec(), row, "productspec", "pk_commission_b");
+			//getCardPanel().setBodyValueAt(bodySource2.getPk_productspec(), row, "productspec", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getPk_structuretype(), row, "pk_structuretype", "pk_commission_b");
-			getCardPanel().setBodyValueAt(bodySource2.getPk_structuretype(), row, "structuretype", "pk_commission_b");
+			//getCardPanel().setBodyValueAt(bodySource2.getPk_structuretype(), row, "structuretype", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getContacttype(), row, "contacttype", "pk_commission_b");
-			getCardPanel().setBodyValueAt(bodySource2.getContacttype(), row, "ref_contacttype", "pk_commission_b");
+			//getCardPanel().setBodyValueAt(bodySource2.getContacttype(), row, "ref_contacttype", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getManufacturer(), row, "manufacturer", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getPk_contactbrand(), row, "pk_contactbrand", "pk_commission_b");
-			getCardPanel().setBodyValueAt(bodySource2.getPk_contactbrand(), row, "contactbrand", "pk_commission_b");
+			//getCardPanel().setBodyValueAt(bodySource2.getPk_contactbrand(), row, "contactbrand", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getContactmodel(), row, "contactmodel", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getProductstage(), row, "productstage", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getPk_samplegroup(), row, "pk_samplegroup", "pk_commission_b");
-			getCardPanel().setBodyValueAt(bodySource2.getPk_samplegroup(), row, "samplegroup", "pk_commission_b");
+			//getCardPanel().setBodyValueAt(bodySource2.getPk_samplegroup(), row, "samplegroup", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getQuantity(), row, "quantity", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getAnalysisref(), row, "analysisref", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getOtherinfo(), row, "otherinfo", "pk_commission_b");

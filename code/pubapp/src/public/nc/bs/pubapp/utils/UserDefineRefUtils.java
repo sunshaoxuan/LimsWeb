@@ -96,6 +96,40 @@ public class UserDefineRefUtils {
 			}
 		}
 	}
+	/**
+	 * 只刷新一行子表
+	 * @param fullBodyVO
+	 * @param billForm
+	 * @param tabCode
+	 * @param bodyVOClass
+	 */
+	public static void refreshBillCardBodyDefRefs4SingleRow(SuperVO fullBodyVO,int row, BillForm billForm, String tabCode) {
+		if (fullBodyVO != null) {
+			for (BillItem item : billForm.getBillCardPanel().getBillModel(tabCode).getBodyItems()) {
+				if (!StringUtils.isEmpty(item.getRefType()) && item.getRefType().contains("<")) {
+					String itemKey = item.getKey();
+					if ("ref_contacttype".equals(itemKey) || "contacttype".equals(itemKey)) {
+						BillItem pkItem = billForm.getBillCardPanel().getBillModel(tabCode).getItemByKey("contacttype");
+
+						if (pkItem != null) {
+							fullBodyVO.setAttributeValue(itemKey, fullBodyVO.getAttributeValue("contacttype"));
+						}
+						UserDefineRefUtils.refreshItemRefValue(fullBodyVO, billForm.getBillCardPanel().getBillTable(tabCode), row, item,
+								true);
+					} else {
+						BillItem pkItem = billForm.getBillCardPanel().getBillModel(tabCode).getItemByKey("pk_" + itemKey);
+
+						if (pkItem != null) {
+							fullBodyVO.setAttributeValue(itemKey, fullBodyVO.getAttributeValue("pk_" + itemKey));
+						}
+						UserDefineRefUtils.refreshItemRefValue(fullBodyVO, billForm.getBillCardPanel().getBillTable(tabCode), row, item,
+								true);
+					}
+				}
+			}
+		}
+		
+	}
 
 	public static void refreshBillCardGrandDefRefs(BillForm grandBillForm, String tabCode, List<Object> grandVOList) {
 		int row = grandBillForm.getBillCardPanel().getBillModel().getRowCount();
@@ -121,18 +155,21 @@ public class UserDefineRefUtils {
 					}
 				} else {
 					// 因为任务单的孙表都无primaryKey，因此走以下方法，如影响其他功能，则可，单独判断测试条件和试验后参数孙表。
-					SuperVO superVO = (SuperVO) grandVOList.get(i);
-					for (BillItem billItem : grandBillForm.getBillCardPanel().getBillModel().getBodyItems()) {
+					if(i<grandVOList.size()){
+						SuperVO superVO = (SuperVO) grandVOList.get(i);
+						for (BillItem billItem : grandBillForm.getBillCardPanel().getBillModel().getBodyItems()) {
 
-						String itemKey = billItem.getKey();
-						BillItem pkItem = grandBillForm.getBillCardPanel().getBillModel(tabCode)
-								.getItemByKey("pk_" + itemKey);
-						if (pkItem != null) {
-							superVO.setAttributeValue(itemKey, superVO.getAttributeValue("pk_" + itemKey));
+							String itemKey = billItem.getKey();
+							BillItem pkItem = grandBillForm.getBillCardPanel().getBillModel(tabCode)
+									.getItemByKey("pk_" + itemKey);
+							if (pkItem != null) {
+								superVO.setAttributeValue(itemKey, superVO.getAttributeValue("pk_" + itemKey));
+							}
+							UserDefineRefUtils.refreshItemRefValue(superVO,
+									grandBillForm.getBillCardPanel().getBillTable(tabCode), i, billItem, true);
 						}
-						UserDefineRefUtils.refreshItemRefValue(superVO,
-								grandBillForm.getBillCardPanel().getBillTable(tabCode), i, billItem, true);
 					}
+					
 				}
 			} catch (BusinessException e) {
 				Logger.error(e.getMessage());

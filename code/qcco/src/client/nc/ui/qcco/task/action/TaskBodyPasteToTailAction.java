@@ -4,13 +4,16 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.ui.pub.bill.BillScrollPane;
 import nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterRowEditEvent;
+import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
+import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
@@ -80,6 +83,7 @@ public class TaskBodyPasteToTailAction extends BodyPasteToTailAction {
 		Integer order = (Integer) getCardPanel().getBillModel().getValueAt(rowSource, "runorder");
 		AggTaskHVO aggvo =  (AggTaskHVO)this.getBillForm().getValue();
 		ISuperVO[] bodyVOs = aggvo.getChildren(TaskBVO.class);
+		TaskBVO newVO = null;
 		if (bodyVOs != null && bodyVOs.length > 0) {
 			List<TaskSVO> pastedSVOs = new ArrayList<TaskSVO>();
 			List<TaskRVO> pastedRVOs = new ArrayList<TaskRVO>();
@@ -111,7 +115,8 @@ public class TaskBodyPasteToTailAction extends BodyPasteToTailAction {
 					// 复制出的数据有点问题,没办法添加孙表,手动复制
 					getCardPanel().getBodyPanel("pk_task_b").addLine();
 					//updateStatus();
-					fillPastedBodyVO((TaskBVO)bodySource.clone());
+					newVO = (TaskBVO)bodySource.clone();
+					fillPastedBodyVO(newVO);
 					fillGrandPanel(taskSVOs,taskRVOs);
 					fireEvent();
 					break;
@@ -122,6 +127,15 @@ public class TaskBodyPasteToTailAction extends BodyPasteToTailAction {
 			tgtVO.setStatus(VOStatus.NEW);
 			tgtVO.setPk_task_s(pastedSVOs.toArray(new TaskSVO[0]));
 			tgtVO.setPk_task_r(pastedRVOs.toArray(new TaskRVO[0]));
+			
+			
+			//刷新操作
+			UserDefineRefUtils.refreshBillCardBodyDefRefs4SingleRow((SuperVO)newVO,(getCardPanel().getRowCount("pk_task_b") - 1),
+					(BillForm)billForm.getMainPanel(), "pk_task_b");
+			List<Object> svoList = new ArrayList<>();
+			//List<Object> rvoList = new ArrayList<>();
+			svoList.addAll(pastedRVOs);
+			UserDefineRefUtils.refreshBillCardGrandDefRefs(grandCard, "pk_task_r", svoList);
 		}
 		
 	}
