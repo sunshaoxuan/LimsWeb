@@ -3,6 +3,7 @@ package nc.ui.qcco.task.action;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.ui.pub.bill.BillScrollPane;
@@ -151,6 +152,9 @@ public class TaskBodyPasteToTailAction extends BodyPasteToTailAction {
 			getCardPanel().setBodyValueAt(bodySource2.getTestnumber(), row, "testnumber", "pk_task_b");
 			getCardPanel().setBodyValueAt(bodySource2.getSampleallocation(), row, "sampleallocation", "pk_task_b");
 			getCardPanel().setBodyValueAt(bodySource2.getSamplequantity(), row, "samplequantity", "pk_task_b");
+			String uuid = UUID.randomUUID().toString();	
+			uuid = uuid.replace("-", "");
+			getCardPanel().setBodyValueAt(uuid, row, "uniquekey", "pk_task_b");
 			getCardPanel().setBodyValueAt(VOStatus.NEW, row, "status", "pk_task_b");
 		}
 	}

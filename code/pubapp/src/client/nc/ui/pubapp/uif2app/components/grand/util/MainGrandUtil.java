@@ -3,6 +3,7 @@ package nc.ui.pubapp.uif2app.components.grand.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import nc.bs.logging.Logger;
 import nc.md.model.IBusinessEntity;
@@ -14,6 +15,7 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.bill.BillTabVO;
+import nc.vo.qcco.task.TaskBVO;
 
 /**
  * 主子孙常用方法的工具类

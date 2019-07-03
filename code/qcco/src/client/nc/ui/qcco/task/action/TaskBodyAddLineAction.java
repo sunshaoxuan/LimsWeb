@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.Vector;
 
 import nc.bs.dao.DAOException;
@@ -83,7 +84,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									this.getCardPanel().getRowCount() - 1, "testresultshortname");
 							super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
 									this.getCardPanel().getRowCount() - 1, "runorder");
-
+							String uuid = UUID.randomUUID().toString();	
+							uuid = uuid.replace("-", "");
+							super.getCardPanel().setBodyValueAt(uuid,
+									this.getCardPanel().getRowCount() - 1, "uniquekey");
 							super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1,
 									"pk_task_h");
 
@@ -108,7 +112,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							this.getCardPanel().getRowCount() - 1, "testresultshortname");
 					super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
 							this.getCardPanel().getRowCount() - 1, "runorder");
-
+					String uuid = UUID.randomUUID().toString();	
+					uuid = uuid.replace("-", "");
+					super.getCardPanel().setBodyValueAt(uuid,
+							this.getCardPanel().getRowCount() - 1, "uniquekey");
 					super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1, "pk_task_h");
 
 					// 生成孙表测试条件

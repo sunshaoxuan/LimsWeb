@@ -24,6 +24,10 @@ public class TaskBVO extends SuperVO {
 	 */
 	public String pk_task_b;
 	/**
+	 * Î±Àý
+	 */
+	public String uniquekey;
+	/**
 	 * ÈÎ„Õ¾ŽÌ–
 	 */
 	public String taskcode;
@@ -155,6 +159,15 @@ public class TaskBVO extends SuperVO {
 	 * •rég´Á
 	 */
 	public UFDateTime ts;
+
+	
+	public String getUniquekey() {
+		return uniquekey;
+	}
+
+	public void setUniquekey(String uniquekey) {
+		this.uniquekey = uniquekey;
+	}
 
 	public Integer Dr;
 	public TaskRVO[] pk_task_r;

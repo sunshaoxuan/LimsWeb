@@ -535,6 +535,7 @@
 						<bean class="nc.ui.qcco.task.ace.handler.AceBodyAfterEditHandler" >
 							<property name="mainBillForm" ref="billFormEditor" />
 							<property name="grandCard" ref="sunbillFormEditor1" />	
+							<property name="billForm" ref="MainGrandbillFormEditor" />
 						</bean>
 					</property>
 				</bean>

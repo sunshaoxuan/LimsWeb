@@ -38,6 +38,7 @@ import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.pub.ValidationException;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.task.TaskBVO;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -198,6 +199,7 @@ public class MainGrandAssist {
 		}
 		String pk_body = this.getPkStatusIsEdit(currBodyVO);
 		// 车胎都爆了,就别抢银行了! Tank 2019年4月10日23:16:27
+		RowNumUtil.getRowNumUtil().generateRowNo();
 		/*
 		 * if (pk_body == null) { String precolum =
 		 * RowNumUtil.getRowNumUtil().generateRowNo();
@@ -797,6 +799,10 @@ public class MainGrandAssist {
 			children_pk = changeChild.getPrimaryKey();
 		} catch (BusinessException e) {
 			Logger.error(e.getMessage(), e);
+		}
+		//mod 添加了一个新字段用来唯一标识一行 Ares.tank 2019年7月2日22:39:18
+		if (changeChild instanceof TaskBVO && children_pk == null) {
+			children_pk = (String) changeChild.getAttributeValue("uniquekey");
 		}
 		if (children_pk == null) {
 			children_pk = (String) changeChild.getAttributeValue("precolumn");
