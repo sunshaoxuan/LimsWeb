@@ -1,6 +1,8 @@
 package nc.ui.pub.qcco.task.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +20,8 @@ import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
+import nc.vo.pub.lang.UFBoolean;
+import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.commission.CommissionRVO;
@@ -143,7 +147,7 @@ public class WriteBackLimsUtils {
         }
         class2NumMap.put(CommissionHVO.class, lists!=null?(lists.length - 1):0);
         if (lists != null && lists.length > 0) {
-            sqlList.addAll(getHeadInsertSQL(lists));
+            sqlList.addAll(getHeadInsertSQL(lists,pk_commission_h));
         }
         // 样品行
         lists = getInsertSQLByMap(getBodySampleMapping(), CommissionBVO.class,
@@ -384,8 +388,79 @@ public class WriteBackLimsUtils {
         }
         return rsList;
     }
+    /**
+     * 委托单主表固定值回写
+     */
+    private static Map<String,String> COMMISSION_HEARD_STATIC_MAP = new HashMap<>();
+    {
+    	COMMISSION_HEARD_STATIC_MAP.put("TEMPLATE","1");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_MAIL_LAB_APPROVAL","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("TEMPLATE_VERSION","1");
+    	COMMISSION_HEARD_STATIC_MAP.put("STATUS","'U'");
+    	COMMISSION_HEARD_STATIC_MAP.put("OLD_STATUS","'I'");
+    	COMMISSION_HEARD_STATIC_MAP.put("COST_FACTOR","0.0000");
+    	COMMISSION_HEARD_STATIC_MAP.put("GROUP_NAME","'DEFAULT'");
+    	COMMISSION_HEARD_STATIC_MAP.put("CLOSED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("SAMPLE_TEMPLATE","'HF-MAIN'");
+    	COMMISSION_HEARD_STATIC_MAP.put("STABILITY","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("USE_GROUP_LOGIN","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("USE_GRID_LOGIN","'T'");
+    	COMMISSION_HEARD_STATIC_MAP.put("ALIQUOT","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("SIGNED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("T_COA_TEMPLATE","'HF_COA_DEFAULT'");
+    	COMMISSION_HEARD_STATIC_MAP.put("T_INVOICE_NUMBER","0");
+    	COMMISSION_HEARD_STATIC_MAP.put("T_LOGIN_VERIF_REQD","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("T_LOGIN_VERIFIED","'T'");
+    	COMMISSION_HEARD_STATIC_MAP.put("T_PRE_INVOICE_NUMBER","0");
+    	COMMISSION_HEARD_STATIC_MAP.put("APPROVED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("APPROVAL_GROUP","'PROJECT'");
+    	COMMISSION_HEARD_STATIC_MAP.put("READY_FOR_APPROVAL","'T'");
+		COMMISSION_HEARD_STATIC_MAP.put("APPROVAL_ID", "0");
+		COMMISSION_HEARD_STATIC_MAP.put("NUM_U", "0");
+		COMMISSION_HEARD_STATIC_MAP.put("NUM_I", "0");
+		COMMISSION_HEARD_STATIC_MAP.put("NUM_P", "0");
+		COMMISSION_HEARD_STATIC_MAP.put("NUM_C", "0");
+		COMMISSION_HEARD_STATIC_MAP.put("NUM_A", "0");
+		COMMISSION_HEARD_STATIC_MAP.put("NUM_R", "0");
+		COMMISSION_HEARD_STATIC_MAP.put("NUM_X", "0");
+    	COMMISSION_HEARD_STATIC_MAP.put("APPROVAL_ROUTING","'HF'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_QUOTES_CREATED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_QUOTES_VERIFYED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_PRIORITY_LEVEL","3");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_TOTAL_CHARGE","0.00");
+    	COMMISSION_HEARD_STATIC_MAP.put("HAS_ANSWER_SET","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_RPT_AUTHORIZED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_INVOICE_CREATED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_INVOICE_VERIFYED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_RPT_REPORT_NUMBER","0");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_ALLTASK_COA_AUTHORIZED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_RPT_CNAS_LOGO","'T'");
+    }
+    /**
+     * 参照需要code写入的字段
+     */
+    private static Map<Class<?>,Set<String>> NEED_CODE_WRITE_BACK_MAP = new HashMap<>();
+    {
+		Set<String> COMMISSIONHVO_SET = new HashSet<>();
+		COMMISSIONHVO_SET.add("cuserid");
+		COMMISSIONHVO_SET.add("pk_maincategory");
+		COMMISSIONHVO_SET.add("pk_subcategory");
+		COMMISSIONHVO_SET.add("pk_lastcategory");
+		COMMISSIONHVO_SET.add("reportlang");
+		COMMISSIONHVO_SET.add("productproperty");
+		COMMISSIONHVO_SET.add("customername");
+		COMMISSIONHVO_SET.add("customertype");
+		COMMISSIONHVO_SET.add("testrequirement");
+		COMMISSIONHVO_SET.add("checkingproperty");
+		COMMISSIONHVO_SET.add("productline");
+		COMMISSIONHVO_SET.add("batchnumber");
+		COMMISSIONHVO_SET.add("productdate");
+		COMMISSIONHVO_SET.add("batchserial");
+		COMMISSIONHVO_SET.add("identificationtype");
+		COMMISSIONHVO_SET.add("certificationtype");
+		NEED_CODE_WRITE_BACK_MAP.put(CommissionHVO.class, COMMISSIONHVO_SET);
 
-
+    }
     /**
      * 委托单表头
      *
@@ -394,17 +469,36 @@ public class WriteBackLimsUtils {
      * @param fatherPkList
      * @param selfPkList
      * @return
+     * @throws BusinessException 
      */
-    private List<String> getHeadInsertSQL(String[] lists) {
+    private List<String> getHeadInsertSQL(String[] lists,String pk_commission_h) throws BusinessException {
         List<String> rsList = new ArrayList();
         if (lists != null && lists.length > 1) {
-            // 先 生成好pk
-
+        	StringBuilder colNameSB = new StringBuilder(lists[0]);
+        	StringBuilder colValSB = new StringBuilder();
+        	//查询样品行数量,用于回写project.NUM_SAMPLES 字段
+        	Integer bNum = (Integer)baseDao.executeQuery(
+        			"select count(*) from qc_commission_b where pk_commission_h = '"+pk_commission_h+"'", 
+        			new ColumnProcessor());
+        	if(bNum == null){
+        		bNum = 0;
+        	}
+        	colNameSB.append(",").append("num_samples");
+    		colValSB.append(",").append(bNum);
+            //处理固定值字段
+        	for(String colName : COMMISSION_HEARD_STATIC_MAP.keySet()){
+        		colNameSB.append(",").append(colName);
+        		colValSB.append(",").append(COMMISSION_HEARD_STATIC_MAP.get(colName));
+        	}
+        	
             StringBuilder sqlSB = new StringBuilder();
+            StringBuilder temp = new StringBuilder();
             for (int i = 1; i < lists.length; i++) {
                 sqlSB.append("INSERT INTO PROJECT").append("(")
-                        .append(lists[0]).append(")  values (");
-                sqlSB.append(lists[i]);
+                        .append(colNameSB.toString()).append(")  values (");
+                temp.delete(0, temp.length());
+                temp.append(lists[i]).append(colValSB);
+                sqlSB.append(temp.toString());
                 sqlSB.append(" ) ");
                 rsList.add(sqlSB.toString());
                 sqlSB.delete(0, sqlSB.length());
@@ -492,12 +586,25 @@ public class WriteBackLimsUtils {
                     }
                     if(null!=realValue &&("creationtime".equals(fieldName)||"modifiedtime".equals(fieldName))){
                         realValue = "to_timestamp('"+realValue+"','yyyy-mm-dd hh24:mi:ss.ff')";}
+                    if(null!=realValue &&("productdate".equals(fieldName))){
+                        realValue = "to_timestamp('"+realValue+"','yyyy-mm-dd')";}
                     for (int j = 0; j < times; j++) {
                         if (realValue != null) {
-                            if (realValue instanceof Integer) {
+                            if (realValue instanceof Integer || realValue instanceof UFDouble || realValue instanceof Double) {
                                 fieldValues[row].append(realValue).append(",");
-                            } else {
-                                if("creationtime".equals(fieldName)||"modifiedtime".equals(fieldName)){
+                            }else if(realValue instanceof UFBoolean){
+                            	if("Y".equals(String.valueOf(realValue))){
+                            		fieldValues[row].append("'")
+                                    .append("T")
+                                    .append("',");
+                            	}else{
+                            		fieldValues[row].append("'")
+                                    .append("F")
+                                    .append("',");
+                            	}
+                            	
+                            }else {
+                            	if(null!=realValue &&("creationtime".equals(fieldName)||"modifiedtime".equals(fieldName)||"productdate".equals(fieldName))){
                                     fieldValues[row]
                                             .append(String.valueOf(realValue))
                                             .append(",");
@@ -585,10 +692,22 @@ public class WriteBackLimsUtils {
                                 Object realValue = dealRefValue(clazz, ncField,
                                         oldFieldValue);
                                 if (null == realValue
-                                        || realValue instanceof Integer) {
+                                        || realValue instanceof Integer|| realValue instanceof UFDouble || realValue instanceof Double) {
+                                	
                                     fieldValues[i].append(realValue)
                                             .append(",");
-                                } else {
+                                } else if(realValue instanceof UFBoolean){
+                                	if("Y".equals(String.valueOf(realValue))){
+                                		fieldValues[i].append("'")
+                                        .append("T")
+                                        .append("',");
+                                	}else{
+                                		fieldValues[i].append("'")
+                                        .append("F")
+                                        .append("',");
+                                	}
+                                	
+                                }else {
                                     fieldValues[i].append("'")
                                             .append(dealEscapse(String.valueOf(realValue)))
                                             .append("',");
@@ -596,7 +715,7 @@ public class WriteBackLimsUtils {
                             }
                         }
                         if (null == pkList.get(i - 1)
-                                || pkList.get(i - 1) instanceof Integer) {
+                                || pkList.get(i - 1) instanceof Integer ) {
                             // pk
                             fieldValues[i].append(pkList.get(i - 1))
                                     .append(",");
@@ -761,9 +880,20 @@ public class WriteBackLimsUtils {
                     }
                     for (int j = 0; j < times; j++) {
                         if (realValue != null) {
-                            if (realValue instanceof Integer) {
+                            if (realValue instanceof Integer || realValue instanceof UFDouble || realValue instanceof Double) {
                                 fieldValues[row].append(realValue).append(",");
-                            } else {
+                            } else if(realValue instanceof UFBoolean){
+                            	if("Y".equals(String.valueOf(realValue))){
+                            		fieldValues[row].append("'")
+                                    .append("T")
+                                    .append("',");
+                            	}else{
+                            		fieldValues[row].append("'")
+                                    .append("F")
+                                    .append("',");
+                            	}
+                            	
+                            }else {
                                 fieldValues[row].append("'")
                                         .append(dealEscapse(String.valueOf(realValue)))
                                         .append("',");
@@ -830,10 +960,21 @@ public class WriteBackLimsUtils {
                                 Object realValue = dealRefValue(clazz, ncField,
                                         oldFieldValue);
                                 if (null == realValue
-                                        || realValue instanceof Integer) {
+                                        || realValue instanceof Integer || realValue instanceof UFDouble || realValue instanceof Double) {
                                     fieldValues[i].append(realValue)
                                             .append(",");
-                                } else {
+                                } else if(realValue instanceof UFBoolean){
+                                	if("Y".equals(String.valueOf(realValue))){
+                                		fieldValues[i].append("'")
+                                        .append("T")
+                                        .append("',");
+                                	}else{
+                                		fieldValues[i].append("'")
+                                        .append("F")
+                                        .append("',");
+                                	}
+                                	
+                                }else {
                                     fieldValues[i].append("'")
                                             .append(dealEscapse(String.valueOf(realValue)))
                                             .append("',");
@@ -993,8 +1134,8 @@ public class WriteBackLimsUtils {
     public Map<String, String> getHeadMapping() {
         if (headMapping == null) {
             headMapping = new HashMap<String, String>();
-
-            headMapping.put("pk_commissiontype", "project.template");// 委托单类型
+            
+            headMapping.put("pk_commissiontype", "project.C_APPLY_TYPE");// 委托单编号
             headMapping.put("billno", "project.name");// 委托单编号
             headMapping.put("billname", "project.title");// 委托单名称
             headMapping.put("pk_owner", "project.customer");// 委托单位
@@ -1009,7 +1150,6 @@ public class WriteBackLimsUtils {
             headMapping.put("pk_lastcategory", "project.c_prod_type_c2");// 三级分类
             headMapping.put("reportformat", "project.c_coa_format");// 报告格式
             headMapping.put("reportlang", "project.c_coa_language");// 报告语言
-            headMapping.put("managersendflag", "project.c_mail_lab_approval");// 实验室主管审核发送邮件
             headMapping.put("taskbeginsendflag", "project.c_mail_task_end");// 任务开始发送邮件
             headMapping.put("taskendsendflag", "project.c_mail_task_start");// 任务结束发送邮件
             headMapping.put("reportsendflag", "project.c_mail_coa_sign");// 报告签发发送邮件
@@ -1033,8 +1173,8 @@ public class WriteBackLimsUtils {
             headMapping
                     .put("certificationtype", "project.c_certification_type");// 认证类型
             headMapping.put("itemnumber", "project.c_item_number");// 项目号
-            headMapping.put("modifiedtime",
-                    "project.date_created;project.date_updated");// 制单时间
+            headMapping.put("creationtime", "project.date_created");// 制单时间
+            headMapping.put("modifiedtime", "project.date_updated");// 制单时间
         }
 
         return headMapping;
@@ -1206,6 +1346,10 @@ public class WriteBackLimsUtils {
      */
     private Object dealRefValue(Class<?> clazz, String fieldName,
                                 Object fieldValue) throws BusinessException {
+    	//系统参照特殊处理
+    	if(isSystemRef(clazz,fieldName)){
+    		return dealSystemRef(clazz,fieldName,fieldValue);
+    	}
         String strSQL = "select reftype from md_property ppt " + "inner join md_class cls on cls.id = ppt.classid "
                 + "inner join pub_billtemplet_b btb on btb.metadataproperty = 'qcco.' || cls.name || '.' || ppt.name "
                 + "where btb.reftype is not null and cls.fullclassname = '" + clazz.getName() + "' and ppt.name='"
@@ -1216,7 +1360,7 @@ public class WriteBackLimsUtils {
         if (!StringUtils.isEmpty(refType)) {
             refType = refType.replace("<", "").replace(">", "").split(",")[0].trim();
         }
-
+        
         try {
             if(TaskSVO.class==clazz && "conditionstatus".equals(fieldName)){
                 if(null == fieldValue){
@@ -1226,7 +1370,14 @@ public class WriteBackLimsUtils {
                 }else {
                     fieldValue = 2;
                 }
-            }
+            }else if(CommissionHVO.class==clazz && "reportlang".equals(fieldName)){
+            	//非系统特殊参照 : 报告语言 需要写入编码(非code)
+            	return dealNotSystemRefButSpec(clazz,fieldName,fieldValue);
+            }/*else if(CommissionHVO.class==clazz && "pk_commissiontype".equals(fieldName)){
+            	//非系统特殊参照 : 委托单类型 中文
+            	return dealNotSystemRefButSpec(clazz,fieldName,fieldValue);
+            }*/
+            
             if(null == refType){
                 return fieldValue;
             }
@@ -1245,7 +1396,13 @@ public class WriteBackLimsUtils {
             }
 
             if (value != null) {
-                fieldValue = ((Vector) value.get(0)).get(1);
+            	if(NEED_CODE_WRITE_BACK_MAP.get(clazz)!=null && NEED_CODE_WRITE_BACK_MAP.get(clazz).contains(fieldName.toLowerCase())){
+            		//写入code
+            		fieldValue = ((Vector) value.get(0)).get(0);
+            	}else{
+            		//写入name
+            		fieldValue = ((Vector) value.get(0)).get(1);
+            	}
             }
         } catch (Exception e) {
             Logger.error(e);
@@ -1254,4 +1411,105 @@ public class WriteBackLimsUtils {
 
         return fieldValue;
     }
+    //非系统参照缓存
+    private Map<String,String> notSystemRefCacheMap = new HashMap<>();
+    private Object dealNotSystemRefButSpec(Class<?> clazz, String fieldName, Object fieldValue) throws BusinessException {
+    	//缓存大小为100 
+		if (notSystemRefCacheMap.size() > 100) {
+			notSystemRefCacheMap = new HashMap<>();
+		}
+
+		if (CommissionHVO.class == clazz && "reportlang".equals(fieldName)) {
+			// 报告语言写入 编码
+			if (notSystemRefCacheMap.containsKey(String.valueOf(fieldValue))) {
+				return notSystemRefCacheMap.get(String.valueOf(fieldValue));
+			}
+			String newValue = (String) baseDao.executeQuery("select LIS_NAME from NC_REPORT_LANG WHERE ISENABLE=1 and PK_REPORT_LANG = '" + String.valueOf(fieldValue)
+					+ "' ", new ColumnProcessor());
+			notSystemRefCacheMap.put(String.valueOf(fieldValue), newValue);
+			return newValue;
+		}/*else if(CommissionHVO.class==clazz && "pk_commissiontype".equals(fieldName)){
+			// 委托单类型写入 编码
+			if (notSystemRefCacheMap.containsKey(String.valueOf(fieldValue))) {
+				return notSystemRefCacheMap.get(String.valueOf(fieldValue));
+			}
+			String newValue = (String) baseDao.executeQuery("select NAME from NC_PROJ_TYPE WHERE ISENABLE=1 and PK_PROJ_TYPE = '"
+					+ String.valueOf(fieldValue) + "' ", new ColumnProcessor());
+			notSystemRefCacheMap.put(String.valueOf(fieldValue), newValue);
+			return newValue;
+		}*/
+		return fieldValue;
+		
+	}
+	//系统参照缓存
+    private Map<String,String> systemRefCacheMap = new HashMap<>();
+    private Object dealSystemRef(Class<?> clazz, String fieldName, Object fieldValue) throws BusinessException {
+    	if(IS_SYSREF_MAP.get(clazz)!=null && IS_SYSREF_MAP.get(clazz).keySet()!=null && IS_SYSREF_MAP.get(clazz).get(fieldName.toLowerCase())!=null){
+    		String refCode = IS_SYSREF_MAP.get(clazz).get(fieldName.toLowerCase());
+    		//缓存大小为10 
+    		if(systemRefCacheMap.size() > 10){
+    			systemRefCacheMap = new HashMap<>();
+    		}
+    		if(refCode!=null){
+    			
+    			if("org_orgs".equals(refCode)){
+    				//组织参照 name
+    				if(systemRefCacheMap.containsKey(String.valueOf(fieldValue))){
+    					return systemRefCacheMap.get(String.valueOf(fieldValue));
+    				}
+    				String newValue = 
+    						(String)baseDao.executeQuery("select name from org_orgs where pk_org = '"+String.valueOf(fieldValue)+"' ", new ColumnProcessor());
+    				systemRefCacheMap.put(String.valueOf(fieldValue), newValue);
+    				return newValue;
+    			}else if("bd_psndoc".equals(refCode)){
+    				//人员参照 code
+    				if(systemRefCacheMap.containsKey(String.valueOf(fieldValue))){
+    					return systemRefCacheMap.get(String.valueOf(fieldValue));
+    				}
+    				String newValue = 
+    						(String)baseDao.executeQuery("select code from bd_psndoc where pk_psndoc = '"+String.valueOf(fieldValue)+"' ", new ColumnProcessor());
+    				systemRefCacheMap.put(String.valueOf(fieldValue), newValue);
+    				return newValue;
+    			}else if("org_dept".equals(refCode)){
+    				//部门参照 name
+    				if(systemRefCacheMap.containsKey(String.valueOf(fieldValue))){
+    					return systemRefCacheMap.get(String.valueOf(fieldValue));
+    				}
+    				String newValue = 
+    						(String)baseDao.executeQuery("select name from org_dept where pk_dept = '"+String.valueOf(fieldValue)+"' ", new ColumnProcessor());
+    				systemRefCacheMap.put(String.valueOf(fieldValue), newValue);
+    				return newValue;
+    			}
+    		}
+    	}
+		return fieldValue;
+	}
+
+	/**
+     * 判断是否系统参照
+     * @param clazz
+     * @param fieldName
+     * @return
+     */
+    /**
+     * 系统参照对照表
+     */
+    private static Map<Class<?>,HashMap<String,String>> IS_SYSREF_MAP = new HashMap<>();
+    {
+    	HashMap<String,String> COMMISSIONHVO_MAP = new HashMap<>();
+    	COMMISSIONHVO_MAP.put("pk_payer","org_orgs");
+    	COMMISSIONHVO_MAP.put("cuserid","bd_psndoc");
+    	COMMISSIONHVO_MAP.put("pk_owner","org_orgs");
+    	COMMISSIONHVO_MAP.put("pk_dept","org_dept");
+		IS_SYSREF_MAP.put(CommissionHVO.class, COMMISSIONHVO_MAP);
+
+    }
+	private boolean isSystemRef(Class<?> clazz, String fieldName) {
+		if(IS_SYSREF_MAP.get(clazz)!=null && IS_SYSREF_MAP.get(clazz).keySet()!=null && IS_SYSREF_MAP.get(clazz).keySet().contains(fieldName.toLowerCase())){
+			return true;
+		}
+		return false;
+	}
+	
+    
 }
