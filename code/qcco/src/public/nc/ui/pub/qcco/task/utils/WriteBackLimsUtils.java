@@ -435,6 +435,8 @@ public class WriteBackLimsUtils {
     	COMMISSION_HEARD_STATIC_MAP.put("C_RPT_REPORT_NUMBER","0");
     	COMMISSION_HEARD_STATIC_MAP.put("C_ALLTASK_COA_AUTHORIZED","'F'");
     	COMMISSION_HEARD_STATIC_MAP.put("C_RPT_CNAS_LOGO","'T'");
+    	COMMISSION_HEARD_STATIC_MAP.put("C_NEED_MESSAGE","'F'");
+    	
     }
     /**
      * 参照需要code写入的字段
