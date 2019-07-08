@@ -6,7 +6,7 @@ import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
-import nc.ui.qcco.commission.ace.view.ConfirmDialog;
+import nc.ui.qcco.commission.ace.view.WebBrowser;
 import nc.ui.uif2.NCAction;
 import nc.ui.uif2.UIState;
 import nc.ui.uif2.model.AbstractAppModel;
@@ -44,18 +44,8 @@ public class CommissionPreviewAction extends NCAction {
 				AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
 				url = url.replace("%REPORT_NAME%", aggvo.getParentVO().getBillno());
 				url = url.replace("%REPORT_NO%", aggvo.getParentVO().getBillno());
-			}
 
-			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
-					ConfirmDialog.CONFIRM_PREVIEW, "委托单预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
-
-			int rtnID = (Integer) value[0];
-			String txtMessage = (String) value[1];
-
-			if (rtnID == ConfirmDialog.ID_CONFIRM) {
-
-			} else if (rtnID == ConfirmDialog.ID_REJECT) {
-
+				WebBrowser.open(url, "委托单预览");
 			}
 
 		} catch (Exception e) {
