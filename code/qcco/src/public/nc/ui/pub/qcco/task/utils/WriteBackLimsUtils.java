@@ -393,7 +393,6 @@ public class WriteBackLimsUtils {
      */
     private static Map<String,String> COMMISSION_HEARD_STATIC_MAP = new HashMap<>();
     {
-    	COMMISSION_HEARD_STATIC_MAP.put("TEMPLATE","1");
     	COMMISSION_HEARD_STATIC_MAP.put("C_MAIL_LAB_APPROVAL","'F'");
     	COMMISSION_HEARD_STATIC_MAP.put("TEMPLATE_VERSION","1");
     	COMMISSION_HEARD_STATIC_MAP.put("STATUS","'U'");
@@ -1137,7 +1136,7 @@ public class WriteBackLimsUtils {
         if (headMapping == null) {
             headMapping = new HashMap<String, String>();
             
-            headMapping.put("pk_commissiontype", "project.C_APPLY_TYPE");// 委托单编号
+            headMapping.put("pk_commissiontype", "project.C_APPLY_TYPE;project.template");// 委托单类型
             headMapping.put("billno", "project.name");// 委托单编号
             headMapping.put("billname", "project.title");// 委托单名称
             headMapping.put("pk_owner", "project.customer");// 委托单位
