@@ -479,7 +479,7 @@ public class WriteBackLimsUtils {
         	StringBuilder colValSB = new StringBuilder();
         	//查询样品行数量,用于回写project.NUM_SAMPLES 字段
         	Integer bNum = (Integer)baseDao.executeQuery(
-        			"select count(*) from qc_commission_b where pk_commission_h = '"+pk_commission_h+"'", 
+        			"select count(*) from qc_commission_b where pk_commission_h = '"+pk_commission_h+"' and dr = 0 ", 
         			new ColumnProcessor());
         	if(bNum == null){
         		bNum = 0;
