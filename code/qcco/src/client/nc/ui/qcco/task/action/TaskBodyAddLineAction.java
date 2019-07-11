@@ -63,7 +63,8 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 			}
 			String pk_commission_h = super.getCardPanel().getHeadItem("pk_commission_h").getValue();
 			String pk_task_h = super.getCardPanel().getHeadItem("pk_task_h").getValue();
-			String reportType = getReportType(pk_commission_h);// 1是中文，2是英文
+			String reportType = "2";// getReportType(pk_commission_h);//
+									// 1是英文，2是中文
 			SunlistPanel sunlistPanel = new SunlistPanel(pk_commission_h);
 			if (sunlistPanel.showModal() == 1) {
 				pklists = sunlistPanel.getPklist();
@@ -84,10 +85,10 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									this.getCardPanel().getRowCount() - 1, "testresultshortname");
 							super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
 									this.getCardPanel().getRowCount() - 1, "runorder");
-							String uuid = UUID.randomUUID().toString();	
+							String uuid = UUID.randomUUID().toString();
 							uuid = uuid.replace("-", "");
-							super.getCardPanel().setBodyValueAt(uuid,
-									this.getCardPanel().getRowCount() - 1, "uniquekey");
+							super.getCardPanel().setBodyValueAt(uuid, this.getCardPanel().getRowCount() - 1,
+									"uniquekey");
 							super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1,
 									"pk_task_h");
 
@@ -112,10 +113,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							this.getCardPanel().getRowCount() - 1, "testresultshortname");
 					super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
 							this.getCardPanel().getRowCount() - 1, "runorder");
-					String uuid = UUID.randomUUID().toString();	
+					String uuid = UUID.randomUUID().toString();
 					uuid = uuid.replace("-", "");
-					super.getCardPanel().setBodyValueAt(uuid,
-							this.getCardPanel().getRowCount() - 1, "uniquekey");
+					super.getCardPanel().setBodyValueAt(uuid, this.getCardPanel().getRowCount() - 1, "uniquekey");
 					super.getCardPanel().setBodyValueAt(pk_task_h, this.getCardPanel().getRowCount() - 1, "pk_task_h");
 
 					// 生成孙表测试条件
