@@ -16,6 +16,7 @@ import nc.ui.pub.beans.constenum.IConstEnum;
 import nc.ui.pub.bill.BillData;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.view.BillForm;
+import nc.ui.qcco.commission.refmodel.AnalyseComponentRefModel;
 import nc.ui.uif2.editor.BillListView;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
@@ -32,7 +33,8 @@ import org.apache.commons.lang.StringUtils;
 import uap.iweb.log.Logger;
 
 public class UserDefineRefUtils {
-	private static Map<String,String> cacheMap = new HashMap<>();
+	private static TwoQueuesCacheMap<String,String> cacheMap4TestAfter = new TwoQueuesCacheMap<>();
+	private static TwoQueuesCacheMap<String,String> cacheMap4TestBefore = new TwoQueuesCacheMap<>();
 	public static void refreshBillCardHeadDefRefs(AbstractBill aggvo, BillForm billForm, int selectedRow) {
 		for (BillItem item : billForm.getBillCardPanel().getHeadItems()) {
 			if (!StringUtils.isEmpty(item.getRefType()) && item.getRefType().contains("<")) {
@@ -251,63 +253,98 @@ public class UserDefineRefUtils {
 				UIRefPane pane = (UIRefPane) rowItem.getComponent();
 				AbstractRefModel refModel = pane.getRefModel();
 				
-				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null  && !refModel.getTableName().equals("NC_TEST_AFTER")) {
-					
-					Vector refvls = refModel.matchData(refModel.getPkFieldCode(),
-							(String) vo.getAttributeValue(rowItem.getKey()));
-					if (null != refvls) {
-						IConstEnum val = new DefaultConstEnum(((Vector) refvls.get(0)).get(0),
-								(String) ((Vector) refvls.get(0)).get(1));
-						for (int col = 0; col < uiTable.getColumnCount(); col++) {
-							if (uiTable.getColumnName(col).equals(rowItem.getName())) {
-								uiTable.setValueAt(val, row, col);
-							}
-						}
-					}
-					//改个bug tank 2019年6月16日17:13:42
-				}else if(null != rowItem && rowItem.getKey().equals("component")&& null != refModel && refModel.getTableName().equals("NC_TEST_AFTER")){
-					//单独查询pk_component的参照
-					String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
-					if (pk_component == null) {
-						return ;
-					}
-					IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
-					try {
-						String val=null;
-						if(cacheMap.containsKey(pk_component)){
-							val = cacheMap.get(pk_component);
-						}else{
-							List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
-									.executeQuery(
-											"select distinct test_after_code,trim(test_after_name) as test_after_name,PK_TEST_AFTER from NC_TEST_AFTER where PK_TEST_AFTER='"
-									+pk_component+"' ", new MapListProcessor());
-							for (Map<String, Object> map : custlist) {
-								val = map.get("test_after_name")==null?null:map.get("test_after_name").toString();
-								//设置缓存大小为10条数据 tank 2019年6月16日17:13:20
-								if(cacheMap.size() >= 100){
-									cacheMap = new HashMap<>();
+				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null) {
+					if(rowItem.getKey().equals("component")&& refModel.getTableName().equals("NC_TEST_AFTER")){
+						refreshTestAfterValue(vo,uiTable,row,rowItem,onlyDisplayItem);
+					}else if((rowItem.getKey().equals("component")||rowItem.getKey().equals("pk_component"))&& refModel.getTableName().equals("NC_TEST_INIT")){
+						refreshTestBeforeValue(vo,uiTable,row,rowItem,onlyDisplayItem);
+					}else{
+						Vector refvls = refModel.matchData(refModel.getPkFieldCode(),
+								(String) vo.getAttributeValue(rowItem.getKey()));
+						if (null != refvls) {
+							IConstEnum val = new DefaultConstEnum(((Vector) refvls.get(0)).get(0),
+									(String) ((Vector) refvls.get(0)).get(1));
+							for (int col = 0; col < uiTable.getColumnCount(); col++) {
+								if (uiTable.getColumnName(col).equals(rowItem.getName())) {
+									uiTable.setValueAt(val, row, col);
 								}
-								cacheMap.put(pk_component, val);
 							}
 						}
-						
-						for (int col = 0; col < uiTable.getColumnCount(); col++) {
-							if (uiTable.getColumnName(col).equals(rowItem.getName())) {
-								uiTable.setValueAt(val, row, col);
-							}
-						}
-					
-					} catch (BusinessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
-						
-					
 				}
 			}
 		}
 	}
+	private static void refreshTestBeforeValue(SuperVO vo, UITable uiTable, int row, BillItem rowItem,
+			boolean onlyDisplayItem) {
+		// 单独查询pk_component的参照
+		String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
+		if (pk_component == null) {
+			return;
+		}
+		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
+		try {
+			String val = null;
+			if (cacheMap4TestBefore.containsKey(pk_component)) {
+				val = cacheMap4TestBefore.get(pk_component);
+			} else {
+				List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS.executeQuery(
+							"select test_init_name from nc_test_init  where pk_test_init = '"
+								+ pk_component + "' ", new MapListProcessor());
+				for (Map<String, Object> map : custlist) {
+					val = map.get("test_init_name") == null ? null : map.get("test_init_name").toString();
+					cacheMap4TestBefore.put(pk_component, val);
+				}
+			}
 
+			for (int col = 0; col < uiTable.getColumnCount(); col++) {
+				if (uiTable.getColumnName(col).equals(rowItem.getName())) {
+					uiTable.setValueAt(val, row, col);
+				}
+			}
+
+		} catch (BusinessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private static void refreshTestAfterValue(SuperVO vo, UITable uiTable, int row, BillItem rowItem,
+			boolean onlyDisplayItem){
+
+		//单独查询pk_component的参照
+		String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
+		if (pk_component == null) {
+			return ;
+		}
+		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
+		try {
+			String val=null;
+			if(cacheMap4TestAfter.containsKey(pk_component)){
+				val = cacheMap4TestAfter.get(pk_component);
+			}else{
+				List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
+						.executeQuery(
+								"select distinct test_after_code,trim(test_after_name) as test_after_name,PK_TEST_AFTER from NC_TEST_AFTER where PK_TEST_AFTER='"
+						+pk_component+"' ", new MapListProcessor());
+				for (Map<String, Object> map : custlist) {
+					val = map.get("test_after_name")==null?null:map.get("test_after_name").toString();
+					cacheMap4TestAfter.put(pk_component, val);
+				}
+			}
+			
+			for (int col = 0; col < uiTable.getColumnCount(); col++) {
+				if (uiTable.getColumnName(col).equals(rowItem.getName())) {
+					uiTable.setValueAt(val, row, col);
+				}
+			}
+		
+		} catch (BusinessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * 设置孙表的审计信息(是的你没看错,审计信息确实很奇葩的到了孙表上) TODO 动态设置审计信息 (反射) 500年后吧
 	 * 

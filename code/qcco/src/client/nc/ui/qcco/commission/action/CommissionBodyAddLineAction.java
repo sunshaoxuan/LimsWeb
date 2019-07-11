@@ -1,5 +1,6 @@
 package nc.ui.qcco.commission.action;
 
+import java.util.UUID;
 import java.util.Vector;
 
 import nc.ui.pub.beans.UIRefPane;
@@ -55,6 +56,14 @@ public class CommissionBodyAddLineAction extends BodyAddLineAction {
 				getCardPanel().setBodyValueAt(val, index, "samplegroup");
 				getCardPanel().setBodyValueAt(val, index, "pk_samplegroup");
 			}
+		}
+		//…Ë÷√uuid
+		if (getCardPanel().getBodyItem("uniqueid") != null) {
+
+			String uuid = UUID.randomUUID().toString();
+			uuid = uuid.replace("-", "");
+			getCardPanel().setBodyValueAt(uuid, index, "uniqueid");
+
 		}
 	}
 }

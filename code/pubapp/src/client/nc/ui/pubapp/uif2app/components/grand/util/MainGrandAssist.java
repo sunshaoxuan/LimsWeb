@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.swing.Action;
 
@@ -38,6 +39,7 @@ import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.pub.ValidationException;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.task.TaskBVO;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -251,7 +253,12 @@ public class MainGrandAssist {
 		}
 		// 伪列
 		if (pk_body == null) {
-			pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "precolumn");
+			if("nc.vo.qcco.commission.CommissionBVO".equals(className)){
+				pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "uniqueid");
+			}else{
+				pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "precolumn");
+			}
+			
 		}
 		if (pk_body == null) {
 			this.addPreColumBillItemToBody(mainbillform, currentRow, bodyTabCode, RowNumUtil.getRowNumUtil()
@@ -570,7 +577,12 @@ public class MainGrandAssist {
 			}
 			// 伪列
 			if (last_pk_body == null) {
-				last_pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(lastrow, "precolumn");
+				if("nc.vo.qcco.commission.CommissionBVO".equals(className)){
+					last_pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(lastrow, "uniqueid");
+				}else{
+					last_pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(lastrow, "precolumn");
+				}
+				
 			}
 			if (last_pk_body == null) {
 				this.addPreColumBillItemToBody(mainbillform, lastrow, bodyTabCode, RowNumUtil.getRowNumUtil()
@@ -803,6 +815,14 @@ public class MainGrandAssist {
 		//mod 添加了一个新字段用来唯一标识一行 Ares.tank 2019年7月2日22:39:18
 		if (changeChild instanceof TaskBVO && children_pk == null) {
 			children_pk = (String) changeChild.getAttributeValue("uniquekey");
+		}else if(changeChild instanceof CommissionBVO && children_pk == null){
+			children_pk = (String) changeChild.getAttributeValue("uniqueid"); 
+			/*if(children_pk==null){
+				String uuid = UUID.randomUUID().toString();	
+				uuid = uuid.replace("-", "");
+				changeChild.setAttributeValue("uniqueid",uuid);
+				children_pk = (String) changeChild.getAttributeValue("uniqueid"); 
+			}*/
 		}
 		if (children_pk == null) {
 			children_pk = (String) changeChild.getAttributeValue("precolumn");

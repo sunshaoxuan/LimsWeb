@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import nc.bs.bank_cvp.compile.registry.BussinessMethods;
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pubapp.uif2app.model.BillManageModel;
@@ -136,7 +137,7 @@ public class MainSubBillModel extends BillManageModel {
 						.getHeadItem("itemnumber").getValueObject());
 	}
 
-	public void resetBillFormEnableState() {
+	public void resetBillFormEnableState() throws BusinessException {
 		// 表头不可变更项目
 		((ShowUpableBillForm) getBillFormView().getMainPanel()).getBillCardPanel().getHeadItem("pk_commissiontype")
 				.setEnabled(!isChangeStatus());
@@ -212,8 +213,14 @@ public class MainSubBillModel extends BillManageModel {
 				.get("pk_commission_b")).getBillCardPanel().getBodyItem("unitname").setEnabled(!isChangeStatus());
 		((CommissionGrandBillForm) getBillFormView().getMaingrandrelationship().getBodyTabTOGrandCardComposite()
 				.get("pk_commission_b")).getBillCardPanel().getBodyItem("productstage").setEnabled(!isChangeStatus());
-		((CommissionGrandBillForm) getBillFormView().getMaingrandrelationship().getBodyTabTOGrandCardComposite()
-				.get("pk_commission_b")).getBillCardPanel().getBodyItem("pk_samplegroup").setEnabled(!isChangeStatus());
+		if(((CommissionGrandBillForm) getBillFormView().getMaingrandrelationship().getBodyTabTOGrandCardComposite()
+				.get("pk_commission_b")).getBillCardPanel().getBodyItem("pk_samplegroup")==null){
+			throw new BusinessException("孙表样品组别为空,请检查单据模板.");
+		}else{
+			((CommissionGrandBillForm) getBillFormView().getMaingrandrelationship().getBodyTabTOGrandCardComposite()
+					.get("pk_commission_b")).getBillCardPanel().getBodyItem("pk_samplegroup").setEnabled(!isChangeStatus());
+		}
+		
 		((CommissionGrandBillForm) getBillFormView().getMaingrandrelationship().getBodyTabTOGrandCardComposite()
 				.get("pk_commission_b")).getBillCardPanel().getBodyItem("stdmaxvalue").setEnabled(!isChangeStatus());
 		((CommissionGrandBillForm) getBillFormView().getMaingrandrelationship().getBodyTabTOGrandCardComposite()

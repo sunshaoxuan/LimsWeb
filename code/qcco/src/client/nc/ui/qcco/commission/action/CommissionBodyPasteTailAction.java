@@ -3,6 +3,7 @@ package nc.ui.qcco.commission.action;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.ui.pubapp.uif2app.actions.BodyPasteToTailAction;
@@ -123,7 +124,9 @@ public class CommissionBodyPasteTailAction extends BodyPasteToTailAction {
 			getCardPanel().setBodyValueAt(bodySource2.getQuantity(), row, "quantity", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getAnalysisref(), row, "analysisref", "pk_commission_b");
 			getCardPanel().setBodyValueAt(bodySource2.getOtherinfo(), row, "otherinfo", "pk_commission_b");
-			
+			String uuid = UUID.randomUUID().toString();
+			uuid = uuid.replace("-", "");
+			getCardPanel().setBodyValueAt(uuid, row, "uniqueid", "pk_commission_b");
 			getCardPanel().setBodyValueAt(VOStatus.NEW, row, "status", "pk_commission_b");
 		}
 	}

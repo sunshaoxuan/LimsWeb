@@ -42,7 +42,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			}
 			// 产品系列
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_productserial");
-			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "samplegroup", "pk_samplegroup" });
+			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "samplegroup", "pk_samplegroup","uniqueid" });
 			// 刷新温度字段
 			refreshProductstage(e);
 			// 刷新实验前参数
@@ -59,7 +59,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 			// 企业标准
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_enterprisestandard");
 			clearBodyItems(e, new String[] { "pk_productserial", "productserial", "pk_enterprisestandard",
-					"enterprisestandard", "analysisref", "samplegroup", "pk_samplegroup" });
+					"enterprisestandard", "analysisref", "samplegroup", "pk_samplegroup","uniqueid" });
 			// 刷新温度字段
 			refreshProductstage(e);
 		} else if ("productspec".equals(e.getKey())) {
@@ -249,7 +249,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 		for (BillItem item : e.getBillCardPanel().getBodyItems()) {
 			if (!Arrays.asList(exceptions).contains(item.getKey()) && !"rowno".equals(item.getKey())) {
 				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), item.getKey());
-				if (item.getKey().equals("rowno")) {
+				if (item.getKey().equals("rowno") || item.getKey().equals("uniqueid")) {
 					continue;
 				}
 				if (e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup") == null

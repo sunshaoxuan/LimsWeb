@@ -27,6 +27,11 @@ public class CommissionBVO extends SuperVO {
      * 行號
      */
     public String rowno;
+    
+    /**
+     * uniqueid
+     */
+    public String uniqueid;
     /**
      * 產品系列
      */
@@ -173,8 +178,18 @@ public class CommissionBVO extends SuperVO {
      * 時間戳
      */
     public UFDateTime ts;
+    
+    
 
-    public CommissionRVO[] pk_commission_r;
+    public String getUniqueid() {
+		return uniqueid;
+	}
+
+	public void setUniqueid(String uniqueid) {
+		this.uniqueid = uniqueid;
+	}
+
+	public CommissionRVO[] pk_commission_r;
 
     /**
      * 屬性 pk_commission_b的Getter方法.屬性名：樣品行主鍵 創建日期:2019/4/8

@@ -785,6 +785,7 @@ dr smallint default 0
 create table qc_commission_b (
 pk_commission_b char(20) NOT NULL,
 rowno varchar(50) NULL,
+uniqueid varchar(50) NULL,
 pk_productserial varchar(20) default '~' NULL,
 pk_enterprisestandard varchar(20) default '~' NULL,
 typeno varchar(200) NULL,
