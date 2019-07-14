@@ -800,7 +800,7 @@ public class TaskHVO extends SuperVO {
 	 * @return java.lang.String
 	 */
 	public String getBillversionpk() {
-		return this.billversionpk;
+		return this.billversionpk==null?this.pk_task_h:this.billversionpk;
 	}
 
 	/**

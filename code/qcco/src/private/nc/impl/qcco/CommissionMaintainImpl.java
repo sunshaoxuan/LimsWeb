@@ -130,8 +130,41 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 	private void check(AggCommissionHVO[] vos) throws BusinessException {
 		checkMail(vos);
 		checkBody(vos);
+		checkTelNO(vos);
+		checkBatchnumber(vos);
 	}
 
+	private void checkBatchnumber(AggCommissionHVO[] vos) throws BusinessException {
+		if (vos != null) {
+			for (AggCommissionHVO aggvo : vos) {
+				if (aggvo != null && aggvo.getParentVO() != null && aggvo.getParentVO().getBatchnumber() != null
+						&& !aggvo.getParentVO().getBatchnumber().equals("")) {
+					String email = aggvo.getParentVO().getBatchnumber();
+					boolean isMatch = email
+							.matches("^[0-9]*$");
+					if (!isMatch) {
+						throw new BusinessException("生产批量只能为数字!");
+					}
+				}
+			}
+		}
+	}
+
+	private void checkTelNO(AggCommissionHVO[] vos) throws BusinessException {
+		if (vos != null) {
+			for (AggCommissionHVO aggvo : vos) {
+				if (aggvo != null && aggvo.getParentVO() != null && aggvo.getParentVO().getTeleno() != null
+						&& !aggvo.getParentVO().getTeleno().equals("")) {
+					String email = aggvo.getParentVO().getTeleno();
+					boolean isMatch = email
+							.matches("^[0-9]*$");
+					if (!isMatch) {
+						throw new BusinessException("联系电话只能为数字!");
+					}
+				}
+			}
+		}
+	}
 	private void checkMail(AggCommissionHVO[] vos) throws BusinessException {
 		if (vos != null) {
 			for (AggCommissionHVO aggvo : vos) {
@@ -141,7 +174,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 					boolean isMatch = email
 							.matches("^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$");
 					if (!isMatch) {
-						throw new BusinessException("电子邮箱不合法");
+						throw new BusinessException("电子邮箱不合法!");
 					}
 				}
 			}

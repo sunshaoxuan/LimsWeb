@@ -411,7 +411,7 @@ public class WriteBackLimsUtils {
     	COMMISSION_HEARD_STATIC_MAP.put("T_LOGIN_VERIF_REQD","'F'");
     	COMMISSION_HEARD_STATIC_MAP.put("T_LOGIN_VERIFIED","'T'");
     	COMMISSION_HEARD_STATIC_MAP.put("T_PRE_INVOICE_NUMBER","0");
-    	COMMISSION_HEARD_STATIC_MAP.put("APPROVED","'F'");
+    	COMMISSION_HEARD_STATIC_MAP.put("APPROVED","'T'");
     	COMMISSION_HEARD_STATIC_MAP.put("APPROVAL_GROUP","'PROJECT'");
     	COMMISSION_HEARD_STATIC_MAP.put("READY_FOR_APPROVAL","'T'");
 		COMMISSION_HEARD_STATIC_MAP.put("APPROVAL_ID", "0");
@@ -452,13 +452,13 @@ public class WriteBackLimsUtils {
 		COMMISSIONHVO_SET.add("customername");
 		COMMISSIONHVO_SET.add("customertype");
 		COMMISSIONHVO_SET.add("testrequirement");
-		COMMISSIONHVO_SET.add("checkingproperty");
+		//COMMISSIONHVO_SET.add("checkingproperty");
 		COMMISSIONHVO_SET.add("productline");
-		COMMISSIONHVO_SET.add("batchnumber");
+		//COMMISSIONHVO_SET.add("batchnumber");
 		COMMISSIONHVO_SET.add("productdate");
 		COMMISSIONHVO_SET.add("batchserial");
 		COMMISSIONHVO_SET.add("identificationtype");
-		COMMISSIONHVO_SET.add("certificationtype");
+		//COMMISSIONHVO_SET.add("certificationtype");
 		NEED_CODE_WRITE_BACK_MAP.put(CommissionHVO.class, COMMISSIONHVO_SET);
 
     }
@@ -478,14 +478,14 @@ public class WriteBackLimsUtils {
         	StringBuilder colNameSB = new StringBuilder(lists[0]);
         	StringBuilder colValSB = new StringBuilder();
         	//查询样品行数量,用于回写project.NUM_SAMPLES 字段
-        	Integer bNum = (Integer)baseDao.executeQuery(
-        			"select count(*) from qc_commission_b where pk_commission_h = '"+pk_commission_h+"' and dr = 0 ", 
-        			new ColumnProcessor());
+        	UFDouble bNum = new UFDouble(baseDao.executeQuery(
+        			"select sum(quantity) from qc_commission_b where pk_commission_h = '"+pk_commission_h+"' and dr = 0 ", 
+        			new ColumnProcessor()).toString());
         	if(bNum == null){
-        		bNum = 0;
+        		bNum = UFDouble.ZERO_DBL;
         	}
         	colNameSB.append(",").append("num_samples");
-    		colValSB.append(",").append(bNum);
+    		colValSB.append(",").append(bNum.toDouble());
             //处理固定值字段
         	for(String colName : COMMISSION_HEARD_STATIC_MAP.keySet()){
         		colNameSB.append(",").append(colName);
@@ -1468,7 +1468,7 @@ public class WriteBackLimsUtils {
     					return systemRefCacheMap.get(String.valueOf(fieldValue));
     				}
     				String newValue = 
-    						(String)baseDao.executeQuery("select code from bd_psndoc where pk_psndoc = '"+String.valueOf(fieldValue)+"' ", new ColumnProcessor());
+    						(String)baseDao.executeQuery("select psncode from bd_psnjob where rownum = 1 and ismainjob = 'Y' and pk_psndoc = '"+String.valueOf(fieldValue)+"' order by ts desc", new ColumnProcessor());
     				systemRefCacheMap.put(String.valueOf(fieldValue), newValue);
     				return newValue;
     			}else if("org_dept".equals(refCode)){

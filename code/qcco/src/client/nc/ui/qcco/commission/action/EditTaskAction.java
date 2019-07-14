@@ -79,6 +79,7 @@ public class EditTaskAction extends NCAction {
 		parentVO.setPk_group(commissionHVO.getPk_group());
 		parentVO.setPk_org(commissionHVO.getPk_org());
 		parentVO.setPk_org_v(commissionHVO.getPk_org_v());
+		parentVO.setBillno(commissionHVO.getBillno());
 		parentVO.setApprovestatus(-1);
 
 		newVO.setParent(parentVO);
