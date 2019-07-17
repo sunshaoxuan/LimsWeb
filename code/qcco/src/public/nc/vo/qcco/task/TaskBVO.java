@@ -63,6 +63,11 @@ public class TaskBVO extends SuperVO {
 	 * 樣品分配
 	 */
 	public String sampleallocation;
+	
+	/**
+	 * 樣品分配原始数据
+	 */
+	public String sampleallocationsource;
 	/**
 	 * 樣品數量
 	 */
@@ -159,8 +164,15 @@ public class TaskBVO extends SuperVO {
 	 * 時間戳
 	 */
 	public UFDateTime ts;
-
 	
+	public String getSampleallocationsource() {
+		return sampleallocationsource;
+	}
+
+	public void setSampleallocationsource(String sampleallocationsource) {
+		this.sampleallocationsource = sampleallocationsource;
+	}
+
 	public String getUniquekey() {
 		return uniquekey;
 	}

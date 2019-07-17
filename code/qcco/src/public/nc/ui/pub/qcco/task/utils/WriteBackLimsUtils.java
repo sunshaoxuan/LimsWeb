@@ -17,6 +17,7 @@ import nc.bs.logging.Logger;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnListProcessor;
 import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.jdbc.framework.processor.MapProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
@@ -30,6 +31,13 @@ import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskSVO;
 
 import org.apache.commons.lang.StringUtils;
+
+/**
+ * TODO 等哪天实在忍不住了,再重构这个类
+ * 
+ * @author 91967
+ *
+ */
 public class WriteBackLimsUtils {
     private BaseDAO baseDao = new BaseDAO();
 
@@ -184,7 +192,7 @@ public class WriteBackLimsUtils {
                 taskPk2CommissionPkMap,projectList);
         class2NumMap.put(TaskBVO.class, lists!=null?(lists.length - 1):0);
         if (lists != null && lists.length > 0) {
-            sqlList.addAll(getTaskInsertSQL(lists));
+            sqlList.addAll(getTaskInsertSQL(lists,pk_commission_h));
         }
 
         // 实验条件
@@ -299,14 +307,52 @@ public class WriteBackLimsUtils {
      * @param selfPkList
      * @return
      */
-    private List<String> getTaskInsertSQL(String[] lists) {
-        List<String> rsList = new ArrayList();
+    @SuppressWarnings("unchecked")
+	private List<String> getTaskInsertSQL(String[] lists,String pk_commission_h) {
+    	List<String> rsList = new ArrayList<>();
         if (lists != null && lists.length > 1) {
+        	StringBuilder colNameSB = new StringBuilder(lists[0]);
+        	StringBuilder colValSB = new StringBuilder();
+            //处理固定值字段
+        	for(String colName : TASK_BODY_STATIC_MAP.keySet()){
+        		colNameSB.append(",").append(colName);
+        		colValSB.append(",").append(TASK_BODY_STATIC_MAP.get(colName));
+        	}
+        	
+        	String sql = "select job.psncode changed_by,taskh.modifiedtime changed_on,"
+        				+ " job2.psncode c_submit_by,ch.creationtime c_submit_date from qc_task_h taskh "
+        				+ " left join sm_user sm on sm.cuserid = taskh.modifier "
+        				+ " left join (select * from bd_psnjob jobinner where ismainjob = 'Y' ) job on rownum = 1 and job.pk_psndoc = sm.pk_psndoc "
+        				+ " left join qc_commission_h ch on ch.pk_commission_h = taskh.pk_commission_h "
+        				+ " left join sm_user sm2 on sm2.cuserid = ch.creator "
+        				+ " left join (select * from bd_psnjob jobinner where ismainjob = 'Y' ) job2 on rownum = 1 and job2.pk_psndoc = sm2.pk_psndoc "
+        				+ " where taskh.pk_commission_h = '"+pk_commission_h+"' ";
+        	Map<String,String> rs = null;
+        	try {
+        		rs = (Map<String,String>)baseDao.executeQuery(sql, new MapProcessor());
+			} catch (DAOException e) {
+				rs = new HashMap<>();;
+			}
+			if (null != rs) {
+				// 委托单制单人,制单时间 修改人.修改时间 realValue =
+				// "to_timestamp('"+realValue+"','yyyy-mm-dd hh24:mi:ss.ff')"
+				colNameSB.append(",").append("changed_by").append(",").append("changed_on").append(",")
+					.append("c_submit_by").append(",").append("c_submit_date");
+
+				colValSB.append(", '").append(rs.get("changed_by")).append("', ")
+					.append("to_timestamp('"+rs.get("changed_on")+"','yyyy-mm-dd hh24:mi:ss.ff')")
+					.append(", '").append(rs.get("c_submit_by")).append("',")
+					.append("to_timestamp('"+rs.get("c_submit_date")+"','yyyy-mm-dd hh24:mi:ss.ff') ");
+			}
+        	
             StringBuilder sqlSB = new StringBuilder();
+            StringBuilder temp = new StringBuilder();
             for (int i = 1; i < lists.length; i++) {
                 sqlSB.append("INSERT INTO c_proj_task").append("(")
-                        .append(lists[0]).append(")  values (");
-                sqlSB.append(lists[i]);
+                        .append(colNameSB.toString()).append(")  values (");
+                temp.delete(0, temp.length());
+                temp.append(lists[i]).append(colValSB);
+                sqlSB.append(temp.toString());
                 sqlSB.append(" ) ");
                 rsList.add(sqlSB.toString());
                 sqlSB.delete(0, sqlSB.length());
@@ -350,13 +396,24 @@ public class WriteBackLimsUtils {
      * @return
      */
     private List<String> getSampleInsertSQL(String[] lists) {
-        List<String> rsList = new ArrayList();
+    	List<String> rsList = new ArrayList();
         if (lists != null && lists.length > 1) {
+        	StringBuilder colNameSB = new StringBuilder(lists[0]);
+        	StringBuilder colValSB = new StringBuilder();
+            //处理固定值字段
+        	for(String colName : COMMISSION_BODY_STATIC_MAP.keySet()){
+        		colNameSB.append(",").append(colName);
+        		colValSB.append(",").append(COMMISSION_BODY_STATIC_MAP.get(colName));
+        	}
+        	
             StringBuilder sqlSB = new StringBuilder();
+            StringBuilder temp = new StringBuilder();
             for (int i = 1; i < lists.length; i++) {
                 sqlSB.append("INSERT INTO C_PROJ_LOGIN_SAMPLE").append("(")
-                        .append(lists[0]).append(")  values (");
-                sqlSB.append(lists[i]);
+                        .append(colNameSB.toString()).append(")  values (");
+                temp.delete(0, temp.length());
+                temp.append(lists[i]).append(colValSB);
+                sqlSB.append(temp.toString());
                 sqlSB.append(" ) ");
                 rsList.add(sqlSB.toString());
                 sqlSB.delete(0, sqlSB.length());
@@ -436,6 +493,43 @@ public class WriteBackLimsUtils {
     	COMMISSION_HEARD_STATIC_MAP.put("C_RPT_CNAS_LOGO","'T'");
     	COMMISSION_HEARD_STATIC_MAP.put("C_NEED_MESSAGE","'F'");
     	
+    }
+    /**
+     * 委托单表体固定值回写
+     */
+    private static Map<String,String> COMMISSION_BODY_STATIC_MAP = new HashMap<>();
+    {
+    	COMMISSION_BODY_STATIC_MAP.put("NEED_LIST","'F'");
+    	COMMISSION_BODY_STATIC_MAP.put("HAS_LOGINED_SAMPLE","'F'");
+    	
+    }
+    /**
+     * 任务单表体固定值回写
+     */
+    private static Map<String,String> TASK_BODY_STATIC_MAP = new HashMap<>();
+    {
+    	TASK_BODY_STATIC_MAP.put("ACTUAL_BASE_FEE", "0");
+    	TASK_BODY_STATIC_MAP.put("ACTUAL_SURCHARGE", "0");
+    	TASK_BODY_STATIC_MAP.put("ACTUAL_TEST_FEE", "0");
+    	TASK_BODY_STATIC_MAP.put("ACTUAL_TEST_QTY", "0");
+    	TASK_BODY_STATIC_MAP.put("ACTUAL_TEST_TIME", "0");
+    	TASK_BODY_STATIC_MAP.put("ACTUAL_TOTAL_COST", "0");
+    	TASK_BODY_STATIC_MAP.put("ADDITIONAL_WORK_HOURS", "0");
+    	TASK_BODY_STATIC_MAP.put("ANALYSIS_VERSION", "0");
+    	TASK_BODY_STATIC_MAP.put("BASE_FEE", "0");
+    	TASK_BODY_STATIC_MAP.put("IF_PASS", "'F'");
+    	TASK_BODY_STATIC_MAP.put("IS_ENTERED", "'T'");
+    	TASK_BODY_STATIC_MAP.put("IS_RECHECK", "'F'");	
+    	TASK_BODY_STATIC_MAP.put("QUOTES", "0");
+    	TASK_BODY_STATIC_MAP.put("READY_FOR_DRAFT", "'F'");
+    	TASK_BODY_STATIC_MAP.put("READY_FOR_REVIEW", "'F'");
+    	TASK_BODY_STATIC_MAP.put("REDATE", "0");
+    	TASK_BODY_STATIC_MAP.put("REPORT_NUMBER", "0");
+    	TASK_BODY_STATIC_MAP.put("RPT_AUTHORIZED", "'F'");
+		TASK_BODY_STATIC_MAP.put("STATUS", "'T'");
+		TASK_BODY_STATIC_MAP.put("SURCHARGE", "0");
+		TASK_BODY_STATIC_MAP.put("TEST_FEE", "0");
+		TASK_BODY_STATIC_MAP.put("TEST_QUANTITY", "0");
     }
     /**
      * 参照需要code写入的字段
@@ -549,6 +643,10 @@ public class WriteBackLimsUtils {
             //任务单子表还需要申请test_number和sample_number
             test_numberList = getPrePk("test_number","test",srcData.size());
             sample_numberList = getPrePk("sample_number","sample",srcData.size());
+            //XXX:test插入占位
+            for(Integer pktest : test_numberList){
+            	baseDao.executeUpdate("insert into test (test_number) values("+pktest+")");
+            }
         }
         if (null == srcData || srcData.size() <= 0) {
             return null;
@@ -1274,10 +1372,9 @@ public class WriteBackLimsUtils {
             bodyTaskMapping.put("testitem", "c_proj_task.task_reported_name");// 测试项目
             bodyTaskMapping.put("pk_testresultname", "c_proj_task.analysis");// 测试结果名称
             bodyTaskMapping.put("runorder", "c_proj_task.order_number");// 顺序
-            bodyTaskMapping.put("sampleallocation",
-                    "c_proj_task.assigned_sample_display");// 样品分配
-            bodyTaskMapping.put("samplequantity",
-                    "c_proj_task.assigned_sample_quantity");// 样品数量
+            bodyTaskMapping.put("sampleallocation", "c_proj_task.assigned_sample_display");// 样品分配
+            bodyTaskMapping.put("sampleallocationsource", "c_proj_task.assigned_sample");// 样品分配
+            bodyTaskMapping.put("samplequantity", "c_proj_task.assigned_sample_quantity");// 样品数量
         }
 
         return bodyTaskMapping;

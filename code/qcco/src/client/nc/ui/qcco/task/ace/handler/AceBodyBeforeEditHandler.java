@@ -87,6 +87,9 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 				if (samplepanel.showModal() == 1) {
 					String strvalue = samplepanel.getSelectedstr();
 					Integer testnum = samplepanel.getTestnum();
+					//获取原始选择的列
+					List<String> sourceList = samplepanel.getSelectedList();
+					String sourceStr = getSourceString(sourceList);
 					BillCardPanel card = this.getMainBillForm().getBillCardPanel();
 					// 校验样品分配是否重复
 					List<String> strlist = new ArrayList<String>();
@@ -109,6 +112,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					card.setBodyValueAt(strvalue, e.getRow(), "sampleallocation");
 					// card.getBodyValueAt(e.getRow()-1, "sampleallocation");
 					card.setBodyValueAt(testnum, e.getRow(), "samplequantity");
+					card.setBodyValueAt(sourceStr, e.getRow(), "sampleallocationsource");
 					// 给孙表试验后参数赋值
 					Set<String> aSet = new HashSet();
 
@@ -146,6 +150,20 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			return;
 		}
 
+	}
+
+	private String getSourceString(List<String> sourceList) {
+		StringBuilder sb = new StringBuilder();
+		if(sourceList!=null && sourceList.size() > 0){
+			for(String s : sourceList){
+				sb.append(s).append(",");
+			}
+			if(sb.length() > 0){
+				sb.setLength(sb.length() - 1 );
+			}
+			return sb.toString();
+		}
+		return null;
 	}
 
 	/**

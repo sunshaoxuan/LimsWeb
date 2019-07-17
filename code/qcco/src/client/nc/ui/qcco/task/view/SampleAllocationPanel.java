@@ -97,8 +97,18 @@ public class SampleAllocationPanel extends UIDialog implements
 	private Integer testnum;
 	private String[] strs;
 	private String beforesample;
+	//原始选择列
+	private List<String> selectedList;
 	
 	
+
+	public List<String> getSelectedList() {
+		return selectedList;
+	}
+
+	public void setSelectedList(List<String> selectedList) {
+		this.selectedList = selectedList;
+	}
 
 	public String[] getStrs() {
 		return strs;
@@ -221,6 +231,8 @@ public class SampleAllocationPanel extends UIDialog implements
 				}
 				try {
 					testnum = strlist.size();
+					selectedList = new ArrayList<>();
+					selectedList.addAll(strlist);
 					selectedstr = StringOrderUtils.outOrderString(
 							strlist.toArray(new String[strlist.size()]),
 							listnum);
