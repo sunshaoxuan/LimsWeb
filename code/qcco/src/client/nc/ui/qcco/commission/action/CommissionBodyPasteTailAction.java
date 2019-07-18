@@ -155,7 +155,7 @@ public class CommissionBodyPasteTailAction extends BodyPasteToTailAction {
 			this.getGrandCard().getBillCardPanel().setBodyValueAt(rvo.getJudgeflag(), row, "judgeflag", "pk_commission_r");
 			this.getGrandCard().getBillCardPanel().setBodyValueAt(rvo.getTestflag(), row, "testflag", "pk_commission_r");
 			this.getGrandCard().getBillCardPanel().setBodyValueAt(rvo.getProductstage(), row, "productstage", "pk_commission_r");
-			this.getGrandCard().getBillCardPanel().setBodyValueAt(rvo.getIsautogeneration(), row, "isAutoGeneration", "pk_commission_r");
+			this.getGrandCard().getBillCardPanel().setBodyValueAt(rvo.getIsautogeneration(), row, "isautogeneration", "pk_commission_r");
 			
 			
 			this.getGrandCard().getBillCardPanel().setBodyValueAt(rvo.getStatus(), row, "status", "pk_commission_r");

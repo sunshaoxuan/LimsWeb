@@ -27,6 +27,7 @@ import nc.impl.pubapp.pattern.data.vo.VOInsert;
 import nc.impl.pubapp.pattern.data.vo.VOUpdate;
 import nc.md.persist.framework.IMDPersistenceQueryService;
 import nc.md.persist.framework.IMDPersistenceService;
+import nc.ui.qc.continuebatch.maintain.view.continuebatch_config;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
@@ -243,8 +244,12 @@ public abstract class AceCommissionPubServiceImpl {
 					aggvo.getParentVO().setModifiedtime(null);
 					// aggvo.getParentVO().setModifier(null);
 					CommissionBVO[] bvos = (CommissionBVO[]) (aggvo.getChildren(CommissionBVO.class));
+					List<CommissionBVO> bvoList = new ArrayList<>();
 					for (CommissionBVO bvo : bvos) {
 						if (bvo != null) {
+							if(3==bvo.getStatus()){
+								continue;
+							}
 							bvo.setPk_commission_h(null);
 							bvo.setPk_commission_b(null);
 							bvo.setTs(null);
@@ -260,18 +265,26 @@ public abstract class AceCommissionPubServiceImpl {
 								}
 							}
 						}
+						bvoList.add(bvo);
 					}
+					aggvo.setChildren(CommissionBVO.class, bvoList.toArray(new CommissionBVO[0]));
 					CommissionCVO[] cvos = (CommissionCVO[]) (aggvo.getChildren(CommissionCVO.class));
+					List<CommissionCVO> cvoList = new ArrayList<>();
 					if (cvos != null && cvos.length > 0) {
 						for (CommissionCVO cvo : cvos) {
 							if (cvo != null) {
+								if(3==cvo.getStatus()){
+									continue;
+								}
 								cvo.setPk_commission_h(null);
 								cvo.setPk_commission_c(null);
 								cvo.setTs(null);
 								cvo.setStatus(2);
 							}
+							cvoList.add(cvo);
 						}
 					}
+					aggvo.setChildren(CommissionCVO.class, cvoList.toArray(new CommissionCVO[0]));
 				}
 			}
 		}

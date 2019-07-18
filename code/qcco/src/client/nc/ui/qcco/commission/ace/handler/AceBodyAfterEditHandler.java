@@ -268,7 +268,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 
 			for (int i = 0; i < rowCount; i++) {
 				// 只清空自动生成的行
-				UFBoolean ifAuto = (UFBoolean) getGrandCard().getBillCardPanel().getBodyValueAt(i, "isAutoGeneration");
+				UFBoolean ifAuto = (UFBoolean) getGrandCard().getBillCardPanel().getBodyValueAt(i, "isautogeneration");
 				if (ifAuto != null && ifAuto.booleanValue()) {
 					lineSet.add(i);
 				}
@@ -321,7 +321,7 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "judgeflag");
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "testflag");
 				// 系统生成标识 //客户那估计模板乱了,上两个
-				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isAutoGeneration");
+				//this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isAutoGeneration");
 				this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "isautogeneration");
 				// 企业标准
 				String pk_enterprisestandard = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(),

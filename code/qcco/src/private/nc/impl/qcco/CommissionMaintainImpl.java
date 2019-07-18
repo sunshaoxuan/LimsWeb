@@ -210,7 +210,10 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 								if (groupSet.contains(bvo.getPk_samplegroup())) {
 									throw new BusinessException("表体组别不能重复!");
 								} else {
-									groupSet.add(bvo.getPk_samplegroup());
+									if(3!=bvo.getStatus()){
+										groupSet.add(bvo.getPk_samplegroup());	
+									}
+									
 								}
 							}
 						}
