@@ -1,5 +1,7 @@
 package nc.ui.pub.linkoperate;
 
+import nc.vo.sm.UserVO;
+
 public class LinkEditData implements ILinkMaintainData {
 
 	private String billID;

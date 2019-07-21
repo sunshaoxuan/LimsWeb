@@ -8,6 +8,7 @@ import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.linkoperate.LinkEditData;
+import nc.ui.qcco.task.ace.handler.Commission2TaskListener;
 import nc.ui.uap.sf.SFClientUtil;
 import nc.ui.uif2.NCAction;
 import nc.ui.uif2.UIState;
@@ -55,7 +56,8 @@ public class EditTaskAction extends NCAction {
 					}
 				}
 				data.setBillID(pk_task_h);
-				SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
+				//SFClientUtil.openNodeLinkedMaintain(FUN_CODE, data);
+				SFClientUtil.openNodeLinkedMaintain(FUN_CODE, this.getBillListPanel(), data, new Commission2TaskListener());
 			}
 		}
 	}
