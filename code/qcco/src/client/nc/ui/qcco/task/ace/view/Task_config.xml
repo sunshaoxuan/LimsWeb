@@ -687,7 +687,7 @@
 		<property name="model" ref="manageAppModel" />
 		<property name="interceptor" ref="showCardInterceptor" />
 	</bean>
-	<bean id="editAction" class="nc.ui.uif2.actions.EditAction">	
+	<bean id="editAction" class="nc.ui.qcco.task.action.TaskEditAction">	
 		<property name="model" ref="manageAppModel" />
 		<property name="interceptor" ref="showCardInterceptor" />
 	</bean>

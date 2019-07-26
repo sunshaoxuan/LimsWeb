@@ -83,8 +83,14 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 		
 		this.billFormEditor.getBillCardPanel().stopEditing();
 		AggTaskHVO agghvo = (AggTaskHVO)this.getBillForm().getValue();
+		AggTaskHVO origanVO= (AggTaskHVO)getModel().getSelectedData();
 		if(null == agghvo){
 			return;
+		}
+		if(origanVO != null && origanVO.getParentVO()!=null){
+			agghvo.getParentVO().setCreator(origanVO.getParentVO().getCreator());
+			agghvo.getParentVO().setCreationtime(origanVO.getParentVO().getCreationtime());
+			agghvo.getParentVO().setBillmaker(origanVO.getParentVO().getBillmaker());
 		}
 		this.validate(agghvo);
 		if (this.getModel().getUiState() == UIState.ADD) {
