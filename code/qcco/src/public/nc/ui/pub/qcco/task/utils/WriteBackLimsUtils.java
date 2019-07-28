@@ -15,6 +15,7 @@ import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.BeanProcessor;
 import nc.jdbc.framework.processor.ColumnListProcessor;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapProcessor;
@@ -22,18 +23,20 @@ import nc.ui.bd.ref.AbstractRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.lang.UFBoolean;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.commission.CommissionRVO;
 import nc.vo.qcco.task.TaskBVO;
+import nc.vo.qcco.task.TaskHVO;
 import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskSVO;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
- * TODO 等哪天实在忍不住了,再重构这个类
+ * XXX 等哪天实在忍不住了,再重构这个类
  * 
  * @author 91967
  *
@@ -140,8 +143,15 @@ public class WriteBackLimsUtils {
         Map<String, Object> ncPK2NCObjMap = new HashMap();
         String[] lists = null;
         List<String> projectList = new ArrayList();
-        //额外的回写字段
-        String[] listsExtends = null;
+        //sample表第一次回写
+        String[] sampleFirstExtends = null;
+        //test表第一次回写
+        String[] testFirstExtendArray = null;
+        List<String> testFirstExtendList = new ArrayList<>();
+        //
+        //用于存储的临时数据     pkFirstSample:第一次回写的sample主键
+        Map<String,Object> boxMap = new HashMap<>();
+        //Integer pkFirstSample = null;
 
         // 存储nc中的pk和lims系统的pk的对应关系
         Map<String, Object> ncPK2LimsPkMap = new HashMap<>();
@@ -149,7 +159,7 @@ public class WriteBackLimsUtils {
                 + "' and dr = 0 ";
         // 委托单表头
         lists = getInsertSQLByMap(getHeadMapping(), CommissionHVO.class,
-                headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap,projectList);
+                headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap,projectList,testFirstExtendList);
         if (lists == null || lists.length < 1) {
             throw new BusinessException("委托单主档回写失败!");
         }
@@ -159,21 +169,21 @@ public class WriteBackLimsUtils {
         }
         // 样品行
         lists = getInsertSQLByMap(getBodySampleMapping(), CommissionBVO.class,
-                headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap,projectList);
+                headCond, ncPK2LimsPkMap, ncPK2NCObjMap, taskPk2CommissionPkMap,projectList,testFirstExtendList);
         class2NumMap.put(CommissionBVO.class, lists!=null?(lists.length - 1):0);
         if (lists != null && lists.length > 0) {
             sqlList.addAll(getSampleInsertSQL(lists));
         }
         //额外回写Sample表
-        listsExtends = getSampleInsertSQLByMap(getBodySampleExtendMapping(), CommissionBVO.class,
-                headCond, ncPK2LimsPkMap, ncPK2NCObjMap);
+        sampleFirstExtends = getSampleInsertSQLByMap(pk_commission_h,getBodySampleExtendMapping(), CommissionBVO.class,
+                headCond, ncPK2LimsPkMap, ncPK2NCObjMap,boxMap);
 
         // 实验前参数
         String subCondition = "pk_commission_b in (select pk_commission_b from qc_commission_b where "
                 + headCond + ") and dr = 0 ";
         lists = getInsertSQLByMap(getGrandBeforeMapping(), CommissionRVO.class,
                 subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-                taskPk2CommissionPkMap,projectList);
+                taskPk2CommissionPkMap,projectList,testFirstExtendList);
         if (lists != null && class2NumMap.get(CommissionBVO.class) <= 0
                 && lists.length > 0) {
             throw new BusinessException("委托单孙表[实验前参数]发现无效数据,请联系数据管理员.");
@@ -189,7 +199,7 @@ public class WriteBackLimsUtils {
         //
         lists = getInsertSQLByMap(getBodyTaskMapping(), TaskBVO.class,
                 subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-                taskPk2CommissionPkMap,projectList);
+                taskPk2CommissionPkMap,projectList,testFirstExtendList);
         class2NumMap.put(TaskBVO.class, lists!=null?(lists.length - 1):0);
         if (lists != null && lists.length > 0) {
             sqlList.addAll(getTaskInsertSQL(lists,pk_commission_h));
@@ -201,7 +211,7 @@ public class WriteBackLimsUtils {
                 + headCond + " ) and dr = 0 ) and dr = 0 ";
         lists = getInsertSQLByMap(getGrandConditionMapping(), TaskSVO.class,
                 subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-                taskPk2CommissionPkMap,projectList);
+                taskPk2CommissionPkMap,projectList,testFirstExtendList);
         if (lists != null && class2NumMap.get(TaskBVO.class) <= 0
                 && lists.length > 0) {
             throw new BusinessException("任务单孙表[实验条件]发现无效数据,请联系数据管理员.");
@@ -217,7 +227,7 @@ public class WriteBackLimsUtils {
                 + headCond + " ) and dr = 0 ) and dr = 0 ";
         lists = getInsertSQLByMap(getGrandAfterMapping(), TaskRVO.class,
                 subCondition, ncPK2LimsPkMap, ncPK2NCObjMap,
-                taskPk2CommissionPkMap,projectList);
+                taskPk2CommissionPkMap,projectList,testFirstExtendList);
         if (lists != null && class2NumMap.get(TaskBVO.class) <= 0
                 && lists.length > 0) {
             throw new BusinessException("任务单孙表[实验后参数]发现无效数据,请联系数据管理员.");
@@ -226,14 +236,58 @@ public class WriteBackLimsUtils {
         if (lists != null && lists.length > 0) {
             sqlList.addAll(getAfterInsertSQL(lists));
         }
-        //额外的回写sample表
-        if (listsExtends != null && listsExtends.length > 0) {
-            sqlList.addAll(getSampleExtendInsertSQL(listsExtends));
+        //额外的回写sample表(第一次)
+        if (sampleFirstExtends != null && sampleFirstExtends.length > 0) {
+            sqlList.addAll(getSampleExtendInsertSQL(sampleFirstExtends));
+        }
+        //额外的回写test表(第一次)
+        testFirstExtendArray = testFirstExtendList.toArray(new String[0]);
+        if (testFirstExtendArray != null && testFirstExtendArray.length > 0) {
+            sqlList.addAll(getTestExtendInsertSQL(testFirstExtendArray,boxMap));
         }
         return sqlList.toArray(new String[0]);
     }
+    /**
+     * 额外的回写test表(第一次)
+     * @param lists
+     * @return
+     */
+    private List<String> getTestExtendInsertSQL(String[] lists,Map<String,Object> boxMap) {
+        List<String> rsList = new ArrayList<>();
+        if (lists != null && lists.length > 1) {
+        	StringBuilder colNameSB = new StringBuilder(lists[0]);
+        	StringBuilder colValSB = new StringBuilder();
+            //处理固定值字段
+        	for(String colName : TEST_STATIC_MAP.keySet()){
+        		colNameSB.append(",").append(colName);
+        		colValSB.append(",").append(TEST_STATIC_MAP.get(colName));
+        	}
+        	//sample_number
+        	if(boxMap.get("pkFirstSample")!=null){
+        		colNameSB.append(",").append("sample_number");
+        		colValSB.append(",").append(boxMap.get("pkFirstSample"));
+        	}else{
+        		colNameSB.append(",").append("sample_number");
+        		colValSB.append(",").append("null");
+        	}
+        	
+            StringBuilder sqlSB = new StringBuilder();
+            StringBuilder temp = new StringBuilder();
+            for (int i = 1; i < lists.length; i++) {
+                sqlSB.append("INSERT INTO test").append("(")
+                        .append(colNameSB.toString()).append(")  values (");
+                temp.delete(0, temp.length());
+                temp.append(lists[i]).append(colValSB);
+                sqlSB.append(temp.toString());
+                sqlSB.append(" ) ");
+                rsList.add(sqlSB.toString());
+                sqlSB.delete(0, sqlSB.length());
+            }
+        }
+        return rsList;
+    }
 
-    private Map<String, String> initRelated(String pk_commission_h)
+	private Map<String, String> initRelated(String pk_commission_h)
             throws DAOException {
         Map<String, String> rsMap = new HashMap();
         String sql = "select pk_task_h from qc_task_h where pk_commission_h = '"
@@ -256,15 +310,23 @@ public class WriteBackLimsUtils {
      * @param fatherPkList
      * @param selfPkList
      * @return
+     * @throws BusinessException 
      */
-    private List<String> getAfterInsertSQL(String[] lists) {
-        List<String> rsList = new ArrayList();
+    private List<String> getAfterInsertSQL(String[] lists) throws BusinessException {
+        List<String> rsList = new ArrayList<>();
+        StringBuilder colNameSB = new StringBuilder(lists[0]);
+        StringBuilder colValSB = new StringBuilder();
+   
+        //处理ENTRY_CODE(选取C_PROJ_PARA_A的最大值)
+        //预申请ENTRY_CODE
+        List<Integer> entryCodeList = getPrePk("entry_code","c_proj_task_para_b",lists.length - 1);
+        colNameSB.append(",").append("entry_code");
         if (lists != null && lists.length > 1) {
             StringBuilder sqlSB = new StringBuilder();
             for (int i = 1; i < lists.length; i++) {
                 sqlSB.append("INSERT INTO c_proj_task_para_b").append("(")
-                        .append(lists[0]).append(")  values (");
-                sqlSB.append(lists[i]);
+                        .append(colNameSB.toString()).append(")  values (");
+                sqlSB.append(lists[i]).append(",").append(entryCodeList.get(i-1));
                 sqlSB.append(" ) ");
                 rsList.add(sqlSB.toString());
                 sqlSB.delete(0, sqlSB.length());
@@ -315,10 +377,11 @@ public class WriteBackLimsUtils {
         	StringBuilder colValSB = new StringBuilder();
             //处理固定值字段
         	for(String colName : TASK_BODY_STATIC_MAP.keySet()){
-        		colNameSB.append(",").append(colName);
-        		colValSB.append(",").append(TASK_BODY_STATIC_MAP.get(colName));
+        		colNameSB.append(colName).append(",");
+        		colValSB.append(TASK_BODY_STATIC_MAP.get(colName)).append(",");
         	}
-        	
+        	//colNameSB = colNameSB.delete(colNameSB.length()-1, colNameSB.length());
+        	//colValSB = colValSB.delete(colValSB.length()-1, colValSB.length());
         	String sql = "select job.psncode changed_by,taskh.modifiedtime changed_on,"
         				+ " job2.psncode c_submit_by,ch.creationtime c_submit_date from qc_task_h taskh "
         				+ " left join sm_user sm on sm.cuserid = taskh.modifier "
@@ -336,10 +399,10 @@ public class WriteBackLimsUtils {
 			if (null != rs) {
 				// 委托单制单人,制单时间 修改人.修改时间 realValue =
 				// "to_timestamp('"+realValue+"','yyyy-mm-dd hh24:mi:ss.ff')"
-				colNameSB.append(",").append("changed_by").append(",").append("changed_on").append(",")
+				colNameSB.append("changed_by").append(",").append("changed_on").append(",")
 					.append("c_submit_by").append(",").append("c_submit_date");
 
-				colValSB.append(", '").append(rs.get("changed_by")).append("', ")
+				colValSB.append(" '").append(rs.get("changed_by")).append("', ")
 					.append("to_timestamp('"+rs.get("changed_on")+"','yyyy-mm-dd hh24:mi:ss.ff')")
 					.append(", '").append(rs.get("c_submit_by")).append("',")
 					.append("to_timestamp('"+rs.get("c_submit_date")+"','yyyy-mm-dd hh24:mi:ss.ff') ");
@@ -369,15 +432,23 @@ public class WriteBackLimsUtils {
      * @param fatherPkList
      * @param selfPkList
      * @return
+     * @throws DAOException 
      */
-    private List<String> getBeforeInsertSQL(String[] lists) {
-        List<String> rsList = new ArrayList();
+    private List<String> getBeforeInsertSQL(String[] lists) throws DAOException {
+        List<String> rsList = new ArrayList<>();
+        StringBuilder colNameSB = new StringBuilder(lists[0]);
+        StringBuilder colValSB = new StringBuilder();
+   
+        //处理ENTRY_CODE(选取C_PROJ_PARA_A的最大值)
+        //预申请ENTRY_CODE
+        List<Integer> entryCodeList = getPrePk("entry_code","c_proj_para_a",lists.length - 1);
+        colNameSB.append(",").append("entry_code");
         if (lists != null && lists.length > 1) {
             StringBuilder sqlSB = new StringBuilder();
             for (int i = 1; i < lists.length; i++) {
                 sqlSB.append("INSERT INTO C_PROJ_PARA_A").append("(")
-                        .append(lists[0]).append(")  values (");
-                sqlSB.append(lists[i]);
+                        .append(colNameSB.toString()).append(")  values (");
+                sqlSB.append(lists[i]).append(",").append(entryCodeList.get(i-1));
                 sqlSB.append(" ) ");
                 rsList.add(sqlSB.toString());
                 sqlSB.delete(0, sqlSB.length());
@@ -396,7 +467,7 @@ public class WriteBackLimsUtils {
      * @return
      */
     private List<String> getSampleInsertSQL(String[] lists) {
-    	List<String> rsList = new ArrayList();
+    	List<String> rsList = new ArrayList<>();
         if (lists != null && lists.length > 1) {
         	StringBuilder colNameSB = new StringBuilder(lists[0]);
         	StringBuilder colValSB = new StringBuilder();
@@ -422,7 +493,7 @@ public class WriteBackLimsUtils {
         return rsList;
     }
     /**
-     * 样品行
+     * Sample 第一次回写
      *
      * @param lists
      * @param ncPK2LimsPk
@@ -431,13 +502,24 @@ public class WriteBackLimsUtils {
      * @return
      */
     private List<String> getSampleExtendInsertSQL(String[] lists) {
-        List<String> rsList = new ArrayList();
+        List<String> rsList = new ArrayList<>();
         if (lists != null && lists.length > 1) {
+        	StringBuilder colNameSB = new StringBuilder(lists[0]);
+        	StringBuilder colValSB = new StringBuilder();
+            //处理固定值字段
+        	for(String colName : SAMPLE_STATIC_MAP.keySet()){
+        		colNameSB.append(",").append(colName);
+        		colValSB.append(",").append(SAMPLE_STATIC_MAP.get(colName));
+        	}
+        	
             StringBuilder sqlSB = new StringBuilder();
+            StringBuilder temp = new StringBuilder();
             for (int i = 1; i < lists.length; i++) {
                 sqlSB.append("INSERT INTO SAMPLE").append("(")
-                        .append(lists[0]).append(")  values (");
-                sqlSB.append(lists[i]);
+                        .append(colNameSB.toString()).append(")  values (");
+                temp.delete(0, temp.length());
+                temp.append(lists[i]).append(colValSB);
+                sqlSB.append(temp.toString());
                 sqlSB.append(" ) ");
                 rsList.add(sqlSB.toString());
                 sqlSB.delete(0, sqlSB.length());
@@ -613,6 +695,8 @@ public class WriteBackLimsUtils {
      *            ncpk和lims系统pk对应关系
      * @param ncPK2ObjectMap
      *            本次保存的所有NCOBJ
+     * @param testFirstExtends sample表第一次回写的部分sql
+     * 
      * @return fieldValues[0]: 字段名片断<br />
      *         fieldValues[1-n]：值片断
      * @return project 委托单编号,用于各个表的project
@@ -622,7 +706,7 @@ public class WriteBackLimsUtils {
                                        Class<?> clazz, String condition,
                                        Map<String, Object> ncPK2LimsPkMap,
                                        Map<String, Object> ncPK2NCObjMap,
-                                       Map<String, String> taskPk2CommissionPkMap,List<String> projectList)
+                                       Map<String, String> taskPk2CommissionPkMap,List<String> projectList,List<String> testFirstExtendList)
             throws BusinessException {
 
         // 用于某个字段的值,一行数据对应array中的一行
@@ -630,27 +714,27 @@ public class WriteBackLimsUtils {
         IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
         List<?> srcData = (List<?>) query.retrieveByClause(clazz, condition);
         List<Integer> pkList = null;
-
+        if (null == srcData || srcData.size() <= 0) {
+            return null;
+        }
         List<Integer> test_numberList = null;
-        List<Integer> sample_numberList = null;
+        //List<Integer> sample_numberList = null;
 
         if (CommissionHVO.class != clazz) {
             // 预申请pk-出来委托单之外(委托单的主键是billNo)
             pkList = getPrePk(clazz, srcData.size());
         }
 
-        if(TaskSVO.class == clazz){
+        if(TaskBVO.class == clazz){
             //任务单子表还需要申请test_number和sample_number
             test_numberList = getPrePk("test_number","test",srcData.size());
-            sample_numberList = getPrePk("sample_number","sample",srcData.size());
-            //XXX:test插入占位
-            for(Integer pktest : test_numberList){
+            //sample_numberList = getPrePk("sample_number","sample",srcData.size());
+            //test插入占位
+            /*for(Integer pktest : test_numberList){
             	baseDao.executeUpdate("insert into test (test_number) values("+pktest+")");
-            }
+            }*/
         }
-        if (null == srcData || srcData.size() <= 0) {
-            return null;
-        }
+        
         fieldValues = new StringBuilder[srcData.size() + 1];
         // 用于拼接字段名
         StringBuilder insertFields = new StringBuilder();
@@ -733,26 +817,32 @@ public class WriteBackLimsUtils {
                 if (CommissionHVO.class != clazz) {
                     // 写入主键和父主键(只支持单主键,要多主键,需要参考上面的字段添加逻辑)
                     if (0 == i) {
-                        // 处理委托单子表字段需要写到孙表
+                        
                         if (CommissionRVO.class == clazz) {
+                        	// 处理委托单子表字段需要写到孙表
                             Map<String, String> LimsFiled2ncFieldMap = getBodySimple2ChildrenMapping();
-                            for (String limsField : LimsFiled2ncFieldMap
-                                    .keySet()) {
+                            for (String limsField : LimsFiled2ncFieldMap.keySet()) {
                                 fieldValues[i]
                                         .append(getWriteBackFields(new String[] { limsField })[0])
                                         .append(",");
                             }
+                            //RULE_TYPE 写入
+                            fieldValues[i].append("rule_type").append(",");
                         }
                         fieldValues[i].append(
                                 getWriteBackFields(new String[] { LIMS_PK_MAP
                                         .get(clazz) })[0]).append(",");
-
-                        if(TaskSVO.class==clazz){
-                            //如果是任务单子表,需要回写testnumber和sample_number
+                        if(TaskRVO.class==clazz){
+                        	//RULE_TYPE 写入
+                            fieldValues[i].append("spec_rule").append(",");
+                        }
+                        
+                        if(TaskBVO.class==clazz){
+                            //如果是任务单子表,需要回写testnumber
                             fieldValues[i]
                                     .append("test_number").append(",");
-                            fieldValues[i]
-                                    .append("sample_number");
+                            /*fieldValues[i]
+                                    .append("sample_number");*/
                         }else{
                             fieldValues[i]
                                     .append(getWriteBackFields(new String[] { LIMS_FK_MAP
@@ -776,8 +866,7 @@ public class WriteBackLimsUtils {
                         // 处理委托单子表字段需要写到孙表
                         if (CommissionRVO.class == clazz) {
                             Map<String, String> LimsFiled2ncFieldMap = getBodySimple2ChildrenMapping();
-                            for (String limsField : LimsFiled2ncFieldMap
-                                    .keySet()) {
+                            for (String limsField : LimsFiled2ncFieldMap.keySet()) {
                                 // 上层的NCVO 需要回写到子表的字段
                                 String ncField = LimsFiled2ncFieldMap
                                         .get(limsField);
@@ -812,6 +901,11 @@ public class WriteBackLimsUtils {
                                             .append("',");
                                 }
                             }
+                            // 处理RULE_TYPE的值
+                            CommissionRVO rvo = ((CommissionRVO) srcData.get(i - 1));
+                            fieldValues[i].append("'")
+                            .append(dealRuleType(rvo))
+                            .append("',");
                         }
                         if (null == pkList.get(i - 1)
                                 || pkList.get(i - 1) instanceof Integer ) {
@@ -823,24 +917,34 @@ public class WriteBackLimsUtils {
                             fieldValues[i].append("'").append(pkList.get(i - 1))
                                     .append("',");
                         }
+                        if(TaskRVO.class == clazz){
+                        	// 处理RULE_TYPE的值
+                        	TaskRVO rvo = ((TaskRVO) srcData.get(i - 1));
+                            fieldValues[i].append("'")
+                            .append(dealRuleType(rvo))
+                            .append("',");
+                        }
+                        if(TaskBVO.class == clazz){
+                        	//第一次回写test表
+                            firstWriteBackTest(ncPK2NCObjMap,srcData.get(i - 1),test_numberList.get(i - 1),testFirstExtendList,i);
+                        }
 
 
-
-
-                        //任务单子表需要另外会写test_number和sample_number
-                        if(TaskSVO.class == clazz){
+                        //任务单子表需要另外会写test_number
+                        if(TaskBVO.class == clazz){
                             if (null == test_numberList.get(i - 1)
                                     || test_numberList.get(i - 1) instanceof Integer) {
                                 // test_numberList
                                 fieldValues[i].append(test_numberList.get(i - 1))
                                         .append(",");
+                                
                             } else {
                                 // test_numberList
                                 fieldValues[i].append("'").append(test_numberList.get(i - 1))
                                         .append("',");
                             }
 
-                            if (null == sample_numberList.get(i - 1)
+                            /*if (null == sample_numberList.get(i - 1)
                                     || sample_numberList.get(i - 1) instanceof Integer) {
                                 // sample_numberList
                                 fieldValues[i].append(sample_numberList.get(i - 1))
@@ -849,7 +953,7 @@ public class WriteBackLimsUtils {
                                 // sample_numberList
                                 fieldValues[i].append("'").append(sample_numberList.get(i - 1))
                                         .append("'");
-                            }
+                            }*/
                         }else{
                             if (null == ncPK2LimsPkMap.get(realfatherPk)
                                     || ncPK2LimsPkMap.get(realfatherPk) instanceof Integer) {
@@ -906,7 +1010,112 @@ public class WriteBackLimsUtils {
         }
         return rsString;
     }
-    private String dealEscapse(String value){
+    /**
+     * 第一次回写Test表
+     * @param object 
+     * @param object
+     * @param pk_test 预申请的test主键
+     * @param pk_firstSample 第一次回写的sample表主键
+     * @throws BusinessException 
+     */
+    private void firstWriteBackTest(Map<String, Object> ncPK2NCObjMap, Object taskBVOObj, Integer pk_test,List<String> testFirstExtends,int i) throws BusinessException {
+		if(taskBVOObj!=null && taskBVOObj instanceof TaskBVO){
+			StringBuilder colNameSb = new StringBuilder();
+			StringBuilder colValueSb = new StringBuilder();
+			TaskBVO taskBvo = (TaskBVO)taskBVOObj;
+			TaskHVO taskHvo = (TaskHVO)ncPK2NCObjMap.get(taskBvo.getPk_task_h());
+			//查询hvo
+			if(taskHvo==null){
+				taskHvo = (TaskHVO)(baseDao.executeQuery("select * from qc_task_h where pk_task_h = '"+taskBvo.getPk_task_h()+"'", new BeanProcessor(TaskHVO.class)));
+				ncPK2NCObjMap.put(taskBvo.getPk_task_h(), taskHvo);
+				if(taskHvo == null){
+					throw new BusinessException("数据错误:未找到任务单主表信息!请联系管理员!");
+				}
+			}
+			//主键
+			colNameSb.append("test_number");
+			colValueSb.append(pk_test);
+			colNameSb.append(", ").append("original_test");
+			colValueSb.append(", ").append(pk_test).append(" ");
+			
+			//任务单创建时间
+			UFDateTime creatTime = taskHvo.getCreationtime();
+			colNameSb.append(", ").append("date_received");
+			colValueSb.append(", ").append("to_timestamp('"+creatTime+"','yyyy-mm-dd hh24:mi:ss.ff')");
+			colNameSb.append(", ").append("date_started");
+			colValueSb.append(", ").append("to_timestamp('"+creatTime+"','yyyy-mm-dd hh24:mi:ss.ff')");
+			colNameSb.append(", ").append("t_date_enabled");
+			colValueSb.append(", ").append("to_timestamp('"+creatTime+"','yyyy-mm-dd hh24:mi:ss.ff')");
+			
+			//最后修改时间
+			UFDateTime modifyTime = taskHvo.getModifiedtime()==null?creatTime:taskHvo.getModifiedtime();
+			colNameSb.append(", ").append("changed_on");
+			colValueSb.append(", ").append("to_timestamp('"+modifyTime+"','yyyy-mm-dd hh24:mi:ss.ff')");
+			
+			//表体测试结果名称
+			colNameSb.append(", ").append("analysis");
+			colValueSb.append(", '").append(taskBvo.getPk_testresultname()).append("' ");
+			
+			//测试结果短名称
+			colNameSb.append(", ").append("common_name");
+			colValueSb.append(", '").append(taskBvo.getTestresultshortname()).append("' ");
+			
+			//测试项目
+			colNameSb.append(", ").append("reported_name");
+			colValueSb.append(", '").append(taskBvo.getTestitem()).append("' ");
+			
+			if(testFirstExtends.size() <= 0){
+				//先生成列名
+				testFirstExtends.add(colNameSb.toString());
+			}
+			testFirstExtends.add(colValueSb.toString());
+		}
+	}
+
+	private String dealRuleType(CommissionRVO rvo) {
+		/*
+		 * 委托单孙表 RuleType 此为对应项，列表如下：
+		 * 只有最大值：LTE_MAX
+		 * 只有最小值：GTE_MIN
+		 * 最大最小都有：MNLTELTEMX
+		 * 温湿度：EMPTY
+		 * GT_MIN
+		 * MNLTLTEMX
+		 */
+    	if(rvo!=null){
+    		if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue==null){
+    			return "LET_MAX";
+    		}else if(rvo.getStdmaxvalue()==null && rvo.stdminvalue!=null){
+    			return "GTE_MAX";
+    		}else if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue!=null){
+    			return "MNLTELTEMX";
+    		}
+    	}
+		return null;
+	}
+	private String dealRuleType(TaskRVO rvo) {
+		/*
+		 * 委托单孙表 RuleType 此为对应项，列表如下：
+		 * 只有最大值：LTE_MAX
+		 * 只有最小值：GTE_MIN
+		 * 最大最小都有：MNLTELTEMX
+		 * 温湿度：EMPTY
+		 * GT_MIN
+		 * MNLTLTEMX
+		 */
+    	if(rvo!=null){
+    		if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue==null){
+    			return "LET_MAX";
+    		}else if(rvo.getStdmaxvalue()==null && rvo.stdminvalue!=null){
+    			return "GTE_MAX";
+    		}else if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue!=null){
+    			return "MNLTELTEMX";
+    		}
+    	}
+		return null;
+	}
+
+	private String dealEscapse(String value){
     	if(value!=null){
     		if(value.contains("'")){
     			value = value.replaceAll("'", "''");
@@ -929,12 +1138,72 @@ public class WriteBackLimsUtils {
      *         fieldValues[1-n]：值片断
      * @throws BusinessException
      */
-    private String[] getSampleInsertSQLByMap(Map<String, String> fieldMap,
+    private String[] getSampleInsertSQLByMap(String pk_commisssion_h,Map<String, String> fieldMap,
                                              Class<?> clazz, String condition,Map<String, Object> ncPK2LimsPkMap,
-                                             Map<String, Object> ncPK2NCObjMap)
+                                             Map<String, Object> ncPK2NCObjMap,Map<String,Object> boxMap)
             throws BusinessException {
+    	//委托单
+    	CommissionHVO hvo = (CommissionHVO)ncPK2NCObjMap.get(pk_commisssion_h);
+    	String[] rsArray = new String[2];
+    	StringBuilder rowName = new StringBuilder();
+    	StringBuilder rowValue = new StringBuilder();
+    	//修改日期
+    	UFDateTime modtime = hvo.getModifiedtime()==null?hvo.getCreationtime():hvo.getModifiedtime();
+    	if(modtime==null){
+    		modtime = new UFDateTime();
+    	}
+    	rowName.append("changed_on");
+    	rowValue.append("to_timestamp('"+modtime.toStdString()+"','yyyy-mm-dd hh24:mi:ss.ff')");
+    	rowName.append(", ").append("date_started");
+    	rowValue.append(", ").append("to_timestamp('"+modtime.toStdString()+"','yyyy-mm-dd hh24:mi:ss.ff')");
+    	rowName.append(", ").append("login_date");
+    	rowValue.append(", ").append("to_timestamp('"+modtime.toStdString()+"','yyyy-mm-dd hh24:mi:ss.ff')");
+    	rowName.append(", ").append("recd_date");
+    	rowValue.append(", ").append("to_timestamp('"+modtime.toStdString()+"','yyyy-mm-dd hh24:mi:ss.ff')");
 
-        // 用于某个字段的值,一行数据对应array中的一行
+    	//员工号
+    	String pk_user = hvo.getModifier()==null?hvo.getCreator():hvo.getModifier();
+    	if(pk_user!=null){
+    		String userCode = String.valueOf(dealSystemRef(CommissionHVO.class, "cuserid", pk_user));
+        	rowName.append(", ").append("login_by");
+        	rowValue.append(", '").append(userCode).append("' ");
+        	rowName.append(", ").append("received_by");
+        	rowValue.append(", '").append(userCode).append("' ");
+    	}
+    	
+    	
+    	//主键
+    	List<Integer> prePk = getPrePk("sample_number", "sample", 1);
+    	Integer pkFirstSample = prePk.get(0);
+    	boxMap.put("pkFirstSample", pkFirstSample);
+    	rowName.append(", ").append("sample_number");
+    	rowValue.append(", ").append(pkFirstSample).append(" ");
+    	rowName.append(", ").append("original_sample");
+    	rowValue.append(", ").append(pkFirstSample).append(" ");
+    	
+    	//SAMPLE.TEXT_ID此处有两种生成方式：由于本次是第一次写入，写入的是上表红色的格式(19-5673)，
+    	//代表试验前的样品分类，格式为“年份-最大值+1”
+    	
+    	String sql = "select str2 from (SELECT REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,1,'i')  STR1, "
+    			+ " nvl(REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,2,'i'),'1')  str2 FROM sample) origin "
+    			+ " where str1 = '"+modtime.getYear()+"' order by str2 desc ";
+    	Object maxNumObj = baseDao.executeQuery(sql, new ColumnProcessor());
+    	int maxNum = 1;
+    	if(maxNumObj!=null){
+    		try{
+    			maxNum = Integer.valueOf(maxNumObj.toString());
+    		}catch(Exception e){
+    			maxNum = 1 ;
+    		}
+    	}
+    	rowName.append(", ").append("text_id");
+    	rowValue.append(", '").append(modtime.getYear()).append("-").append(maxNum+1).append("' ");
+    	
+    	
+    	rsArray[0] = rowName.toString();
+    	rsArray[1] = rowValue.toString();
+    	return rsArray;
+        /*// 用于某个字段的值,一行数据对应array中的一行
         StringBuilder[] fieldValues = null;
         IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
         List<?> srcData = (List<?>) query.retrieveByClause(clazz, condition);
@@ -1116,8 +1385,8 @@ public class WriteBackLimsUtils {
                 rsString[i] = fieldValues[i].toString();
             }
 
-        }
-        return rsString;
+        }*/
+        
     }
 
 
@@ -1340,6 +1609,12 @@ public class WriteBackLimsUtils {
                     "pk_structuretype");// 结构类型
             bodySimple2ChildrenMapping.put("C_PROJ_PARA_A.stage",
                     "productstage");// 温度
+            
+            bodySimple2ChildrenMapping.put("c_proj_para_a.prodname",
+                    "typeno");// 规格型号 
+            bodySimple2ChildrenMapping.put("c_proj_para_a.contact_type",
+                    "contacttype");// 触点类型	contacttype
+            
         }
 
         return bodySimple2ChildrenMapping;
@@ -1448,6 +1723,23 @@ public class WriteBackLimsUtils {
     	if(isSystemRef(clazz,fieldName)){
     		return dealSystemRef(clazz,fieldName,fieldValue);
     	}
+    	//有些父表写入子表的字段,需要把类型改成父表
+    	if(clazz==CommissionRVO.class){
+    		switch(fieldName){
+    		case "pk_enterprisestandard":
+    			clazz=CommissionBVO.class;
+    			break;
+    		case "pk_productspec":
+    			clazz=CommissionBVO.class;
+    			break;
+    		case "pk_structuretype":
+    			clazz=CommissionBVO.class;
+    			break;
+    		default: break;
+    		}
+    	}
+    	
+    	
         String strSQL = "select reftype from md_property ppt " + "inner join md_class cls on cls.id = ppt.classid "
                 + "inner join pub_billtemplet_b btb on btb.metadataproperty = 'qcco.' || cls.name || '.' || ppt.name "
                 + "where btb.reftype is not null and cls.fullclassname = '" + clazz.getName() + "' and ppt.name='"
@@ -1564,8 +1856,12 @@ public class WriteBackLimsUtils {
     				if(systemRefCacheMap.containsKey(String.valueOf(fieldValue))){
     					return systemRefCacheMap.get(String.valueOf(fieldValue));
     				}
+    				String sql = "select job.psncode psncode "
+    						+" from  sm_user sm  "
+    						+" left join (select * from bd_psnjob jobinner where ismainjob = 'Y' ) job on rownum = 1 and job.pk_psndoc = sm.pk_psndoc   "
+    						+" where sm.cuserid = '"+String.valueOf(fieldValue)+"'";
     				String newValue = 
-    						(String)baseDao.executeQuery("select psncode from bd_psnjob where rownum = 1 and ismainjob = 'Y' and pk_psndoc = '"+String.valueOf(fieldValue)+"' order by ts desc", new ColumnProcessor());
+    						(String)baseDao.executeQuery(sql, new ColumnProcessor());
     				systemRefCacheMap.put(String.valueOf(fieldValue), newValue);
     				return newValue;
     			}else if("org_dept".equals(refCode)){
@@ -1608,6 +1904,137 @@ public class WriteBackLimsUtils {
 		}
 		return false;
 	}
-	
+	/**
+     * sample表体第一次回写固定值
+     */
+    private static Map<String,String> SAMPLE_STATIC_MAP = new HashMap<>();
+    {
+    	SAMPLE_STATIC_MAP.put("ALIQUOT", "'F'");
+    	SAMPLE_STATIC_MAP.put("ALIQUOT_TEMPLATE", "'ALIQUOT'");
+    	SAMPLE_STATIC_MAP.put("ALLOW_CHLD_ALQTS", "'F'");
+    	SAMPLE_STATIC_MAP.put("APPROVAL_ID", "0.00");
+    	SAMPLE_STATIC_MAP.put("APPROVED", "'F'");
+    	SAMPLE_STATIC_MAP.put("\"AUDIT\"", "'F'");
+    	SAMPLE_STATIC_MAP.put("C_IS_SEQUNCE", "'F'");
+    	SAMPLE_STATIC_MAP.put("CHK_ALIQUOT_SPECS", "'F'");
+    	SAMPLE_STATIC_MAP.put("CHK_ALIQUOT_STATUS", "'F'");
+    	SAMPLE_STATIC_MAP.put("CLONED_FROM", "0.00");
+    	SAMPLE_STATIC_MAP.put("COLLECTION_OFFSET", "0.00");
+    	SAMPLE_STATIC_MAP.put("COMPOSITE", "'F'");
+    	SAMPLE_STATIC_MAP.put("CONTRACT_NUMBER", "0.00");
+    	SAMPLE_STATIC_MAP.put("HAS_FLAGS", "'F'");
+    	SAMPLE_STATIC_MAP.put("IN_CAL", "'T'");
+    	SAMPLE_STATIC_MAP.put("IN_CONTROL", "'T'");
+    	SAMPLE_STATIC_MAP.put("IN_SPEC", "'T'");
+    	SAMPLE_STATIC_MAP.put("INVESTIGATED", "'F'");
+    	SAMPLE_STATIC_MAP.put("LOT", "0.00");
+    	SAMPLE_STATIC_MAP.put("MODIFIED_RESULTS", "'F'");
+    	SAMPLE_STATIC_MAP.put("NUM_CONTAINERS", "1.00");
+    	SAMPLE_STATIC_MAP.put("OLD_STATUS", "'I'");
+    	SAMPLE_STATIC_MAP.put("PARENT_ALIQUOT", "0.00");
+    	SAMPLE_STATIC_MAP.put("PARENT_COMPOSITE", "0.00");
+    	SAMPLE_STATIC_MAP.put("PARENT_SAMPLE", "0.00");
+    	SAMPLE_STATIC_MAP.put("PARTIAL_SPEC", "'F'");
+    	SAMPLE_STATIC_MAP.put("PEOPLE", "0.00");
+    	SAMPLE_STATIC_MAP.put("PREP", "'F'");
+    	SAMPLE_STATIC_MAP.put("PRIMARY_IN_SPEC", "'T'");
+    	SAMPLE_STATIC_MAP.put("PRIORITY", "0.00");
+    	SAMPLE_STATIC_MAP.put("PRODUCT_VERSION", "0.00");
+    	SAMPLE_STATIC_MAP.put("RE_SAMPLE", "'F'");
+    	SAMPLE_STATIC_MAP.put("READY_FOR_APPROVAL", "'F'");
+    	SAMPLE_STATIC_MAP.put("RELEASED", "'F'");
+    	SAMPLE_STATIC_MAP.put("REPORT_NUMBER", "0.00");
+    	SAMPLE_STATIC_MAP.put("REPORTED_RSLT_OOS", "'F'");
+    	SAMPLE_STATIC_MAP.put("REQD_VOLUME", "0.00");
+    	SAMPLE_STATIC_MAP.put("SAMPLE_EVENT", "0.00");
+    	SAMPLE_STATIC_MAP.put("SAMPLE_VOLUME", "0.00");
+    	SAMPLE_STATIC_MAP.put("SAMPLED", "'F'");
+    	SAMPLE_STATIC_MAP.put("SIGNED", "'F'");
+    	SAMPLE_STATIC_MAP.put("SPEC_TYPE", "'NONE'");
+    	SAMPLE_STATIC_MAP.put("STAGE", "'NONE'");
+    	SAMPLE_STATIC_MAP.put("STANDARD", "'F'");
+    	SAMPLE_STATIC_MAP.put("STARTED", "'T'");
+    	SAMPLE_STATIC_MAP.put("STATUS", "'P'");
+    	SAMPLE_STATIC_MAP.put("STORAGE_LOC_NO", "0.00");
+    	SAMPLE_STATIC_MAP.put("T_CONTRACT_TESTS", "'F'");
+    	SAMPLE_STATIC_MAP.put("T_LOGIN_VERIFIED", "'F'");
+    	SAMPLE_STATIC_MAP.put("TEMPLATE", "'HF-CONDITION'");
+    	SAMPLE_STATIC_MAP.put("TRANS_NUM", "0.00");
+    }
+    /**
+     * TEST表体第一次回写固定值
+     */
+    private static Map<String,String> TEST_STATIC_MAP = new HashMap<>();
+    {
+    	TEST_STATIC_MAP.put("CHARGE_ENTRY", "0.00");
+    	TEST_STATIC_MAP.put("REPLICATE_COUNT", "1.00");
+    	TEST_STATIC_MAP.put("STATUS", "'P'");
+    	TEST_STATIC_MAP.put("OLD_STATUS", "'I'");
+    	TEST_STATIC_MAP.put("PREP", "'F'");
+    	TEST_STATIC_MAP.put("C_TASK_SEQ_NUM", "0.00");
+    	TEST_STATIC_MAP.put("C_IF_ARRANGED", "'F'");
+    	TEST_STATIC_MAP.put("C_ARRANGE_TYPE", "'A类'");
+    	TEST_STATIC_MAP.put("C_TEST_TYPE", "'测试条件'");
+    	TEST_STATIC_MAP.put("C_APPLY_REVIEW", "'F'");
+    	TEST_STATIC_MAP.put("C_BASE_PARA_TEMP", "'T'");
+    	TEST_STATIC_MAP.put("C_ARRANGE_SEQ_NUM", "0.00");
+    	TEST_STATIC_MAP.put("C_TASK_STATUS", "'0'");
+    	TEST_STATIC_MAP.put("C_TEST_CYCLE", "0.00");
+    	TEST_STATIC_MAP.put("C_FAILURE_CYCLE", "0.00");
+    	TEST_STATIC_MAP.put("REPLICATE_TEST", "'F'");
+    	TEST_STATIC_MAP.put("TEST_PRIORITY", "0.00");
+    	TEST_STATIC_MAP.put("IN_SPEC", "'T'");
+    	TEST_STATIC_MAP.put("IN_CAL", "'T'");
+    	TEST_STATIC_MAP.put("TEST_LOCATION", "'DEFAULT'");
+    	TEST_STATIC_MAP.put("ORDER_NUMBER", "1.00");
+    	TEST_STATIC_MAP.put("GROUP_NAME", "'DEFAULT'");
+    	TEST_STATIC_MAP.put("RESOLVE_REQD", "'F'");
+    	TEST_STATIC_MAP.put("STAGE", "'NONE'");
+    	TEST_STATIC_MAP.put("PRIMARY_IN_SPEC", "'T'");
+    	TEST_STATIC_MAP.put("IN_CONTROL", "'T'");
+    	TEST_STATIC_MAP.put("VARIATION", "''");
+    	TEST_STATIC_MAP.put("RE_TESTED", "'F'");
+    	TEST_STATIC_MAP.put("MODIFIED_RESULTS", "'F'");
+    	TEST_STATIC_MAP.put("ALIQUOTED_TO", "0.00");
+    	TEST_STATIC_MAP.put("ON_WORKSHEET", "'F'");
+    	TEST_STATIC_MAP.put("ALIQUOT_GROUP", "'DEFAULT'");
+    	TEST_STATIC_MAP.put("ANALYSIS_COUNT", "0.00");
+    	TEST_STATIC_MAP.put("BATCH_ORIGINAL_TEST", "0.00");
+    	TEST_STATIC_MAP.put("BATCH_PARENT_TEST", "0.00");
+    	TEST_STATIC_MAP.put("BATCH_SIBLING_TEST", "0.00");
+    	TEST_STATIC_MAP.put("CHILD_OUT_SPEC", "'F'");
+    	TEST_STATIC_MAP.put("CROSS_SAMPLE", "'F'");
+    	TEST_STATIC_MAP.put("DISPLAY_RESULTS", "'T'");
+    	TEST_STATIC_MAP.put("DOUBLE_ENTRY", "'F'");
+    	TEST_STATIC_MAP.put("PARENT_TEST", "0.00");
+    	TEST_STATIC_MAP.put("RELEASED", "'F'");
+    	TEST_STATIC_MAP.put("SIGNED", "'F'");
+    	TEST_STATIC_MAP.put("SPLIT_REPLICATES", "'F'");
+    	TEST_STATIC_MAP.put("TEST_SEQUENCE_NO", "0.00");
+    	TEST_STATIC_MAP.put("CNTRCT_QTE_ITEM_NO", "0.00");
+    	TEST_STATIC_MAP.put("DOUBLE_BLIND", "'F'");
+    	TEST_STATIC_MAP.put("INVOICE_NUMBER", "0.00");
+    	TEST_STATIC_MAP.put("PRE_INVOICE_NUMBER", "0.00");
+    	TEST_STATIC_MAP.put("REPORTED_RSLT_OOS", "'F'");
+    	TEST_STATIC_MAP.put("T_CHARGE_GROUP", "0.00");
+    	TEST_STATIC_MAP.put("T_NEEDS_LOCATION", "'F'");
+    	TEST_STATIC_MAP.put("T_PREP_TEST", "0.00");
+    	TEST_STATIC_MAP.put("T_QC_REFERENCE", "0.00");
+    	TEST_STATIC_MAP.put("T_TURNAROUND_ACTUA", "0.00");
+    	TEST_STATIC_MAP.put("T_TURNAROUND_CHARG", "0.00");
+    	TEST_STATIC_MAP.put("T_TURNAROUND_MET", "'F'");
+    	TEST_STATIC_MAP.put("TRANS_NUM", "0.00");
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 }
