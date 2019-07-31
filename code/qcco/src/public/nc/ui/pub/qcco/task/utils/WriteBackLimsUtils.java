@@ -828,6 +828,8 @@ public class WriteBackLimsUtils {
                             }
                             //RULE_TYPE 写入
                             fieldValues[i].append("rule_type").append(",");
+                            // ANALYSIS_VERSION 写入
+                            fieldValues[i].append("analysis_version").append(",");
                         }
                         fieldValues[i].append(
                                 getWriteBackFields(new String[] { LIMS_PK_MAP
@@ -835,6 +837,10 @@ public class WriteBackLimsUtils {
                         if(TaskRVO.class==clazz){
                         	//RULE_TYPE 写入
                             fieldValues[i].append("spec_rule").append(",");
+                           
+                            fieldValues[i].append("task_name").append(",");
+                            fieldValues[i].append("analysis_version").append(",");
+                            fieldValues[i].append("proj_logsamp_seqnum").append(",");
                         }
                         
                         if(TaskBVO.class==clazz){
@@ -903,9 +909,9 @@ public class WriteBackLimsUtils {
                             }
                             // 处理RULE_TYPE的值
                             CommissionRVO rvo = ((CommissionRVO) srcData.get(i - 1));
-                            fieldValues[i].append("'")
-                            .append(dealRuleType(rvo))
-                            .append("',");
+							fieldValues[i].append("'").append(dealRuleType(rvo)).append("',");
+							//客户需求不明确,暂时回写 1
+							fieldValues[i].append("").append(1).append(",");
                         }
                         if (null == pkList.get(i - 1)
                                 || pkList.get(i - 1) instanceof Integer ) {
@@ -920,9 +926,15 @@ public class WriteBackLimsUtils {
                         if(TaskRVO.class == clazz){
                         	// 处理RULE_TYPE的值
                         	TaskRVO rvo = ((TaskRVO) srcData.get(i - 1));
-                            fieldValues[i].append("'")
-                            .append(dealRuleType(rvo))
-                            .append("',");
+							fieldValues[i].append("'").append(dealRuleType(rvo)).append("',");
+							// 回写 分析名
+							TaskBVO bvo =  (TaskBVO)ncPK2NCObjMap.get(rvo.getPk_task_b());
+							String analysisName = bvo==null?null:bvo.getPk_testresultname();
+							fieldValues[i].append("'").append(analysisName).append("',");
+							// 分析版本
+							fieldValues[i].append("").append(getAnalysisVerionFromName(analysisName)).append(",");
+							//proj_logsamp_seqnum 通过组别获取对应的委托单子表
+							fieldValues[i].append("").append(getCommissionBFromGroup(rvo.getPk_samplegroup(),bvo==null?null:bvo.getPk_task_h(),ncPK2LimsPkMap)).append(",");
                         }
                         if(TaskBVO.class == clazz){
                         	//第一次回写test表
@@ -1010,7 +1022,34 @@ public class WriteBackLimsUtils {
         }
         return rsString;
     }
-    /**
+    private Integer getCommissionBFromGroup(String pk_simpleGroup,String pk_task_h, Map<String, Object> ncPK2LimsPkMap) throws DAOException {
+    	Integer pkSimple= null;
+		if(pk_simpleGroup!=null && pk_task_h != null){
+			String sql = " select cb.PK_COMMISSION_B from QC_COMMISSION_B cb "
+						+" left join QC_TASK_H th on cb.PK_COMMISSION_H = th.PK_COMMISSION_H "
+						+" where cb.PK_SAMPLEGROUP = '"+pk_simpleGroup+"' and th.PK_task_H = '"+pk_task_h+"' and cb.dr = 0 ";
+			String pk_commission_b = (String)baseDao.executeQuery(sql, new ColumnProcessor());
+			Object pkSimpleObj = ncPK2LimsPkMap.get(pk_commission_b);
+			try{
+				pkSimple = Integer.valueOf(pkSimpleObj.toString());
+			}catch(Exception e){
+				pkSimple = null;
+			}
+		}
+		return pkSimple;
+	}
+	/**
+     * 通过分析名,获取分析版本
+     * @param analysisName
+     * @return
+     * @throws DAOException 
+     */
+    private String getAnalysisVerionFromName(String analysisName) throws DAOException {
+		String sql = " select VERSION from nc_analysis_list where name  = '"+analysisName+"'"; 
+		Integer ver = (Integer)baseDao.executeQuery(sql, new ColumnProcessor());
+		return String.valueOf(ver);
+	}
+	/**
      * 第一次回写Test表
      * @param object 
      * @param object
@@ -1064,6 +1103,11 @@ public class WriteBackLimsUtils {
 			colNameSb.append(", ").append("reported_name");
 			colValueSb.append(", '").append(taskBvo.getTestitem()).append("' ");
 			
+			//分析版本
+			//测试项目
+			colNameSb.append(", ").append("version");
+			colValueSb.append(", '").append(getAnalysisVerionFromName(taskBvo.getPk_testresultname())).append("' ");
+			
 			if(testFirstExtends.size() <= 0){
 				//先生成列名
 				testFirstExtends.add(colNameSb.toString());
@@ -1073,27 +1117,19 @@ public class WriteBackLimsUtils {
 	}
 
 	private String dealRuleType(CommissionRVO rvo) {
-		/*
-		 * 委托单孙表 RuleType 此为对应项，列表如下：
-		 * 只有最大值：LTE_MAX
-		 * 只有最小值：GTE_MIN
-		 * 最大最小都有：MNLTELTEMX
-		 * 温湿度：EMPTY
-		 * GT_MIN
-		 * MNLTLTEMX
-		 */
-    	if(rvo!=null){
-    		if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue==null){
-    			return "LET_MAX";
-    		}else if(rvo.getStdmaxvalue()==null && rvo.stdminvalue!=null){
-    			return "GTE_MAX";
-    		}else if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue!=null){
-    			return "MNLTELTEMX";
-    		}
-    	}
+		if(rvo!=null){
+			return dealRuleType(rvo.getStdmaxvalue(),rvo.getStdminvalue());
+		}
 		return null;
 	}
 	private String dealRuleType(TaskRVO rvo) {
+		if(rvo!=null){
+			return dealRuleType(rvo.getStdmaxvalue(),rvo.getStdminvalue());
+		}
+		return null;
+	}
+	
+	private String dealRuleType(Object maxValue,Object minValue){
 		/*
 		 * 委托单孙表 RuleType 此为对应项，列表如下：
 		 * 只有最大值：LTE_MAX
@@ -1103,18 +1139,22 @@ public class WriteBackLimsUtils {
 		 * GT_MIN
 		 * MNLTLTEMX
 		 */
-    	if(rvo!=null){
-    		if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue==null){
-    			return "LET_MAX";
-    		}else if(rvo.getStdmaxvalue()==null && rvo.stdminvalue!=null){
-    			return "GTE_MAX";
-    		}else if(rvo.getStdmaxvalue()!=null && rvo.stdminvalue!=null){
-    			return "MNLTELTEMX";
-    		}
-    	}
+		if ((maxValue != null &&  "-".equals(String.valueOf(maxValue))) 
+				&& (minValue == null || "-".equals(String.valueOf(minValue)))) {
+			return "LET_MAX";
+		} else if ( (maxValue == null || "-".equals(String.valueOf(maxValue))) 
+				&& (minValue != null && !"-".equals(String.valueOf(minValue)) )) {
+			return "GTE_MAX";
+		} else if ((maxValue != null && !"-".equals(String.valueOf(maxValue))    
+				&& (minValue != null && !"-".equals(String.valueOf(minValue))))) {
+			return "MNLTELTEMX";
+		} else if((maxValue==null || "-".equals(String.valueOf(maxValue))) 
+				&& (minValue!=null || "-".equals(String.valueOf(minValue)))){
+			return "EMPTY";
+		}
+    	
 		return null;
 	}
-
 	private String dealEscapse(String value){
     	if(value!=null){
     		if(value.contains("'")){
@@ -1633,6 +1673,7 @@ public class WriteBackLimsUtils {
             grandBeforeMapping.put("unitname", "C_PROJ_PARA_A.units");// 单位
             grandBeforeMapping.put("judgeflag", "C_PROJ_PARA_A.check_spec");// 是否判定
             grandBeforeMapping.put("testflag", "C_PROJ_PARA_A.is_added");// 是否测试
+            grandBeforeMapping.put("rowno", "C_PROJ_PARA_A.order_number");// 序号
 
         }
 
