@@ -202,10 +202,10 @@ public class WriteBackLimsUtils {
                 taskPk2CommissionPkMap,projectList,testFirstExtendList);
         class2NumMap.put(TaskBVO.class, lists!=null?(lists.length - 1):0);
         if (lists != null && lists.length > 0) {
-            sqlList.addAll(getTaskInsertSQL(lists,pk_commission_h));
+            sqlList.addAll(getTaskInsertSQL(lists,pk_commission_h,ncPK2LimsPkMap));
         }
 
-        // 实验条件
+        // 测试条件
         subCondition = "pk_task_b in (select pk_task_b from qc_task_b where "
                 + " pk_task_h in (select pk_task_h from qc_task_h where "
                 + headCond + " ) and dr = 0 ) and dr = 0 ";
@@ -345,13 +345,24 @@ public class WriteBackLimsUtils {
      * @return
      */
     private List<String> getConditionInsertSQL(String[] lists) {
-        List<String> rsList = new ArrayList();
+    	List<String> rsList = new ArrayList<>();
         if (lists != null && lists.length > 1) {
+        	StringBuilder colNameSB = new StringBuilder(lists[0]);
+        	StringBuilder colValSB = new StringBuilder();
+            //处理固定值字段
+        	for(String colName : TASK_CONDITION_STATIC_MAP.keySet()){
+        		colNameSB.append(",").append(colName);
+        		colValSB.append(",").append(TASK_CONDITION_STATIC_MAP.get(colName));
+        	}
+        	
             StringBuilder sqlSB = new StringBuilder();
+            StringBuilder temp = new StringBuilder();
             for (int i = 1; i < lists.length; i++) {
-                sqlSB.append("INSERT INTO result").append("(").append(lists[0])
-                        .append(")  values (");
-                sqlSB.append(lists[i]);
+                sqlSB.append("INSERT INTO result").append("(")
+                        .append(colNameSB.toString()).append(")  values (");
+                temp.delete(0, temp.length());
+                temp.append(lists[i]).append(colValSB);
+                sqlSB.append(temp.toString());
                 sqlSB.append(" ) ");
                 rsList.add(sqlSB.toString());
                 sqlSB.delete(0, sqlSB.length());
@@ -370,7 +381,7 @@ public class WriteBackLimsUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-	private List<String> getTaskInsertSQL(String[] lists,String pk_commission_h) {
+	private List<String> getTaskInsertSQL(String[] lists,String pk_commission_h,Map<String, Object> ncPK2LimsPkMap) {
     	List<String> rsList = new ArrayList<>();
         if (lists != null && lists.length > 1) {
         	StringBuilder colNameSB = new StringBuilder(lists[0]);
@@ -380,6 +391,10 @@ public class WriteBackLimsUtils {
         		colNameSB.append(colName).append(",");
         		colValSB.append(TASK_BODY_STATIC_MAP.get(colName)).append(",");
         	}
+        	//project 
+        	colNameSB.append("project").append(",");
+    		colValSB.append("'").append(String.valueOf(ncPK2LimsPkMap.get(pk_commission_h))).append("',");
+        	
         	//colNameSB = colNameSB.delete(colNameSB.length()-1, colNameSB.length());
         	//colValSB = colValSB.delete(colValSB.length()-1, colValSB.length());
         	String sql = "select job.psncode changed_by,taskh.modifiedtime changed_on,"
@@ -576,6 +591,63 @@ public class WriteBackLimsUtils {
     	COMMISSION_HEARD_STATIC_MAP.put("C_NEED_MESSAGE","'F'");
     	
     }
+
+    
+    /**
+     * 委托单表体固定值回写
+     */
+    private static Map<String,String> TASK_CONDITION_STATIC_MAP = new HashMap<>();
+    {
+    	TASK_CONDITION_STATIC_MAP.put("INSTRUMENT","null");
+    	//TASK_CONDITION_STATIC_MAP.put("RESULT_NUMBER","0.00"); 此为主键怎么会是0.0?
+    	TASK_CONDITION_STATIC_MAP.put("C_CERTIFICATIONS","null");
+    	TASK_CONDITION_STATIC_MAP.put("USES_CODES","'F'");
+    	TASK_CONDITION_STATIC_MAP.put("AUTO_CALC","'T'");
+    	TASK_CONDITION_STATIC_MAP.put("ALLOW_CANCEL","'F'");
+    	TASK_CONDITION_STATIC_MAP.put("IN_SPEC","'T'");
+    	TASK_CONDITION_STATIC_MAP.put("CODE_ENTERED","'F'");
+    	TASK_CONDITION_STATIC_MAP.put("DATE_REVIEWED","null");
+    	TASK_CONDITION_STATIC_MAP.put("REVIEWER","null");
+    	TASK_CONDITION_STATIC_MAP.put("STD_REAG_SAMPLE","0.00");
+    	TASK_CONDITION_STATIC_MAP.put("DISPLAYED","'T'");
+    	TASK_CONDITION_STATIC_MAP.put("ENTRY_QUALIFIER","null");
+    	TASK_CONDITION_STATIC_MAP.put("USES_INSTRUMENT","'F'");
+    	TASK_CONDITION_STATIC_MAP.put("IN_CAL","'T'");
+    	TASK_CONDITION_STATIC_MAP.put("LINK_SIZE","0");
+    	TASK_CONDITION_STATIC_MAP.put("LINK_DATE","null");
+    	TASK_CONDITION_STATIC_MAP.put("FACTOR_VALUE","0");
+    	TASK_CONDITION_STATIC_MAP.put("FACTOR_OPERATOR","null");
+    	//TASK_CONDITION_STATIC_MAP.put("MIN_LIMIT","null");
+    	//TASK_CONDITION_STATIC_MAP.put("MAX_LIMIT","null");
+    	TASK_CONDITION_STATIC_MAP.put("ALIAS_NAME","null");
+    	TASK_CONDITION_STATIC_MAP.put("CONTROL_1","null");
+    	TASK_CONDITION_STATIC_MAP.put("CONTROL_2","null");
+    	TASK_CONDITION_STATIC_MAP.put("IN_CONTROL","'T'");
+    	TASK_CONDITION_STATIC_MAP.put("PRIMARY_IN_SPEC","'T'");
+    	TASK_CONDITION_STATIC_MAP.put("SPEC_OVERRIDE","'F'");
+    	TASK_CONDITION_STATIC_MAP.put("BATCH","null");
+    	TASK_CONDITION_STATIC_MAP.put("DOUBLE_ENTRY_CHK","null");
+    	TASK_CONDITION_STATIC_MAP.put("FIRST_ENTRY","null");
+    	TASK_CONDITION_STATIC_MAP.put("FIRST_ENTRY_BY","null");
+    	TASK_CONDITION_STATIC_MAP.put("HI_CONTROL","null");
+    	TASK_CONDITION_STATIC_MAP.put("LO_CONTROL","null");
+    	TASK_CONDITION_STATIC_MAP.put("TEXT_LIMIT","null");
+    	TASK_CONDITION_STATIC_MAP.put("ATTRIBUTE_2","null");
+    	TASK_CONDITION_STATIC_MAP.put("ATTRIBUTE_3","null");
+    	TASK_CONDITION_STATIC_MAP.put("ATTRIBUTE_4","null");
+    	TASK_CONDITION_STATIC_MAP.put("CHART_COMMENT","null");
+    	TASK_CONDITION_STATIC_MAP.put("T_ACCREDITED_ID","null");
+    	TASK_CONDITION_STATIC_MAP.put("TRANS_NUM","0");
+    	
+    	
+    	
+    	//二次写入!!!
+    	//TASK_CONDITION_STATIC_MAP.put("ENTRY","null");
+    	TASK_CONDITION_STATIC_MAP.put("ENTERED_ON","null");
+    	TASK_CONDITION_STATIC_MAP.put("ATTRIBUTE_1","null");
+    }
+    
+    
     /**
      * 委托单表体固定值回写
      */
@@ -1224,9 +1296,9 @@ public class WriteBackLimsUtils {
     	//SAMPLE.TEXT_ID此处有两种生成方式：由于本次是第一次写入，写入的是上表红色的格式(19-5673)，
     	//代表试验前的样品分类，格式为“年份-最大值+1”
     	
-    	String sql = "select str2 from (SELECT REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,1,'i')  STR1, "
+    	String sql = "select max(str2) from (SELECT REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,1,'i')  STR1, "
     			+ " nvl(REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,2,'i'),'1')  str2 FROM sample) origin "
-    			+ " where str1 = '"+modtime.getYear()+"' order by str2 desc ";
+    			+ " where str1 = '"+String.valueOf(modtime.getYear()).substring(2, 4)+"' order by str2 desc ";
     	Object maxNumObj = baseDao.executeQuery(sql, new ColumnProcessor());
     	int maxNum = 1;
     	if(maxNumObj!=null){
@@ -1237,7 +1309,7 @@ public class WriteBackLimsUtils {
     		}
     	}
     	rowName.append(", ").append("text_id");
-    	rowValue.append(", '").append(modtime.getYear()).append("-").append(maxNum+1).append("' ");
+    	rowValue.append(", '").append(String.valueOf(modtime.getYear()).substring(2, 4)).append("-").append(maxNum+1).append("' ");
     	
     	
     	rsArray[0] = rowName.toString();
@@ -1722,25 +1794,17 @@ public class WriteBackLimsUtils {
      * @return
      */
     public Map<String, String> getGrandAfterMapping() {
-        if (grandAfterMapping == null) {
-            grandAfterMapping = new HashMap<String, String>();
-
-            grandAfterMapping
-                    .put("analysisname", "c_proj_task_para_b.analysis");// 实验参数名称
-            grandAfterMapping.put("pk_samplegroup",
-                    "c_proj_task_para_b.sample_group");// 样品组别
-            grandAfterMapping.put("pk_component",
-                    "c_proj_task_para_b.component");// 参数项
-            grandAfterMapping
-                    .put("stdmaxvalue", "c_proj_task_para_b.max_value");// 最大值
-            grandAfterMapping
-                    .put("stdminvalue", "c_proj_task_para_b.min_value");// 最小值
-            grandAfterMapping.put("pk_unit", "c_proj_task_para_b.units");// 单位
-            grandAfterMapping.put("judgeflag", "c_proj_task_para_b.check_spec");// 是否判定
-            grandAfterMapping.put("testflag", "c_proj_task_para_b.is_added");// 是否测试
-            grandAfterMapping.put("pk_testtemperature",
-                    "c_proj_task_para_b.stage");// 测试温度
-
+		if (grandAfterMapping == null) {
+			grandAfterMapping = new HashMap<String, String>();
+			grandAfterMapping.put("analysisname", "c_proj_task_para_b.analysis");// 实验参数名称
+			grandAfterMapping.put("pk_samplegroup", "c_proj_task_para_b.sample_group");// 样品组别
+			grandAfterMapping.put("pk_component", "c_proj_task_para_b.component");// 参数项
+			grandAfterMapping.put("stdmaxvalue", "c_proj_task_para_b.max_value");// 最大值
+			grandAfterMapping.put("stdminvalue", "c_proj_task_para_b.min_value");// 最小值
+			grandAfterMapping.put("pk_unit", "c_proj_task_para_b.units");// 单位
+			grandAfterMapping.put("judgeflag", "c_proj_task_para_b.check_spec");// 是否判定
+			grandAfterMapping.put("testflag", "c_proj_task_para_b.is_added");// 是否测试
+			grandAfterMapping.put("pk_testtemperature", "c_proj_task_para_b.stage");// 测试温度
         }
 
         return grandAfterMapping;
@@ -1897,10 +1961,10 @@ public class WriteBackLimsUtils {
     				if(systemRefCacheMap.containsKey(String.valueOf(fieldValue))){
     					return systemRefCacheMap.get(String.valueOf(fieldValue));
     				}
-    				String sql = "select job.psncode psncode "
+    				String sql = "select nvl(job.psncode,sm.user_code) psncode "
     						+" from  sm_user sm  "
     						+" left join (select * from bd_psnjob jobinner where ismainjob = 'Y' ) job on rownum = 1 and job.pk_psndoc = sm.pk_psndoc   "
-    						+" where sm.cuserid = '"+String.valueOf(fieldValue)+"'";
+    						+" where sm.cuserid = '"+String.valueOf(fieldValue)+"' or sm.pk_psndoc = '"+String.valueOf(fieldValue)+"'";
     				String newValue = 
     						(String)baseDao.executeQuery(sql, new ColumnProcessor());
     				systemRefCacheMap.put(String.valueOf(fieldValue), newValue);
@@ -2001,6 +2065,20 @@ public class WriteBackLimsUtils {
     	SAMPLE_STATIC_MAP.put("T_LOGIN_VERIFIED", "'F'");
     	SAMPLE_STATIC_MAP.put("TEMPLATE", "'HF-CONDITION'");
     	SAMPLE_STATIC_MAP.put("TRANS_NUM", "0.00");
+    	
+    	
+    	
+    	//二次写入
+    	SAMPLE_STATIC_MAP.put("\"AUDIT\"", "'T'");
+    	//SAMPLE_STATIC_MAP.put("DATE_STARTED", "null");
+    	SAMPLE_STATIC_MAP.put("OLD_STATUS", "'C'");
+    	SAMPLE_STATIC_MAP.put("PRODUCT_VERSION", "1");
+    	//SAMPLE_STATIC_MAP.put("RECD_DATE", "null");
+    	//SAMPLE_STATIC_MAP.put("RECEIVED_BY", "null");
+    	SAMPLE_STATIC_MAP.put("STARTED", "'F'");
+    	SAMPLE_STATIC_MAP.put("STATUS", "'U'");
+    	SAMPLE_STATIC_MAP.put("T_LOGIN_VERIFIED", "'T'");
+    	SAMPLE_STATIC_MAP.put("TEMPLATE", "'HF-MAIN'");
     }
     /**
      * TEST表体第一次回写固定值
@@ -2065,6 +2143,12 @@ public class WriteBackLimsUtils {
     	TEST_STATIC_MAP.put("T_TURNAROUND_CHARG", "0.00");
     	TEST_STATIC_MAP.put("T_TURNAROUND_MET", "'F'");
     	TEST_STATIC_MAP.put("TRANS_NUM", "0.00");
+    	
+    	
+    	//二次写入
+    	TEST_STATIC_MAP.put("STATUS", "'I'");
+    	TEST_STATIC_MAP.put("VARIATION", "null");
+    	
     }
     
     
