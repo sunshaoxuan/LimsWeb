@@ -96,14 +96,16 @@ private BaseDAO dao = null;
 	@Override
 	public AggTaskHVO[] approve(AggTaskHVO[] clientFullVOs,
 			AggTaskHVO[] originBills) throws BusinessException {
+		
+		AggTaskHVO[] rtnVO = super.pubapprovebills(clientFullVOs, originBills);
 		if(clientFullVOs!=null && clientFullVOs.length > 0){
 			for(AggTaskHVO aggvo:clientFullVOs){
-				if(aggvo!=null){
+				if(aggvo!=null && aggvo.getParentVO()!=null && 1 == aggvo.getParentVO().getApprovestatus()){
 					writeBackLims(aggvo);
 				}
 			}
 		}
-		return super.pubapprovebills(clientFullVOs, originBills);
+		return rtnVO;
 	}
 
 	@Override
