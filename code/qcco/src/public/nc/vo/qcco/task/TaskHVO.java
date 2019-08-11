@@ -534,7 +534,7 @@ public class TaskHVO extends SuperVO {
 	 * @return java.lang.String
 	 */
 	public String getBillid() {
-		return this.billid;
+		return this.getBillversionpk();
 	}
 
 	/**
@@ -544,7 +544,7 @@ public class TaskHVO extends SuperVO {
 	 *            java.lang.String
 	 */
 	public void setBillid(String billid) {
-		this.billid = billid;
+		this.billversionpk = billid;
 	}
 
 	/**

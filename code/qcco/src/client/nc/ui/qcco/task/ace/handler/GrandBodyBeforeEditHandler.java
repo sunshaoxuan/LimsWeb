@@ -28,7 +28,7 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 	public void handleAppEvent(CardBodyBeforeEditEvent e) {
 		String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 		if ("textvalue".equals(e.getKey())) {
-			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null
+			/*Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null
 					: (Integer) e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
 			String pk_result_type = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_valuetype");
 			String typeCode = "";
@@ -62,8 +62,8 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 					e.setReturnValue(false);
 					return;
 				}
-			}
-
+			}*/
+			e.setReturnValue(true);
 		}
 		if ("pk_refvalue".equals(e.getKey())) {
 

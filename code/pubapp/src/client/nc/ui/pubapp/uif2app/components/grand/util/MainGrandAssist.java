@@ -255,6 +255,7 @@ public class MainGrandAssist {
 		if (pk_body == null) {
 			if("nc.vo.qcco.commission.CommissionBVO".equals(className)){
 				pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "uniqueid");
+				//mainbillform.getBillCardPanel().getBodyValueAt(currentRow, "uniqueid")
 			}else{
 				pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "precolumn");
 			}

@@ -331,8 +331,8 @@
 			<list>
 				<!-- 提供了一组默认实现 -->
 				<bean class="nc.ui.qcco.commission.action.CommissionBodyAddLineAction" />
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyDelLineAction" />
+				<bean class="nc.ui.qcco.commission.action.CommissionBodyInsertLineAction" />
+				<bean class="nc.ui.qcco.commission.action.CommissionBodyDelLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />
 				<!-- <bean class="nc.ui.pubapp.uif2app.actions.BodyPasteLineAction" >
 					<property name="clearItems">

@@ -925,7 +925,7 @@
 	</bean>
 
 	<!--======= ¶¯×÷£º[newActions] [ÉóÅú] ===========-->
-	<bean id="approveScriptAction" class="nc.ui.pubapp.uif2app.actions.pflow.ApproveScriptAction">
+	<bean id="approveScriptAction" class="nc.ui.qcco.task.action.TaskApproveAction">
 		<property name="model"><ref bean="manageAppModel"/></property>
 		<property name="editor"><ref bean="billFormEditor"/></property>
 		<property name="billType" value="QC08" />

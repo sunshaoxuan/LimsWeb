@@ -63,6 +63,7 @@ public class CommissionBodyAddLineAction extends BodyAddLineAction {
 			String uuid = UUID.randomUUID().toString();
 			uuid = uuid.replace("-", "");
 			getCardPanel().setBodyValueAt(uuid, index, "uniqueid");
+			getCardPanel().getBillModel().setValueAt(uuid,index, "uniqueid");
 
 		}
 	}
