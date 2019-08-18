@@ -16,7 +16,9 @@ public class CommissionBodyInsertLineAction extends BodyInsertLineAction {
 		boolean rt = super.doBeforeAction(e);
 		/*getCardPanel().getBodyPanel().addLine();
 		getCardPanel().getBodyPanel().delLine();*/
-		
+		//f**k tank 2019Äê8ÔÂ18ÈÕ21:12:27
+		getCardPanel().firePropertyChange(null, true, true);
+		//getCardPanel().delLine();
 		return rt;
 		
 	}
