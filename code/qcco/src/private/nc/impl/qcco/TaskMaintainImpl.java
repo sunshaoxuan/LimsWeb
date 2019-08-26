@@ -10,6 +10,7 @@ import nc.bs.dao.DAOException;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
 import nc.ui.pub.qcco.task.utils.WriteBackLimsUtils;
+import nc.ui.pub.qcco.writeback.utils.mediator.WriteBackMediator;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -158,13 +159,13 @@ private BaseDAO dao = null;
 		}
 		String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
 		//获取回写的sql
-		String[] insertSqls = new WriteBackLimsUtils().getInsertLIMSSQL(pk_commission_h);
-		
-		if(insertSqls!=null && insertSqls.length > 0){
+		List<String> insertSqls = new WriteBackMediator().getLIMSSQL(pk_commission_h);
+		//FIXME 测试用
+		/*if(insertSqls!=null && insertSqls.size() > 0){
 			for(String sql : insertSqls){
 				getDao().executeUpdate(sql);
 			}
-		}
+		}*/
 		
 	}
 	@Override
