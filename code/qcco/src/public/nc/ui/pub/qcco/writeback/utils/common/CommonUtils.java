@@ -595,7 +595,17 @@ public class CommonUtils {
 		return TIME_COLUMN_SET;
 	}
 	
-	
+	/**
+     * 通过分析名,获取分析版本
+     * @param analysisName
+     * @return
+     * @throws DAOException 
+     */
+    public String getAnalysisVerionFromName(String analysisName) throws DAOException {
+		String sql = " select VERSION from nc_analysis_list where name  = '"+analysisName+"'"; 
+		Integer ver = (Integer)baseDao.executeQuery(sql, new ColumnProcessor());
+		return String.valueOf(ver);
+	}
 	
 	
     

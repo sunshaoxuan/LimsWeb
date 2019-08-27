@@ -10,19 +10,14 @@ import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
-import nc.bs.framework.common.NCLocator;
-import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
-import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaB;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
-import nc.vo.pub.lang.UFBoolean;
-import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
@@ -116,7 +111,7 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor {
 				String analysisName = bvo == null ? null : bvo.getPk_testresultname();
 				allParaBList.get(i).setAttributeValue("task_name", analysisName);
 				//analysis_version 分析版本
-				allParaBList.get(i).setAttributeValue("analysis_version", getAnalysisVerionFromName(analysisName));
+				allParaBList.get(i).setAttributeValue("analysis_version", utils.getAnalysisVerionFromName(analysisName));
 				// proj_logsamp_seqnum 通过组别获取对应的委托单子表
 				allParaBList.get(i).setAttributeValue("proj_logsamp_seqnum", 
 						getCommissionBFromGroup(rvo.getPk_samplegroup(), bvo == null ? null : bvo.getPk_task_h()));
@@ -201,17 +196,7 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor {
 		return rsListMap;
 	}
 
-	/**
-     * 通过分析名,获取分析版本
-     * @param analysisName
-     * @return
-     * @throws DAOException 
-     */
-    private String getAnalysisVerionFromName(String analysisName) throws DAOException {
-		String sql = " select VERSION from nc_analysis_list where name  = '"+analysisName+"'"; 
-		Integer ver = (Integer)baseDao.executeQuery(sql, new ColumnProcessor());
-		return String.valueOf(ver);
-	}
+	
     private Integer getCommissionBFromGroup(String pk_simpleGroup,String pk_task_h) throws DAOException {
     	Integer pkSimple= null;
 		if(pk_simpleGroup!=null && pk_task_h != null){

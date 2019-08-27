@@ -36,11 +36,11 @@ public class WriteBackProcessData {
 	//LIMS样品组  顺序和委托单子表一致
 	private List<CProjLoginSample>loginSampleList;
 	
-	//LIMS第一次回写sample key:c_proj_task.test_number 任务行主键 第一次回写,一条task对应一个sample
-	private Map<String,Sample> firstSampleList; 
+	//LIMS第一次回写sample 一条task对应一个sample 顺序都和任务单子表一致
+	private List<Sample> firstSampleList; 
 	
 	// LIMS第二次回写样品  key:c_proj_login_sample.seq_num 样品组主键  第二次回写,一个sample代表一个样品
-	private Map<String,List<Sample>> secSampleList;  
+	private Map<String,List<Sample>> secSampleListMap;  
 	
 	//LIMS 实验前参数
 	//1.key:c_proj_login_sample.seq_num
@@ -56,8 +56,8 @@ public class WriteBackProcessData {
 	private Map<Integer,List<ParaB>> paraBListMap;    
 	
 	//LIMS第一次回写test
-	//key:c_proj_task.test_number test第一次回写,一个task对应一个test
-	private Map<String,Test> firstTestList;  
+	//key:一个task对应一个test 顺序和任务单子表任务顺序一致
+	private List<Test> firstTestList;  
 	
 	//LIMS第二次回写test
 	//key:Sample.sample_number 
@@ -181,20 +181,20 @@ public class WriteBackProcessData {
 		this.loginSampleList = loginSampleList;
 	}
 
-	public Map<String, Sample> getFirstSampleList() {
+	public List<Sample> getFirstSampleList() {
 		return firstSampleList;
 	}
 
-	public void setFirstSampleList(Map<String, Sample> firstSampleList) {
+	public void setFirstSampleList(List<Sample> firstSampleList) {
 		this.firstSampleList = firstSampleList;
 	}
 
 	public Map<String, List<Sample>> getSecSampleList() {
-		return secSampleList;
+		return secSampleListMap;
 	}
 
-	public void setSecSampleList(Map<String, List<Sample>> secSampleList) {
-		this.secSampleList = secSampleList;
+	public void setSecSampleList(Map<String, List<Sample>> secSampleListMap) {
+		this.secSampleListMap = secSampleListMap;
 	}
 
 	public Map<Integer, List<ParaA>> getParaAListMap() {
@@ -221,11 +221,11 @@ public class WriteBackProcessData {
 		this.paraBListMap = paraBListMap;
 	}
 
-	public Map<String, Test> getFirstTestList() {
+	public List<Test> getFirstTestList() {
 		return firstTestList;
 	}
 
-	public void setFirstTestList(Map<String, Test> firstTestList) {
+	public void setFirstTestList(List<Test> firstTestList) {
 		this.firstTestList = firstTestList;
 	}
 

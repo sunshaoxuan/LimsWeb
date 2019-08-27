@@ -13,6 +13,12 @@ import nc.vo.pub.BusinessException;
  */
 public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecWriteBackProcessor {
 
+	private CommonUtils utils;
+	@Override
+	public void setUtils(CommonUtils utils) {
+		this.utils = utils;
+	}
+	
 	@Override
 	public void processSec(WriteBackProcessData data) throws BusinessException{
 		// TODO 自动生成的方法存根
@@ -25,10 +31,6 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 
 	}
 
-	private CommonUtils utils;
-	@Override
-	public void setUtils(CommonUtils utils) {
-		this.utils = utils;
-	}
+
 
 }
