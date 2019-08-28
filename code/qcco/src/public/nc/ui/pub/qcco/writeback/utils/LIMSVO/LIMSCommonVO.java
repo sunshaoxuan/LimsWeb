@@ -38,4 +38,17 @@ public class LIMSCommonVO extends SuperVO {
 		}
 		
 	}
+	
+	/**
+	 * É¾³ýÄ³¸ö×Ö¶Î
+	 * @param name
+	 */
+	public void removeAttributeValue(String name) {
+		if(null != name){
+			atrrMap.remove(name.toLowerCase());
+		}else{
+			atrrMap.remove(name);
+		}
+		
+	}
 }

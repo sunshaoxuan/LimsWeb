@@ -67,8 +67,10 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
     	//需要回写的LIMS数据 --test 第一次回写, 一个sample对应一个test 都对应一条task任务
     	List<Test> firstTestList = initData(bvos.length);
     	
+    	//预申请PK
     	List<Integer> test_numberList = 
     			utils.getPrePk("test_number","test",processData.getTaskList().size());
+    	processData.setMaxTestPK(test_numberList.get(processData.getTaskList().size()-1));
     	
     	for(int i = 0 ; i < bvos.length ; i++){
     			TaskBVO taskBvo = (TaskBVO)bvos[i];

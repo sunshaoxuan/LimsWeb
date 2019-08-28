@@ -91,7 +91,7 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor {
 			if (srcDataList != null && srcDataList.size() > 0) {
 				for (int i = 0; i < srcDataList.size(); i++) {
 					Object unDofieldValue = srcDataList.get(i).getAttributeValue(fieldName);
-					Object realValue = utils.getRealValue(unDofieldValue, fieldName, TaskBVO.class);
+					Object realValue = utils.getRealValue(unDofieldValue, fieldName, TaskRVO.class);
 					for (String field : fields) {
 						allParaBList.get(i).setAttributeValue(field, realValue);
 					}

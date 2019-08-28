@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
-import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjLoginSample;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;

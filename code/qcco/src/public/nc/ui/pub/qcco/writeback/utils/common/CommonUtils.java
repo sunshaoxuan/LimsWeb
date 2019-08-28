@@ -480,10 +480,50 @@ public class CommonUtils {
 					return bvo;
 				}
 			}
+		}else if(clazz == TaskBVO.class){
+			ISuperVO[] bvos = 
+					processData.getAggTaskHVO().getChildren(TaskBVO.class);
+			for(ISuperVO bvo : bvos){
+				if(bvo!=null && fatherPk.equals(bvo.getPrimaryKey())){
+					return bvo;
+				}
+			}
 		}
 		
 		return rtn;
 	}
+	/**
+	 * 根据ncpk 获取ncVO在数组中的index
+	 * @param fatherPk
+	 * @param processData 
+	 * @param class1
+	 * @return
+	 */
+	public Integer getNCObjIndexByPK(String fatherPk, Class clazz) {
+		if(clazz == CommissionBVO.class){
+			ISuperVO[] bvos = 
+					processData.getAggCommissionHVO().getChildren(CommissionBVO.class);
+			for(int i = 0 ; i< bvos.length;i++){
+				if(bvos[i]!=null && fatherPk.equals(bvos[i].getPrimaryKey())){
+					return i;
+				}
+			}
+		}else if(clazz == TaskBVO.class){
+			ISuperVO[] bvos = 
+					processData.getAggTaskHVO().getChildren(TaskBVO.class);
+			for(int i = 0 ; i< bvos.length;i++){
+				if(bvos[i]!=null && fatherPk.equals(bvos[i].getPrimaryKey())){
+					return i;
+				}
+			}
+		}
+		
+		
+		return -1;
+	}
+	
+	
+	
 	public void setData(WriteBackProcessData data) {
 		this.processData = data;
 	}

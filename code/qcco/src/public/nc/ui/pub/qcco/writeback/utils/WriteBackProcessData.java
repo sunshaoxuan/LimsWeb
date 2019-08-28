@@ -64,8 +64,9 @@ public class WriteBackProcessData {
 	//test第二次回写,一个sample(对应第二次回写的sample)对应一条test
 	private Map<String,Test> secTestList;  
 	
-	//LIMS第一次回写Result
-	private Map<String,List<Result>> firstResultListMap;    
+	//1.key:c_proj_task.seq_num
+	//2.list的顺序和任务单对应任务的实验条件孙表一致
+	private Map<Integer,List<Result>> firstResultListMap;    
 	
 	//LIMS第二次回写Result 
 	//key:sample.sample_number   
@@ -73,6 +74,38 @@ public class WriteBackProcessData {
 	private Map<String,Result> secResultMap;  
 
 	
+	//三张表的主键最大值
+	private int maxSamplePK = 0;
+	
+	private int maxTestPK = 0;
+	
+	private int maxResult = 0;
+	
+	
+	public int getMaxSamplePK() {
+		return maxSamplePK;
+	}
+
+	public void setMaxSamplePK(int maxSamplePK) {
+		this.maxSamplePK = maxSamplePK;
+	}
+
+	public int getMaxTestPK() {
+		return maxTestPK;
+	}
+
+	public void setMaxTestPK(int maxTestPK) {
+		this.maxTestPK = maxTestPK;
+	}
+
+	public int getMaxResult() {
+		return maxResult;
+	}
+
+	public void setMaxResult(int maxResult) {
+		this.maxResult = maxResult;
+	}
+
 	public WriteBackProcessData(String pk_commission_h){
 		initNCDataFromPK(pk_commission_h);
 	}
@@ -189,11 +222,11 @@ public class WriteBackProcessData {
 		this.firstSampleList = firstSampleList;
 	}
 
-	public Map<String, List<Sample>> getSecSampleList() {
+	public Map<String, List<Sample>> getSecSampleListMap() {
 		return secSampleListMap;
 	}
 
-	public void setSecSampleList(Map<String, List<Sample>> secSampleListMap) {
+	public void setSecSampleListMap(Map<String, List<Sample>> secSampleListMap) {
 		this.secSampleListMap = secSampleListMap;
 	}
 
@@ -237,11 +270,11 @@ public class WriteBackProcessData {
 		this.secTestList = secTestList;
 	}
 
-	public Map<String, List<Result>> getFirstResultListMap() {
+	public Map<Integer, List<Result>> getFirstResultListMap() {
 		return firstResultListMap;
 	}
 
-	public void setFirstResultListMap(Map<String, List<Result>> firstResultListMap) {
+	public void setFirstResultListMap(Map<Integer, List<Result>> firstResultListMap) {
 		this.firstResultListMap = firstResultListMap;
 	}
 
