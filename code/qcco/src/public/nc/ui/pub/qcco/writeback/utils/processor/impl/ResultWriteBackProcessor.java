@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
+import nc.bs.dao.DAOException;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Result;
@@ -38,8 +39,7 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 	
 	@Override
 	public void processSec(WriteBackProcessData data) throws BusinessException{
-		// TODO 自动生成的方法存根
-
+		processSecond(data);
 	}
 
 	@Override
@@ -47,6 +47,60 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		process(data);
 	}
 
+	
+	/**
+	 * test 二次回写
+	 * 
+	 * @param data
+	 * @throws DAOException
+	 */
+	private void processSecond(WriteBackProcessData processData) throws DAOException {
+		// LIMS Data
+		List<Sample> allSampleList = processData.getAllSecSampleList();
+		Map<Integer, Test> secTestList = processData.getSecTestList();
+		
+
+		Map<Integer, Result> secResultMap = new HashMap<>();
+
+		if (allSampleList != null && allSampleList.size() > 0) {
+			for (int i = 0; i < allSampleList.size(); i++) {
+
+				// 开始生成result
+				Result result = new Result();
+				
+				Integer sampleNumber = Integer.parseInt(String.valueOf(allSampleList.get(i).getAttributeValue("sample_number")));
+				
+				//RESULT.SAMPLE_NUMBER	sample表第二次写入的主键，测试结果有多少行，此处一只样品就有多少行
+				result.setAttributeValue("sample_number", sampleNumber);
+				
+				//RESULT.NAME	xxx 测试结果对应的显示值			测试结果指的是什么表?什么字段?对应的显示值是哪个字段?	此处为后台逻辑，前台应该无显示
+				result.setAttributeValue("name", "");
+				
+				//RESULT.ENTRY	null				
+				result.setAttributeValue("entry", null);
+				
+				//RESULT.TEST_NUMBER	test表二次写入对应sample_number的test_number				
+				result.setAttributeValue("test_number", secTestList.get(sampleNumber).getAttributeValue("test_number"));
+				
+				//RESULT.ORDER_NUMBER	XXX result 2 测试结果的排序				
+				result.setAttributeValue("order_number", "");
+				
+				//RESULT.ENTERED_ON	default:null			输入时间是什么时间?怎么获取??	第一次写入为写入时的系统时间
+				result.setAttributeValue("entered_on", null);
+				
+				//RESULT.ANALYSIS	XXX result 2  测试结果依据的分析名称（带A的）			测试依据的分析是不带A的?测试依据/结果是什么?	analysis表分析类型只有两种
+				result.setAttributeValue("analysis", "");
+				
+				//RESULT.FORMAT_CALCULATION	XXX result 2 时间转换（此处lims原意为字段相应的计算，但本软件中只有一段程序，即将时间转换为小时显示，此处为实际测试时间转换）			转换哪个时间?实际测试时间是什么时间?怎么获取?	转换通过公式计算出的时间
+				result.setAttributeValue("format_calculation", "");
+				
+				//RESULT.ATTRIBUTE_1	default:null				
+				result.setAttributeValue("attribute_1", null);
+
+			}
+			processData.setSecResultMap(secResultMap);
+		}
+	}
 
 	
 	/**

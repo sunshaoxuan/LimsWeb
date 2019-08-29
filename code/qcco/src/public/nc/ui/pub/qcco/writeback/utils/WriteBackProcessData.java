@@ -2,8 +2,11 @@
 package nc.ui.pub.qcco.writeback.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
@@ -62,7 +65,7 @@ public class WriteBackProcessData {
 	//LIMS第二次回写test
 	//key:Sample.sample_number 
 	//test第二次回写,一个sample(对应第二次回写的sample)对应一条test
-	private Map<String,Test> secTestList;  
+	private Map<Integer,Test> secTestList;  
 	
 	//1.key:c_proj_task.seq_num
 	//2.list的顺序和任务单对应任务的实验条件孙表一致
@@ -71,7 +74,7 @@ public class WriteBackProcessData {
 	//LIMS第二次回写Result 
 	//key:sample.sample_number   
 	//result第二次回写时,result,sample,test三者都是一一对应
-	private Map<String,Result> secResultMap;  
+	private Map<Integer,Result> secResultMap;  
 
 	
 	//三张表的主键最大值
@@ -81,35 +84,10 @@ public class WriteBackProcessData {
 	
 	private int maxResult = 0;
 	
+	//sample表对应的task表缓存
+	private Map<String,CProjTask> sampleIdTaskMap = null;
 	
-	public int getMaxSamplePK() {
-		return maxSamplePK;
-	}
 
-	public void setMaxSamplePK(int maxSamplePK) {
-		this.maxSamplePK = maxSamplePK;
-	}
-
-	public int getMaxTestPK() {
-		return maxTestPK;
-	}
-
-	public void setMaxTestPK(int maxTestPK) {
-		this.maxTestPK = maxTestPK;
-	}
-
-	public int getMaxResult() {
-		return maxResult;
-	}
-
-	public void setMaxResult(int maxResult) {
-		this.maxResult = maxResult;
-	}
-
-	public WriteBackProcessData(String pk_commission_h){
-		initNCDataFromPK(pk_commission_h);
-	}
-	
 	/**
 	 * 根据pk_commission_h 初始化nc委托单和任务单
 	 * @param pk_commission_h
@@ -179,8 +157,78 @@ public class WriteBackProcessData {
 		}
 	}
 	
+	/**
+	 * 获取所有第二次回写的sample数据
+	 * @return
+	 */
+	public List<Sample> getAllSecSampleList() {
+		List<Sample> rsList = new ArrayList<>();
+		if(getSecSampleListMap()!=null && getSecSampleListMap().size() > 0){
+			for(List<Sample> list : getSecSampleListMap().values()){
+				rsList.addAll(list);
+			}
+		}
+		return rsList;
+	}
+	/**
+	 * 根据第二次回写的sample查找出对应的task
+	 * 就是查找哪个task包含了sampe id 比如 A1,B4之类的
+	 * @param sample
+	 * @return
+	 */
+	public CProjTask getTaskFromSampleSec(Sample sample) {
 
+		if(sample!=null&&sample.getAttributeValue("text_id")!=null){
+			String sampleId = String.valueOf(sample.getAttributeValue("text_id")).split("-")[1];
+			return getSampleIdTaskMap().get(sampleId);
+		}
+		return null;
+	}
+
+	public Map<String, CProjTask> getSampleIdTaskMap() {
+		if(null == sampleIdTaskMap && getTaskList()!=null && getTaskList().size() > 0){
+			for(CProjTask task : getTaskList()){
+				if(task.getAttributeValue("assigned_sample") !=null){
+					String[] sampleIDs = String.valueOf(task.getAttributeValue("assigned_sample")).split(",");
+					if(sampleIDs!=null && sampleIDs.length > 0){
+						sampleIdTaskMap = new HashMap<>();
+						for(String sampleID : sampleIDs){
+							sampleIdTaskMap.put(sampleID, task);
+						}
+					}
+				}
+			}
+		}
+		return sampleIdTaskMap;
+	}
 	
+	public int getMaxSamplePK() {
+		return maxSamplePK;
+	}
+
+	public void setMaxSamplePK(int maxSamplePK) {
+		this.maxSamplePK = maxSamplePK;
+	}
+
+	public int getMaxTestPK() {
+		return maxTestPK;
+	}
+
+	public void setMaxTestPK(int maxTestPK) {
+		this.maxTestPK = maxTestPK;
+	}
+
+	public int getMaxResult() {
+		return maxResult;
+	}
+
+	public void setMaxResult(int maxResult) {
+		this.maxResult = maxResult;
+	}
+
+	public WriteBackProcessData(String pk_commission_h){
+		initNCDataFromPK(pk_commission_h);
+	}
 
 	public AggCommissionHVO getAggCommissionHVO() {
 		return aggCommissionHVO;
@@ -262,11 +310,11 @@ public class WriteBackProcessData {
 		this.firstTestList = firstTestList;
 	}
 
-	public Map<String, Test> getSecTestList() {
+	public Map<Integer, Test> getSecTestList() {
 		return secTestList;
 	}
 
-	public void setSecTestList(Map<String, Test> secTestList) {
+	public void setSecTestList(Map<Integer, Test> secTestList) {
 		this.secTestList = secTestList;
 	}
 
@@ -278,13 +326,16 @@ public class WriteBackProcessData {
 		this.firstResultListMap = firstResultListMap;
 	}
 
-	public Map<String, Result> getSecResultMap() {
+	public Map<Integer, Result> getSecResultMap() {
 		return secResultMap;
 	}
 
-	public void setSecResultMap(Map<String, Result> secResultMap) {
+	public void setSecResultMap(Map<Integer, Result> secResultMap) {
 		this.secResultMap = secResultMap;
 	}
+
+	
+	
 
 	
 

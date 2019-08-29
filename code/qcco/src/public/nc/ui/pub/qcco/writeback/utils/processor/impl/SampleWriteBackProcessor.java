@@ -6,19 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import nc.bs.dao.BaseDAO;
+import nc.bs.dao.DAOException;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjLoginSample;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
-import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaB;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Sample;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
 import nc.ui.pub.qcco.writeback.utils.processor.ISecWriteBackProcessor;
 import nc.vo.pub.BusinessException;
-import nc.vo.pub.ISuperVO;
 import nc.vo.pub.lang.UFDateTime;
-import nc.vo.qcco.commission.CommissionBVO;
+import nc.vo.pub.lang.UFLiteralDate;
 import nc.vo.qcco.commission.CommissionHVO;
 
 /**
@@ -55,14 +54,24 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 	 * sample 二次回写
 	 * 
 	 * @param data
+	 * @throws DAOException 
 	 */
-	private void processSecond(WriteBackProcessData processData) {
+	private void processSecond(WriteBackProcessData processData) throws DAOException {
 		//NC Data
-		ISuperVO[] commissionBVOs = processData.getAggCommissionHVO().getChildren(CommissionBVO.class);
 		List<CProjLoginSample> sampleGroupList = processData.getLoginSampleList();
 		
+		//LIMS Data
+		List<CProjTask> taskList = processData.getTaskList();
+		
+		//CLONED_FROM 自增pk
+		int cloneFromPK = utils.getPrePk("cloned_from", "sample", 1).get(0)-1;
+		int transNumPK = utils.getPrePk("trans_num", "sample", 1).get(0)-1;
+		
+		//时间前缀
+		String timeStr = new UFLiteralDate().toStdString().replaceAll("-", "");
+		
 		//需要回写的LIMS数据 组数*每组数量
-		List<Sample> allSampleList = new ArrayList<>();
+		Map<String,List<Sample>> secSampleListMap = new HashMap<>();
 		
 		if(sampleGroupList!=null && sampleGroupList.size() > 0){
 			for(int i = 0 ;i < sampleGroupList.size() ;i++){
@@ -72,73 +81,80 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 					//每组数量
 					Integer gourpNum = Integer.parseInt(String.valueOf(sampleGroupList.get(i).getAttributeValue("sample_quantity")));
 					
+					//每组list
+					List<Sample> sampleList = new ArrayList<>();
 					for(int j = 0 ; j < gourpNum ;j++){
 						//开始生成sample
 						Sample sample = new Sample();
 						//SAMPLE.PROJECT	所属委托单号
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("project", processData.getProject().getAttributeValue("name"));
 						//SAMPLE.AUDIT	T
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("audit", "T");
 						//SAMPLE.C_CONTACT_TYPE	触点类型
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("c_contact_type", sampleGroupList.get(i).getAttributeValue("contact_type"));
 						//SAMPLE.C_SAMPLE_GROUP	样品组
 
 						sample.setAttributeValue("c_sample_group", group);
 						//SAMPLE.CLONED_FROM	主键式自增
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("cloned_from", ++cloneFromPK);
+						
 						//SAMPLE.CUSTOMER	提交人公司名
-
-						sample.setAttributeValue("c_sample_group", group);
+						
+						sample.setAttributeValue("customer", taskList.get(i).getAttributeValue("C_SUBMIT_BY"));
 						//SAMPLE.DATE_STARTED	null
 
-						sample.setAttributeValue("c_sample_group", group);
-						//SAMPLE.LAB	所属测试小组名称
+						sample.setAttributeValue("date_started", null);
+						//SAMPLE.LAB	XXX sample 2 所属测试小组名称
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("lab", null);
 						//SAMPLE.LOGIN_BY	BACKGROUND
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("login_by", "BACKGROUND");
 						//SAMPLE.OLD_STATUS	C
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("old_status", "C");
 						//SAMPLE.PRODUCT	企标值
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("product", sampleGroupList.get(i).getAttributeValue("product_standard"));
 						//SAMPLE.PRODUCT_VERSION	产品版本，默认1
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("product_version", 1);
 						//SAMPLE.SAMPLE_NUMBER	"主键，
 						//有多少只样品，要写入多少行"
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("sample_number", processData.getMaxSamplePK()+1);
+						processData.setMaxSamplePK(processData.getMaxSamplePK()+1);
 						//SAMPLE.SAMPLING_POINT	样品规格号
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("sampling_point", sampleGroupList.get(i).getAttributeValue("production_spec"));
 						//SAMPLE.STARTED	F
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("started", "F");
 						//SAMPLE.STATUS	U
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("status", "U");
 						//SAMPLE.T_LOGIN_VERIFIED	T
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("t_login_verified", "T");
 						//SAMPLE.TEMPLATE	HF-MAIN
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("template", "HF-MAIN");
 						//SAMPLE.TEXT_ID	此处有两种生成方式：此次为第二种写入方式，写入值为“2位年月日-”+样品编号
 
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("text_id", timeStr+"-"+group+""+j);
 						//SAMPLE.TRANS_NUM	主键式自增
-						sample.setAttributeValue("c_sample_group", group);
+						sample.setAttributeValue("trans_num", ++transNumPK);
 						
-						allSampleList.add(new Sample());
+						sampleList.add(new Sample());
 					}
+					secSampleListMap.put(String.valueOf(sampleGroupList.get(i).getAttributeValue("seq_num")), sampleList);
+					
 				}
 			}
+			processData.setSecSampleListMap(secSampleListMap);
 		}
 	}
 
@@ -215,12 +231,6 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		for(int i = 0;i<size;i++){
 			rsList.add(new Sample());
 		}
-		return rsList;
-	}
-	
-	private List<Sample> initWriteBackList(List<CProjLoginSample> sampleGroupList) {
-		List<Sample> rsList = new ArrayList<>();
-		
 		return rsList;
 	}
 
