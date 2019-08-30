@@ -14,7 +14,12 @@ import nc.bs.logging.Logger;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaB;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Project;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.Result;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.Sample;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.Test;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
@@ -538,13 +543,91 @@ public class CommonUtils {
 	public List<String> toLIMSSQL(){
 		List<String> rs = new ArrayList<>();
 		
+		//project
 		if(processData.getProject()!=null){
 			List<SuperVO> temp = new ArrayList<>();
 			temp.add(processData.getProject());
 			rs.addAll(VOToInserSQL(temp,"project"));
 		}
+		//样品组
+		if(processData.getLoginSampleList()!=null && processData.getLoginSampleList().size() > 0){
+			List<SuperVO> temp = new ArrayList<>();
+			temp.addAll(processData.getLoginSampleList());
+			rs.addAll(VOToInserSQL(temp,"c_proj_login_sample"));
+		}
+		//实验前
+		if(processData.getParaAListMap()!=null && processData.getParaAListMap().size() > 0){
+			List<SuperVO> temp = new ArrayList<>();
+			for(List<ParaA>  paraaList : processData.getParaAListMap().values()){
+				temp.addAll(paraaList);
+			}
+			rs.addAll(VOToInserSQL(temp,"c_proj_para_a"));
+		}
+		//任务
+		if(processData.getTaskList()!=null && processData.getTaskList().size() > 0){
+			List<SuperVO> temp = new ArrayList<>();
+			temp.addAll(processData.getTaskList());
+			rs.addAll(VOToInserSQL(temp,"c_proj_task"));
+		}
+		//实验后
+		if(processData.getParaBListMap()!=null && processData.getParaBListMap().size() > 0){
+			List<SuperVO> temp = new ArrayList<>();
+			for(List<ParaB> parabList : processData.getParaBListMap().values()){
+				temp.addAll(parabList);
+			}
+			
+			rs.addAll(VOToInserSQL(temp,"c_proj_task_para_b"));
+		}
+		//sample第一次
+		if(processData.getFirstSampleList()!=null && processData.getFirstSampleList().size() > 0){
+			List<SuperVO> temp = new ArrayList<>();
+			temp.addAll(processData.getFirstSampleList());
+			rs.addAll(VOToInserSQL(temp,"sample"));
+		}
+		//test第一次
+		if(processData.getFirstTestList()!=null && processData.getFirstTestList().size() > 0){
+			List<SuperVO> temp = new ArrayList<>();
+			temp.addAll(processData.getFirstTestList());
+			rs.addAll(VOToInserSQL(temp,"test"));
+		}
+		//result第一次
+		if(processData.getFirstResultListMap()!=null && processData.getFirstResultListMap().size() > 0){
+			List<SuperVO> temp = new ArrayList<>();
+			for(List<Result> resultList : processData.getFirstResultListMap().values()){
+				temp.addAll(resultList);
+			}
+			rs.addAll(VOToInserSQL(temp,"result"));
+		}
 		
-	
+		// sample第二次
+		if (processData.getSecSampleListMap() != null && processData.getSecSampleListMap().size() > 0) {
+			List<SuperVO> temp = new ArrayList<>();
+			for(List<Sample> sampleList : processData.getSecSampleListMap().values()){
+				temp.addAll(sampleList);
+			}
+			
+			rs.addAll(VOToInserSQL(temp, "sample"));
+		}
+		// test第二次
+		if (processData.getSecTestList() != null && processData.getSecTestList().size() > 0) {
+			List<SuperVO> temp = new ArrayList<>();
+			for(Test test : processData.getSecTestList().values()){
+				temp.add(test);
+			}
+			
+			rs.addAll(VOToInserSQL(temp, "test"));
+		}
+		// result第二次
+		if (processData.getSecResultMap() != null && processData.getSecResultMap().size() > 0) {
+			List<SuperVO> temp = new ArrayList<>();
+			for(Result result : processData.getSecResultMap().values()){
+				temp.add(result);
+			}
+			rs.addAll(VOToInserSQL(temp, "result"));
+		}
+		
+		
+		
 
 		return rs;
 	}
@@ -560,9 +643,12 @@ public class CommonUtils {
 			String[] names = vo.getAttributeNames();
 			
 			for(String name : names){
+				if("sample".equals(tableName) && "\"audit\"".equals(name)){
+					name = name.toUpperCase();
+				}
 				nameSB.append(name).append(",");
 				
-				Object realValue = processData.getProject().getAttributeValue(name);
+				Object realValue = vo.getAttributeValue(name);
 				//可直接add的sqlvalue
 				String sqlValue = dealValue4Sql(name,realValue);
 				valueSB.append(sqlValue).append(",");

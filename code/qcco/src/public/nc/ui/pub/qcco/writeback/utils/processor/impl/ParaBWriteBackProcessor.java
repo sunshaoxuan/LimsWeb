@@ -104,7 +104,7 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor {
 
 				// 处理RULE_TYPE的值
 				TaskRVO rvo = ((TaskRVO) srcDataList.get(i));
-				allParaBList.get(i).setAttributeValue("rule_type", dealRuleType(rvo));
+				allParaBList.get(i).setAttributeValue("spec_rule", dealRuleType(rvo));
 				
 				// 回写 分析名
 				TaskBVO bvo = (TaskBVO) utils.getNCObjByPK(rvo.getPk_task_b(), TaskBVO.class);

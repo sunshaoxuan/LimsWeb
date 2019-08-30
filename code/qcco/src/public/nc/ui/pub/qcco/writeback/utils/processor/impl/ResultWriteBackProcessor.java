@@ -68,6 +68,9 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				// 开始生成result
 				Result result = new Result();
 				
+				result.setAttributeValue("result_number", processData.getMaxResult()+1);
+				processData.setMaxResult(processData.getMaxResult()+1);
+				
 				Integer sampleNumber = Integer.parseInt(String.valueOf(allSampleList.get(i).getAttributeValue("sample_number")));
 				
 				//RESULT.SAMPLE_NUMBER	sample表第二次写入的主键，测试结果有多少行，此处一只样品就有多少行
@@ -97,6 +100,7 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				//RESULT.ATTRIBUTE_1	default:null				
 				result.setAttributeValue("attribute_1", null);
 
+				secResultMap.put(sampleNumber, result);
 			}
 			processData.setSecResultMap(secResultMap);
 		}
@@ -157,7 +161,7 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			// 获取上层的主键:
 			String fatherPk = (String) (((ISuperVO) srcDataList.get(i)).getAttributeValue("pk_task_b"));
 			//上次obj的index
-			int fatherIndex = utils.getNCObjIndexByPK(fatherPk, TaskSVO.class);
+			int fatherIndex = utils.getNCObjIndexByPK(fatherPk, TaskBVO.class);
 			// 主键
 			allResultList.get(i).setAttributeValue("result_number", pkList.get(i));
 			//外键们

@@ -160,12 +160,12 @@ private BaseDAO dao = null;
 		String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
 		//获取回写的sql
 		List<String> insertSqls = new WriteBackMediator().getLIMSSQL(pk_commission_h);
-		//FIXME 测试用
-		/*if(insertSqls!=null && insertSqls.size() > 0){
+
+		if(insertSqls!=null && insertSqls.size() > 0){
 			for(String sql : insertSqls){
 				getDao().executeUpdate(sql);
 			}
-		}*/
+		}
 		
 	}
 	@Override

@@ -1,7 +1,7 @@
 package nc.ui.pub.qcco.writeback.utils.LIMSVO;
 import nc.vo.pub.SuperVO;
 
-public class Test extends SuperVO {
+public class Test extends LIMSCommonVO {
 
 	/**
 	 * 

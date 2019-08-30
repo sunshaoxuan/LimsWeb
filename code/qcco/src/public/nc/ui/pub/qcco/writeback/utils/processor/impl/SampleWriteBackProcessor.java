@@ -90,7 +90,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						sample.setAttributeValue("project", processData.getProject().getAttributeValue("name"));
 						//SAMPLE.AUDIT	T
 
-						sample.setAttributeValue("audit", "T");
+						sample.setAttributeValue("\"audit\"", "T");
 						//SAMPLE.C_CONTACT_TYPE	触点类型
 
 						sample.setAttributeValue("c_contact_type", sampleGroupList.get(i).getAttributeValue("contact_type"));
@@ -148,7 +148,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						//SAMPLE.TRANS_NUM	主键式自增
 						sample.setAttributeValue("trans_num", ++transNumPK);
 						
-						sampleList.add(new Sample());
+						sampleList.add(sample);
 					}
 					secSampleListMap.put(String.valueOf(sampleGroupList.get(i).getAttributeValue("seq_num")), sampleList);
 					
@@ -215,8 +215,8 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				Integer pkFirstSample = prePk.get(i);
 				firstSampleList.get(i).setAttributeValue("sample_number", pkFirstSample);
 				firstSampleList.get(i).setAttributeValue("original_sample", pkFirstSample);
-				//task 任务关联
-				taskList.get(i).setAttributeValue("sample_number", pkFirstSample);
+				//task 任务关联 没有sample_number这个字段?
+				//taskList.get(i).setAttributeValue("sample_number", pkFirstSample);
 				// SAMPLE.TEXT_ID此处有两种生成方式：由于本次是第一次写入，写入的是上表红色的格式(19-5673)，
 				// 代表试验前的样品分类，格式为“年份-最大值+1”
 				firstSampleList.get(i).setAttributeValue("text_id", String.valueOf(modtime.getYear()).substring(2, 4)+(++maxNum));

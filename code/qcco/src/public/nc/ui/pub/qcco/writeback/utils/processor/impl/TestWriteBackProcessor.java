@@ -65,8 +65,9 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 				// 开始生成test
 				Test test = new Test();
 				
-				//根据sample查找task 任务单 
-				CProjTask task = processData.getTaskFromSampleSec(allSampleList.get(i));
+				//根据sample查找task 任务单 (如果样品没有分配任务,则找不到相应的task)
+				CProjTask task = processData.getTaskFromSampleSec(allSampleList.get(i))==null?
+						new CProjTask():processData.getTaskFromSampleSec(allSampleList.get(i));
 				
 				// TEST.TEST_NUMBER 根据sample_number主键自增
 				test.setAttributeValue("test_number", processData.getMaxTestPK()+1);
