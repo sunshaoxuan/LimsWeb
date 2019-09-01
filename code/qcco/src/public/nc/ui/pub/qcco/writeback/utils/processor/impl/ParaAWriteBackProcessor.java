@@ -63,6 +63,11 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 
 		// 预申请pk
 		List<Integer> pkList = utils.getPrePk(CommissionRVO.class, srcDataList.size());
+		//处理ENTRY_CODE(选取C_PROJ_PARA_A的最大值)
+        //预申请ENTRY_CODE
+        List<Integer> entryCodeList = utils.getPrePk("entry_code","c_proj_para_a",srcDataList.size());
+		
+		
 		// 进行列循环
 		for (Entry<String, String> map : FirstWriteBackStaticMaping.GRAND_BEFORE_MAPPING.entrySet()) {
 			String fieldName = map.getKey();
@@ -115,6 +120,8 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 			allParaAList.get(i).setAttributeValue("proj_logsamp_seqnum", utils.getLIMSPKByNCPK(fatherPk, CommissionBVO.class));
 			// project name
 			allParaAList.get(i).setAttributeValue("project", processData.getProject().getAttributeValue("name"));
+			// entry_code
+			allParaAList.get(i).setAttributeValue("entry_code", entryCodeList.get(i));
 
 		}
 		processData.setParaAListMap(sortParaA(allParaAList));

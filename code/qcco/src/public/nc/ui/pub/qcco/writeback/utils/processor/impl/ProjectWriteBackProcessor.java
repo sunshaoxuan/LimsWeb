@@ -3,13 +3,16 @@ package nc.ui.pub.qcco.writeback.utils.processor.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Project;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
+import nc.vo.fts.commission.util.CommissionVOUtil;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
+import nc.vo.qcco.commission.CommissionBVO;
 
 /**
  * 委托单主表回写 一对一
@@ -73,6 +76,8 @@ public class ProjectWriteBackProcessor implements IFirstWriteBackProcessor {
 				}
 			}
 		}
+		//样品行数量,用于回写project.NUM_SAMPLES 字段
+		project.setAttributeValue("num_samples", processData.getAggCommissionHVO().getChildren(CommissionBVO.class).length);
 		processData.setProject(project);
 		
 	}

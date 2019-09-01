@@ -76,6 +76,9 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor {
 		List<ParaB> allParaBList = initWriteBackList(srcDataList.size());
 		// 预申请pk
 		List<Integer> pkList = utils.getPrePk(TaskRVO.class, srcDataList.size());
+		//处理ENTRY_CODE(选取C_PROJ_PARA_A的最大值)
+        //预申请ENTRY_CODE
+        List<Integer> entryCodeList = utils.getPrePk("entry_code","c_proj_task_para_b",srcDataList.size());
 
 		// 进行列循环
 		for (Entry<String, String> map : FirstWriteBackStaticMaping.GRAND_AFTER_MAPPING.entrySet()) {
@@ -123,6 +126,8 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor {
 				allParaBList.get(i).setAttributeValue("seq_num", pkList.get(i));
 				// 外键
 				allParaBList.get(i).setAttributeValue("task_seq_num", utils.getLIMSPKByNCPK(fatherPk, TaskBVO.class));
+				// 主键
+				allParaBList.get(i).setAttributeValue("entry_code", entryCodeList.get(i));
 			
 		}
 		processData.setParaBListMap(sortParaB(allParaBList));

@@ -2,13 +2,18 @@ package nc.ui.pub.qcco.writeback.utils.processor.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
+import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
+import nc.hr.utils.InSQLCreator;
+import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Result;
@@ -16,6 +21,7 @@ import nc.ui.pub.qcco.writeback.utils.LIMSVO.Sample;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Test;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
+import nc.ui.pub.qcco.writeback.utils.mapping.SecWriteBackStaticMaping;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
 import nc.ui.pub.qcco.writeback.utils.processor.ISecWriteBackProcessor;
 import nc.vo.pub.BusinessException;
@@ -32,6 +38,7 @@ import nc.vo.qcco.task.TaskSVO;
 public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecWriteBackProcessor {
 
 	private CommonUtils utils;
+	private BaseDAO baseDao = new BaseDAO();
 	@Override
 	public void setUtils(CommonUtils utils) {
 		this.utils = utils;
@@ -99,6 +106,8 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				
 				//RESULT.ATTRIBUTE_1	default:null				
 				result.setAttributeValue("attribute_1", null);
+				
+				result.setAttributeValue("places", 0);
 
 				secResultMap.put(sampleNumber, result);
 			}
@@ -128,6 +137,10 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		List<Sample> firstSampleList = processData.getFirstSampleList();
 		List<Test> firstTestList = processData.getFirstTestList();
 		List<CProjTask> taskList = processData.getTaskList();
+		//分析表
+		Map<String,Map<String,Object>> analysisMapMap = getAnalysis(taskList);
+		//分析类型表 name->code
+		Map<String,String> analysisTypeCodeMap = getanalysisTypeCode();
 		
 		//要回写的LIMS 数据--任务单孙表试验条件
 		List<Result> allResultList = initWriteBackList(srcDataList.size());
@@ -168,11 +181,61 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			allResultList.get(i).setAttributeValue("sample_number", firstSampleList.get(fatherIndex).getAttributeValue("sample_number"));
 			allResultList.get(i).setAttributeValue("test_number", firstTestList.get(fatherIndex).getAttributeValue("test_number"));
 			
+			
+			
 			//flag标记,会在sort完之后清除
 			allResultList.get(i).setAttributeValue("task_seq_num", taskList.get(fatherIndex).getAttributeValue("seq_num"));
+			//对应的analysis
+			Map<String,Object> analysisMap = analysisMapMap.get(taskList.get(fatherIndex).getAttributeValue("analysis"));
+			allResultList.get(i).setAttributeValue("analysis", analysisMap.get("name"));
+			String result_type = analysisTypeCodeMap.get(analysisMap.get("analysis_type"));
+			allResultList.get(i).setAttributeValue("result_type", result_type==null?null:result_type.substring(0, 1));
+			
+			
+			allResultList.get(i).setAttributeValue("places", 0);
 		}
 
 		processData.setFirstResultListMap(sortResult(allResultList));
+	}
+
+	private Map<String, String> getanalysisTypeCode() throws DAOException {
+		Map<String, String> rsMap = new HashMap<>();
+		@SuppressWarnings("unchecked")
+		List<Map<String,Object>> rs = 
+				(List<Map<String,Object>>)baseDao.executeQuery("select * from nc_analysis_type", new MapListProcessor());
+		if(rs!=null && rs.size() > 0){
+			for(Map<String,Object> data : rs){
+				rsMap.put(String.valueOf(data.get("nc_type_name")).replaceAll(" ", ""), String.valueOf(data.get("nc_type_code")).replaceAll(" ", ""));
+			}
+		}
+		return rsMap;
+	}
+	/**
+	 * key : analysis的name
+	 * @param taskList
+	 * @return
+	 * @throws BusinessException
+	 */
+	private Map<String, Map<String, Object>> getAnalysis(List<CProjTask> taskList) throws BusinessException {
+		Map<String, Map<String, Object>> rsMap = new HashMap<>();
+		Set<String> analysisNameSet = new HashSet<>();
+		if(taskList!=null && taskList.size() > 0){
+			for(CProjTask task : taskList){
+				analysisNameSet.add(String.valueOf(task.getAttributeValue("analysis")).replaceAll(" ", ""));
+			}
+			
+		}
+		InSQLCreator insql = new InSQLCreator();
+		String insqlstr = insql.getInSQL(analysisNameSet.toArray(new String[0]));
+		@SuppressWarnings("unchecked")
+		List<Map<String,Object>> rs = 
+		(List<Map<String,Object>>)baseDao.executeQuery("select * from analysis where name in ("+insqlstr+")", new MapListProcessor());
+		if(rs!=null && rs.size() > 0){
+			for(Map<String,Object> data : rs){
+				rsMap.put(String.valueOf(data.get("name")).replaceAll(" ", ""), data);
+			}
+		}
+		return rsMap;
 	}
 
 	private Map<Integer, List<Result>> sortResult(List<Result> allResultList) {

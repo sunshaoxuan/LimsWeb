@@ -46,7 +46,7 @@ public class SecWriteBackStaticMaping {
     {	
     	//¶þ´ÎÐ´Èë
     	TEST_STATIC_MAP.put("STATUS", "'I'");
-    	TEST_STATIC_MAP.put("VARIATION", "null");
+    	//TEST_STATIC_MAP.put("VARIATION", "null");
     	
     }
 

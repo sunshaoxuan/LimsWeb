@@ -20,6 +20,8 @@ import nc.ui.pub.qcco.writeback.utils.LIMSVO.Project;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Result;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Sample;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Test;
+import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
+import nc.ui.pub.qcco.writeback.utils.mapping.SecWriteBackStaticMaping;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
@@ -547,13 +549,13 @@ public class CommonUtils {
 		if(processData.getProject()!=null){
 			List<SuperVO> temp = new ArrayList<>();
 			temp.add(processData.getProject());
-			rs.addAll(VOToInserSQL(temp,"project"));
+			rs.addAll(VOToInserSQL(temp,"project",FirstWriteBackStaticMaping.COMMISSION_HEARD_STATIC_MAP));
 		}
 		//样品组
 		if(processData.getLoginSampleList()!=null && processData.getLoginSampleList().size() > 0){
 			List<SuperVO> temp = new ArrayList<>();
 			temp.addAll(processData.getLoginSampleList());
-			rs.addAll(VOToInserSQL(temp,"c_proj_login_sample"));
+			rs.addAll(VOToInserSQL(temp,"c_proj_login_sample",FirstWriteBackStaticMaping.COMMISSION_BODY_STATIC_MAP));
 		}
 		//实验前
 		if(processData.getParaAListMap()!=null && processData.getParaAListMap().size() > 0){
@@ -561,13 +563,13 @@ public class CommonUtils {
 			for(List<ParaA>  paraaList : processData.getParaAListMap().values()){
 				temp.addAll(paraaList);
 			}
-			rs.addAll(VOToInserSQL(temp,"c_proj_para_a"));
+			rs.addAll(VOToInserSQL(temp,"c_proj_para_a",null));
 		}
 		//任务
 		if(processData.getTaskList()!=null && processData.getTaskList().size() > 0){
 			List<SuperVO> temp = new ArrayList<>();
 			temp.addAll(processData.getTaskList());
-			rs.addAll(VOToInserSQL(temp,"c_proj_task"));
+			rs.addAll(VOToInserSQL(temp,"c_proj_task",FirstWriteBackStaticMaping.TASK_BODY_STATIC_MAP));
 		}
 		//实验后
 		if(processData.getParaBListMap()!=null && processData.getParaBListMap().size() > 0){
@@ -576,19 +578,19 @@ public class CommonUtils {
 				temp.addAll(parabList);
 			}
 			
-			rs.addAll(VOToInserSQL(temp,"c_proj_task_para_b"));
+			rs.addAll(VOToInserSQL(temp,"c_proj_task_para_b",null));
 		}
 		//sample第一次
 		if(processData.getFirstSampleList()!=null && processData.getFirstSampleList().size() > 0){
 			List<SuperVO> temp = new ArrayList<>();
 			temp.addAll(processData.getFirstSampleList());
-			rs.addAll(VOToInserSQL(temp,"sample"));
+			rs.addAll(VOToInserSQL(temp,"sample",FirstWriteBackStaticMaping.SAMPLE_STATIC_MAP));
 		}
 		//test第一次
 		if(processData.getFirstTestList()!=null && processData.getFirstTestList().size() > 0){
 			List<SuperVO> temp = new ArrayList<>();
 			temp.addAll(processData.getFirstTestList());
-			rs.addAll(VOToInserSQL(temp,"test"));
+			rs.addAll(VOToInserSQL(temp,"test",FirstWriteBackStaticMaping.TEST_STATIC_MAP));
 		}
 		//result第一次
 		if(processData.getFirstResultListMap()!=null && processData.getFirstResultListMap().size() > 0){
@@ -596,7 +598,7 @@ public class CommonUtils {
 			for(List<Result> resultList : processData.getFirstResultListMap().values()){
 				temp.addAll(resultList);
 			}
-			rs.addAll(VOToInserSQL(temp,"result"));
+			rs.addAll(VOToInserSQL(temp,"result",FirstWriteBackStaticMaping.TASK_CONDITION_STATIC_MAP));
 		}
 		
 		// sample第二次
@@ -606,7 +608,7 @@ public class CommonUtils {
 				temp.addAll(sampleList);
 			}
 			
-			rs.addAll(VOToInserSQL(temp, "sample"));
+			rs.addAll(VOToInserSQL(temp, "sample",null));
 		}
 		// test第二次
 		if (processData.getSecTestList() != null && processData.getSecTestList().size() > 0) {
@@ -615,7 +617,7 @@ public class CommonUtils {
 				temp.add(test);
 			}
 			
-			rs.addAll(VOToInserSQL(temp, "test"));
+			rs.addAll(VOToInserSQL(temp, "test",null));
 		}
 		// result第二次
 		if (processData.getSecResultMap() != null && processData.getSecResultMap().size() > 0) {
@@ -623,7 +625,7 @@ public class CommonUtils {
 			for(Result result : processData.getSecResultMap().values()){
 				temp.add(result);
 			}
-			rs.addAll(VOToInserSQL(temp, "result"));
+			rs.addAll(VOToInserSQL(temp, "result",SecWriteBackStaticMaping.TEST_STATIC_MAP));
 		}
 		
 		
@@ -632,7 +634,7 @@ public class CommonUtils {
 		return rs;
 	}
 	
-	private List<String> VOToInserSQL(List<SuperVO> voList,String tableName){
+	private List<String> VOToInserSQL(List<SuperVO> voList,String tableName,Map<String,String> staticMap){
 		List<String> rsList = new ArrayList<>();
 		StringBuilder nameSB = new StringBuilder();
 		StringBuilder valueSB = new StringBuilder();
@@ -653,6 +655,16 @@ public class CommonUtils {
 				String sqlValue = dealValue4Sql(name,realValue);
 				valueSB.append(sqlValue).append(",");
 			}
+			
+			//静态字段写入
+			if(staticMap!=null && staticMap.size() > 0){
+				for(String staticName : staticMap.keySet()){
+					nameSB.append(staticName).append(",");
+					valueSB.append(staticMap.get(staticName)).append(",");
+				}
+			}
+			
+			
 			nameSB.delete(nameSB.length()-1, nameSB.length());
 			valueSB.delete(valueSB.length()-1, valueSB.length());
 			
@@ -733,6 +745,15 @@ public class CommonUtils {
 		return String.valueOf(ver);
 	}
 	
+/*    public SuperVO writeStaticField(SuperVO vo ,Map<String, String> staticMaping){
+    	
+    	if(vo!=null && staticMaping!=null && staticMaping.size() > 0){
+    		for(String name : staticMaping.keySet()){
+    			vo.setAttributeValue(name, staticMaping.get(name));
+    		}
+    	}
+    	return vo;
+    }*/
 	
     
 }
