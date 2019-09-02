@@ -548,7 +548,7 @@
 				<ref bean="editTaskAction" />
 				<ref bean="separatorAction" />
 				<!--ref bean="previewActionGroup" /-->
-				<ref bean="commissionPreviewAction" />
+				<!-- <ref bean="commissionPreviewAction" /> -->
 				<ref bean="quotationAction" />
 				<ref bean="payDemandAction" />
 				<ref bean="officialReportAction" />

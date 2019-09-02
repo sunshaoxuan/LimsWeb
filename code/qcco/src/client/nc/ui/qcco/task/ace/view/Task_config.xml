@@ -617,6 +617,8 @@
 				<ref bean="taskStatusAction" />
 				<ref bean="sampleProgressAction" />
 				<ref bean="separatorAction" />
+				<ref bean="commissionPreviewAction" />
+				<ref bean="separatorAction" />
 				<!-- <ref bean="writeBackLims" /> -->
 				
 			</list>
@@ -817,6 +819,11 @@
 	<bean id="sampleProgressAction" class="nc.ui.qcco.task.action.SampleProgressAction">
 		<property name="model" ref="manageAppModel" />
 	</bean>
+	<bean id="commissionPreviewAction" class="nc.ui.qcco.task.action.CommissionPreviewAction">
+		<property name="model" ref="manageAppModel" />
+	</bean>
+	
+	
 <!-- Ô¤ÀÀ°´Å¥×é -->
 	<bean id="previewActionGroup" class="nc.funcnode.ui.action.GroupAction">
 		<property name="code" value="previewActionGroup" />
