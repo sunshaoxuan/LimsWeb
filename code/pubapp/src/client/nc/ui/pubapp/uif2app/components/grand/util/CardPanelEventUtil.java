@@ -127,14 +127,27 @@ public class CardPanelEventUtil {
 			BillForm grandBillForm = (BillForm) relationShip.getBodyTabTOGrandCardComposite().get(currentbodyTabCode);
 			if (grandBillForm == null)
 				return;
-			RowChangeBean rowChangeBean = setChangeRowInfo(mainGrandPanel, lastrow, currentRow, grandBillForm);
+			//mod tank 如果lastrow和currentrow是同一行,则说明可能是插入行,导致的问题,需要进行修正
 			CircularlyAccessibleValueObject[] bodyVos = MainGrandUtil.getBodyVOsByTabCode(
 					(BillForm) mainGrandPanel.getMainPanel(), currentbodyTabCode);
+			int [] oldrows = ((CardBodyRowChangedEvent)event).getBillEditEvent().getOldrows();
+			int [] rows = ((CardBodyRowChangedEvent)event).getBillEditEvent().getRows();
+			if("pk_commission_b".equals(currentbodyTabCode)){
+				CircularlyAccessibleValueObject[] lastGrandVos = MainGrandUtil.getBodyVOsByTabCode(grandBillForm,
+						"pk_commission_r");
+				//上一行和当前行相等,而且行数发生了变化,而且变化后的行,子表获取为0
+				if(lastrow==currentRow && bodyVos != null && bodyVos.length > currentRow && lastGrandVos.length > 0
+						&& oldrows!=null && rows!=null && rows.length > oldrows.length){
+					lastrow+=1;
+				}
+			}
+			//mod end
 			if (bodyVos != null && bodyVos.length > 0) {
 				if (bodyVos.length < lastrow + 1) {
 					return;
 				}
 			}
+			RowChangeBean rowChangeBean = setChangeRowInfo(mainGrandPanel, lastrow, currentRow, grandBillForm);
 			// 获取孙表信息VO数据
 			Map<String, ArrayList<Object>> grandAllVOMap = mainGrandPanel.getMainGrandAssist()
 					.getGrandCardDataByMainRowAdd(rowChangeBean, mainGrandPanel.getMaingrandrelationship(),
