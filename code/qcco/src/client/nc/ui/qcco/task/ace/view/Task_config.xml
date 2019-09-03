@@ -618,9 +618,7 @@
 				<ref bean="sampleProgressAction" />
 				<ref bean="separatorAction" />
 				<ref bean="commissionPreviewAction" />
-				<ref bean="separatorAction" />
-				<!-- <ref bean="writeBackLims" /> -->
-				
+				<ref bean="separatorAction" />				
 			</list>
 		</property>
 	</bean>
@@ -658,7 +656,8 @@
 				<ref bean="taskStatusAction" />
 				<ref bean="sampleProgressAction" />
 				<ref bean="separatorAction" />
-				<!-- <ref bean="writeBackLims" /> -->
+				<ref bean="commissionPreviewAction" />
+				<ref bean="separatorAction" />
 			</list>
 		</property>
 
