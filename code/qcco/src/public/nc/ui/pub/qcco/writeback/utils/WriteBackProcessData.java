@@ -187,11 +187,11 @@ public class WriteBackProcessData {
 
 	public Map<String, CProjTask> getSampleIdTaskMap() {
 		if(null == sampleIdTaskMap && getTaskList()!=null && getTaskList().size() > 0){
+			sampleIdTaskMap = new HashMap<>();
 			for(CProjTask task : getTaskList()){
 				if(task.getAttributeValue("assigned_sample") !=null){
 					String[] sampleIDs = String.valueOf(task.getAttributeValue("assigned_sample")).split(",");
 					if(sampleIDs!=null && sampleIDs.length > 0){
-						sampleIdTaskMap = new HashMap<>();
 						for(String sampleID : sampleIDs){
 							sampleIdTaskMap.put(sampleID, task);
 						}
