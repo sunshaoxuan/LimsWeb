@@ -103,8 +103,9 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 		String seed = name + "-" + dt.format(new UFDate().toDate()) + "-";
 
 		try {
-			maxcode = (String) query.executeQuery("select max(billno) from QC_COMMISSION_H where billno like '" + seed
-					+ "%'", new ColumnProcessor());
+			maxcode = (String) query.executeQuery(
+					"select max(billno) from qc_commission_h where billno like 'A-______-____' and billno not like 'A-______-9999' and dr = 0", 
+					new ColumnProcessor());
 		} catch (BusinessException ex) {
 			ExceptionUtils.wrappBusinessException(ex.getMessage());
 		}

@@ -89,6 +89,7 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 		this.getMainGrandAssist().setMainGrandModel(this.getModel());
 		// 设置回调方法(用于记录上次打开界面状态)
 		this.registeCallbak();
+		
 	}
 
 	/**
@@ -341,15 +342,15 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 		if (event instanceof ListBodyRowChangedEvent) {
 
 			this.bodyRowChangeProcess();
-
+			
 		} else if (event instanceof ListBodyTabChangedEvent) {
 
 			this.tabChangeProcess();
-
+			
 		} else if (event instanceof MainGrandAppEvent) {
 
 			this.grandEventProcess(event);
-
+			
 		} else if (event instanceof ListHeadRowChangedEvent) {
 		    //排序
 			if("C0J00203".equals(((ListHeadRowChangedEvent) event).getContext().getNodeCode())){
@@ -366,6 +367,7 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 			this.clearGrandData();
 			
 		} else if (event.getType().equals(AppEventConst.MODEL_INITIALIZED)) {
+			
 			this.clearGrandData();
 			this.getModel().getSelectGrandRowNum().clear();
 			this.getModel().getQueryDataMap().clear();
@@ -375,7 +377,16 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 				if (childVOs != null) {
 					this.getModel().parseGrandData(obj);
 				}
+				
 			}
+			/**
+			 * 修复审批人入口进入无法显示孙表的问题
+			 */
+			if(datas!=null && datas.size() == 1){
+				((BillListView) this.getMainPanel()).getModel().directlyUpdate(datas.get(0));
+			}
+			//AbstractBill aggVO = (AbstractBill) ((BillListView) this.getMainPanel()).getModel().getSelectedData();
+			
 		} else if (event.getType().equals(AppEventConst.SELECTED_DATE_CHANGED)) {
 
 			AbstractBill aggVoWihGrand = CardPanelEventUtil.selectedDataChange(this);
@@ -384,9 +395,11 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 
 				this.getModel().parseGrandData(aggVoWihGrand);
 			}
+			
 		} else if (event.getType().equals(AppEventConst.SELECTION_CHANGED) && this.isShowing()) {
 
 			CardPanelEventUtil.grandListModelInit(this);
+			
 		}
 	}
 
@@ -481,7 +494,10 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 		BillListView grandListView = (BillListView) this.getMaingrandrelationship().getBodyTabTOGrandListComposite()
 				.get(currentbodyTabCode);
 		if (grandListView != null) {
+			//XXX fix
+			
 			AbstractBill aggVO = (AbstractBill) ((BillListView) this.getMainPanel()).getModel().getSelectedData();
+			//getDataManager().refresh();
 			if (aggVO != null && null != aggVO.getChildrenVO() && aggVO.getChildrenVO().length != 0) {
 				String bodyClassName = aggVO.getChildrenVO()[0].getClass().getName();
 				List<Object> grandVOList = this.getMainGrandAssist().getGrandListDataByMainRow(

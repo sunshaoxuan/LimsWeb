@@ -118,6 +118,7 @@
 		<property name="expendShrinkGrandListAction" ref="expendShrinkGrandListAction"></property>
 		<!--孙表的提示信息，默认为"孙表信息"，可以不配-->
 		<property name="grandString" value="孙表信息"></property>
+		<property name="dataManager" ref="modelDataManager" />
 	</bean>	
 	<!-- 主子孙卡片界面 -->
 	<bean id="MainGrandbillFormEditor" class="nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite" init-method="initUI">

@@ -27,7 +27,10 @@ import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.components.grand.mediator.MainGrandMediator;
 import nc.ui.pubapp.uif2app.components.grand.util.CardPanelEventUtil;
 import nc.ui.pubapp.uif2app.view.BillForm;
+import nc.ui.uif2.editor.BillListView;
+import nc.vo.pub.SuperVO;
 import nc.vo.pub.bill.BillTabVO;
+import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 
 /**
  * TabbedPane,以tablecode为标志,存放UIScrollPane. 创建日期:(2002-09-10 13:01:36)
@@ -355,6 +358,43 @@ public class BillTabbedPane extends ExtTabbedPane implements
 	}
 
 	private static void refreshGrand(BillTabbedPane btp) {
+		refreshCardPanel(btp);
+		refreshListPanel(btp);
+		
+	}
+
+
+	private static void refreshListPanel(BillTabbedPane btp) {
+		MainGrandMediator cpc = (MainGrandMediator)btp.getTabChangedListener();
+		// 获得当前选中行
+		int currentRow = cpc.getMainBillListView().getBillListPanel().getBodyTable().getSelectedRow();
+		String currentbodyTabCode = cpc.getMainBillListView().getBillListPanel().getChildListPanel()
+				.getTableCode();
+		// 根据当前子页签获取孙表view
+		BillListView grandListView = (BillListView) cpc.getMainGrandRelationShip().getBodyTabTOGrandListComposite()
+				.get(currentbodyTabCode);
+
+		if (grandListView != null && currentRow != -1) {
+			// 加载孙面板数据
+			AbstractBill aggVO = (AbstractBill) (cpc.getMainBillListView()).getModel().getSelectedData();
+			String bodyClassName = aggVO.getChildrenVO()[0].getClass().getName();
+			List<Object> grandVOList = cpc.getMainGrandAssist().getGrandListDataByMainRow(
+					(BillListView) cpc.getMainBillListView(), currentRow, grandListView, bodyClassName,
+					cpc.getMainGrandRelationShip());
+			if (grandVOList != null) {
+				// ssx add for append user define REFs
+				// on 2019-03-06
+				UserDefineRefUtils.refreshBillListGrandDefRefs(grandListView, grandVOList);
+				//
+			} else {
+				grandListView.getBillListPanel().getBodyBillModel().clearBodyData();
+			}
+		}
+		
+	}
+
+
+	private static void refreshCardPanel(BillTabbedPane btp) {
 		BillForm grandBillForm = null;
 		String grandTabCode = null;
 		List<Object> grandVOList = null;

@@ -88,7 +88,8 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 
 		try {
 			maxcode = (String) query.executeQuery(
-					"select max(billno) from QC_COMMISSION_H where billno not like '%9999'", new ColumnProcessor());
+					"select max(billno) from qc_commission_h where billno like 'A-______-____' and billno not like 'A-______-9999' and dr = 0",
+					new ColumnProcessor());
 		} catch (BusinessException ex) {
 			ExceptionUtils.wrappBusinessException(ex.getMessage());
 		}
