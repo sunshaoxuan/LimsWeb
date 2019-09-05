@@ -67,9 +67,10 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		//CLONED_FROM 自增pk
 		int cloneFromPK = utils.getPrePk("cloned_from", "sample", 1).get(0)-1;
 		int transNumPK = utils.getPrePk("trans_num", "sample", 1).get(0)-1;
+		int originalPK = utils.getPrePk("original_sample", "sample", 1).get(0)-1;
 		
 		//时间前缀
-		String timeStr = new UFLiteralDate().toStdString().replaceAll("-", "");
+		String timeStr = new UFLiteralDate().toStdString().replaceAll("-", "").substring(2);
 		
 		//需要回写的LIMS数据 组数*每组数量
 		Map<String,List<Sample>> secSampleListMap = new HashMap<>();
@@ -81,6 +82,8 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 					String group = String.valueOf(sampleGroupList.get(i).getAttributeValue("sample_group"));
 					//每组数量
 					Integer gourpNum = Integer.parseInt(String.valueOf(sampleGroupList.get(i).getAttributeValue("sample_quantity")));
+					//结构类型
+					String structure_type = String.valueOf(sampleGroupList.get(i).getAttributeValue("structure_type"));
 					
 					//每组list
 					List<Sample> sampleList = new ArrayList<>();
@@ -104,13 +107,11 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						
 						//SAMPLE.CUSTOMER	提交人公司名
 						
-						sample.setAttributeValue("customer", taskList.get(i).getAttributeValue("C_SUBMIT_BY"));
+//						sample.setAttributeValue("customer", taskList.get(i).getAttributeValue("C_SUBMIT_BY"));
 						//SAMPLE.DATE_STARTED	null
 
 						sample.setAttributeValue("date_started", null);
-						//SAMPLE.LAB	XXX sample 2 所属测试小组名称
-
-						sample.setAttributeValue("lab", null);
+						
 						//SAMPLE.LOGIN_BY	BACKGROUND
 
 						sample.setAttributeValue("login_by", "BACKGROUND");
@@ -149,6 +150,70 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						//SAMPLE.TRANS_NUM	主键式自增
 						sample.setAttributeValue("trans_num", ++transNumPK);
 						
+						
+						//创建日期
+						sample.setAttributeValue("CHANGED_ON", processData.getProject().getAttributeValue("date_created"));
+						sample.setAttributeValue("LOGIN_DATE", processData.getProject().getAttributeValue("date_created"));
+						
+						//自增
+						sample.setAttributeValue("ORIGINAL_SAMPLE", ++originalPK);
+						//结构类型单稳态
+						sample.setAttributeValue("PRODUCT_GRADE", structure_type);
+						
+						//委托单单位名称
+						sample.setAttributeValue("CUSTOMER", processData.getProject().getAttributeValue("customer"));
+						
+						//SAMPLE.LAB	XXX sample 2 所属测试小组名称
+						sample.setAttributeValue("lab", null);
+						
+						//XXX sample 2 所属测试小组名称
+						sample.setAttributeValue("C_IS_SEQUNCE", "U");
+					
+						
+						
+						sample.setAttributeValue("IN_SPEC", "T");
+						sample.setAttributeValue("IN_CAL", "T");
+						sample.setAttributeValue("RE_SAMPLE", "F");
+						sample.setAttributeValue("ALIQUOT", "F");
+						sample.setAttributeValue("PARENT_SAMPLE", 0);
+						sample.setAttributeValue("PARENT_ALIQUOT", 0);
+						sample.setAttributeValue("SAMPLE_VOLUME", 0);
+						sample.setAttributeValue("PREP", "F");
+						sample.setAttributeValue("PRIORITY", 0);
+						sample.setAttributeValue("STANDARD", "F");
+						sample.setAttributeValue("LOT", 0);
+						sample.setAttributeValue("PARTIAL_SPEC", "F");
+						sample.setAttributeValue("SPEC_TYPE", "NONE");
+						sample.setAttributeValue("STAGE", "NONE");
+						sample.setAttributeValue("PRIMARY_IN_SPEC", "F");
+						sample.setAttributeValue("RELEASED", "F");
+						sample.setAttributeValue("IN_CONTROL", "T");
+						sample.setAttributeValue("INVESTIGATED", "F");
+						sample.setAttributeValue("APPROVED", "F");
+						sample.setAttributeValue("READY_FOR_APPROVAL", "F");
+						sample.setAttributeValue("APPROVAL_ID", 0);
+						sample.setAttributeValue("MODIFIED_RESULTS", "F");
+						sample.setAttributeValue("REPORT_NUMBER", 0);
+						sample.setAttributeValue("COMPOSITE", "F");
+						sample.setAttributeValue("PARENT_COMPOSITE", 0);
+						sample.setAttributeValue("PEOPLE", 0);
+						sample.setAttributeValue("CHK_ALIQUOT_STATUS", "F");
+						sample.setAttributeValue("CHK_ALIQUOT_SPECS", "F");
+						sample.setAttributeValue("ALIQUOT_TEMPLATE", "ALIQUOT");
+						sample.setAttributeValue("SAMPLE_EVENT", 0);
+						sample.setAttributeValue("HAS_FLAGS", "F");
+						sample.setAttributeValue("SAMPLED", "F");
+						sample.setAttributeValue("NUM_CONTAINERS", 1);
+						sample.setAttributeValue("REQD_VOLUME", 0);
+						sample.setAttributeValue("COLLECTION_OFFSET", 0);
+						sample.setAttributeValue("SIGNED", "F");
+						sample.setAttributeValue("ALLOW_CHLD_ALQTS", "F");
+						sample.setAttributeValue("CONTRACT_NUMBER", 0);
+						sample.setAttributeValue("STORAGE_LOC_NO", 0);
+						sample.setAttributeValue("REPORTED_RSLT_OOS", "F");
+						sample.setAttributeValue("T_CONTRACT_TESTS", "F");
+						sample.setAttributeValue("C_IS_SEQUNCE", "U");
+						
 						sampleList.add(sample);
 					}
 					secSampleListMap.put(String.valueOf(sampleGroupList.get(i).getAttributeValue("seq_num")), sampleList);
@@ -182,9 +247,11 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		List<Integer> prePk = utils.getPrePk("sample_number", "sample", taskList.size());
 		processData.setMaxSamplePK(prePk.get(taskList.size()-1));
 		//textid 
-		String sql = "select max(str2) from (SELECT REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,1,'i')  STR1, "
-				+ " nvl(REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,2,'i'),'1')  str2 FROM sample) origin " + " where str1 = '"
-				+ String.valueOf(modtime.getYear()).substring(2, 4) + "' order by str2 desc ";
+		String sql = " SELECT  max(to_number(str2)) FROM ( "
+        +" SELECT REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,1,'i')          STR1,  "
+        +" NVL(REGEXP_SUBSTR(TEXT_ID,'[^-]+',1,2,'i'),'1') str2  "
+        +"  FROM sample) origin "
+        +" WHERE  regexp_like(str2,'^[[:digit:]]+$') and regexp_like(str1,'^[[:digit:]]+$') ";
 		Object maxNumObj = new BaseDAO().executeQuery(sql, new ColumnProcessor());
 		int maxNum = 1;
 		if (maxNumObj != null) {
@@ -220,7 +287,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				//taskList.get(i).setAttributeValue("sample_number", pkFirstSample);
 				// SAMPLE.TEXT_ID此处有两种生成方式：由于本次是第一次写入，写入的是上表红色的格式(19-5673)，
 				// 代表试验前的样品分类，格式为“年份-最大值+1”
-				firstSampleList.get(i).setAttributeValue("text_id", String.valueOf(modtime.getYear()).substring(2, 4)+(++maxNum));
+				firstSampleList.get(i).setAttributeValue("text_id", String.valueOf(modtime.getYear()).substring(2, 4)+"-"+(++maxNum));
 
 			}
 		}

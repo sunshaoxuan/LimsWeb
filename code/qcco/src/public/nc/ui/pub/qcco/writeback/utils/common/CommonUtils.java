@@ -730,6 +730,7 @@ public class CommonUtils {
 		TIME_COLUMN_SET.add("date_started");
 		TIME_COLUMN_SET.add("t_date_enabled");
 		TIME_COLUMN_SET.add("c_product_date");
+		TIME_COLUMN_SET.add("date_updated");
 		return TIME_COLUMN_SET;
 	}
 	

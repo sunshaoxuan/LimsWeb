@@ -78,6 +78,17 @@ public class ProjectWriteBackProcessor implements IFirstWriteBackProcessor {
 		}
 		//样品行数量,用于回写project.NUM_SAMPLES 字段
 		project.setAttributeValue("num_samples", processData.getAggCommissionHVO().getChildren(CommissionBVO.class).length);
+		//date_updated为空时,写入创建时间
+		if(project.getAttributeValue("date_updated")==null){
+			Object realValue = utils.getRealValue(processData.getAggCommissionHVO().getParentVO().getCreationtime(), 
+					"creationtime",processData.getAggCommissionHVO().getParentVO().getClass());
+			project.setAttributeValue("date_updated", realValue);
+		}
+		//approval_id 自增
+		List<Integer> approvalId = utils.getPrePk("approval_id", "project", 1);
+		project.setAttributeValue("approval_id", approvalId.get(0));
+		
+		
 		processData.setProject(project);
 		
 	}
