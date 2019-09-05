@@ -87,7 +87,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 					
 					//每组list
 					List<Sample> sampleList = new ArrayList<>();
-					for(int j = 0 ; j < gourpNum ;j++){
+					for(int j = 1 ; j <= gourpNum ;j++){
 						//开始生成sample
 						Sample sample = new Sample();
 						//SAMPLE.PROJECT	所属委托单号

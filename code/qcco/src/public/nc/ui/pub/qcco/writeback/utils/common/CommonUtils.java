@@ -12,8 +12,10 @@ import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.bs.logging.Logger;
 import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaB;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Project;
@@ -47,6 +49,14 @@ public class CommonUtils {
 	private BaseDAO baseDao = new BaseDAO();
 	
 	private WriteBackProcessData processData;
+	
+	private Map<String,String> analysisToVersion = new HashMap<>();
+	
+	private Map<String,String> analysisToLab = new HashMap<>();
+	
+	private Map<String,String> analysisToMethod = new HashMap<>();
+	
+	private Map<String,List<Map<String,Object>>> analysisToResultComponentMap = new HashMap<>();
 	
 	//用于SQL转换
 	private StringBuilder sb = new StringBuilder();
@@ -613,16 +623,16 @@ public class CommonUtils {
 		// test第二次
 		if (processData.getSecTestList() != null && processData.getSecTestList().size() > 0) {
 			List<SuperVO> temp = new ArrayList<>();
-			for(Test test : processData.getSecTestList().values()){
+			for(Test test : processData.getSecTestList()){
 				temp.add(test);
 			}
 			
 			rs.addAll(VOToInserSQL(temp, "test",null));
 		}
 		// result第二次
-		if (processData.getSecResultMap() != null && processData.getSecResultMap().size() > 0) {
+		if (processData.getSecResultList() != null && processData.getSecResultList().size() > 0) {
 			List<SuperVO> temp = new ArrayList<>();
-			for(Result result : processData.getSecResultMap().values()){
+			for(Result result : processData.getSecResultList()){
 				temp.add(result);
 			}
 			rs.addAll(VOToInserSQL(temp, "result",SecWriteBackStaticMaping.TEST_STATIC_MAP));
@@ -741,9 +751,83 @@ public class CommonUtils {
      * @throws DAOException 
      */
     public String getAnalysisVerionFromName(String analysisName) throws DAOException {
-		String sql = " select VERSION from nc_analysis_list where name  = '"+analysisName+"'"; 
+    	if(analysisToVersion.containsKey(analysisName)){
+    		return analysisToVersion.get(analysisName);
+    	}
+		String sql = " select version from analysis where name  = '"+analysisName+"'"; 
 		Integer ver = (Integer)baseDao.executeQuery(sql, new ColumnProcessor());
+		analysisToVersion.put(analysisName, String.valueOf(ver));
 		return String.valueOf(ver);
+	}
+    /**
+     * 通过分析名,获取lab
+     * @param analysisName
+     * @return
+     * @throws DAOException 
+     */
+    public String getLabFromAnalysisName(String analysisName) throws DAOException {
+    	if(analysisToLab.containsKey(analysisName)){
+    		return analysisToLab.get(analysisName);
+    	}
+		String sql = " select lab from analysis where name  = '"+analysisName+"'"; 
+		String rs = (String)baseDao.executeQuery(sql, new ColumnProcessor());
+		analysisToLab.put(analysisName, String.valueOf(rs));
+		return String.valueOf(rs);
+	}
+    
+    /**
+     * 通过分析名,获取分析方法
+     * @param analysisName
+     * @return
+     * @throws DAOException 
+     */
+    public String getMethodFromAnalysisName(String analysisName) throws DAOException {
+    	if(analysisToMethod.containsKey(analysisName)){
+    		return analysisToMethod.get(analysisName);
+    	}
+		String sql = " select t_analysis_method from analysis where name  = '"+analysisName+"'"; 
+		String rs = (String)baseDao.executeQuery(sql, new ColumnProcessor());
+		analysisToMethod.put(analysisName, String.valueOf(rs));
+		return String.valueOf(rs);
+	}
+    
+    
+    /**
+	 * 根据task id 查找测试结果分项
+	 * @param valueOf
+	 * @return
+     * @throws DAOException 
+	 */
+	public List<Map<String, Object>> getResultCompoentList(String taskId) throws DAOException {
+		List<Map<String, Object>> rsList = new ArrayList<>();
+		//循环查找task
+		CProjTask task = null;
+		if(processData.getTaskList()!=null && processData.getTaskList().size() > 0){
+			for(CProjTask vo : processData.getTaskList()){
+				if(taskId.equals(String.valueOf(vo.getAttributeValue("seq_num")))){
+					task = vo;
+					break;
+				}
+			}
+		}
+		if(task !=null){
+			String analysis = String.valueOf(task.getAttributeValue("analysis"));
+			if(analysis!=null){
+				if(analysisToResultComponentMap.containsKey(analysis)){
+					rsList = analysisToResultComponentMap.get(analysis);
+				}else{
+					String sql = "select COMPONENT.* from COMPONENT "
+							+" left join ANALYSIS analysis on analysis.name = component.analysis  "
+							+" where ANALYSIS = '"+analysis+"' and analysis.c_test_type='测试结果' ";
+					@SuppressWarnings("unchecked")
+					List<Map<String,Object>> rs = (List<Map<String,Object>>)baseDao.executeQuery(sql, new MapListProcessor());
+					analysisToResultComponentMap.put(analysis, rs);
+					rsList = rs;
+				}
+			}
+		}
+
+		return rsList;
 	}
 	
 /*    public SuperVO writeStaticField(SuperVO vo ,Map<String, String> staticMaping){

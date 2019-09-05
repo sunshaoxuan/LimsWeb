@@ -2,18 +2,21 @@
 package nc.ui.pub.qcco.writeback.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+
+
 
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.*;
 import nc.vo.pub.BusinessException;
-import nc.vo.pub.lang.UFDouble;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -63,18 +66,16 @@ public class WriteBackProcessData {
 	private List<Test> firstTestList;  
 	
 	//LIMS第二次回写test
-	//key:Sample.sample_number 
-	//test第二次回写,一个sample(对应第二次回写的sample)对应一条test
-	private Map<Integer,Test> secTestList;  
+	//task 每分配一个任务,则生成一条test
+	private List<Test> secTestList;  
 	
 	//1.key:c_proj_task.seq_num
 	//2.list的顺序和任务单对应任务的实验条件孙表一致
 	private Map<Integer,List<Result>> firstResultListMap;    
 	
 	//LIMS第二次回写Result 
-	//key:sample.sample_number   
-	//result第二次回写时,result,sample,test三者都是一一对应
-	private Map<Integer,Result> secResultMap;  
+	//result第二次回写时,以test二次写入为标准,去查询测试结果的分项
+	private List<Result> secResultList;  
 
 	
 	//三张表的主键最大值
@@ -84,8 +85,8 @@ public class WriteBackProcessData {
 	
 	private int maxResult = 0;
 	
-	//sample表对应的task表缓存
-	private Map<String,CProjTask> sampleIdTaskMap = null;
+	//sample表对应的task表缓存(一个sample可能对应多个task)
+	private Map<String,List<CProjTask>> sampleIdTaskMap = null;
 	
 
 	/**
@@ -130,6 +131,19 @@ public class WriteBackProcessData {
 				List<TaskBVO> taskbvoList = 
 						(List<TaskBVO>) bs.retrieveByClause(TaskBVO.class, " pk_task_h = '"+taskhvo.getPk_task_h()+"'  and dr = 0 ");
 				if(taskbvoList!=null && taskbvoList.size() > 0){
+					//任务单需要进行排序
+					Collections.sort(taskbvoList, new Comparator<TaskBVO>(){
+
+						@Override
+						public int compare(TaskBVO b1, TaskBVO b2) {
+							int order1 = b1.getRunorder()==null?99999:b1.getRunorder();
+							int order2 = b2.getRunorder()==null?99999:b2.getRunorder();
+							return order1-order2;
+						}
+						
+					});
+					
+					
 					for(TaskBVO bvo : taskbvoList){
 						List<TaskRVO> rvoList = 
 								(List<TaskRVO>) bs.retrieveByClause(TaskRVO.class, 
@@ -176,7 +190,7 @@ public class WriteBackProcessData {
 	 * @param sample
 	 * @return
 	 */
-	public CProjTask getTaskFromSampleSec(Sample sample) {
+	public List<CProjTask> getTaskFromSampleSec(Sample sample) {
 
 		if(sample!=null&&sample.getAttributeValue("text_id")!=null){
 			String sampleId = String.valueOf(sample.getAttributeValue("text_id")).split("-")[1];
@@ -185,7 +199,7 @@ public class WriteBackProcessData {
 		return null;
 	}
 
-	public Map<String, CProjTask> getSampleIdTaskMap() {
+	public Map<String, List<CProjTask>> getSampleIdTaskMap() {
 		if(null == sampleIdTaskMap && getTaskList()!=null && getTaskList().size() > 0){
 			sampleIdTaskMap = new HashMap<>();
 			for(CProjTask task : getTaskList()){
@@ -193,7 +207,14 @@ public class WriteBackProcessData {
 					String[] sampleIDs = String.valueOf(task.getAttributeValue("assigned_sample")).split(",");
 					if(sampleIDs!=null && sampleIDs.length > 0){
 						for(String sampleID : sampleIDs){
-							sampleIdTaskMap.put(sampleID, task);
+							if(sampleIdTaskMap.containsKey(sampleID)){
+								sampleIdTaskMap.get(sampleID).add(task);
+							}else{
+								List<CProjTask> tempList = new ArrayList<>();
+								tempList.add(task);
+								sampleIdTaskMap.put(sampleID, tempList);
+							}
+							
 						}
 					}
 				}
@@ -310,11 +331,11 @@ public class WriteBackProcessData {
 		this.firstTestList = firstTestList;
 	}
 
-	public Map<Integer, Test> getSecTestList() {
+	public List<Test> getSecTestList() {
 		return secTestList;
 	}
 
-	public void setSecTestList(Map<Integer, Test> secTestList) {
+	public void setSecTestList(List<Test> secTestList) {
 		this.secTestList = secTestList;
 	}
 
@@ -326,12 +347,12 @@ public class WriteBackProcessData {
 		this.firstResultListMap = firstResultListMap;
 	}
 
-	public Map<Integer, Result> getSecResultMap() {
-		return secResultMap;
+	public List<Result> getSecResultList() {
+		return secResultList;
 	}
 
-	public void setSecResultMap(Map<Integer, Result> secResultMap) {
-		this.secResultMap = secResultMap;
+	public void setSecResultList(List<Result> secResultMap) {
+		this.secResultList = secResultMap;
 	}
 
 	

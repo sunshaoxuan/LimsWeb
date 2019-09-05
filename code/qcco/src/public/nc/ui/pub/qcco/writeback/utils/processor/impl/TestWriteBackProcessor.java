@@ -54,61 +54,63 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 	private void processSecond(WriteBackProcessData processData) throws DAOException {
 		// LIMS Data
 		List<Sample> allSampleList = processData.getAllSecSampleList();
-
+		//所有样品对应的task
+		
+		
 		// 需要回写的LIMS
-		// key:Sample.sample_number
-		// test第二次回写,一个sample(对应第二次回写的sample)对应一条test
-		Map<Integer, Test> secTestMap = new HashMap<>();
+		// test第二次回写,task每分配一个样品就产生一个test
+		List<Test> secTestList = new ArrayList<>();
 
 		if (allSampleList != null && allSampleList.size() > 0) {
 			for (int i = 0; i < allSampleList.size(); i++) {
+				List<CProjTask> taskList = processData.getTaskFromSampleSec(allSampleList.get(i));
+				if(taskList!=null && taskList.size() > 0){
+					if(taskList.size() > 1){
+						//当一个样品不止一条task时,序列为true
+						allSampleList.get(i).setAttributeValue("c_is_sequnce", "T");
+					}
+					for(CProjTask task : taskList){
+						Test test = new Test();
+						// TEST.TEST_NUMBER 根据sample_number主键自增
+						test.setAttributeValue("test_number", processData.getMaxTestPK()+1);
+						processData.setMaxTestPK(processData.getMaxTestPK()+1);
+						
+						// TEST.SAMPLE_NUMBER
+						// 取sample表二次插入的sample_number，一个任务有多少只样品，便有多少行
+						test.setAttributeValue("sample_number", Integer.parseInt(String.valueOf(allSampleList.get(i).getAttributeValue("sample_number"))));
 
-				// 开始生成test
-				Test test = new Test();
-				
-				//根据sample查找task 任务单 (如果样品没有分配任务,则找不到相应的task)
-				CProjTask task = processData.getTaskFromSampleSec(allSampleList.get(i))==null?
-						new CProjTask():processData.getTaskFromSampleSec(allSampleList.get(i));
-				
-				// TEST.TEST_NUMBER 根据sample_number主键自增
-				test.setAttributeValue("test_number", processData.getMaxTestPK()+1);
-				processData.setMaxTestPK(processData.getMaxTestPK()+1);
-				
-				// TEST.SAMPLE_NUMBER
-				// 取sample表二次插入的sample_number，一个任务有多少只样品，便有多少行
-				test.setAttributeValue("sample_number", Integer.parseInt(String.valueOf(allSampleList.get(i).getAttributeValue("sample_number"))));
+						// TEST.STATUS I
+						test.setAttributeValue("status", "I");
 
-				// TEST.STATUS I
-				test.setAttributeValue("status", "I");
+						// TEST.C_TASK_SEQ_NUM c_proj_task表任务表任务对应的主键
+						test.setAttributeValue("c_task_seq_num", task.getAttributeValue("seq_num"));
 
-				// TEST.C_TASK_SEQ_NUM c_proj_task表任务表任务对应的主键
-				test.setAttributeValue("c_task_seq_num", task.getAttributeValue("seq_num"));
+						// TEST.C_TASK_ID 任务表c_proj_task.task_id
+						test.setAttributeValue("c_task_id", task.getAttributeValue("task_id"));
 
-				// TEST.C_TASK_ID 任务表c_proj_task.task_id
-				test.setAttributeValue("c_task_id", task.getAttributeValue("task_id"));
+						// TEST.C_ARRANGE_TYPE XXX test 2 排程类别
+						test.setAttributeValue("c_arrange_type", "");
 
-				// TEST.C_ARRANGE_TYPE XXX test 2 排程类别
-				test.setAttributeValue("c_arrange_type", "");
+						// TEST.test类型 
+						test.setAttributeValue("c_test_type", "测试结果");
 
-				// TEST.C_TEST_TYPE XXX test 2 测试结果
-				test.setAttributeValue("c_test_type", "");
+						// TEST.ORDER_NUMBER 任务排序
+						test.setAttributeValue("order_number", task.getAttributeValue("order_number"));
 
-				// TEST.ORDER_NUMBER 任务排序
-				test.setAttributeValue("order_number", task.getAttributeValue("order_number"));
+						// TEST.LAB  测试小组名称
+						test.setAttributeValue("lab", utils.getLabFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
 
-				// TEST.LAB XXX test 2 测试小组名称
-				test.setAttributeValue("lab", "");
+						// TEST.VARIATION default:null
+						test.setAttributeValue("variation", null);
 
-				// TEST.VARIATION default:null
-				test.setAttributeValue("variation", null);
+						// TEST.T_ANALYSIS_METHOD 分析方法(如IEC61810-7)
+						test.setAttributeValue("t_analysis_method", utils.getMethodFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
 
-				// TEST.T_ANALYSIS_METHOD 分析方法(如IEC61810-7)
-				test.setAttributeValue("t_analysis_method", "");
-
-				secTestMap.put(Integer.parseInt(String.valueOf(allSampleList.get(i).getAttributeValue("sample_number"))), test);
-
+						secTestList.add(test);
+					}
+				}
 			}
-			processData.setSecTestList(secTestMap);
+			processData.setSecTestList(secTestList);
 		}
 	}
 
