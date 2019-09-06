@@ -7,6 +7,7 @@ import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
+import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
 import nc.ui.pub.qcco.task.utils.WriteBackLimsUtils;
@@ -22,6 +23,7 @@ import nc.vo.qcco.task.TaskRVO;
 import nc.itf.qcco.ITaskMaintain;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.SuperVO;
+import nc.vo.pub.lang.UFDateTime;
 
 public class TaskMaintainImpl extends AceTaskPubServiceImpl
 		implements ITaskMaintain {
@@ -163,7 +165,9 @@ private BaseDAO dao = null;
 
 		if(insertSqls!=null && insertSqls.size() > 0){
 			for(String sql : insertSqls){
+				Logger.error("LIMS SQL WRITE BACK 4 CHECK start:"+new UFDateTime().toStdString()+"--------------------------------");
 				getDao().executeUpdate(sql);
+				Logger.error("LIMS SQL WRITE BACK 4 CHECK end:"+new UFDateTime().toStdString()+"--------------------------------");
 			}
 		}
 		

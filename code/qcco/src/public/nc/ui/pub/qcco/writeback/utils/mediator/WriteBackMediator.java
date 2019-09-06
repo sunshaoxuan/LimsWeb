@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import nc.bs.logging.Logger;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
@@ -12,6 +13,8 @@ import nc.ui.pub.qcco.writeback.utils.mapping.SecWriteBackStaticMaping;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
 import nc.ui.pub.qcco.writeback.utils.processor.impl.*;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.lang.UFDateTime;
+import nc.vo.pub.lang.UFLiteralDate;
 
 public class WriteBackMediator {
 	
@@ -82,6 +85,14 @@ public class WriteBackMediator {
 			resultProcessor.processSec(data);
 			
 			rsList.addAll(utils.toLIMSSQL());
+		}
+		//XXX : for test
+		if(rsList!=null && rsList.size() > 0){
+			Logger.error("LIMS SQL WRITE BACK start:"+new UFDateTime().toStdString()+"--------------------------------");
+			for(String sql : rsList){
+				Logger.error(sql);
+			}
+			Logger.error("LIMS SQL WRITE BACK end:"+new UFDateTime().toStdString()+"--------------------------------");
 		}
 		
 		
