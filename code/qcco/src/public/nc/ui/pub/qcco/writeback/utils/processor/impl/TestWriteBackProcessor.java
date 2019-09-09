@@ -99,7 +99,8 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 
 						// TEST.LAB  测试小组名称
 						test.setAttributeValue("lab", utils.getLabFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
-
+						
+						
 						// TEST.VARIATION default:null
 						test.setAttributeValue("variation", null);
 
@@ -155,6 +156,9 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 
 			// 任务单创建时间
 			UFDateTime creatTime = taskHvo.getCreationtime();
+			if(null==creatTime){
+				creatTime = processData.getAggCommissionHVO().getParentVO().getCreationtime();
+			}
 			String time = "to_timestamp('" + creatTime + "','yyyy-mm-dd hh24:mi:ss.ff')";
 			firstTestList.get(i).setAttributeValue("date_received", time);
 			firstTestList.get(i).setAttributeValue("date_started", time);

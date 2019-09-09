@@ -164,6 +164,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						sample.setAttributeValue("CUSTOMER", processData.getProject().getAttributeValue("customer"));
 						
 						//SAMPLE.LAB	XXX sample 2 所属测试小组名称
+						
 						sample.setAttributeValue("lab", null);
 						
 						//XXX sample 2 所属测试小组名称
