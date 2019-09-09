@@ -2,6 +2,7 @@ package nc.itf.qcco;
 
 import java.util.List;
 
+import nc.bs.dao.DAOException;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
@@ -52,4 +53,10 @@ public interface ITaskMaintain {
 	 * @throws BusinessException 
 	 */
 	public void updateCommissionReference(String pk_commission_h,String old_pk_commission_h) throws BusinessException;
+	/**
+	 * 更新单据状态
+	 * @param aggvos
+	 * @throws DAOException
+	 */
+	void updateBillStatus(Integer status,String pk_task_h) throws DAOException;
 }

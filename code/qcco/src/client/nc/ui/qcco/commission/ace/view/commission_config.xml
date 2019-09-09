@@ -680,10 +680,12 @@
 		<property name="mainGrandPanel" ref="MainGrandbillForm" />
 	</bean>
 	<!-- ¸´ÖÆ -->
-	<bean id="copyAction" class="nc.ui.pubapp.uif2app.actions.CopyAction">
+	<bean id="copyAction" class="nc.ui.qcco.commission.action.CommissionCopyAction">
 		<property name="model" ref="bmModel" />
 		<property name="interceptor" ref="showCardInterceptor" />
 		<property name="editor" ref="billForm" />
+		<property name="billForm" ref="MainGrandbillForm" />
+		<property name="grandCard" ref="sunbillForm1" />	
 		<property name="copyActionProcessor">
 			<bean
 				class="nc.ui.qcco.commission.action.CommissionCopyActionProcessor"></bean>

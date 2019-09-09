@@ -2,6 +2,7 @@ package nc.ui.qcco.commission.action;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 import nc.bs.framework.common.InvocationInfoProxy;
@@ -31,7 +32,7 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 	public void processVOAfterCopy(AggCommissionHVO billVO, LoginContext context) {
 		processHeadVO(billVO, context);
 		// 子表和孙表的关联通过主键,所以在保存的时候在清除
-		/* processBodyVO(billVO); */
+		//processBodyVO(billVO);
 	}
 
 	public static void processBodyVO(AggCommissionHVO billVO) {
@@ -39,17 +40,9 @@ public class CommissionCopyActionProcessor implements ICopyActionProcessor<AggCo
 
 		if (childVOs != null && childVOs.length > 0) {
 			for (CircularlyAccessibleValueObject childVO : childVOs) {
-				((CommissionBVO) childVO).setPk_commission_h(null);
-				((CommissionBVO) childVO).setPk_commission_b(null);
-				((CommissionBVO) childVO).setStatus(VOStatus.NEW);
-				if (((CommissionBVO) childVO).getPk_commission_r() != null
-						&& ((CommissionBVO) childVO).getPk_commission_r().length > 0) {
-					for (CommissionRVO gvo : ((CommissionBVO) childVO).getPk_commission_r()) {
-						gvo.setPk_commission_b(null);
-						gvo.setPk_commission_r(null);
-						gvo.setStatus(VOStatus.NEW);
-					}
-				}
+					String uuid = UUID.randomUUID().toString();
+					uuid = uuid.replace("-", "");
+				((CommissionBVO) childVO).setAttributeValue("uniqueid", uuid);;
 			}
 		}
 	}

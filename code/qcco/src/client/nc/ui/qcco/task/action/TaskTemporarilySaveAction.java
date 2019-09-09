@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 
+import nc.bs.framework.common.NCLocator;
 import nc.bs.uif2.validation.IValidationService;
+import nc.itf.qcco.ITaskMaintain;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
 import nc.ui.pubapp.uif2app.actions.RefreshSingleAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
@@ -110,7 +112,16 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction {
 			throw new BusinessException("service不能为空");
 		}
 		afterUpdateVOs = getService().insert(lightVOs);
-
+		
+		// tank 更新单据状态 2019年9月9日14:45:32
+		if (afterUpdateVOs != null && afterUpdateVOs.length > 0) {
+			for (IBill bill : afterUpdateVOs) {
+				ITaskMaintain taskMaintain = NCLocator.getInstance().lookup(ITaskMaintain.class);
+				taskMaintain.updateBillStatus(-99, bill.getPrimaryKey());
+			}
+		}
+		
+		
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
 		getModel().setUiState(UIState.NOT_EDIT);
@@ -133,7 +144,14 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction {
 			throw new BusinessException("Service未找到");
 		}
 		afterUpdateVOs = getService().update(lightVOs);
-
+		//tank 更新单据状态 2019年9月9日14:45:32
+		if(afterUpdateVOs!=null && afterUpdateVOs.length > 0){
+			for(IBill bill : afterUpdateVOs){
+				ITaskMaintain taskMaintain = NCLocator.getInstance().lookup(ITaskMaintain.class);
+				taskMaintain.updateBillStatus(-99, bill.getPrimaryKey());
+			}
+		}
+		
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
 		getModel().setUiState(UIState.NOT_EDIT);

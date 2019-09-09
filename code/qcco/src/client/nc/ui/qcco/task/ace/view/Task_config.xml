@@ -912,7 +912,7 @@
 
 	
 	<!--======= 动作：[newActions] [提交] ===========-->
-	<bean id="commitScriptAction" class="nc.ui.pubapp.uif2app.actions.pflow.CommitScriptAction">
+	<bean id="commitScriptAction" class="nc.ui.qcco.task.action.TaskCommitScriptAction">
 		<property name="model"><ref bean="manageAppModel"/></property>
 		<property name="editor"><ref bean="billFormEditor"/></property>
 		<property name="billType" value="QC08" />

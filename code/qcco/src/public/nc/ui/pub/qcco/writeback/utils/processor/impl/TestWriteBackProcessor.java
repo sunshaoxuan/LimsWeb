@@ -64,6 +64,7 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 		if (allSampleList != null && allSampleList.size() > 0) {
 			for (int i = 0; i < allSampleList.size(); i++) {
 				List<CProjTask> taskList = processData.getTaskFromSampleSec(allSampleList.get(i));
+				int labCount = 1;
 				if(taskList!=null && taskList.size() > 0){
 					if(taskList.size() > 1){
 						//当一个样品不止一条task时,序列为true
@@ -99,7 +100,10 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 
 						// TEST.LAB  测试小组名称
 						test.setAttributeValue("lab", utils.getLabFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
-						
+						if(1 == labCount){
+							allSampleList.get(i).setAttributeValue("lab", utils.getLabFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
+							labCount++;
+						}
 						
 						// TEST.VARIATION default:null
 						test.setAttributeValue("variation", null);

@@ -166,18 +166,18 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor {
 		 * 委托单孙表 RuleType 此为对应项，列表如下： 只有最大值：LTE_MAX 只有最小值：GTE_MIN
 		 * 最大最小都有：MNLTELTEMX 温湿度：EMPTY GT_MIN MNLTLTEMX
 		 */
-		if ((maxValue != null && "-".equals(String.valueOf(maxValue))) && (minValue == null || "-".equals(String.valueOf(minValue)))) {
+		if ((maxValue != null && !"-".equals(String.valueOf(maxValue))) && (minValue == null || "-".equals(String.valueOf(minValue)))) {
 			return "LET_MAX";
 		} else if ((maxValue == null || "-".equals(String.valueOf(maxValue)))
 				&& (minValue != null && !"-".equals(String.valueOf(minValue)))) {
-			return "GTE_MAX";
+			return "GTE_MIN";
 		} else if ((maxValue != null && !"-".equals(String.valueOf(maxValue)) && (minValue != null && !"-".equals(String.valueOf(minValue))))) {
 			return "MNLTELTEMX";
-		} else if ((maxValue == null || "-".equals(String.valueOf(maxValue))) && (minValue != null || "-".equals(String.valueOf(minValue)))) {
+		} else {
 			return "EMPTY";
 		}
 
-		return null;
+		//return null;
 	}
 
 	/**

@@ -194,21 +194,25 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 
 	private String dealRuleType(Object maxValue, Object minValue) {
 		/*
-		 * 委托单孙表 RuleType 此为对应项，列表如下： 只有最大值：LTE_MAX 只有最小值：GTE_MIN
-		 * 最大最小都有：MNLTELTEMX 温湿度：EMPTY GT_MIN MNLTLTEMX
+		 * 委托单孙表 RuleType 此为对应项，列表如下： 
+		 * 针对number数据类型，只有max_value有数据时，rule_type数据为LET_MAX，
+		 * 只有min_value有数据时，rule_type数据为GET_MIN，
+		 *  max_value和min_value都有数据时，rule_type数据为MNLTELTEMX，
+		 *  component列的数据为“温度”或者“湿度”时，rule_type数据为EMPTY，
+		 *  number类型的其他情况，rule_type数据为EMPTY
 		 */
-		if ((maxValue != null && "-".equals(String.valueOf(maxValue))) && (minValue == null || "-".equals(String.valueOf(minValue)))) {
+		if ((maxValue != null && !"-".equals(String.valueOf(maxValue))) && (minValue == null || "-".equals(String.valueOf(minValue)))) {
 			return "LET_MAX";
 		} else if ((maxValue == null || "-".equals(String.valueOf(maxValue)))
 				&& (minValue != null && !"-".equals(String.valueOf(minValue)))) {
-			return "GTE_MAX";
+			return "GTE_MIN";
 		} else if ((maxValue != null && !"-".equals(String.valueOf(maxValue)) && (minValue != null && !"-".equals(String.valueOf(minValue))))) {
 			return "MNLTELTEMX";
-		} else if ((maxValue == null || "-".equals(String.valueOf(maxValue))) && (minValue != null || "-".equals(String.valueOf(minValue)))) {
+		} else{
 			return "EMPTY";
 		}
 
-		return null;
+		//return null;
 	}
 
 }

@@ -2,10 +2,12 @@ package nc.ui.qcco.task.action;
 
 import java.awt.event.ActionEvent;
 
+import nc.bs.framework.common.NCLocator;
 import nc.bs.uif2.BusinessExceptionAdapter;
 import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
+import nc.itf.qcco.ITaskMaintain;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
 import nc.ui.pubapp.uif2app.actions.RefreshSingleAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
@@ -129,6 +131,13 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 	    }
 	    afterUpdateVOs = getService().insert(lightVOs);
 
+		// tank 更新单据状态 2019年9月9日14:45:32
+		if (afterUpdateVOs != null && afterUpdateVOs.length > 0) {
+			for (IBill bill : afterUpdateVOs) {
+				ITaskMaintain taskMaintain = NCLocator.getInstance().lookup(ITaskMaintain.class);
+				taskMaintain.updateBillStatus(-1, bill.getPrimaryKey());
+			}
+		}
 
 	    new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
@@ -159,7 +168,14 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 	    }
 	    afterUpdateVOs = getService().update(lightVOs);
 
-
+		// tank 更新单据状态 2019年9月9日14:45:32
+		if (afterUpdateVOs != null && afterUpdateVOs.length > 0) {
+			for (IBill bill : afterUpdateVOs) {
+				ITaskMaintain taskMaintain = NCLocator.getInstance().lookup(ITaskMaintain.class);
+				taskMaintain.updateBillStatus(-1, bill.getPrimaryKey());
+			}
+		}
+	    
 	    new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
 	    getModel().setUiState(UIState.NOT_EDIT);

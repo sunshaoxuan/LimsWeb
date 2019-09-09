@@ -180,8 +180,16 @@ private BaseDAO dao = null;
 		
 	}
 
-	
-	
+	@Override
+	public void updateBillStatus(Integer status,String pk_task_h) throws DAOException{
+		if (null == status) {
+			status = -1;
+		}
+		if (pk_task_h != null) {
+			getDao().executeUpdate("update qc_task_h set billstatus = "+status+" where pk_task_h = '" + pk_task_h + "'");
+		}
+		
+	}
 	
 	
 	

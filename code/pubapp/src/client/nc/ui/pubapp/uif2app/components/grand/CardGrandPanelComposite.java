@@ -87,6 +87,10 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 		this.autoShowUpComponent.setAutoShowUpEventListener(l);
 	}
 
+	public AutoShowUpEventSource getAutoShowUpComponent(){
+		return autoShowUpComponent;
+	}
+	
 	@Override
 	public void showMeUp() {
 
