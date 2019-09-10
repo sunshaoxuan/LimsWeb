@@ -13,6 +13,7 @@ import nc.bs.dao.DAOException;
 import nc.bs.logging.Logger;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.jdbc.framework.processor.MapProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
@@ -55,6 +56,8 @@ public class CommonUtils {
 	private Map<String,String> analysisToLab = new HashMap<>();
 	
 	private Map<String,String> analysisToMethod = new HashMap<>();
+	
+	private Map<String,Map<String,Object>> nameToAnalysis = new HashMap<>();
 	
 	private Map<String,List<Map<String,Object>>> analysisToResultComponentMap = new HashMap<>();
 	
@@ -635,7 +638,7 @@ public class CommonUtils {
 			for(Result result : processData.getSecResultList()){
 				temp.add(result);
 			}
-			rs.addAll(VOToInserSQL(temp, "result",SecWriteBackStaticMaping.TEST_STATIC_MAP));
+			rs.addAll(VOToInserSQL(temp, "result",SecWriteBackStaticMaping.RESULT_STATIC_MAP));
 		}
 		
 		
@@ -789,6 +792,23 @@ public class CommonUtils {
 		String rs = (String)baseDao.executeQuery(sql, new ColumnProcessor());
 		analysisToMethod.put(analysisName, String.valueOf(rs));
 		return String.valueOf(rs);
+	}
+    
+    /**
+     * 通过分析名,获取分析
+     * @param analysisName
+     * @return
+     * @throws DAOException 
+     */
+    public Map<String,Object> getAnalysis(String analysisName) throws DAOException {
+    	if(nameToAnalysis.containsKey(analysisName)){
+    		return nameToAnalysis.get(analysisName);
+    	}
+		String sql = " select * from analysis where name  = '"+analysisName+"'"; 
+		@SuppressWarnings("unchecked")
+		Map<String,Object> rs = (Map<String,Object>)baseDao.executeQuery(sql, new MapProcessor());
+		nameToAnalysis.put(analysisName, rs);
+		return rs;
 	}
     
     

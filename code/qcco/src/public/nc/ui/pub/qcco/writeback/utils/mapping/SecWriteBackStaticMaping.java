@@ -50,7 +50,7 @@ public class SecWriteBackStaticMaping {
     	
     }
 
-
+    public static Map<String,String> RESULT_STATIC_MAP = new HashMap<>();
 
 
 

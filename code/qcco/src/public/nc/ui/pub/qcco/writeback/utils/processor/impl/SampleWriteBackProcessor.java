@@ -212,7 +212,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						sample.setAttributeValue("STORAGE_LOC_NO", 0);
 						sample.setAttributeValue("REPORTED_RSLT_OOS", "F");
 						sample.setAttributeValue("T_CONTRACT_TESTS", "F");
-						sample.setAttributeValue("C_IS_SEQUNCE", "U");
+						//sample.setAttributeValue("C_IS_SEQUNCE", "U");
 						
 						sampleList.add(sample);
 					}

@@ -26,6 +26,7 @@ import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
 import nc.ui.pub.qcco.writeback.utils.processor.ISecWriteBackProcessor;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskSVO;
@@ -105,15 +106,77 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						//RESULT.ANALYSIS	 测试结果依据的分析名称（带A的）
 						result.setAttributeValue("analysis", component.get("analysis"));
 						
-						//RESULT.FORMAT_CALCULATION	XXX result 2 时间转换（此处lims原意为字段相应的计算，但本软件中只有一段程序，即将时间转换为小时显示，此处为实际测试时间转换）
-						//转换哪个时间?实际测试时间是什么时间?怎么获取?	转换通过公式计算出的时间
-						result.setAttributeValue("format_calculation", "");
-						
 						//RESULT.ATTRIBUTE_1	default:null				
 						result.setAttributeValue("attribute_1", null);
 						
-						result.setAttributeValue("places", 0);
+						//report_name
+						result.setAttributeValue("reported_name", component.get("reported_name"));
+						//单位的显示名
+						result.setAttributeValue("units", component.get("units"));
+						//按条件中对分项的定义取
+						result.setAttributeValue("round", component.get("round"));
+						//按结果中对分项的定义取
+						result.setAttributeValue("places", component.get("places"));
+						//
+						result.setAttributeValue("minimum", component.get("minimum"));
+						//
+						result.setAttributeValue("maximum", component.get("maximum"));
+						//
+						result.setAttributeValue("allow_out", component.get("allow_out"));
+						//
+						result.setAttributeValue("list_key", component.get("list_key"));
+						//
+						result.setAttributeValue("reportable", component.get("reportable"));
+						//
+						result.setAttributeValue("optional", component.get("optional"));
+						//
+						result.setAttributeValue("has_attributes", component.get("has_attributes"));
+						//
+						result.setAttributeValue("t_short_name", component.get("t_short_name"));
+						//根据数据类型表得到对应的数据类型标志
+						result.setAttributeValue("result_type", component.get("result_type"));
+						//status
+						result.setAttributeValue("status", "N");
+						//OLD_STATUS
+						result.setAttributeValue("old_status", "N");
+						//是否修改了自动带出结果
+						result.setAttributeValue("modified_result", "F");
+						//RESULT.FORMAT_CALCULATION	数据类型(result_type)是计算类型和数据类型的(K或者L)，FORMAT_CALCULATION的数据为C_ACTUAL_TEST_TIME，
+						String result_type = String.valueOf(component.get("result_type"));
+						boolean isKOrL = "K".equalsIgnoreCase(result_type) || "L".equalsIgnoreCase(result_type);
+						result.setAttributeValue("format_calculation", isKOrL?"C_ACTUAL_TEST_TIME":null);
+						
+						
+						//修改日期
+						result.setAttributeValue("changed_on", "to_timestamp('"+ new UFDateTime().toStdString() +"','yyyy-mm-dd hh24:mi:ss.ff')");
+						//XXX resutl 2 是否认证
+						//result.setAttributeValue("T_ACCREDITED", "T");
+						// XXX resutl 2 默认名称
+						//result.setAttributeValue("C_LIST_KEY", "T");
 
+						
+						//一些固定值
+						result.setAttributeValue("replicate_count", 0);
+						result.setAttributeValue("in_spec", "T");
+						result.setAttributeValue("primary_in_spec", "T");
+						result.setAttributeValue("uses_instrument", "F");
+						result.setAttributeValue("uses_codes", "F");
+						result.setAttributeValue("in_cal", "T");
+						result.setAttributeValue("auto_calc", "T");
+						result.setAttributeValue("allow_cancel", "F");
+						result.setAttributeValue("link_size", 0);
+						result.setAttributeValue("code_entered", "F");
+						result.setAttributeValue("std_reag_sample", 0);
+						result.setAttributeValue("factor_value", 0);
+						result.setAttributeValue("in_control", "T");
+						result.setAttributeValue("displayed", "T");
+						result.setAttributeValue("spec_override", "F");
+						result.setAttributeValue("places_2", 0);
+						result.setAttributeValue("reported_result", "F");
+						result.setAttributeValue("reported_rslt_rev", 0);
+						result.setAttributeValue("reported_rslt_oos", "F");
+						result.setAttributeValue("trans_num", 0);
+						
 						secResultList.add(result);
 					
 						
