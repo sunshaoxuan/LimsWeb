@@ -51,6 +51,7 @@ public class CommonUtils {
 	
 	private WriteBackProcessData processData;
 	
+	//一些缓存 start
 	private Map<String,String> analysisToVersion = new HashMap<>();
 	
 	private Map<String,String> analysisToLab = new HashMap<>();
@@ -60,6 +61,12 @@ public class CommonUtils {
 	private Map<String,Map<String,Object>> nameToAnalysis = new HashMap<>();
 	
 	private Map<String,List<Map<String,Object>>> analysisToResultComponentMap = new HashMap<>();
+	
+	private Map<String,Map<String,Object>> analysisNameToTestComponent = new HashMap<>();
+	
+	private Map<String,String> listKeyToName = new HashMap<>();
+	
+	//一些缓存 end
 	
 	//用于SQL转换
 	private StringBuilder sb = new StringBuilder();
@@ -848,6 +855,37 @@ public class CommonUtils {
 		}
 
 		return rsList;
+	}
+	/**
+	 * 通过component中的list获取listKey
+	 * @param FIXME 
+	 * @return
+	 * @throws DAOException 
+	 */
+	public String getCListKeyByListKey(String listKey) throws DAOException {
+		if(listKeyToName.containsKey(listKey)){
+    		return listKeyToName.get(listKey);
+    	}
+		String sql = " select * from analysis where name  = '"+listKey+"'"; 
+		String rs = (String)baseDao.executeQuery(sql, new MapProcessor());
+		listKeyToName.put(listKey, rs);
+		return rs;
+	}
+	public Map<String, Object> getCompoentByAnalysisAndName(String analysis, String name) throws DAOException {
+		if(analysis!=null){
+			if(analysisNameToTestComponent.containsKey(analysis+"::"+name)){
+				return analysisNameToTestComponent.get(analysis+"::"+name);
+			}else{
+				String sql = "select COMPONENT.* from COMPONENT "
+						+" left join ANALYSIS analysis on analysis.name = component.analysis  "
+						+" where ANALYSIS = '"+analysis+"' and analysis.c_test_type='测试条件' "
+						+" and COMPONENT.name = '"+name+"' and rownum = 1 ";
+				@SuppressWarnings("unchecked")
+				Map<String,Object> rs = (Map<String,Object>)baseDao.executeQuery(sql, new MapProcessor());
+				analysisNameToTestComponent.put(analysis+"::"+name, rs);
+			}
+		}
+		return analysisNameToTestComponent.get(analysis+"::"+name)==null?new HashMap<String, Object>():analysisNameToTestComponent.get(analysis+"::"+name);
 	}
 	
 /*    public SuperVO writeStaticField(SuperVO vo ,Map<String, String> staticMaping){

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
 import nc.bs.dao.BaseDAO;
@@ -149,11 +150,14 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						
 						//修改日期
 						result.setAttributeValue("changed_on", "to_timestamp('"+ new UFDateTime().toStdString() +"','yyyy-mm-dd hh24:mi:ss.ff')");
-						//XXX resutl 2 是否认证
-						//result.setAttributeValue("T_ACCREDITED", "T");
-						// XXX resutl 2 默认名称
-						//result.setAttributeValue("C_LIST_KEY", "T");
-
+						
+						//默认名称 select LIST_KEY ,list_entry.name from COMPONENT  left join list_entry on list_key = list where LIST_KEY is not null
+						result.setAttributeValue("c_list_key", utils.getCListKeyByListKey(String.valueOf(component.get("list_key"))));
+						
+						//是否认证 根据analysis.c_certification是否为空进行判断，为空的话为F，不为空的话为T
+						Map<String, Object> analysis = utils.getAnalysis(String.valueOf(component.get("analysis")));
+						boolean isemp = analysis.get("c_certification")==null|| analysis.get("c_certification").toString().length() <= 0;
+						result.setAttributeValue("t_accredited", isemp?"F":"T");
 						
 						//一些固定值
 						result.setAttributeValue("replicate_count", 0);
@@ -258,12 +262,65 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			
 			//flag标记,会在sort完之后清除
 			allResultList.get(i).setAttributeValue("task_seq_num", taskList.get(fatherIndex).getAttributeValue("seq_num"));
-			//对应的analysis
-			Map<String,Object> analysisMap = analysisMapMap.get(taskList.get(fatherIndex).getAttributeValue("analysis"));
-			allResultList.get(i).setAttributeValue("analysis", analysisMap.get("name"));
-			String result_type = analysisTypeCodeMap.get(analysisMap.get("analysis_type"));
-			allResultList.get(i).setAttributeValue("result_type", result_type==null?null:result_type.substring(0, 1));
+			//对应的analysis-测试条件
+			String resultAnalysis = String.valueOf(taskList.get(fatherIndex).getAttributeValue("analysis"));
+			String analysis = null;
+			if(resultAnalysis.length() > 2){
+				if(resultAnalysis.substring(resultAnalysis.length()-2).equals("_A")){
+					analysis = resultAnalysis.substring(0, resultAnalysis.length()-2);
+				}else{
+					analysis = resultAnalysis.substring(0, resultAnalysis.length()-1);
+				}
+			}
 			
+			Map<String,Object> analysisMap = analysisMapMap.get(analysis)==null?new HashMap<String,Object>():analysisMapMap.get(analysis);
+			
+			allResultList.get(i).setAttributeValue("analysis", analysisMap.get("name"));
+			
+			
+			
+			//根据分析方法和name查询component
+			Map<String,Object> component = 
+					utils.getCompoentByAnalysisAndName(analysis,String.valueOf(allResultList.get(i).getAttributeValue("name")));
+
+			allResultList.get(i).setAttributeValue("list_key", component.get("list_key"));
+			//默认名称 select LIST_KEY ,list_entry.name from COMPONENT  left join list_entry on list_key = list where LIST_KEY is not null
+			allResultList.get(i).setAttributeValue("c_list_key", utils.getCListKeyByListKey(String.valueOf(component.get("list_key"))));
+			
+			//是否认证 根据analysis.c_certification是否为空进行判断，为空的话为F，不为空的话为T
+			boolean isemp = analysisMap.get("c_certification")==null|| analysisMap.get("c_certification").toString().length() <= 0;
+			allResultList.get(i).setAttributeValue("t_accredited", isemp?"F":"T");
+			
+			//order number
+			allResultList.get(i).setAttributeValue("order_number", component.get("order_number"));
+			allResultList.get(i).setAttributeValue("reported_name", component.get("reported_name"));
+			allResultList.get(i).setAttributeValue("replicate_count", 0);
+			//根据数据类型表得到对应的数据类型标志
+			allResultList.get(i).setAttributeValue("result_type", component.get("result_type"));
+			//status
+			allResultList.get(i).setAttributeValue("status", "N");
+			//OLD_STATUS
+			allResultList.get(i).setAttributeValue("old_status", "N");
+			//是否修改了自动带出结果
+			allResultList.get(i).setAttributeValue("modified_result", "F");
+			allResultList.get(i).setAttributeValue("round", component.get("round"));
+			allResultList.get(i).setAttributeValue("places", component.get("places"));
+			allResultList.get(i).setAttributeValue("reportable", component.get("reportable"));
+			allResultList.get(i).setAttributeValue("changed_on", "to_timestamp('"+ new UFDateTime().toStdString() +"','yyyy-mm-dd hh24:mi:ss.ff')");;
+			allResultList.get(i).setAttributeValue("has_attributes", component.get("has_attributes"));
+			String result_type = String.valueOf(component.get("result_type"));
+			allResultList.get(i).setAttributeValue("result_type", result_type==null?null:result_type.substring(0, 1));
+			//RESULT.FORMAT_CALCULATION	数据类型(result_type)是计算类型和数据类型的(K或者L)，FORMAT_CALCULATION的数据为C_ACTUAL_TEST_TIME，
+			boolean isKOrL = "K".equalsIgnoreCase(result_type) || "L".equalsIgnoreCase(result_type);
+			allResultList.get(i).setAttributeValue("format_calculation", isKOrL?"C_ACTUAL_TEST_TIME":null);
+			allResultList.get(i).setAttributeValue("places_2", 0);
+			allResultList.get(i).setAttributeValue("reported_result", "F");
+			allResultList.get(i).setAttributeValue("reported_rslt_rev", 0);
+			allResultList.get(i).setAttributeValue("reported_rslt_oos", "F");
+			allResultList.get(i).setAttributeValue("t_short_name", component.get("t_short_name"));
+//			allResultList.get(i).setAttributeValue("test", "test");
+//			allResultList.get(i).setAttributeValue("test", "test");
+//			allResultList.get(i).setAttributeValue("test", "test");
 			
 			allResultList.get(i).setAttributeValue("places", 0);
 		}
@@ -294,7 +351,18 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		Set<String> analysisNameSet = new HashSet<>();
 		if(taskList!=null && taskList.size() > 0){
 			for(CProjTask task : taskList){
-				analysisNameSet.add(String.valueOf(task.getAttributeValue("analysis")).replaceAll(" ", ""));
+				String resultAnalysis = String.valueOf(task.getAttributeValue("analysis")).replaceAll(" ", "");
+				String analysis = null;
+				if(resultAnalysis.length() > 2){
+					if(resultAnalysis.substring(resultAnalysis.length()-2).equals("_A")){
+						analysis = resultAnalysis.substring(0, resultAnalysis.length()-2);
+					}else{
+						analysis = resultAnalysis.substring(0, resultAnalysis.length()-1);
+					}
+				}
+				
+				
+				analysisNameSet.add(analysis);
 			}
 			
 		}

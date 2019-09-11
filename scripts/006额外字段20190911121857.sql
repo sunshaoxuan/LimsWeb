@@ -1,0 +1,1 @@
+alter table qc_task_h add billstatus int  ;
