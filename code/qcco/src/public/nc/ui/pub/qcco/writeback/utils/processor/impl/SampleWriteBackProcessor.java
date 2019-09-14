@@ -102,9 +102,11 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 
 						sample.setAttributeValue("c_sample_group", group);
 						//SAMPLE.CLONED_FROM	主键式自增
-
-						sample.setAttributeValue("cloned_from", ++cloneFromPK);
-						
+						if(1!=j){
+							sample.setAttributeValue("cloned_from", ++cloneFromPK);
+						}else{
+							sample.setAttributeValue("cloned_from", 0);
+						}
 						//SAMPLE.CUSTOMER	提交人公司名
 						
 //						sample.setAttributeValue("customer", taskList.get(i).getAttributeValue("C_SUBMIT_BY"));
@@ -115,7 +117,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						//SAMPLE.LOGIN_BY	BACKGROUND
 
 						sample.setAttributeValue("login_by", "BACKGROUND");
-						//SAMPLE.OLD_STATUS	C
+						//SAMPLE.OLD_STATUS	C 需求变更:P
 
 						sample.setAttributeValue("old_status", "C");
 						//SAMPLE.PRODUCT	企标值
@@ -147,8 +149,13 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						//SAMPLE.TEXT_ID	此处有两种生成方式：此次为第二种写入方式，写入值为“2位年月日-”+样品编号
 
 						sample.setAttributeValue("text_id", timeStr+"-"+group+""+j);
-						//SAMPLE.TRANS_NUM	主键式自增
-						sample.setAttributeValue("trans_num", ++transNumPK);
+						//SAMPLE.TRANS_NUM	主键式自增 ,每组第一只样品为0
+						if(1!=j){
+							sample.setAttributeValue("trans_num", ++transNumPK);
+						}else{
+							sample.setAttributeValue("trans_num", 0);
+						}
+						
 						
 						
 						//创建日期
@@ -163,9 +170,9 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						//委托单单位名称
 						sample.setAttributeValue("CUSTOMER", processData.getProject().getAttributeValue("customer"));
 						
-						//SAMPLE.LAB 所属测试小组名称 可能会有多个test,要对应哪个?
+						//SAMPLE.LAB 所属测试小组名称 可能会有多个test,要对应哪个?在test中回写对应第一个task
 						
-						sample.setAttributeValue("lab", null);
+						//sample.setAttributeValue("lab", null);
 						
 						sample.setAttributeValue("C_IS_SEQUNCE", "F");
 					
@@ -241,8 +248,9 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		if (modtime == null) {
 			modtime = new UFDateTime();
 		}
-		//需要回写的LIMS数据
-		List<Sample> firstSampleList = initData(taskList.size());
+		//需要回写的LIMS数据,需求变更 第一次回写只回写一条
+		List<Sample> firstSampleList = new ArrayList<>();
+		firstSampleList.add(new Sample());
 		// 主键
 		List<Integer> prePk = utils.getPrePk("sample_number", "sample", taskList.size());
 		processData.setMaxSamplePK(prePk.get(taskList.size()-1));
@@ -261,18 +269,18 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				maxNum = 1;
 			}
 		}
-		if(taskList!=null && taskList.size() > 0){
-			for(int i = 0 ;i<taskList.size() ; i++){
+//		if(taskList!=null && taskList.size() > 0){
+//			for(int i = 0 ;i<taskList.size() ; i++){
 				// 修改时间 任务单子表
 				// 修改日期
-				firstSampleList.get(i).setAttributeValue("changed_on", taskList.get(i).getAttributeValue("changed_on"));
 				
+				int i = 0;
 				String time = "to_timestamp('" + modtime.toStdString() + "','yyyy-mm-dd hh24:mi:ss.ff')";
 				
 				firstSampleList.get(i).setAttributeValue("date_started", time);
 				firstSampleList.get(i).setAttributeValue("login_date", time);
 				firstSampleList.get(i).setAttributeValue("recd_date", time);
-
+				firstSampleList.get(i).setAttributeValue("changed_on", time);
 				// 员工号
 				String pk_user = hvo.getModifier() == null ? hvo.getCreator() : hvo.getModifier();
 				if (pk_user != null) {
@@ -283,14 +291,23 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				Integer pkFirstSample = prePk.get(i);
 				firstSampleList.get(i).setAttributeValue("sample_number", pkFirstSample);
 				firstSampleList.get(i).setAttributeValue("original_sample", pkFirstSample);
+				//SAMPLE.OLD_STATUS	C 需求变更:P
+
+				firstSampleList.get(i).setAttributeValue("old_status", "P");
 				//task 任务关联 没有sample_number这个字段?
 				//taskList.get(i).setAttributeValue("sample_number", pkFirstSample);
 				// SAMPLE.TEXT_ID此处有两种生成方式：由于本次是第一次写入，写入的是上表红色的格式(19-5673)，
 				// 代表试验前的样品分类，格式为“年份-最大值+1”
 				firstSampleList.get(i).setAttributeValue("text_id", String.valueOf(modtime.getYear()).substring(2, 4)+"-"+(++maxNum));
-
-			}
-		}
+				//第一次回写的lab在test第一次回写的时候写入
+				
+				//date
+				String timeComp = "to_timestamp('" + new UFDateTime().toStdString() + "','yyyy-mm-dd hh24:mi:ss.ff')";
+				
+				firstSampleList.get(i).setAttributeValue("date_completed", timeComp);
+				
+//			}
+//		}
 		processData.setFirstSampleList(firstSampleList);
 	}
 	

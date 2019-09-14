@@ -95,7 +95,9 @@ public class WriteBackMediator {
 			Logger.error("LIMS SQL WRITE BACK end:"+new UFDateTime().toStdString()+"--------------------------------");
 		}
 		
-		
+		/*if(rsList.size() > 0) {
+			throw new  BusinessException("test");
+		}*/
 		return rsList;
 		
 	}

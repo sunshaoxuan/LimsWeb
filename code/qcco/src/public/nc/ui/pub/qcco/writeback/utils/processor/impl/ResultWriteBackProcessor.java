@@ -254,8 +254,8 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			int fatherIndex = utils.getNCObjIndexByPK(fatherPk, TaskBVO.class);
 			// 主键
 			allResultList.get(i).setAttributeValue("result_number", pkList.get(i));
-			//外键们
-			allResultList.get(i).setAttributeValue("sample_number", firstSampleList.get(fatherIndex).getAttributeValue("sample_number"));
+			//外键们 第一次回写只有一条sample 2019年9月12日10:34:32
+			allResultList.get(i).setAttributeValue("sample_number", firstSampleList.get(0).getAttributeValue("sample_number"));
 			allResultList.get(i).setAttributeValue("test_number", firstTestList.get(fatherIndex).getAttributeValue("test_number"));
 			
 			

@@ -366,6 +366,9 @@ public class BillTabbedPane extends ExtTabbedPane implements
 
 	private static void refreshListPanel(BillTabbedPane btp) {
 		MainGrandMediator cpc = (MainGrandMediator)btp.getTabChangedListener();
+		if(null == cpc){
+			return ;
+		}
 		// 获得当前选中行
 		int currentRow = cpc.getMainBillListView().getBillListPanel().getBodyTable().getSelectedRow();
 		String currentbodyTabCode = cpc.getMainBillListView().getBillListPanel().getChildListPanel()
@@ -403,6 +406,9 @@ public class BillTabbedPane extends ExtTabbedPane implements
 		try{
 			if(btp.getTabChangedListener() instanceof MainGrandMediator){
 				MainGrandMediator cpc = (MainGrandMediator)btp.getTabChangedListener();
+				if(null == cpc){
+					return ;
+				}
 				// 获得当前选中行
 				int currentRow = cpc.getMainBillForm().getBillCardPanel().getBillTable().getSelectedRow();
 				if(currentRow >= 0){

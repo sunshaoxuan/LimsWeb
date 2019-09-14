@@ -240,7 +240,8 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 			// 主键 外键
 			firstTestList.get(i).setAttributeValue("test_number", test_numberList.get(i));
 			firstTestList.get(i).setAttributeValue("original_test", test_numberList.get(i));
-			firstTestList.get(i).setAttributeValue("sample_number", firstSampleList.get(i).getAttributeValue("sample_number"));
+			//需求变更第一次生成的sample只有一条
+			firstTestList.get(i).setAttributeValue("sample_number", firstSampleList.get(0).getAttributeValue("sample_number"));
 
 			// task 任务关联
 			taskList.get(i).setAttributeValue("test_number", test_numberList.get(i));
@@ -253,14 +254,25 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 			String time = "to_timestamp('" + creatTime + "','yyyy-mm-dd hh24:mi:ss.ff')";
 			firstTestList.get(i).setAttributeValue("date_received", time);
 			firstTestList.get(i).setAttributeValue("date_started", time);
-			firstTestList.get(i).setAttributeValue("t_date_enabled", time);
-
+			
+			firstTestList.get(i).setAttributeValue("t_date_enabled", "to_timestamp('" + creatTime.getEndDate().toStdString() + "','yyyy-mm-dd hh24:mi:ss.ff')");
+			firstTestList.get(i).setAttributeValue("date_completed", "to_timestamp('" + new UFDateTime().toStdString() + "','yyyy-mm-dd hh24:mi:ss.ff')");
+			
 			// 最后修改时间
 			UFDateTime modifyTime = taskHvo.getModifiedtime() == null ? creatTime : taskHvo.getModifiedtime();
 			firstTestList.get(i).setAttributeValue("changed_on", "to_timestamp('" + modifyTime + "','yyyy-mm-dd hh24:mi:ss.ff')");
 
+			String resultAnalysis = taskBvo.getPk_testresultname();
+			String analysis = null;
+			if(resultAnalysis.length() > 2){
+				if(resultAnalysis.substring(resultAnalysis.length()-2).equals("_A")){
+					analysis = resultAnalysis.substring(0, resultAnalysis.length()-2);
+				}else{
+					analysis = resultAnalysis.substring(0, resultAnalysis.length()-1);
+				}
+			}
 			// 表体测试结果名称
-			firstTestList.get(i).setAttributeValue("analysis", taskBvo.getPk_testresultname());
+			firstTestList.get(i).setAttributeValue("analysis", analysis);
 
 			// 测试结果短名称
 			firstTestList.get(i).setAttributeValue("common_name", taskBvo.getTestresultshortname());
@@ -269,7 +281,17 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 			firstTestList.get(i).setAttributeValue("reported_name", taskBvo.getTestitem());
 
 			// 分析版本
-			firstTestList.get(i).setAttributeValue("version", utils.getAnalysisVerionFromName(taskBvo.getPk_testresultname()));
+			firstTestList.get(i).setAttributeValue("version", utils.getAnalysisVerionFromName(analysis));
+			//lab
+			firstTestList.get(i).setAttributeValue("lab", utils.getLabFromAnalysisName(analysis));
+			if(0==i){
+				firstSampleList.get(0).setAttributeValue("lab",utils.getLabFromAnalysisName(analysis));
+				
+			}
+			//分析方法
+			firstTestList.get(i).setAttributeValue("t_analysis_method", utils.getMethodFromAnalysisName(analysis));
+			firstSampleList.get(0).setAttributeValue("status","C");
+			
 		}
 		processData.setFirstTestList(firstTestList);
 	}

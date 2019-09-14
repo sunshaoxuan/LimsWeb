@@ -11,6 +11,7 @@ import java.util.Vector;
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.bs.logging.Logger;
+import nc.jdbc.framework.processor.BeanProcessor;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.jdbc.framework.processor.MapProcessor;
@@ -751,6 +752,10 @@ public class CommonUtils {
 		TIME_COLUMN_SET.add("t_date_enabled");
 		TIME_COLUMN_SET.add("c_product_date");
 		TIME_COLUMN_SET.add("date_updated");
+		TIME_COLUMN_SET.add("date_completed");
+		TIME_COLUMN_SET.add("c_customermanager_date");
+		TIME_COLUMN_SET.add("c_techsupervisor_date");
+		
 		return TIME_COLUMN_SET;
 	}
 	
@@ -886,6 +891,45 @@ public class CommonUtils {
 			}
 		}
 		return analysisNameToTestComponent.get(analysis+"::"+name)==null?new HashMap<String, Object>():analysisNameToTestComponent.get(analysis+"::"+name);
+	}
+	//持续时间计算
+	public Integer getTestTime(ISuperVO iSuperVO) throws BusinessException {
+		if(iSuperVO!=null && iSuperVO.getAttributeValue("pk_task_b")!=null){
+			//查询孙表持续时间
+			TaskSVO svo = 
+					(TaskSVO) baseDao.executeQuery(
+					"select * from qc_task_s where dr = 0 and pk_testconditionitem = '持续时间' and  pk_task_b = '"
+					+String.valueOf(iSuperVO.getAttributeValue("pk_task_b"))+"'", 
+					new BeanProcessor(TaskSVO.class));
+			if(svo!=null && svo.getAttributeValue("textvalue")!=null){
+				Double time = null;
+				try{
+					time = Double.parseDouble(String.valueOf(svo.getAttributeValue("textvalue")));
+				}catch(Exception e){
+					throw new BusinessException("持续时间转换失败:"+String.valueOf(svo.getAttributeValue("textvalue")));
+				}
+				if(svo.getAttributeValue("unit")!=null){
+					String unit = String.valueOf(svo.getAttributeValue("unit"));
+					if("h".equalsIgnoreCase(unit)){
+						return (int)Math.ceil(time);
+					}else if("min".equalsIgnoreCase(unit)){
+						return (int)Math.ceil(time/60);
+					}else if("s".equalsIgnoreCase(unit)){
+						return (int)Math.ceil(time/60/60);
+					}else if("ms".equalsIgnoreCase(unit)){
+						return (int)Math.ceil(time/60/60/1000);
+					}else if("μs".equalsIgnoreCase(unit)){
+						return (int)Math.ceil(time/60/60/1000/1000);
+					}else if("days".equalsIgnoreCase(unit)){
+						return (int)Math.ceil(time*24);
+					}else{
+						throw new BusinessException("未识别的时间单位:"+unit);
+					}
+				}
+				return (int)Math.ceil(time);
+			}
+		}
+		return 0;
 	}
 	
 /*    public SuperVO writeStaticField(SuperVO vo ,Map<String, String> staticMaping){

@@ -137,7 +137,7 @@ public class FirstWriteBackStaticMaping {
         BODY_TASK_MAPPING.put("testitem", "c_proj_task.task_reported_name");// 测试项目
         BODY_TASK_MAPPING.put("pk_testresultname", "c_proj_task.analysis");// 测试结果名称
         BODY_TASK_MAPPING.put("runorder", "c_proj_task.order_number");// 顺序
-        BODY_TASK_MAPPING.put("sampleallocation", "c_proj_task.assigned_sample_display");// 样品分配
+        //BODY_TASK_MAPPING.put("sampleallocation", "c_proj_task.assigned_sample_display");// 样品分配 回写的时候不能跨组,需要重新生成
         BODY_TASK_MAPPING.put("sampleallocationsource", "c_proj_task.assigned_sample");// 样品分配
         BODY_TASK_MAPPING.put("samplequantity", "c_proj_task.assigned_sample_quantity");// 样品数量
     }
@@ -328,7 +328,7 @@ public class FirstWriteBackStaticMaping {
     	SAMPLE_STATIC_MAP.put("ALLOW_CHLD_ALQTS", "'F'");
     	SAMPLE_STATIC_MAP.put("APPROVAL_ID", "0.00");
     	SAMPLE_STATIC_MAP.put("APPROVED", "'F'");
-    	SAMPLE_STATIC_MAP.put("\"AUDIT\"", "'T'");
+    	SAMPLE_STATIC_MAP.put("\"AUDIT\"", "'F'");
     	SAMPLE_STATIC_MAP.put("C_IS_SEQUNCE", "'F'");
     	SAMPLE_STATIC_MAP.put("CHK_ALIQUOT_SPECS", "'F'");
     	SAMPLE_STATIC_MAP.put("CHK_ALIQUOT_STATUS", "'F'");
@@ -344,7 +344,7 @@ public class FirstWriteBackStaticMaping {
     	SAMPLE_STATIC_MAP.put("LOT", "0.00");
     	SAMPLE_STATIC_MAP.put("MODIFIED_RESULTS", "'F'");
     	SAMPLE_STATIC_MAP.put("NUM_CONTAINERS", "1.00");
-    	SAMPLE_STATIC_MAP.put("OLD_STATUS", "'I'");
+    	//SAMPLE_STATIC_MAP.put("OLD_STATUS", "'I'");
     	SAMPLE_STATIC_MAP.put("PARENT_ALIQUOT", "0.00");
     	SAMPLE_STATIC_MAP.put("PARENT_COMPOSITE", "0.00");
     	SAMPLE_STATIC_MAP.put("PARENT_SAMPLE", "0.00");
@@ -368,11 +368,11 @@ public class FirstWriteBackStaticMaping {
     	SAMPLE_STATIC_MAP.put("STAGE", "'NONE'");
     	SAMPLE_STATIC_MAP.put("STANDARD", "'F'");
     	SAMPLE_STATIC_MAP.put("STARTED", "'T'");
-    	SAMPLE_STATIC_MAP.put("STATUS", "'C'");
+    	//SAMPLE_STATIC_MAP.put("STATUS", "'C'");
     	SAMPLE_STATIC_MAP.put("STORAGE_LOC_NO", "0.00");
     	SAMPLE_STATIC_MAP.put("T_CONTRACT_TESTS", "'F'");
     	SAMPLE_STATIC_MAP.put("T_LOGIN_VERIFIED", "'F'");
-    	SAMPLE_STATIC_MAP.put("TEMPLATE", "'HF-MAIN'");
+    	SAMPLE_STATIC_MAP.put("TEMPLATE", "'HF-CONDITION'");
     	SAMPLE_STATIC_MAP.put("TRANS_NUM", "0.00");
     }
     
@@ -383,7 +383,7 @@ public class FirstWriteBackStaticMaping {
     {
     	TEST_STATIC_MAP.put("CHARGE_ENTRY", "0.00");
     	TEST_STATIC_MAP.put("REPLICATE_COUNT", "1.00");
-    	TEST_STATIC_MAP.put("STATUS", "'P'");
+    	TEST_STATIC_MAP.put("STATUS", "'C'");
     	TEST_STATIC_MAP.put("OLD_STATUS", "'I'");
     	TEST_STATIC_MAP.put("PREP", "'F'");
     	TEST_STATIC_MAP.put("C_TASK_SEQ_NUM", "0.00");
@@ -436,7 +436,7 @@ public class FirstWriteBackStaticMaping {
     	TEST_STATIC_MAP.put("T_PREP_TEST", "0.00");
     	TEST_STATIC_MAP.put("T_QC_REFERENCE", "0.00");
     	TEST_STATIC_MAP.put("T_TURNAROUND_ACTUA", "0.00");
-    	TEST_STATIC_MAP.put("T_TURNAROUND_CHARG", "0.00");
+    	TEST_STATIC_MAP.put("T_TURNAROUND_CHARG", "1");
     	TEST_STATIC_MAP.put("T_TURNAROUND_MET", "'F'");
     	TEST_STATIC_MAP.put("TRANS_NUM", "0.00");
     	
