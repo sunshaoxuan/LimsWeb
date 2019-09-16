@@ -20,7 +20,6 @@ import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
-import nc.ui.qcco.task.utils.StringOrderUtils;
 import nc.vo.pf.worknote.WorkNoteVO;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
@@ -143,7 +142,7 @@ public class TaskWriteBackProcessor implements IFirstWriteBackProcessor {
 				String sampleArray = sampleallocationsource ==null?null:String.valueOf(sampleallocationsource);
 				try {
 					taskList.get(i).setAttributeValue("assigned_sample_display", 
-							StringOrderUtils.outOrderString4WriteBack(sampleArray));
+							CommonUtils.outOrderString4WriteBack(sampleArray));
 				} catch (Exception e) {
 					taskList.get(i).setAttributeValue("assigned_sample_display", "");
 				}
@@ -183,6 +182,7 @@ public class TaskWriteBackProcessor implements IFirstWriteBackProcessor {
 		return new ArrayList<>();
 	}
 
+	@SuppressWarnings("unchecked")
 	private Map<String, String> getAppoveInfo(String pk_commission_h) {
 		String sql = "select job.psncode changed_by,taskh.modifiedtime changed_on,"
 				+ " job2.psncode c_submit_by,ch.creationtime c_submit_date from qc_task_h taskh "

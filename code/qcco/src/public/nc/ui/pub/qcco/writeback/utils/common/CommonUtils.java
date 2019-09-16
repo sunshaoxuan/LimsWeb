@@ -1,6 +1,8 @@
 package nc.ui.pub.qcco.writeback.utils.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -931,6 +933,136 @@ public class CommonUtils {
 		}
 		return 0;
 	}
+	
+    /**
+     * @param  String "A1,A2,A4,B1,C1"
+     * @param rowNumList 每组的数量,比如:rowNumList[0]为A组数量,rowNumList[1]为B组数量,rowNumList.size()为分组数量
+     * Out : String "A1-A2,A4,B1,C1"
+     *
+     * @author Tank
+     * @date 2019年3月15日10:01:40
+     */
+    public static String outOrderString4WriteBack(String arraysString) throws Exception {
+    	String[] arrays = intoArray(arraysString);
+        return out4Writeback(arrays);
+    }
+    
+    /**
+     * 
+     * @param arraysString String "A1,A2,A4,B1,C1"
+     * @return Array {A1,A2,A4,B1,C1}
+     */
+        private static String[] intoArray(String arraysString) {
+    		if(arraysString!=null && arraysString.length() > 0){
+    			return arraysString.split(",");
+    		}else{
+    			return new String[0];
+    		}
+    	}
+        /**
+         * * @param  arrays{A1,A2,A4,B1,C1} 不跨组
+         * Out : String "A1-A2,A4,B1,C1"
+         */
+        private static String out4Writeback(String[] arrays) throws Exception {
+        	StringBuilder rs = new StringBuilder();
+            if (arrays != null && arrays.length > 0) {
+            	List<String> sortedList = new ArrayList<>();
+            	Collections.addAll(sortedList, arrays);
+            	Collections.sort(sortedList, new Comparator<String>(){
+
+    				@Override
+    				public int compare(String tab1, String tab2) {
+    					try {
+    						return getSortNumber(tab1)-getSortNumber(tab2);
+    					} catch (Exception e) {
+    						e.printStackTrace();
+    					} 
+    					return 0;
+    				}
+            		
+            	});
+            	if(sortedList!=null && sortedList.size() > 0){
+            		List<String> groupList = new ArrayList<>();
+            		for(int tabIndex = 0 ; tabIndex<sortedList.size();tabIndex++){
+            			if(null != sortedList.get(tabIndex) && sortedList.get(tabIndex).replaceAll(" ", "").length() >= 2){
+            				String tab = sortedList.get(tabIndex).replaceAll(" ", "");
+            				//先进行分组
+                			if((groupList.size()<=0 || groupList.get(0).charAt(0)==tab.charAt(0)) &&( (sortedList.size()-1)!=tabIndex)){
+                				groupList.add(tab);
+                			}else{
+                				if((sortedList.size()-1)==tabIndex){
+                					groupList.add(tab);
+                				}
+                				//分组完成开始进行输出
+                				for(int i =0;i<groupList.size();i++){
+                					if(rs.length() <=0 || rs.charAt(rs.length()-1)==';'||i==0){
+                						rs.append(groupList.get(i));
+                						if((groupList.size()-1) == i){
+                							rs.append(";");
+                						}
+                					}else if(rs.charAt(rs.length()-1)=='-'){
+                						if(getSortNumber(groupList.get(i))-getSortNumber(groupList.get(i-1))==1){
+                							if(i==(groupList.size()-1)){
+                								rs.append(groupList.get(i)).append(";");
+                            				}
+                							//挨着的
+                							continue;
+                						}else{
+                							//不挨着
+                							rs.append(groupList.get(i)).append(";");
+                						}
+                					
+                					}else{
+                						//到这里只有数字了
+                						if(getSortNumber(groupList.get(i))-getSortNumber(groupList.get(i-1))==1){
+                							//挨着的
+                							rs.append("-");
+                							if(i==(groupList.size()-1)){
+                								rs.append(groupList.get(i)).append(";");
+                            				}
+                						}else{
+                							//不挨着
+                							rs.append(";").append(groupList.get(i)).append(";");
+                						}
+                					}
+                				
+                				}
+                				//输出完成开始下一组
+                				groupList.clear();
+                				groupList.add(tab);
+                				//rs.append(tab);
+                			}
+            			}
+            		}
+            	}
+
+            }
+            if(rs.length() > 0){
+            	rs = rs.delete(rs.length()-1, rs.length());
+            }
+            return rs.toString();
+        }
+        /**
+         * 
+         * @param tab A1,B3.....
+         * @return 6001   7003  (ascii A:60 * 100 + 1)
+         * @throws Exception 
+         */
+        private static int getSortNumber(String tab) throws Exception{
+        	if (null != tab && tab.replaceAll(" ", "").length() >= 2) {
+                tab = tab.replaceAll(" ", "");
+                try {
+                    int row = tab.charAt(0);
+                    int col = Integer.parseInt(tab.substring(1, tab.length()));
+                    return row*100+col;
+                } catch (Exception e) {
+                    throw new Exception("字符非法:" + tab);
+                }
+            }
+        	
+        	
+        	return 0;
+        }
 	
 /*    public SuperVO writeStaticField(SuperVO vo ,Map<String, String> staticMaping){
     	

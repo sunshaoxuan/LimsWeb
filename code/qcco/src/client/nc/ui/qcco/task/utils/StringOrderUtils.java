@@ -44,22 +44,22 @@ public class StringOrderUtils {
      * @author Tank
      * @date 2019年3月15日10:01:40
      */
-    public static String outOrderString4WriteBack(String arraysString) throws Exception {
+/*    public static String outOrderString4WriteBack(String arraysString) throws Exception {
     	String[] arrays = intoArray(arraysString);
         return out4Writeback(arrays);
-    }
+    }*/
 /**
  * 
  * @param arraysString String "A1,A2,A4,B1,C1"
  * @return Array {A1,A2,A4,B1,C1}
  */
-    private static String[] intoArray(String arraysString) {
+/*    private static String[] intoArray(String arraysString) {
 		if(arraysString!=null && arraysString.length() > 0){
 			return arraysString.split(",");
 		}else{
 			return new String[0];
 		}
-	}
+	}*/
 
 	/**
      * 创建一个以最大数量为列数,最大组数为行数的二维表
@@ -271,7 +271,7 @@ public class StringOrderUtils {
      * * @param  arrays{A1,A2,A4,B1,C1} 不跨组
      * Out : String "A1-A2,A4,B1,C1"
      */
-    private static String out4Writeback(String[] arrays) throws Exception {
+    /*private static String out4Writeback(String[] arrays) throws Exception {
     	StringBuilder rs = new StringBuilder();
         if (arrays != null && arrays.length > 0) {
         	List<String> sortedList = new ArrayList<>();
@@ -349,7 +349,7 @@ public class StringOrderUtils {
         	rs = rs.delete(rs.length()-1, rs.length());
         }
         return rs.toString();
-    }
+    }*/
     
     /**
      * 
@@ -357,7 +357,7 @@ public class StringOrderUtils {
      * @return 6001   7003  (ascii A:60 * 100 + 1)
      * @throws Exception 
      */
-    private static int getSortNumber(String tab) throws Exception{
+/*    private static int getSortNumber(String tab) throws Exception{
     	if (null != tab && tab.replaceAll(" ", "").length() >= 2) {
             tab = tab.replaceAll(" ", "");
             try {
@@ -371,6 +371,6 @@ public class StringOrderUtils {
     	
     	
     	return 0;
-    }
+    }*/
 
 }
