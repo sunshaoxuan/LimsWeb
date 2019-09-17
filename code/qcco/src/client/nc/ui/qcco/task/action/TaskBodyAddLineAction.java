@@ -254,7 +254,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				List<Map<String, String>> custlist = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
 								"select trim(ana.name) as ananame,trim(cmp.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,"
-										+ " cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
+										+ " cmp.name,cmp.OPTIONAL,cmp.REPORTABLE,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn ,cmp.PK_RESULT_TYPE,trim(NC_UNITS_TYPE.UNIT_CODE) as units,cmp.C_DEFAULT_VALUE,cmp.MINIMUM,"
 										+ "cmp.MAXIMUM,cmp.C_EN_DEFAULT_Value,ana.INSTRUMENT, cmp.pk_list_table, cmp.places from nc_component_table cmp "
 										+ "inner join analysis ana on cmp.analysis = ana.name"
 										+ " left join NC_UNITS_TYPE "
@@ -393,7 +393,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
 								"select DISTINCT NC_TESTLIST_COMP.result_order_no, trim(analysis.name) as ananame,trim(NC_COMPONENT_table.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
-										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,trim(NC_UNITS_TYPE.NC_UNITS_DISP) as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE,NC_TESTLIST_COMP.c_en_default_value, "
+										+ " NC_TESTLIST_COMP.PK_UNITS_TYPE,trim(NC_UNITS_TYPE.UNIT_CODE) as units,NC_TESTLIST_COMP.C_DEFAULT_VALUE,NC_TESTLIST_COMP.c_en_default_value, "
 										+ " NC_COMPONENT_table.minimum, NC_COMPONENT_table.maximum,NC_TESTLIST_COMP.C_EN_DEFAULT_VALUE,"
 										+ " nc_result_type.pk_result_type,trim(NC_RESULT_TYPE.nc_result_namecn) as nc_result_namecn,analysis.INSTRUMENT, nc_testlist_comp.places from NC_TESTLIST_COMP"
 										+ " LEFT JOIN NC_COMPONENT_table ON NC_TESTLIST_COMP.NC_ANALYSIS_NAME = NC_COMPONENT_table.ANALYSIS AND NC_TESTLIST_COMP.NC_TLC_COMPONENT = NC_COMPONENT_table.NAME "

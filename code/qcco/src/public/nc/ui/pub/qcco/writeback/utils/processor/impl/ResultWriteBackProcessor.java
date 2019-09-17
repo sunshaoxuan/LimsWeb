@@ -14,6 +14,7 @@ import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.hr.utils.InSQLCreator;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
@@ -80,7 +81,7 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 					for(Map<String,Object> component : compoentList){
 						// 开始生成result
 						Result result = new Result();
-						
+						Map<String, Object> analysis = utils.getAnalysis(String.valueOf(component.get("analysis")));
 						result.setAttributeValue("result_number", processData.getMaxResult()+1);
 						processData.setMaxResult(processData.getMaxResult()+1);
 						
@@ -111,7 +112,7 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						result.setAttributeValue("attribute_1", null);
 						
 						//report_name
-						result.setAttributeValue("reported_name", component.get("reported_name"));
+						result.setAttributeValue("reported_name", analysis.get("reported_name"));
 						//单位的显示名
 						result.setAttributeValue("units", component.get("units"));
 						//按条件中对分项的定义取
@@ -155,7 +156,7 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						result.setAttributeValue("c_list_key", utils.getCListKeyByListKey(String.valueOf(component.get("list_key"))));
 						
 						//是否认证 根据analysis.c_certification是否为空进行判断，为空的话为F，不为空的话为T
-						Map<String, Object> analysis = utils.getAnalysis(String.valueOf(component.get("analysis")));
+						
 						boolean isemp = analysis.get("c_certification")==null|| analysis.get("c_certification").toString().length() <= 0;
 						result.setAttributeValue("t_accredited", isemp?"F":"T");
 						
@@ -246,6 +247,14 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			}
 		}
 
+		//数值型类型参照主键:
+		String pk_result_type_num = 
+				(String)baseDao.executeQuery("select pk_result_type from nc_result_type where nc_result_namecn like '%数值%' and rownum = 1", 
+						new ColumnProcessor());
+		//制单人
+		String psncode = (String)baseDao.executeQuery("select USER_CODE from sm_user where CUSERID = '"
+				+processData.getAggCommissionHVO().getParentVO().getCreator()+"'", 
+				new ColumnProcessor());
 		for (int i = 0; i < srcDataList.size(); i++) {
 			// 写入主键和父主键(只支持单主键,要多主键,需要参考上面的字段添加逻辑)
 			// 获取上层的主键:
@@ -293,23 +302,36 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			
 			//order number
 			allResultList.get(i).setAttributeValue("order_number", component.get("order_number"));
-			allResultList.get(i).setAttributeValue("reported_name", component.get("reported_name"));
+			allResultList.get(i).setAttributeValue("reported_name", analysisMap.get("reported_name"));
 			allResultList.get(i).setAttributeValue("replicate_count", 0);
 			//根据数据类型表得到对应的数据类型标志
 			allResultList.get(i).setAttributeValue("result_type", component.get("result_type"));
 			//status
-			allResultList.get(i).setAttributeValue("status", "N");
+			allResultList.get(i).setAttributeValue("status", "E");
 			//OLD_STATUS
 			allResultList.get(i).setAttributeValue("old_status", "N");
 			//是否修改了自动带出结果
 			allResultList.get(i).setAttributeValue("modified_result", "F");
 			allResultList.get(i).setAttributeValue("round", component.get("round"));
-			allResultList.get(i).setAttributeValue("places", component.get("places"));
+			//默认改成1 2019年9月16日17:15:42
+			allResultList.get(i).setAttributeValue("places", 1);
 			allResultList.get(i).setAttributeValue("reportable", component.get("reportable"));
-			allResultList.get(i).setAttributeValue("changed_on", "to_timestamp('"+ new UFDateTime().toStdString() +"','yyyy-mm-dd hh24:mi:ss.ff')");;
+			
+			String time = "to_timestamp('"+ new UFDateTime().toStdString() +"','yyyy-mm-dd hh24:mi:ss.ff')";
+			allResultList.get(i).setAttributeValue("changed_on", time);
+			allResultList.get(i).setAttributeValue("entered_on", time);
+			allResultList.get(i).setAttributeValue("first_entry_on", time);
+			
+			//制单人
+			allResultList.get(i).setAttributeValue("entered_by", psncode);
+			
+			
+			
 			allResultList.get(i).setAttributeValue("has_attributes", component.get("has_attributes"));
 			String result_type = String.valueOf(component.get("result_type"));
 			allResultList.get(i).setAttributeValue("result_type", result_type==null?null:result_type.substring(0, 1));
+			allResultList.get(i).setAttributeValue("entry_type", result_type==null?null:result_type.substring(0, 1));
+			
 			//RESULT.FORMAT_CALCULATION	数据类型(result_type)是计算类型和数据类型的(K或者L)，FORMAT_CALCULATION的数据为C_ACTUAL_TEST_TIME，
 			boolean isKOrL = "K".equalsIgnoreCase(result_type) || "L".equalsIgnoreCase(result_type);
 			allResultList.get(i).setAttributeValue("format_calculation", isKOrL?"C_ACTUAL_TEST_TIME":null);
@@ -318,11 +340,25 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			allResultList.get(i).setAttributeValue("reported_rslt_rev", 0);
 			allResultList.get(i).setAttributeValue("reported_rslt_oos", "F");
 			allResultList.get(i).setAttributeValue("t_short_name", component.get("t_short_name"));
-//			allResultList.get(i).setAttributeValue("test", "test");
-//			allResultList.get(i).setAttributeValue("test", "test");
+			
+			//如果值类型为参照,则为参照,其他情况为文本
+			String entryStr = null;
+			if(srcDataList.get(i).getAttributeValue("valueways")!=null 
+					&& 2 == Integer.parseInt(String.valueOf(srcDataList.get(i).getAttributeValue("valueways")))){
+				entryStr = String.valueOf(srcDataList.get(i).getAttributeValue("refvalue"));
+			}else{
+				entryStr = String.valueOf(srcDataList.get(i).getAttributeValue("textvalue"));
+			}
+			allResultList.get(i).setAttributeValue("entry", entryStr);
+			//如果是数值型,需要回写
+			if(pk_result_type_num!=null && 
+					pk_result_type_num.equalsIgnoreCase(String.valueOf(srcDataList.get(i).getAttributeValue("pk_valuetype")))){
+				allResultList.get(i).setAttributeValue("numeric_entry", allResultList.get(i).getAttributeValue("entry"));
+			}
+					
 //			allResultList.get(i).setAttributeValue("test", "test");
 			
-			allResultList.get(i).setAttributeValue("places", 0);
+//			allResultList.get(i).setAttributeValue("places", 1);
 		}
 
 		processData.setFirstResultListMap(sortResult(allResultList));

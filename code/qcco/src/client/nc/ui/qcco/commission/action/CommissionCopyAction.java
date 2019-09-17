@@ -24,6 +24,7 @@ import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionRVO;
 
@@ -143,6 +144,17 @@ public class CommissionCopyAction extends
 				//°¦... 2019Äê9ÔÂ10ÈÕ00:04:19
 				getModel().setOtherUiState(UIState.NOT_EDIT);
 				getBillForm().getAutoShowUpComponent().showMeUp();
+				/*AggCommissionHVO aggvo4Fresh = (AggCommissionHVO)aggvo.clone();
+				List<CommissionBVO> bvolist = new ArrayList<>();
+				for (int row = 0; row < getCardPanel().getRowCount("pk_commission_b"); row++) {
+					
+					SuperVO bodyVO = (SuperVO) billForm.getBillCardPanel().getBillModel(tabCode)
+							.getBodyValueRowVO(row, bodyVOClass.getName());
+					bvolist.add(bodyVO);
+				}*/
+				UserDefineRefUtils.refreshBillCardBodyDefRefs(
+						(AggCommissionHVO)(billForm.getValue()),
+						(BillForm)billForm.getMainPanel(), "pk_commission_b", CommissionBVO.class);
 				throw new BusinessException();
 				
 				

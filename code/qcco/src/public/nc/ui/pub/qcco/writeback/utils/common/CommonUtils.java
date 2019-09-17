@@ -757,6 +757,10 @@ public class CommonUtils {
 		TIME_COLUMN_SET.add("date_completed");
 		TIME_COLUMN_SET.add("c_customermanager_date");
 		TIME_COLUMN_SET.add("c_techsupervisor_date");
+		TIME_COLUMN_SET.add("first_entry_on");
+		TIME_COLUMN_SET.add("entered_on");
+		
+		
 		
 		return TIME_COLUMN_SET;
 	}

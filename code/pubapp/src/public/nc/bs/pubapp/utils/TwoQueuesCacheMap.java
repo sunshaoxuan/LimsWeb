@@ -82,6 +82,10 @@ public class TwoQueuesCacheMap<K, V> {
 
 	public boolean containsKey(K key) {
 		if (key != null && (FIFO_MAP.containsKey(key) || LRU_MAP.containsKey(key))) {
+			//‘ –Ìª∫¥Ê¥©Õ∏
+			/*if(FIFO_MAP.get(key)==null || LRU_MAP.get(key)==null){
+				return false;
+			}*/
 			return true;
 		}
 		return false;

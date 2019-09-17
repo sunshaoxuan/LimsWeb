@@ -22,6 +22,7 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
+import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionHVO;
@@ -63,6 +64,10 @@ public class UserDefineRefUtils {
 			if (aggvo.getAllChildrenVO() != null) {
 				for (ISuperVO realBody : aggvo.getChildren(bodyVOClass)) {
 					if (bodyVO.getPrimaryKey() != null && bodyVO.getPrimaryKey().equals(realBody.getPrimaryKey())) {
+						fullBodyVO = (SuperVO) realBody;
+						break;
+					}
+					if (bodyVO.getAttributeValue("uniqueid") != null && bodyVO.getAttributeValue("uniqueid").equals(realBody.getAttributeValue("uniqueid"))) {
 						fullBodyVO = (SuperVO) realBody;
 						break;
 					}
@@ -261,6 +266,18 @@ public class UserDefineRefUtils {
 					}else{
 						Vector refvls = refModel.matchData(refModel.getPkFieldCode(),
 								(String) vo.getAttributeValue(rowItem.getKey()));
+						if (null == refvls){
+							try {
+								AbstractRefModel newModel = (AbstractRefModel)refModel.getClass().newInstance();
+								refvls = newModel.matchData(refModel.getPkFieldCode(),
+										(String) vo.getAttributeValue(rowItem.getKey()));
+							} catch (InstantiationException e) {
+								ExceptionUtils.wrappException(e);
+							} catch (IllegalAccessException e) {
+								ExceptionUtils.wrappException(e);
+							}
+							
+						}
 						if (null != refvls) {
 							IConstEnum val = new DefaultConstEnum(((Vector) refvls.get(0)).get(0),
 									(String) ((Vector) refvls.get(0)).get(1));
