@@ -103,7 +103,7 @@ public class FirstWriteBackStaticMaping {
 		BODY_SIMPLE_2_CHILDREN_MAPPING.put("c_proj_para_a.product_standard", "pk_enterprisestandard");// 企业标准
 		BODY_SIMPLE_2_CHILDREN_MAPPING.put("c_proj_para_a.production_spec", "pk_productspec");// 规格号
 		BODY_SIMPLE_2_CHILDREN_MAPPING.put("C_PROJ_PARA_A.structure_type", "pk_structuretype");// 结构类型
-		BODY_SIMPLE_2_CHILDREN_MAPPING.put("C_PROJ_PARA_A.stage", "productstage");// 温度
+		//BODY_SIMPLE_2_CHILDREN_MAPPING.put("C_PROJ_PARA_A.stage", "productstage");// 温度
 
 		BODY_SIMPLE_2_CHILDREN_MAPPING.put("c_proj_para_a.prodname", "typeno");// 规格型号
 		BODY_SIMPLE_2_CHILDREN_MAPPING.put("c_proj_para_a.contact_type", "contacttype");// 触点类型 // contacttype
@@ -125,6 +125,7 @@ public class FirstWriteBackStaticMaping {
 		GRAND_BEFORE_MAPPING.put("judgeflag", "C_PROJ_PARA_A.check_spec");// 是否判定
 		GRAND_BEFORE_MAPPING.put("testflag", "C_PROJ_PARA_A.is_added");// 是否测试
 		GRAND_BEFORE_MAPPING.put("rowno", "C_PROJ_PARA_A.order_number");// 序号
+		GRAND_BEFORE_MAPPING.put("productstage", "C_PROJ_PARA_A.stage");// 温度
 	}
     
     /**

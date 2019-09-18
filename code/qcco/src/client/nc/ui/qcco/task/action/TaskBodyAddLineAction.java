@@ -489,6 +489,8 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								} else {
 									this.getGrandCard().getBillCardPanel()
 											.setBodyValueAt(2, row, "valueways", "pk_task_s");
+									this.getGrandCard().getBillCardPanel()
+									.setBodyValueAt(map.get("pk_list_table"), row, "pk_list_table", "pk_task_s");
 									// ≤Œ’’÷µ
 									String refvalue = getRefValue(map.get("pk_list_table"), reportType);
 									this.getGrandCard().getBillCardPanel()
