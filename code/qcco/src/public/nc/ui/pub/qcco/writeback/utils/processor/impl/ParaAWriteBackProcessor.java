@@ -8,6 +8,9 @@ import java.util.Map.Entry;
 
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
+import nc.bs.framework.common.NCLocator;
+import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
@@ -89,7 +92,8 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 				}
 			}
 		}
-
+		//获取各个组别对应的实验前参数的数量
+		Map<String,Integer> numberMap = getGroupParaANum(processData.getAggCommissionHVO().getPrimaryKey());
 		for (int i = 0; i < srcDataList.size(); i++) {
 			// 写入主键和父主键(只支持单主键,要多主键,需要参考上面的字段添加逻辑)
 
@@ -122,9 +126,54 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 			allParaAList.get(i).setAttributeValue("project", processData.getProject().getAttributeValue("name"));
 			// entry_code
 			allParaAList.get(i).setAttributeValue("entry_code", entryCodeList.get(i));
+			//order_number 不同组别公用一个序号
+			int ordernum = 0;
+			if(allParaAList.get(i).getAttributeValue("order_number")!=null){
+				ordernum = Integer.parseInt(String.valueOf(allParaAList.get(i).getAttributeValue("order_number")));
+			}
+			if("B".equalsIgnoreCase(String.valueOf(allParaAList.get(i).getAttributeValue("sample_group")))){
+				allParaAList.get(i).setAttributeValue("order_number",ordernum+numberMap.get("A"));
+			}else if("C".equalsIgnoreCase(String.valueOf(allParaAList.get(i).getAttributeValue("sample_group")))){
+				allParaAList.get(i).setAttributeValue("order_number",ordernum+numberMap.get("A")+numberMap.get("B"));
+			}else if("D".equalsIgnoreCase(String.valueOf(allParaAList.get(i).getAttributeValue("sample_group")))){
+				allParaAList.get(i).setAttributeValue("order_number",ordernum+numberMap.get("A")+numberMap.get("B")+numberMap.get("C"));
+			}
 
 		}
 		processData.setParaAListMap(sortParaA(allParaAList));
+	}
+
+	/**
+	 * 获取各个组别对应的实验前参数的数量
+	 * @param pk_commission_h
+	 * @return
+	 * @throws BusinessException 
+	 */
+	private Map<String, Integer> getGroupParaANum(String pk_commission_h) throws BusinessException {
+		Map<String, Integer> rs = new HashMap<>();
+		String sql = " select sg.NC_SAMPLE_NAME sggroup,max(to_number(r.ROWNO)) num from QC_COMMISSION_R  r "
+				+" left join QC_COMMISSION_B b on b.PK_COMMISSION_B = r.PK_COMMISSION_B "
+				+" left join NC_SAMPLE_GROUP sg on sg.PK_SAMPLE_GROUP = b.PK_SAMPLEGROUP "
+				+" where r.PK_COMMISSION_B in (select PK_COMMISSION_B  "
+				+" from QC_COMMISSION_B  where PK_COMMISSION_H = '"+pk_commission_h+"')  "
+				+" GROUP by sg.NC_SAMPLE_NAME ";
+		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+		@SuppressWarnings("unchecked")
+		List<Map<String,Object>> rsList = 
+				(List<Map<String,Object>>)bs.executeQuery(sql, new MapListProcessor());
+		if(rsList!=null && rsList.size() > 0){
+			for(Map<String,Object> rsMap : rsList){
+				if(rsMap!=null && rsMap.get("sggroup")!=null){
+					if(rsMap.get("num")!=null){
+						rs.put(String.valueOf(rsMap.get("sggroup")), Integer.parseInt(String.valueOf(rsMap.get("num"))));
+					}else{
+						rs.put(String.valueOf(rsMap.get("sggroup")), 0);
+					}
+					
+				}
+			}
+		}
+		return rs;
 	}
 
 	private List<ParaA> initWriteBackList(int size) {

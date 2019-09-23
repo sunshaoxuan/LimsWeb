@@ -916,17 +916,17 @@ public class CommonUtils {
 				}
 				if(svo.getAttributeValue("unit")!=null){
 					String unit = String.valueOf(svo.getAttributeValue("unit"));
-					if("h".equalsIgnoreCase(unit)){
+					if("HOURS".equalsIgnoreCase(unit)){
 						return (int)Math.ceil(time);
-					}else if("min".equalsIgnoreCase(unit)){
+					}else if("MINUTES".equalsIgnoreCase(unit)){
 						return (int)Math.ceil(time/60);
-					}else if("s".equalsIgnoreCase(unit)){
+					}else if("SECONDS".equalsIgnoreCase(unit)){
 						return (int)Math.ceil(time/60/60);
-					}else if("ms".equalsIgnoreCase(unit)){
+					}else if("MS".equalsIgnoreCase(unit)){
 						return (int)Math.ceil(time/60/60/1000);
-					}else if("μs".equalsIgnoreCase(unit)){
+					}else if("US".equalsIgnoreCase(unit)){
 						return (int)Math.ceil(time/60/60/1000/1000);
-					}else if("days".equalsIgnoreCase(unit)){
+					}else if("DAYS".equalsIgnoreCase(unit)){
 						return (int)Math.ceil(time*24);
 					}else{
 						throw new BusinessException("未识别的时间单位:"+unit);
