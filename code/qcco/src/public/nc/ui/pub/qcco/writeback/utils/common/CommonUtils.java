@@ -721,7 +721,12 @@ public class CommonUtils {
 		sb.delete(0, sb.length());
 		if (realValue != null) {
 			if (realValue instanceof Integer || realValue instanceof UFDouble || realValue instanceof Double) {
-				rt = String.valueOf(realValue) ;
+				if("max_value".equalsIgnoreCase(name) || "min_value".equalsIgnoreCase(name)){
+					rt = sb.append("'").append(dealEscapse(String.valueOf(realValue))).append("'").toString();
+				}else{
+					rt = String.valueOf(realValue) ;
+				}
+				
 			}else{
 				if (getTimeColumnSet().contains(name)) {
 					rt = String.valueOf(realValue);
