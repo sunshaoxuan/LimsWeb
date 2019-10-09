@@ -1,6 +1,11 @@
 package nc.ui.qcco.task.action;
 
 import java.awt.event.ActionEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import nc.bs.framework.common.NCLocator;
 import nc.bs.uif2.BusinessExceptionAdapter;
@@ -8,6 +13,10 @@ import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
 import nc.itf.qcco.ITaskMaintain;
+import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.jdbc.framework.processor.MapListProcessor;
+import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
 import nc.ui.pubapp.uif2app.actions.RefreshSingleAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
@@ -22,6 +31,7 @@ import nc.util.mmpub.dpub.gc.GCClientBillToServer;
 import nc.util.mmpub.dpub.gc.GCPseudoColUtil;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
+import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
@@ -207,6 +217,7 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	private void validateGrand(Object value) throws BusinessExceptionAdapter{
 		// “是否可选”没勾的，都是必输项的意思，保存的时候加校验值不能为空
 		if(value!=null && value instanceof AggTaskHVO){
@@ -214,15 +225,69 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 			if(aggvo.getChildren(TaskBVO.class)!=null){
 				ISuperVO[] superVOs = aggvo.getChildren(TaskBVO.class);
 				if(superVOs.length > 0){
+					//值类型
+					IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+					Map<String,String> typePk2NameMap = new HashMap<>();
+					try {
+						/*typePk2NameMap = 
+								(Map<String,String>)bs.executeQuery("select nc_result_namecn, pk_result_type  from nc_result_type ", 
+										new ResultSetProcessor() {
+							
+							*//**
+							 * 
+							 *//*
+							private static final long serialVersionUID = -6591534122732286076L;
+							Map<String,String> map = new HashMap<>();
+							@Override
+							public Object handleResultSet(ResultSet rs) throws SQLException {
+								while(rs.next()){
+									map.put(rs.getString(2)==null?null:rs.getString(2).replaceAll(" ", ""), 
+											rs.getString(1)==null?null:rs.getString(1).replaceAll(" ", ""));
+								}
+								return map;
+							}
+						});*/
+						List<Map<String,String>> rsList = 
+								(List<Map<String,String>>)bs.executeQuery("select nc_result_namecn, pk_result_type  from nc_result_type ",new MapListProcessor());
+						if(rsList!=null && rsList.size() > 0){
+							for(Map<String,String> map : rsList){
+								typePk2NameMap.put(map.get("pk_result_type"), 
+										map.get("nc_result_namecn")==null?null:map.get("nc_result_namecn").replaceAll(" ", ""));
+							}
+						}
+					} catch (BusinessException e) {
+						ExceptionUtils.wrappException(e);
+					}
 					for(ISuperVO superVO : superVOs){
 						TaskBVO bvo = (TaskBVO)superVO;
 						if(bvo!=null && bvo.getPk_task_s()!=null && bvo.getPk_task_s().length > 0){
 							TaskSVO[] svos =  bvo.getPk_task_s();
 							for(TaskSVO svo : svos){
-								if(svo!=null && (svo.getIsoptional()==null || !(svo.getIsoptional().booleanValue())) ){
-									//必输项,文本值或参照值不能同时为空
-									if((svo.getTextvalue()==null||"".equals(svo.getTextvalue()))&&svo.getPk_refvalue()==null ){
-										throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()+"],值不能为空"));
+								if(svo!=null){
+									if(svo.getIsoptional()==null || !(svo.getIsoptional().booleanValue())){
+										//必输项,文本值或参照值不能同时为空
+										if((svo.getTextvalue()==null||"".equals(svo.getTextvalue()))&&svo.getPk_refvalue()==null ){
+											throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()+"],值不能为空!"));
+										}
+									}
+									//计算型值和数值型值,只能为数字
+									if(svo.getTextvalue()!=null && 
+											svo.getPk_valuetype()!=null && typePk2NameMap.get(svo.getPk_valuetype())!=null){
+										String typeName = typePk2NameMap.get(svo.getPk_valuetype());
+										if("数值".equals(typeName)||"计算型".equals(typeName)){
+											try{
+												Double.parseDouble(svo.getTextvalue().toString());
+											}catch(Exception e){
+												throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()
+														+"],必须为数字!"));
+											}
+										}
+									}
+									//参照和文本不能同时有值
+									if(svo.getTextvalue()!=null&& !"".equals(svo.getTextvalue()) 
+											&& svo.getPk_refvalue()!=null && !"".equals(svo.getPk_refvalue())){
+										throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()
+												+"],参照和文本不能同时有值!"));
 									}
 								}
 							}

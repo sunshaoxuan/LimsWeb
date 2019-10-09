@@ -63,10 +63,23 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 					return;
 				}
 			}*/
-			e.setReturnValue(true);
+			//如果参照已经有值,那么文本不能输入
+			String pk_refvalue = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_refvalue");
+			if(pk_refvalue==null || "".equals(pk_refvalue)){
+				e.setReturnValue(true);
+			}else{
+				e.setReturnValue(false);
+			}
+			return;
 		}
 		if ("pk_refvalue".equals(e.getKey())) {
-
+			//如果文本已经有值,那么参照不能输入
+			String textvalue = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue");
+			if(textvalue!=null && !"".equals(textvalue)){
+				e.setReturnValue(false);
+				return;
+			}
+			
 			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null
 					: (Integer) e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
 			if (null == valueways) {
