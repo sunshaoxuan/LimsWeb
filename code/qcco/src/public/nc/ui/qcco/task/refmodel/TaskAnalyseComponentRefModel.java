@@ -20,7 +20,7 @@ public class TaskAnalyseComponentRefModel extends AbstractRefModel {
 	}
 
 	public java.lang.String[] getFieldName() {
-		return new String[] { "参数项名称", "参数项名称" };
+		return new String[] { "参数项编码", "参数项名称" };
 	}
 
 	public java.lang.String[] getHiddenFieldCode() {
@@ -50,7 +50,7 @@ public class TaskAnalyseComponentRefModel extends AbstractRefModel {
 
 	protected String getSql(String strPatch, String[] strFieldCode, String[] hiddenFields, String strTableName,
 			String strWherePart, String strGroupField, String strOrderField) {
-		return "select distinct test_after_code,test_after_name，PK_TEST_AFTER from NC_TEST_AFTER;";
+		return "select distinct test_after_code,test_after_name,PK_TEST_AFTER from NC_TEST_AFTER";
 	}
 
 	

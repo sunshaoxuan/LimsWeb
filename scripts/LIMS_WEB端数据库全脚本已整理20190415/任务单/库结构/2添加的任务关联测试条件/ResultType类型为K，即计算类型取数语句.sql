@@ -12,4 +12,4 @@
 --取变量定义
 select * from calc_variables cv where cv.analysis = 'IEC61810-7-2006_4.31-3';   --analysis为程序取出，此处仅为示例
 --取变更计算公式
-select * calculation c where c.analysis = 'IEC61810-7-2006_4.31-3';             --备注同上
+select * from calculation c where c.analysis = 'IEC61810-7-2006_4.31-3';             --备注同上

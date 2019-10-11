@@ -8,7 +8,10 @@ public class SampleGroupRefModel extends AbstractRefModel {
 		this.setTableName("NC_SAMPLE_GROUP");
 		this.setMutilLangNameRef(false);
 	}
-
+	private String groupWhere = null;
+	public void setGroupWhere(String groupWhere){
+		this.groupWhere = groupWhere;
+	}
 	public java.lang.String[] getFieldCode() {
 		return new String[] { "NC_SAMPLE_CODE", "NC_SAMPLE_NAME" };
 	}
@@ -44,6 +47,8 @@ public class SampleGroupRefModel extends AbstractRefModel {
 
 	protected String getSql(String strPatch, String[] strFieldCode, String[] hiddenFields, String strTableName,
 			String strWherePart, String strGroupField, String strOrderField) {
-		return "select NC_SAMPLE_CODE, NC_SAMPLE_NAME, PK_SAMPLE_GROUP from NC_SAMPLE_GROUP WHERE ISENABLE=1 ORDER BY NC_SAMPLE_CODE";
+		return "select NC_SAMPLE_CODE, NC_SAMPLE_NAME, PK_SAMPLE_GROUP from NC_SAMPLE_GROUP WHERE ISENABLE=1 "
+			+ (groupWhere==null?"":" and "+ groupWhere)
+			+" ORDER BY NC_SAMPLE_CODE";
 	}
 }

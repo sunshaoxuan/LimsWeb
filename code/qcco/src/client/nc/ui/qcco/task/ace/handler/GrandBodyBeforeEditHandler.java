@@ -1,14 +1,26 @@
 package nc.ui.qcco.task.ace.handler;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import nc.bs.dao.DAOException;
+import nc.bs.framework.common.NCLocator;
+import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.beans.MessageDialog;
+import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.qcco.commission.refmodel.ValueTypeRefModel;
 import nc.ui.qcco.task.view.RefValuePanel;
+import nc.ui.pub.beans.UIRefPane;
+import nc.ui.qcco.commission.refmodel.SampleGroupRefModel;
+import nc.vo.pub.BusinessException;
+import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -71,8 +83,7 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 				e.setReturnValue(false);
 			}
 			return;
-		}
-		if ("pk_refvalue".equals(e.getKey())) {
+		}else if ("pk_refvalue".equals(e.getKey())) {
 			//如果文本已经有值,那么参照不能输入
 			String textvalue = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue");
 			if(textvalue!=null && !"".equals(textvalue)){
@@ -102,6 +113,39 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 			}
 			e.setReturnValue(false);
 			return;
+		}else if("samplegroup".equals(e.getKey())){
+			//查出组别
+			String sql = "select pk_samplegroup pk_samplegroup from QC_COMMISSION_B where PK_COMMISSION_H = '"+pk_commission_h+"' and dr = 0";
+			IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+			Set<String> groupPkSet = new HashSet<>();
+			try {
+				List<Map<String,String>> list = (List<Map<String,String>>)bs.executeQuery(sql, new MapListProcessor());
+				if(list!=null && list.size()>0){
+					for(Map<String,String> map : list){
+						groupPkSet.add(map.get("pk_samplegroup"));
+					}
+				}
+			} catch (BusinessException e1) {
+				ExceptionUtils.wrappException(e1);
+			}
+			String groupWhere = " pk_sample_group in (";
+			if(groupPkSet!=null && groupPkSet.size() > 0){
+				boolean isFist = true;
+				for(String pk_group : groupPkSet){
+					if(isFist){
+						groupWhere += "'"+pk_group+"'";
+						isFist = false;
+					}else{
+						groupWhere += ",'"+pk_group+"'";
+					}
+					
+				}
+				groupWhere +=") ";
+				
+				BillItem item = (BillItem)e.getSource();
+				((SampleGroupRefModel)((UIRefPane) item.getComponent()).getRefModel()).setGroupWhere( groupWhere);
+			}
+			//e.getBillCardPanel().getHeadItem(item)
 		}
 		e.setReturnValue(true);
 	}

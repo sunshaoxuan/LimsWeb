@@ -24,7 +24,8 @@ public class TaskCheckRule implements IRule<AggTaskHVO> {
 			if (bodyVOs != null && bodyVOs.length > 0) {
 				for (int i = 0; i < bodyVOs.length; i++) {
 					for (int j = i + 1; j < bodyVOs.length; j++) {
-						if (((Integer) bodyVOs[i].getAttributeValue("runorder")).equals((Integer) bodyVOs[j]
+						if (bodyVOs[i]!=null && bodyVOs[i].getAttributeValue("runorder")!=null &&
+								((Integer) bodyVOs[i].getAttributeValue("runorder")).equals((Integer) bodyVOs[j]
 								.getAttributeValue("runorder"))) {
 							ExceptionUtils.wrappBusinessException("执行顺序 [" + bodyVOs[i].getAttributeValue("runorder")
 									+ "] 重复，请调整后重试。");

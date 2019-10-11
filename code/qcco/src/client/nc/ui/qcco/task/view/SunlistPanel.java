@@ -167,8 +167,8 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 				ivjUIDialogContentPane = new javax.swing.JPanel();
 				ivjUIDialogContentPane.setName("ivjUIDialogContentPane");
 				ivjUIDialogContentPane.setLayout(new java.awt.BorderLayout());
-				getUIDialogContentPane().add(getUIDialogContentPane1(), BorderLayout.CENTER);
-				getUIDialogContentPane().add(getBnPanel(), BorderLayout.SOUTH);
+				ivjUIDialogContentPane.add(getUIDialogContentPane1(), BorderLayout.CENTER);
+				ivjUIDialogContentPane.add(getBnPanel(), BorderLayout.SOUTH);
 			} catch (Throwable ivjExc) {
 				handleException(ivjExc);
 			}
@@ -291,8 +291,8 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 			ivjUIDialogContentPane1.setName("ivjUIDialogContentPane1");
 			ivjUIDialogContentPane1.setLayout(null);
 			// ivjUIDialogContentPane1.setLayout(new BorderLayout());
-			getUIDialogContentPane1().add(getUIPanel1());
-			getUIDialogContentPane1().add(getBillListHeadPanel());
+			ivjUIDialogContentPane1.add(getUIPanel1());
+			ivjUIDialogContentPane1.add(getBillListHeadPanel());
 		}
 		return ivjUIDialogContentPane1;
 	}
@@ -613,7 +613,7 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 					&& conditionmaps.get("productstard") != "") {
 				if (conditionmaps.get("productstard").contains(",")) {
 					String[] str = (conditionmaps.get("productstard") + ",_NA").split(",");
-					String sssql = "   ( select distinct nc_testlist_name from NC_TASK_ADDUNION where  nc_testlist_name like '%"
+					String sssql = "   (   nc_testlist_name like '%"
 							+ str[0] + "%' ";
 
 					for (int i = 1; i < str.length; i++) {
@@ -622,10 +622,10 @@ public class SunlistPanel extends UIDialog implements nc.ui.pub.bill.BillEditLis
 					sssql += ")";
 					InSQLCreator insql = new InSQLCreator();
 					String psInSQL = insql.getInSQL(str);
-					sql += " and nc_testlist_name in(" + sssql + ")";
+					sql += " and (" + sssql + ")";
 				} else {
 					// sql+=" and nc_testlist_name like '%"+conditionmaps.get("productstard")+"%'";
-					sql += " and nc_testlist_name in ( select distinct nc_testlist_name from NC_TASK_ADDUNION where nc_testlist_name like "
+					sql += " and  (nc_testlist_name like "
 							+ "'%" + conditionmaps.get("productstard") + "%' or nc_testlist_name like '%_NA%')";
 				}
 			}

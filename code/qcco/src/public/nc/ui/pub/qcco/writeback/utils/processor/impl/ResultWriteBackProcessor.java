@@ -353,7 +353,11 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 			//如果是数值型,需要回写
 			if(pk_result_type_num!=null && 
 					pk_result_type_num.equalsIgnoreCase(String.valueOf(srcDataList.get(i).getAttributeValue("pk_valuetype")))){
-				allResultList.get(i).setAttributeValue("numeric_entry", allResultList.get(i).getAttributeValue("entry"));
+				String entryStrs = (String)allResultList.get(i).getAttributeValue("entry");
+				if(entryStrs==null || "".equals(entryStrs) || "null".equals(entryStrs)||"NULL".equals(entryStrs)){
+					entryStrs = null;
+				}
+				allResultList.get(i).setAttributeValue("numeric_entry", entryStrs);
 			}
 					
 //			allResultList.get(i).setAttributeValue("test", "test");

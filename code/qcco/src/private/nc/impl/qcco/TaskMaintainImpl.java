@@ -1,8 +1,12 @@
 package nc.impl.qcco;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
@@ -12,6 +16,7 @@ import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
 import nc.ui.pub.qcco.task.utils.WriteBackLimsUtils;
 import nc.ui.pub.qcco.writeback.utils.mediator.WriteBackMediator;
+import nc.ui.qcco.task.utils.FormulaUtils;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -20,8 +25,11 @@ import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskHVO;
 import nc.vo.qcco.task.TaskRVO;
+import nc.vo.qcco.task.TaskSVO;
 import nc.itf.qcco.ITaskMaintain;
+import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.lang.UFDateTime;
 
@@ -55,7 +63,7 @@ private BaseDAO dao = null;
 	}*/
 	@Override
 	public AggTaskHVO[] insert(AggTaskHVO[] vos) throws BusinessException {
-		return super.pubinsertBills(vos,null);
+		return calLastTime(super.pubinsertBills(vos,null));
 	}
 
 	@Override
@@ -75,7 +83,7 @@ private BaseDAO dao = null;
 	@Override
 	public AggTaskHVO[] update(AggTaskHVO[] vos)
 			throws BusinessException {
-		return super.pubupdateBills(vos);
+		return calLastTime(super.pubupdateBills(vos));
 	}
 
 	@Override
@@ -190,6 +198,104 @@ private BaseDAO dao = null;
 		}
 		
 	}
+	
+	private AggTaskHVO[] calLastTime(AggTaskHVO[] aggvos) throws BusinessException{
+		if(aggvos==null || aggvos.length <=0){
+			return aggvos;
+		}
+		//需要计算的资料
+		Set<String> pkSet = new HashSet<>();
+		for(AggTaskHVO aggvo : aggvos){
+			if(aggvo.getPrimaryKey()!=null){
+				pkSet.add(aggvo.getPrimaryKey());
+			}
+		}
+		InSQLCreator insql = new InSQLCreator();
+		String pkInsql = insql.getInSQL(pkSet.toArray(new String[0]));
+		String sql = " SELECT nvl(qtb.PK_TASK_H,''),nvl(qtb.standardclause,''),nvl(cv.COMPONENT,''),"
+				+" nvl(c.SOURCE_CODE,''),nvl(cv.name,''),nvl(qts.TEXTVALUE,'') "
+				+" FROM qc_task_s qts "
+				+" inner join qc_task_b qtb on qtb.PK_TASK_B = qts.PK_TASK_b "
+				+" left join qc_task_h qth on qth.pk_task_h = qtb.pk_task_h "
+				+" INNER join calculation c on c.COMPONENT in ('duration','持续时间','Duration') and c.analysis =qtb.STANDARDCLAUSE "
+				+" inner JOIN calc_variables cv ON (cv.COMPONENT IN ('duration', '持续时间', 'Duration') "
+				+" AND cv.analysis =qtb.STANDARDCLAUSE and cv.ATTRIBUTE_1 = qts.PK_TESTCONDITIONITEM and cv.COMPONENT =c.COMPONENT ) "
+				+" inner join qc_task_s qs on (qtb.PK_TASK_B = qs.pk_task_b and qts.dr = 0 and c.COMPONENT = qs.PK_TESTCONDITIONITEM) "
+				+" WHERE qtb.PK_TASK_H IN("+pkInsql+") "
+				+" AND qts.dr = 0 and qtb.dr = 0 and qth.dr = 0 ";
+		@SuppressWarnings("unchecked")
+		//map<key,map<公式参数名/key,公式参数值/公式>>   其中:key=pk_task_h::pk_task_b::持续时间项名称
+		Map<String, Map<String,String>> rsMap = 
+			(Map<String, Map<String,String>>) getDao().executeQuery(sql, new ResultSetProcessor() {
+
+			private static final long serialVersionUID = -5612957278523735236L;
+			Map<String, Map<String,String>> map = new HashMap<>();
+
+			@Override
+			public Object handleResultSet(ResultSet rs) throws SQLException {
+				while(rs.next()){
+					String key = rs.getString(1)+"::"+rs.getString(2)
+							+"::"+rs.getString(3).replaceAll(" ", "");
+					if(map.containsKey(key)){
+						//参数
+						map.get(key).put(rs.getString(5).replaceAll(" ", ""), rs.getString(6).replaceAll(" ", ""));
+					}else{
+						Map<String,String> tempMap = new HashMap<>();
+						//公式
+						tempMap.put(key, rs.getString(4).replaceAll(" ", ""));
+						//参数
+						tempMap.put(rs.getString(5).replaceAll(" ", ""), rs.getString(6).replaceAll(" ", ""));
+						map.put(key,tempMap);
+					}
+				}
+				return map;
+			}
+		});
+		Set<String> updateSqlSet = new HashSet<>();
+		//更新数据库和vo
+		for(AggTaskHVO aggvo : aggvos){
+			if(aggvo!=null&&aggvo.getChildren(TaskBVO.class)!=null
+					&&aggvo.getChildren(TaskBVO.class).length > 0){
+				ISuperVO[] bvos = aggvo.getChildren(TaskBVO.class);
+				if(bvos!=null && bvos.length > 0){
+					for(ISuperVO superVO : bvos){
+						TaskBVO bvo = (TaskBVO)superVO;
+						if(bvo!=null && bvo.getPk_task_s()!=null && bvo.getPk_task_s().length > 0){
+							TaskSVO[] svos = bvo.getPk_task_s();
+							for(TaskSVO svo : svos){
+								if(svo!=null && svo.getPk_testconditionitem()!=null){
+									String key = aggvo.getPrimaryKey()+"::" + bvo.getStandardclause()+"::"
+											+(svo.getPk_testconditionitem()==null?"":
+												svo.getPk_testconditionitem().replaceAll(" ", ""));
+									if(rsMap.containsKey(key)){
+										//计算持续时间
+										double calResult = 0;
+										try{
+											calResult = FormulaUtils.calFormula(key,rsMap.get(key));
+										}catch(Exception e){
+											calResult = 0.0d;
+											Logger.info(e);
+										}
+										svo.setTextvalue(String.valueOf(calResult));
+										String updateSql = "update qc_task_s set textvalue = '"+String.valueOf(calResult)
+												+"' where pk_task_s = '"+svo.getPk_task_s()+"'";
+										updateSqlSet.add(updateSql);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if(updateSqlSet.size() > 0){
+			for(String sqlLastTime : updateSqlSet){
+				getDao().executeUpdate(sqlLastTime);
+			}
+		}
+		return aggvos;
+	}
+	
 	
 	
 	

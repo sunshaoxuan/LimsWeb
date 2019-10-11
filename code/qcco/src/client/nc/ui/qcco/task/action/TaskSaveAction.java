@@ -264,6 +264,12 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 							TaskSVO[] svos =  bvo.getPk_task_s();
 							for(TaskSVO svo : svos){
 								if(svo!=null){
+									if("duration".equals(svo.getPk_testconditionitem())
+											|| "持续时间".equals(svo.getPk_testconditionitem())
+											|| "Duration".equals(svo.getPk_testconditionitem())){
+										//此项由后台算出
+										continue;
+									}
 									if(svo.getIsoptional()==null || !(svo.getIsoptional().booleanValue())){
 										//必输项,文本值或参照值不能同时为空
 										if((svo.getTextvalue()==null||"".equals(svo.getTextvalue()))&&svo.getPk_refvalue()==null ){
