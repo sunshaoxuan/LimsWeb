@@ -9,6 +9,7 @@ import java.util.Vector;
 import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.bill.BillItem;
@@ -21,6 +22,7 @@ import nc.ui.pub.beans.UIRefPane;
 import nc.ui.qcco.commission.refmodel.SampleGroupRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
+import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -75,21 +77,27 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 					return;
 				}
 			}*/
-			//如果参照已经有值,那么文本不能输入
-			String pk_refvalue = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_refvalue");
+		
+			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null
+				: (Integer) e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
+			if(2==valueways){
+				e.setReturnValue(false);
+				return;
+			}
+			//如果参照已经有值,那么文本不能输入 
+			/*String pk_refvalue = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_refvalue");
 			if(pk_refvalue==null || "".equals(pk_refvalue)){
 				e.setReturnValue(true);
 			}else{
 				e.setReturnValue(false);
-			}
-			return;
+			}*/
 		}else if ("pk_refvalue".equals(e.getKey())) {
 			//如果文本已经有值,那么参照不能输入
-			String textvalue = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue");
+			/*String textvalue = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue");
 			if(textvalue!=null && !"".equals(textvalue)){
 				e.setReturnValue(false);
 				return;
-			}
+			}*/
 			
 			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null
 					: (Integer) e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
@@ -146,6 +154,43 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 				((SampleGroupRefModel)((UIRefPane) item.getComponent()).getRefModel()).setGroupWhere( groupWhere);
 			}
 			//e.getBillCardPanel().getHeadItem(item)
+		} else if ("component".equals(e.getKey())) {
+			// 手工输入参照值,需要进行过滤
+			int bodyRow = getMainBillForm().getBillCardPanel().getBillTable().getSelectedRow();
+			if(bodyRow>=0){
+				String findAnaliyStrSql = "SELECT DISTINCT TRIM(NC_ANALYSIS_NAME)   analysisname "
+						+" FROM NC_TEST_AFTER p "
+						+" INNER JOIN NC_RESULT_TYPE t ON t.PK_RESULT_TYPE = p.PK_RESULT_TYPE "
+						+" INNER JOIN NC_UNITS_TYPE u ON u.PK_UNITS_TYPE = p.PK_UNITS_TYPE "
+						+" INNER JOIN NC_SAMPLE_GROUP g ON g.NC_SAMPLE_NAME IN ( 'A','B','C','D' ) "
+						+" INNER JOIN qc_commission_b c ON c.PK_COMMISSION_H = '1001ZZ100000000043DO' "
+						+" AND c.PK_SAMPLEGROUP = g.PK_SAMPLE_GROUP "
+						+" WHERE p.nc_enstard = ( SELECT NC_BBASEN_NAME FROM NC_BASEN_TYPE "
+						+" WHERE PK_BASEN_TYPE = c.PK_ENTERPRISESTANDARD) AND p.nc_sample_point = "
+						+" ( SELECT TRIM(NC_BASPRODPOINT_NAME) FROM "
+						+" NC_BASPROD_POINT WHERE PK_BASPROD_POINT = c.PK_PRODUCTSPEC) "
+						+" AND ' ' || p.Nc_contact_type || ',' LIKE '% '|| c.CONTACTTYPE ||',%' "
+						+" AND ' ' || p.NC_COIL_TYPE || ',' LIKE '% '|| "
+    					+" ( SELECT NC_BASPRODSTRUCT_NAME  FROM NC_BASPROD_STRUCT "
+						+" WHERE PK_BASPROD_STRUCT = c.pk_structuretype ) ||',%' "
+						+" AND p.nc_coil_current = ( "
+						+" SELECT  NC_BASPRODSTRUCT_NAME FROM "
+						+" NC_BASPROD_STRUCT WHERE PK_BASPROD_STRUCT = c.pk_structuretype) and rownum = 1 ";
+				IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+				String analiy = null;
+				try {
+					analiy = (String)bs.executeQuery(findAnaliyStrSql, new ColumnProcessor());
+				} catch (BusinessException e1) {
+					e1.printStackTrace();
+				}
+				String anaName = null;
+				if(analiy!=null && !"".equals(analiy)){
+					anaName = String.valueOf(analiy);
+				}
+				BillItem item = (BillItem)e.getSource();
+				((TaskAnalyseComponentRefModel)((UIRefPane) item.getComponent()).getRefModel()).setAnalysisName(anaName);
+				
+			}
 		}
 		e.setReturnValue(true);
 	}

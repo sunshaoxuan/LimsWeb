@@ -16,7 +16,7 @@ import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
 import nc.ui.pub.qcco.task.utils.WriteBackLimsUtils;
 import nc.ui.pub.qcco.writeback.utils.mediator.WriteBackMediator;
-import nc.ui.qcco.task.utils.FormulaUtils;
+import nc.ui.qcco.task.utils.FormulaUtilsBack;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
@@ -122,8 +122,16 @@ private BaseDAO dao = null;
 	@Override
 	public AggTaskHVO[] unapprove(AggTaskHVO[] clientFullVOs,
 			AggTaskHVO[] originBills) throws BusinessException {
-		return super.pubunapprovebills(clientFullVOs, originBills);
+		AggTaskHVO[] rtn = super.pubunapprovebills(clientFullVOs, originBills);
+		
+		if(clientFullVOs!=null && clientFullVOs.length > 0){
+			for(AggTaskHVO aggvo:clientFullVOs){
+				unWriteBackLims(aggvo);
+			}
+		}
+		return rtn;
 	}
+	
 	@Override
 	public void deleteOldList(List<AggCommissionHVO> deleteList) throws BusinessException {
 		Set<String> commissionPkSet = new HashSet();
@@ -180,6 +188,13 @@ private BaseDAO dao = null;
 		}
 		
 	}
+	
+	private void unWriteBackLims(AggTaskHVO aggvo) throws BusinessException {
+		String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
+		String unApproveSql = new WriteBackMediator().getLIMSCancelSQL(pk_commission_h);
+		getDao().executeUpdate(unApproveSql);
+	}
+	
 	@Override
 	public void updateCommissionReference(String pk_commission_h,String old_pk_commission_h) throws BusinessException {
 		String sql = "update qc_task_h set pk_commission_h = '"+pk_commission_h
@@ -271,7 +286,7 @@ private BaseDAO dao = null;
 										//计算持续时间
 										double calResult = 0;
 										try{
-											calResult = FormulaUtils.calFormula(key,rsMap.get(key));
+											calResult = FormulaUtilsBack.calFormula(key,rsMap.get(key));
 										}catch(Exception e){
 											calResult = 0.0d;
 											Logger.info(e);

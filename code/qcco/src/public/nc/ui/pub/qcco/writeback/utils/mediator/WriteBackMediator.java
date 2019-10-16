@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
+import nc.itf.uap.IUAPQueryBS;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
@@ -15,9 +17,15 @@ import nc.ui.pub.qcco.writeback.utils.processor.impl.*;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pub.lang.UFLiteralDate;
+import nc.vo.qcco.commission.CommissionHVO;
 
 public class WriteBackMediator {
 	
+	public String getLIMSCancelSQL(String pk_commission_h) throws BusinessException{
+		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+		CommissionHVO hvo = (CommissionHVO)bs.retrieveByPK(CommissionHVO.class, pk_commission_h);
+		return "update project set C_NC_TO_LIMS = 'F' where name = '"+hvo.getBillno()+"'";
+	}
 	
 	
 	

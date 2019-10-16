@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import nc.bs.framework.common.NCLocator;
+import nc.bs.logging.Logger;
 import nc.bs.uif2.BusinessExceptionAdapter;
 import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
@@ -225,6 +226,7 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 			if(aggvo.getChildren(TaskBVO.class)!=null){
 				ISuperVO[] superVOs = aggvo.getChildren(TaskBVO.class);
 				if(superVOs.length > 0){
+					Logger.error("开始前台保存校验:");
 					//值类型
 					IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 					Map<String,String> typePk2NameMap = new HashMap<>();
@@ -253,6 +255,8 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 							for(Map<String,String> map : rsList){
 								typePk2NameMap.put(map.get("pk_result_type"), 
 										map.get("nc_result_namecn")==null?null:map.get("nc_result_namecn").replaceAll(" ", ""));
+								Logger.error("前台保存校验BVO-值类型列表:"+map.get("pk_result_type")+"-"
+										+map.get("nc_result_namecn")==null?null:map.get("nc_result_namecn").replaceAll(" ", ""));
 							}
 						}
 					} catch (BusinessException e) {
@@ -260,10 +264,12 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 					}
 					for(ISuperVO superVO : superVOs){
 						TaskBVO bvo = (TaskBVO)superVO;
+						Logger.error("前台保存校验BVO:"+bvo.getTestitem());
 						if(bvo!=null && bvo.getPk_task_s()!=null && bvo.getPk_task_s().length > 0){
 							TaskSVO[] svos =  bvo.getPk_task_s();
 							for(TaskSVO svo : svos){
 								if(svo!=null){
+									Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem());
 									if("duration".equals(svo.getPk_testconditionitem())
 											|| "持续时间".equals(svo.getPk_testconditionitem())
 											|| "Duration".equals(svo.getPk_testconditionitem())){
@@ -271,20 +277,27 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 										continue;
 									}
 									if(svo.getIsoptional()==null || !(svo.getIsoptional().booleanValue())){
+										Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"是否可选校验");
 										//必输项,文本值或参照值不能同时为空
 										if((svo.getTextvalue()==null||"".equals(svo.getTextvalue()))&&svo.getPk_refvalue()==null ){
-											throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()+"],值不能为空!"));
+											throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],测试条件项:["+svo.getPk_testconditionitem()+"],值不能为空!"));
 										}
 									}
 									//计算型值和数值型值,只能为数字
+									Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"开始进入数字判断");
+									Logger.error("前台保存校验SVO,值类型pk::"+svo.getPk_valuetype());
+									Logger.error("前台保存校验SVO,testvalue::"+svo.getTextvalue());
 									if(svo.getTextvalue()!=null && 
 											svo.getPk_valuetype()!=null && typePk2NameMap.get(svo.getPk_valuetype())!=null){
+										Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"判断是否为数字型");
 										String typeName = typePk2NameMap.get(svo.getPk_valuetype());
+										Logger.error("前台保存校验SVO,typeName::"+typeName);
 										if("数值".equals(typeName)||"计算型".equals(typeName)){
+											Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"数字匹配成功");
 											try{
 												Double.parseDouble(svo.getTextvalue().toString());
 											}catch(Exception e){
-												throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()
+												throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],测试条件项:["+svo.getPk_testconditionitem()
 														+"],必须为数字!"));
 											}
 										}
@@ -292,13 +305,14 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 									//参照和文本不能同时有值
 									if(svo.getTextvalue()!=null&& !"".equals(svo.getTextvalue()) 
 											&& svo.getPk_refvalue()!=null && !"".equals(svo.getPk_refvalue())){
-										throw new BusinessExceptionAdapter(new BusinessException("测试条件项:["+svo.getPk_testconditionitem()
+										throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],测试条件项:["+svo.getPk_testconditionitem()
 												+"],参照和文本不能同时有值!"));
 									}
 								}
 							}
 						}
 					}
+					Logger.error("结束前台保存校验:");
 				}
 			}
 		}

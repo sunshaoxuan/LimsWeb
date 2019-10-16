@@ -87,7 +87,8 @@ public class ProjectWriteBackProcessor implements IFirstWriteBackProcessor {
 		//approval_id 自增
 		List<Integer> approvalId = utils.getPrePk("approval_id", "project", 1);
 		project.setAttributeValue("approval_id", approvalId.get(0));
-		
+		//回写标志位
+		project.setAttributeValue("c_nc_to_lims", "T");
 		
 		processData.setProject(project);
 		

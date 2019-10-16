@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import nc.bs.framework.common.NCLocator;
+import nc.bs.logging.Logger;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
@@ -22,20 +23,21 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskHVO;
-
+import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
 import org.apache.commons.lang.StringUtils;
 
-import uap.iweb.log.Logger;
 
 public class UserDefineRefUtils {
 	private static TwoQueuesCacheMap<String,String> cacheMap4TestAfter = new TwoQueuesCacheMap<>();
 	private static TwoQueuesCacheMap<String,String> cacheMap4TestBefore = new TwoQueuesCacheMap<>();
+	private static TaskAnalyseComponentRefModel taskAnalyseComponentRefModel = new TaskAnalyseComponentRefModel();
 	public static void refreshBillCardHeadDefRefs(AbstractBill aggvo, BillForm billForm, int selectedRow) {
 		for (BillItem item : billForm.getBillCardPanel().getHeadItems()) {
 			if (!StringUtils.isEmpty(item.getRefType()) && item.getRefType().contains("<")) {
@@ -259,7 +261,8 @@ public class UserDefineRefUtils {
 				AbstractRefModel refModel = pane.getRefModel();
 				
 				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null) {
-					if(rowItem.getKey().equals("component")&& refModel.getTableName().equals("NC_TEST_AFTER")){
+
+					if((rowItem.getKey().equals("component")||rowItem.getKey().equals("pk_component"))&& refModel.getTableName().equals(taskAnalyseComponentRefModel.getTableName())){
 						refreshTestAfterValue(vo,uiTable,row,rowItem,onlyDisplayItem);
 					}else if((rowItem.getKey().equals("component")||rowItem.getKey().equals("pk_component"))&& refModel.getTableName().equals("NC_TEST_INIT")){
 						refreshTestBeforeValue(vo,uiTable,row,rowItem,onlyDisplayItem);
@@ -288,7 +291,10 @@ public class UserDefineRefUtils {
 							}
 						}
 					}
+
+					
 				}
+				
 			}
 		}
 	}
@@ -343,10 +349,9 @@ public class UserDefineRefUtils {
 			}else{
 				List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
 						.executeQuery(
-								"select distinct test_after_code,trim(test_after_name) as test_after_name,PK_TEST_AFTER from NC_TEST_AFTER where PK_TEST_AFTER='"
-						+pk_component+"' ", new MapListProcessor());
+								"select name from "+taskAnalyseComponentRefModel.getTableName()+" where pk_ref = '"+pk_component+"'", new MapListProcessor());
 				for (Map<String, Object> map : custlist) {
-					val = map.get("test_after_name")==null?null:map.get("test_after_name").toString();
+					val = map.get("name")==null?null:map.get("name").toString();
 					cacheMap4TestAfter.put(pk_component, val);
 				}
 			}

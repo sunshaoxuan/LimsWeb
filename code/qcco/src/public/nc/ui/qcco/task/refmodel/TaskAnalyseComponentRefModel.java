@@ -4,19 +4,35 @@ package nc.ui.qcco.task.refmodel;
 
 import nc.ui.bd.ref.AbstractRefModel;
 
-import org.apache.commons.lang.StringUtils;
 
 public class TaskAnalyseComponentRefModel extends AbstractRefModel {
 	
 
 	public TaskAnalyseComponentRefModel() {
 		super();
-		this.setTableName("NC_TEST_AFTER");
+		this.setTableName("(select code,name,pk_ref from "
+				+ " ((SELECT DISTINCT test_after_code code, test_after_name name, PK_TEST_AFTER   pk_ref "
+				+" FROM  NC_TEST_AFTER) "
+				+" union all "
+				+" (select NC_COMPONENT_CODE code,NC_COMPONENT_NAME name,PK_COMPONENT_TABLE pk_ref "
+				+ " from nc_component_table nct)))");
 		this.setMutilLangNameRef(false);
 	}
 
+	
+	private String analysisName = null;
+	
+	
+	public String getAnalysisName() {
+		return analysisName;
+	}
+
+	public void setAnalysisName(String analysisName) {
+		this.analysisName = analysisName;
+	}
+
 	public java.lang.String[] getFieldCode() {
-		return new String[] { "test_after_code", "test_after_name" };
+		return new String[] { "code", "name" };
 	}
 
 	public java.lang.String[] getFieldName() {
@@ -24,15 +40,15 @@ public class TaskAnalyseComponentRefModel extends AbstractRefModel {
 	}
 
 	public java.lang.String[] getHiddenFieldCode() {
-		return new String[] { "PK_TEST_AFTER" };
+		return new String[] { "pk_ref" };
 	}
 
 	public java.lang.String getPkFieldCode() {
-		return "PK_TEST_AFTER";
+		return "pk_ref";
 	}
 
 	public java.lang.String getOrderPart() {
-		return "test_after_code";
+		return "code";
 	}
 
 	public int getDefaultFieldCount() {
@@ -44,13 +60,25 @@ public class TaskAnalyseComponentRefModel extends AbstractRefModel {
 	}
 	@Override
 	public String getRefNameField() {
-		return "test_after_name";
+		return "name";
 	}
 
 
 	protected String getSql(String strPatch, String[] strFieldCode, String[] hiddenFields, String strTableName,
 			String strWherePart, String strGroupField, String strOrderField) {
-		return "select distinct test_after_code,test_after_name,PK_TEST_AFTER from NC_TEST_AFTER";
+		if(getAnalysisName()!=null){
+			//有Analysis 为手工输入,只读取 NC_COMPONENT_NAME的数据 tank 2019年10月14日20:15:26
+			return "select code,name,pk_ref from (select PK_COMPONENT_TABLE pk_ref,NC_COMPONENT_CODE code,"
+					+ " NC_COMPONENT_NAME name from nc_component_table nct where nct.analysis in ( "
+					+" select n.name from nc_analysis_list n where n.name = '"+getAnalysisName()+"'))";
+		}else{
+			return "select code,name,pk_ref from "
+					+ " ((SELECT DISTINCT test_after_code code, test_after_name name, PK_TEST_AFTER   pk_ref "
+					+" FROM  NC_TEST_AFTER) "
+					+" union all "
+					+" (select NC_COMPONENT_CODE code,NC_COMPONENT_NAME name,PK_COMPONENT_TABLE pk_ref "
+					+ " from nc_component_table nct)) NC_TEST_AFTER";
+		}
 	}
 
 	
