@@ -1,23 +1,18 @@
 package nc.ui.qcco.task.action;
 
 import java.awt.event.ActionEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import nc.bs.framework.common.NCLocator;
-import nc.bs.logging.Logger;
 import nc.bs.uif2.BusinessExceptionAdapter;
 import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
 import nc.itf.qcco.ITaskMaintain;
 import nc.itf.uap.IUAPQueryBS;
-import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
-import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.pubapp.uif2app.actions.DifferentVOSaveAction;
 import nc.ui.pubapp.uif2app.actions.RefreshSingleAction;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
@@ -34,7 +29,6 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
-import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskSVO;
@@ -226,7 +220,6 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 			if(aggvo.getChildren(TaskBVO.class)!=null){
 				ISuperVO[] superVOs = aggvo.getChildren(TaskBVO.class);
 				if(superVOs.length > 0){
-					Logger.error("开始前台保存校验:");
 					//值类型
 					IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 					Map<String,String> typePk2NameMap = new HashMap<>();
@@ -255,8 +248,6 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 							for(Map<String,String> map : rsList){
 								typePk2NameMap.put(map.get("pk_result_type"), 
 										map.get("nc_result_namecn")==null?null:map.get("nc_result_namecn").replaceAll(" ", ""));
-								Logger.error("前台保存校验BVO-值类型列表:"+map.get("pk_result_type")+"-"
-										+map.get("nc_result_namecn")==null?null:map.get("nc_result_namecn").replaceAll(" ", ""));
 							}
 						}
 					} catch (BusinessException e) {
@@ -264,36 +255,30 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 					}
 					for(ISuperVO superVO : superVOs){
 						TaskBVO bvo = (TaskBVO)superVO;
-						Logger.error("前台保存校验BVO:"+bvo.getTestitem());
 						if(bvo!=null && bvo.getPk_task_s()!=null && bvo.getPk_task_s().length > 0){
 							TaskSVO[] svos =  bvo.getPk_task_s();
 							for(TaskSVO svo : svos){
 								if(svo!=null){
-									Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem());
-									if("duration".equals(svo.getPk_testconditionitem())
-											|| "持续时间".equals(svo.getPk_testconditionitem())
-											|| "Duration".equals(svo.getPk_testconditionitem())){
-										//此项由后台算出
-										continue;
-									}
+									
 									if(svo.getIsoptional()==null || !(svo.getIsoptional().booleanValue())){
-										Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"是否可选校验");
-										//必输项,文本值或参照值不能同时为空
-										if((svo.getTextvalue()==null||"".equals(svo.getTextvalue()))&&svo.getPk_refvalue()==null ){
-											throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],测试条件项:["+svo.getPk_testconditionitem()+"],值不能为空!"));
+										if("duration".equals(svo.getPk_testconditionitem())
+												|| "持续时间".equals(svo.getPk_testconditionitem())
+												|| "Duration".equals(svo.getPk_testconditionitem())){
+											//此项由后台算出
+											;
+										}else{
+											//必输项,文本值或参照值不能同时为空
+											if((svo.getTextvalue()==null||"".equals(svo.getTextvalue()))&&svo.getPk_refvalue()==null ){
+												throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],测试条件项:["+svo.getPk_testconditionitem()+"],值不能为空!"));
+											}
 										}
+										
 									}
 									//计算型值和数值型值,只能为数字
-									Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"开始进入数字判断");
-									Logger.error("前台保存校验SVO,值类型pk::"+svo.getPk_valuetype());
-									Logger.error("前台保存校验SVO,testvalue::"+svo.getTextvalue());
 									if(svo.getTextvalue()!=null && 
 											svo.getPk_valuetype()!=null && typePk2NameMap.get(svo.getPk_valuetype())!=null){
-										Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"判断是否为数字型");
 										String typeName = typePk2NameMap.get(svo.getPk_valuetype());
-										Logger.error("前台保存校验SVO,typeName::"+typeName);
 										if("数值".equals(typeName)||"计算型".equals(typeName)){
-											Logger.error("前台保存校验SVO:"+svo.getPk_testconditionitem()+"数字匹配成功");
 											try{
 												Double.parseDouble(svo.getTextvalue().toString());
 											}catch(Exception e){
@@ -312,7 +297,6 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 							}
 						}
 					}
-					Logger.error("结束前台保存校验:");
 				}
 			}
 		}

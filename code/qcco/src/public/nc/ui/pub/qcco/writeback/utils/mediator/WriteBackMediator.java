@@ -60,6 +60,10 @@ public class WriteBackMediator {
 			//result表
 			ResultWriteBackProcessor resultProcessor = new ResultWriteBackProcessor();
 			resultProcessor.setUtils(utils);
+			//审批信息表
+			ApprovalInfoWriteBackProcessor approvalProcessor = new ApprovalInfoWriteBackProcessor();
+			approvalProcessor.setUtils(utils);
+			
 			
 			//静态资源初始化 -- 这两句话不能删除,虽然没有任何引用,是用于static代码块初始化
 			@SuppressWarnings("unused")
@@ -84,13 +88,17 @@ public class WriteBackMediator {
 			testProcessor.processFirst(data);
 			// result表第一次回写
 			resultProcessor.processFirst(data);
-
+			// 审批表信息回写
+			approvalProcessor.processFirst(data);
+			
 			// sample第二次回写
 			sampleProcessor.processSec(data);
 			// test第二次回写
 			testProcessor.processSec(data);
 			// result第二次回写
 			resultProcessor.processSec(data);
+			
+			
 			
 			rsList.addAll(utils.toLIMSSQL());
 		}

@@ -63,7 +63,10 @@ public class WriteBackProcessData {
 	
 	//LIMS第一次回写test
 	//key:一个task对应一个test 顺序和任务单子表任务顺序一致
-	private List<Test> firstTestList;  
+	private List<Test> firstTestList;
+	
+	//LIMS 审批信息
+	private List<ApprovalInfo> approvalList;
 	
 	//LIMS第二次回写test
 	//task 每分配一个任务,则生成一条test
@@ -353,6 +356,18 @@ public class WriteBackProcessData {
 
 	public void setSecResultList(List<Result> secResultMap) {
 		this.secResultList = secResultMap;
+	}
+
+	public List<ApprovalInfo> getApprovalList() {
+		return approvalList;
+	}
+
+	public void setApprovalList(List<ApprovalInfo> approvalList) {
+		this.approvalList = approvalList;
+	}
+
+	public void setSampleIdTaskMap(Map<String, List<CProjTask>> sampleIdTaskMap) {
+		this.sampleIdTaskMap = sampleIdTaskMap;
 	}
 
 	

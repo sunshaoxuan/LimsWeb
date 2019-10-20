@@ -19,6 +19,7 @@ import nc.jdbc.framework.processor.MapListProcessor;
 import nc.jdbc.framework.processor.MapProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.ApprovalInfo;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaB;
@@ -650,7 +651,14 @@ public class CommonUtils {
 			}
 			rs.addAll(VOToInserSQL(temp, "result",SecWriteBackStaticMaping.RESULT_STATIC_MAP));
 		}
-		
+		// ÉóÅúÐÅÏ¢
+		if (processData.getApprovalList() != null && processData.getApprovalList().size() > 0) {
+			List<SuperVO> temp = new ArrayList<>();
+			for (ApprovalInfo approval : processData.getApprovalList()) {
+				temp.add(approval);
+			}
+			rs.addAll(VOToInserSQL(temp, "approval_details", null));
+		}
 		
 		
 
@@ -764,8 +772,9 @@ public class CommonUtils {
 		TIME_COLUMN_SET.add("c_techsupervisor_date");
 		TIME_COLUMN_SET.add("first_entry_on");
 		TIME_COLUMN_SET.add("entered_on");
-		
-		
+		TIME_COLUMN_SET.add("date_assigned");
+		TIME_COLUMN_SET.add("date_approval_due");
+		TIME_COLUMN_SET.add("date_approved");
 		
 		return TIME_COLUMN_SET;
 	}

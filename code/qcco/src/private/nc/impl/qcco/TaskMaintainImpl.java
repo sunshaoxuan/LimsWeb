@@ -27,6 +27,7 @@ import nc.vo.qcco.task.TaskHVO;
 import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskSVO;
 import nc.itf.qcco.ITaskMaintain;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
@@ -190,6 +191,15 @@ private BaseDAO dao = null;
 	}
 	
 	private void unWriteBackLims(AggTaskHVO aggvo) throws BusinessException {
+		// 只有sample全部为U才可以取消审批
+		String sql = "select count(*) from sample where project = '"+aggvo.getParentVO().getBillno()
+				+"' and (status <> 'U' or status is null)";
+		Integer num = (Integer) getDao().executeQuery(sql, new ColumnProcessor());
+		if (num != null && num > 0) {
+			throw new BusinessException("simple状态校验不通过,无法取消审批!");
+		}
+		
+		
 		String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
 		String unApproveSql = new WriteBackMediator().getLIMSCancelSQL(pk_commission_h);
 		getDao().executeUpdate(unApproveSql);
@@ -197,7 +207,7 @@ private BaseDAO dao = null;
 	
 	@Override
 	public void updateCommissionReference(String pk_commission_h,String old_pk_commission_h) throws BusinessException {
-		String sql = "update qc_task_h set pk_commission_h = '"+pk_commission_h
+		 String sql = "update qc_task_h set pk_commission_h = '"+pk_commission_h
 				+"' where pk_commission_h = '"+old_pk_commission_h+"'";
 		getDao().executeUpdate(sql);
 		

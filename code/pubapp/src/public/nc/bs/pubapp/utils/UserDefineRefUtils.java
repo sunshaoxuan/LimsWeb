@@ -261,7 +261,6 @@ public class UserDefineRefUtils {
 				AbstractRefModel refModel = pane.getRefModel();
 				
 				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null) {
-
 					if((rowItem.getKey().equals("component")||rowItem.getKey().equals("pk_component"))&& refModel.getTableName().equals(taskAnalyseComponentRefModel.getTableName())){
 						refreshTestAfterValue(vo,uiTable,row,rowItem,onlyDisplayItem);
 					}else if((rowItem.getKey().equals("component")||rowItem.getKey().equals("pk_component"))&& refModel.getTableName().equals("NC_TEST_INIT")){
@@ -291,7 +290,6 @@ public class UserDefineRefUtils {
 							}
 						}
 					}
-
 					
 				}
 				

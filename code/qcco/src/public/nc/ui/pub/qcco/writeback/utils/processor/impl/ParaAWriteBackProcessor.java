@@ -1,5 +1,7 @@
 package nc.ui.pub.qcco.writeback.utils.processor.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
@@ -94,6 +97,23 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 		}
 		//获取各个组别对应的实验前参数的数量
 		Map<String,Integer> numberMap = getGroupParaANum(processData.getAggCommissionHVO().getPrimaryKey());
+		//单位缓存
+		@SuppressWarnings("unchecked")
+		Map<String,String> unitMap = (Map<String, String>) NCLocator.getInstance().lookup(IUAPQueryBS.class)
+					.executeQuery("select NC_UNITS_NAME,UNIT_CODE from nc_units_type", 
+							new ResultSetProcessor() {
+								private static final long serialVersionUID = 6620032648507337165L;
+								Map<String,String> rsMap = new HashMap<>();
+								@Override
+								public Object handleResultSet(ResultSet rs) throws SQLException {
+									while(rs.next()){
+										String key = (rs.getString(1)==null?null:rs.getString(1).replaceAll(" ", ""));
+										String value = (rs.getString(2)==null?null:rs.getString(2).replaceAll(" ", ""));
+										rsMap.put(key, value);
+									}
+									return rsMap;
+								}
+							});
 		for (int i = 0; i < srcDataList.size(); i++) {
 			// 写入主键和父主键(只支持单主键,要多主键,需要参考上面的字段添加逻辑)
 
@@ -138,7 +158,15 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 			}else if("D".equalsIgnoreCase(String.valueOf(allParaAList.get(i).getAttributeValue("sample_group")))){
 				allParaAList.get(i).setAttributeValue("order_number",ordernum+numberMap.get("A")+numberMap.get("B")+numberMap.get("C"));
 			}
-
+			//单位转换 2019年10月20日20:28:50
+			String unitname = (String)allParaAList.get(i).getAttributeValue("units");
+			if(unitname!=null){
+				String changeName = unitMap.get(unitname.replaceAll(" ", ""));
+				if(changeName!=null){
+					allParaAList.get(i).setAttributeValue("units", changeName);
+				}
+				
+			}
 		}
 		processData.setParaAListMap(sortParaA(allParaAList));
 	}
