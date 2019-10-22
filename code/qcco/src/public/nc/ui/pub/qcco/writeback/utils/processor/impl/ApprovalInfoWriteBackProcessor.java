@@ -114,7 +114,7 @@ public class ApprovalInfoWriteBackProcessor implements IFirstWriteBackProcessor 
 		//客户主管填1,技术主管填2
 		sec.setAttributeValue("approval_step", 2);
 		//客户主管:CUSTOMER_M,技术主管:实验室主管审批委托单
-		sec.setAttributeValue("approval_role", "实验室主管审批委托单");
+		sec.setAttributeValue("approval_role", "LAB_M");
 		//客户主管:客户主管审核委托单,技术主管:实验室主管审批委托单
 		sec.setAttributeValue("approval_reason", "实验室主管审批委托单");
 		//客户主管:1,技术主管:2

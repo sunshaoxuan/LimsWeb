@@ -5,6 +5,7 @@ package nc.ui.qcco.task.ace.view;
  * 
  * 2.需要在nc.ui.qcco.task.ace.view.Task_config.getSunlistView1() 上添加:bean.getBillListPanel().getBodyTabbedPane().setTabChangedListener(getMainGrandMediator());
  * 
+ * 3.去掉TaskBodyPasteToTailAction()的构造参数
  * @author 91967
  *
  */

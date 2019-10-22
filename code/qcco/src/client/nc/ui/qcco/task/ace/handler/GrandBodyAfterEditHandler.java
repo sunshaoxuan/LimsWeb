@@ -8,13 +8,23 @@ import nc.ui.pub.bill.BillCellEditor;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
+import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
 import nc.vo.pub.BusinessException;
 
 public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEditEvent> {
+	private BillForm mainBillForm;//
 
+	public BillForm getMainBillForm() {
+		return mainBillForm;
+	}
+
+	public void setMainBillForm(BillForm mainBillForm) {
+		this.mainBillForm = mainBillForm;
+	}
 	@Override
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
+		String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 		if ("textvalue".equals(e.getKey())) {
 			if (e.getValue() != null) {
 				e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
@@ -42,6 +52,42 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 		else if("samplegroup".equals(e.getKey())){
 			if(e.getValue()!=null && !"".equals(e.getValue())){
 				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_samplegroup");
+				
+				
+				//手工输入需要设置实验参数
+				String group = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "samplegroup");
+				int bodyRow = getMainBillForm().getBillCardPanel().getBillTable().getSelectedRow();
+				if (bodyRow >= 0) {
+					String findAnaliyStrSql = "SELECT DISTINCT TRIM(NC_ANALYSIS_NAME)   analysisname " + " FROM NC_TEST_AFTER p "
+							+ " INNER JOIN NC_RESULT_TYPE t ON t.PK_RESULT_TYPE = p.PK_RESULT_TYPE "
+							+ " INNER JOIN NC_UNITS_TYPE u ON u.PK_UNITS_TYPE = p.PK_UNITS_TYPE "
+							+ " INNER JOIN NC_SAMPLE_GROUP g ON g.NC_SAMPLE_NAME IN ( '" + group + "' ) "
+							+ " INNER JOIN qc_commission_b c ON c.PK_COMMISSION_H = '" + pk_commission_h + "' "
+							+ " AND c.PK_SAMPLEGROUP = g.PK_SAMPLE_GROUP "
+							+ " WHERE p.nc_enstard = ( SELECT NC_BBASEN_NAME FROM NC_BASEN_TYPE "
+							+ " WHERE PK_BASEN_TYPE = c.PK_ENTERPRISESTANDARD) AND p.nc_sample_point = "
+							+ " ( SELECT TRIM(NC_BASPRODPOINT_NAME) FROM "
+							+ " NC_BASPROD_POINT WHERE PK_BASPROD_POINT = c.PK_PRODUCTSPEC) "
+							+ " AND ' ' || p.Nc_contact_type || ',' LIKE '% '|| c.CONTACTTYPE ||',%' "
+							+ " AND ' ' || p.NC_COIL_TYPE || ',' LIKE '% '|| " + " ( SELECT NC_BASPRODSTRUCT_NAME  FROM NC_BASPROD_STRUCT "
+							+ " WHERE PK_BASPROD_STRUCT = c.pk_structuretype ) ||',%' " + " AND p.nc_coil_current = ( "
+							+ " SELECT  NC_BASPRODSTRUCT_NAME FROM "
+							+ " NC_BASPROD_STRUCT WHERE PK_BASPROD_STRUCT = c.pk_structuretype) and rownum = 1 ";
+					String analiy = null;
+					try {
+						IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+						analiy = (String) bs.executeQuery(findAnaliyStrSql, new ColumnProcessor());
+					} catch (BusinessException e1) {
+						e1.printStackTrace();
+					}
+					String anaName = null;
+					if (analiy != null && !"".equals(analiy)) {
+						anaName = String.valueOf(analiy);
+					}
+					e.getBillCardPanel().setBodyValueAt(anaName, e.getRow(), "analysisname", "pk_task_r");
+
+				}
+				
 			}
 		}
 		else if("component".equals(e.getKey())){
@@ -55,36 +101,7 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 				((TaskAnalyseComponentRefModel)refPane.getRefModel()).setAnalysisName(null);
 			}
 			
-			String findAnaliyStrSql = "SELECT DISTINCT TRIM(NC_ANALYSIS_NAME)   analysisname "
-					+" FROM NC_TEST_AFTER p "
-					+" INNER JOIN NC_RESULT_TYPE t ON t.PK_RESULT_TYPE = p.PK_RESULT_TYPE "
-					+" INNER JOIN NC_UNITS_TYPE u ON u.PK_UNITS_TYPE = p.PK_UNITS_TYPE "
-					+" INNER JOIN NC_SAMPLE_GROUP g ON g.NC_SAMPLE_NAME IN ( 'A','B','C','D' ) "
-					+" INNER JOIN qc_commission_b c ON c.PK_COMMISSION_H = '1001ZZ100000000043DO' "
-					+" AND c.PK_SAMPLEGROUP = g.PK_SAMPLE_GROUP "
-					+" WHERE p.nc_enstard = ( SELECT NC_BBASEN_NAME FROM NC_BASEN_TYPE "
-					+" WHERE PK_BASEN_TYPE = c.PK_ENTERPRISESTANDARD) AND p.nc_sample_point = "
-					+" ( SELECT TRIM(NC_BASPRODPOINT_NAME) FROM "
-					+" NC_BASPROD_POINT WHERE PK_BASPROD_POINT = c.PK_PRODUCTSPEC) "
-					+" AND ' ' || p.Nc_contact_type || ',' LIKE '% '|| c.CONTACTTYPE ||',%' "
-					+" AND ' ' || p.NC_COIL_TYPE || ',' LIKE '% '|| "
-					+" ( SELECT NC_BASPRODSTRUCT_NAME  FROM NC_BASPROD_STRUCT "
-					+" WHERE PK_BASPROD_STRUCT = c.pk_structuretype ) ||',%' "
-					+" AND p.nc_coil_current = ( "
-					+" SELECT  NC_BASPRODSTRUCT_NAME FROM "
-					+" NC_BASPROD_STRUCT WHERE PK_BASPROD_STRUCT = c.pk_structuretype) and rownum = 1 ";
-			IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-			String analiy = null;
-			try {
-				analiy = (String)bs.executeQuery(findAnaliyStrSql, new ColumnProcessor());
-			} catch (BusinessException e1) {
-				e1.printStackTrace();
-			}
-			String anaName = null;
-			if(analiy!=null && !"".equals(analiy)){
-				anaName = String.valueOf(analiy);
-			}
-			e.getBillCardPanel().setBodyValueAt(anaName, e.getRow(), "analysisname", "pk_task_r");
+			
 		}
 
 	}
