@@ -382,7 +382,7 @@ public class RefValuePanel extends UIDialog implements nc.ui.pub.bill.BillEditLi
 		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 
 		List<RefValueVO> lists = new ArrayList<>();
-		String sql = "select distinct trim(nc_list_code)as nc_list_code,c_en_value,value from nc_list_entry where c_en_value is not null and value is not null";
+		String sql = "select distinct trim(nc_list_code)as nc_list_code,c_en_value,value from nc_list_entry where 11 = 11 ";
 		if (pk_list_table != null) {
 			sql += " and pk_list_table ='" + pk_list_table + "'";
 		}

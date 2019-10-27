@@ -43,6 +43,7 @@ public class ChildAddLineAction extends BodyAddLineAction{
 		getCardPanel().getBillModel().setCellEditable(index,"isoptional",true);
 		getCardPanel().getBillModel().setCellEditable(index,"isallow_out",true);
 		getCardPanel().getBillModel().setCellEditable(index,"instrument",true);
+		getCardPanel().getBillModel().setValueAt(1, index, "valueways");
 		
 		// ‘—È∫Û
 		getCardPanel().getBillModel().setCellEditable(index,"samplegroup",true);

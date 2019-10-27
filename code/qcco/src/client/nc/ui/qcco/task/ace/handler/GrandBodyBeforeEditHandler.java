@@ -68,7 +68,7 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 
 			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null : (Integer) e
 					.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
-			if (2 == valueways) {
+			if (valueways == null||2 == valueways) {
 				e.setReturnValue(false);
 				return;
 			}

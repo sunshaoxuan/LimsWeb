@@ -60,7 +60,7 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 						+ "' between indutydate and isnull(enddutydate, '9999-12-31')", new ColumnProcessor());
 
 				Map vals = (Map) query.executeQuery(
-						"select name, email, isnull(officephone, mobile) teleno from bd_psndoc where pk_psndoc =  '"
+						"select name, email, isnull(mobile, '') teleno from bd_psndoc where pk_psndoc =  '"
 								+ pk_psndoc + "'", new MapProcessor());
 				psnName = (String) vals.get("name");
 				psnEmail = (String) vals.get("email");

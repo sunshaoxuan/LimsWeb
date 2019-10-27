@@ -5,12 +5,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import nc.bs.framework.common.NCLocator;
+import nc.bs.logging.Logger;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.jdbc.framework.processor.MapProcessor;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardHeadTailAfterEditEvent;
+import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 
@@ -77,6 +80,15 @@ public class AceHeadTailAfterEditHandler implements IAppEventHandler<CardHeadTai
 				}
 				e.getBillCardPanel().showHeadItem(templates);
 				
+			}
+		} else if ("cuserid".equals(e.getKey())){
+			try {
+				String tellno = (String)NCLocator.getInstance().lookup(IUAPQueryBS.class).executeQuery(
+						"select mobile from bd_psndoc where pk_psndoc =  '"
+								+ String.valueOf(e.getValue()) + "'", new ColumnProcessor());
+				e.getBillCardPanel().setHeadItem("teleno", tellno);
+			} catch (BusinessException e1) {
+				Logger.error(e1);
 			}
 		}
 	}
