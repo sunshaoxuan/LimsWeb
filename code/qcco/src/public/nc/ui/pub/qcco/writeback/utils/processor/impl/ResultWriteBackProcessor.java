@@ -1,5 +1,7 @@
 package nc.ui.pub.qcco.writeback.utils.processor.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,9 +15,12 @@ import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
+import nc.bs.framework.common.NCLocator;
 import nc.hr.utils.InSQLCreator;
+import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Result;
@@ -255,6 +260,23 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		String psncode = (String)baseDao.executeQuery("select USER_CODE from sm_user where CUSERID = '"
 				+processData.getAggCommissionHVO().getParentVO().getCreator()+"'", 
 				new ColumnProcessor());
+		//单位缓存
+		@SuppressWarnings("unchecked")
+		Map<String, String> unitMap = (Map<String, String>) NCLocator.getInstance().lookup(IUAPQueryBS.class)
+				.executeQuery("select NC_UNITS_NAME,UNIT_CODE from nc_units_type", new ResultSetProcessor() {
+					private static final long serialVersionUID = 6620032648507337165L;
+					Map<String, String> rsMap = new HashMap<>();
+
+					@Override
+					public Object handleResultSet(ResultSet rs) throws SQLException {
+						while (rs.next()) {
+							String key = (rs.getString(1) == null ? null : rs.getString(1).replaceAll(" ", ""));
+							String value = (rs.getString(2) == null ? null : rs.getString(2).replaceAll(" ", ""));
+							rsMap.put(key, value);
+						}
+						return rsMap;
+					}
+				});
 		for (int i = 0; i < srcDataList.size(); i++) {
 			// 写入主键和父主键(只支持单主键,要多主键,需要参考上面的字段添加逻辑)
 			// 获取上层的主键:
@@ -358,6 +380,15 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 					entryStrs = null;
 				}
 				allResultList.get(i).setAttributeValue("numeric_entry", entryStrs);
+			}
+			//单位转换 2019年10月27日21:36:49
+			String unitname = (String)allResultList.get(i).getAttributeValue("units");
+			if(unitname!=null){
+				String changeName = unitMap.get(unitname.replaceAll(" ", ""));
+				if(changeName!=null){
+					allResultList.get(i).setAttributeValue("units", changeName);
+				}
+				
 			}
 					
 //			allResultList.get(i).setAttributeValue("test", "test");

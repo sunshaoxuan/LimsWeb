@@ -6,6 +6,7 @@ import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillCellEditor;
 import nc.ui.pub.bill.BillItem;
+import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
@@ -31,8 +32,49 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 			} else {
 				e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
 			}
-
+			String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
+			/*if(valuetype!=null && valuetype.equals("计算型")){
+				//转化成小时
+				String value = (String)e.getValue();
+				String unit = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "unit");
+				CommonUtils utils = new CommonUtils();
+				int valueInt = utils.changeTime2H(value,unit);
+				
+				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "textvalue");
+				e.getBillCardPanel().setBodyValueAt("h", e.getRow(), "unit");
+				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "formatted_entry");
+			}else{
+				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "formatted_entry");
+			}*/
 			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "formatted_entry");
+		} else if ("unit".equals(e.getKey())) {
+			//转化成小时
+			/*String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
+			if(valuetype!=null && valuetype.equals("计算型")){
+				String unit = (String)e.getValue();
+				String value = String.valueOf(e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue"));
+				CommonUtils utils = new CommonUtils();
+				int valueInt = utils.changeTime2H(value,unit);
+				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "textvalue");
+				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "formatted_entry");
+				e.getBillCardPanel().setBodyValueAt("h", e.getRow(), "unit");
+			}*/
+			
+		}else if ("valuetype".equals(e.getKey())) {
+		/*	//转化成小时
+			String valuetype = (String)e.getValue();
+			if(valuetype!=null && valuetype.equals("计算型")){
+				String unit = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "unit");
+				String value = String.valueOf(e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue"));
+				CommonUtils utils = new CommonUtils();
+				int valueInt = utils.changeTime2H(value,unit);
+				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "textvalue");
+				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "formatted_entry");
+				e.getBillCardPanel().setBodyValueAt("h", e.getRow(), "unit");
+			}*/
+			if(e.getValue()!=null && !"".equals(e.getValue())){
+				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_valuetype");
+			}
 		} else if ("refvalue".equals(e.getKey())) {
 			if (e.getValue() != null) {
 				e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
@@ -42,11 +84,6 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 		} else if("instrument".equals(e.getKey())){
 			if(e.getValue()!=null && !"".equals(e.getValue())){
 				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_instrument");
-			}
-		}
-		else if("valuetype".equals(e.getKey())){
-			if(e.getValue()!=null && !"".equals(e.getValue())){
-				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_valuetype");
 			}
 		}
 		else if("samplegroup".equals(e.getKey())){
@@ -105,4 +142,6 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 		}
 
 	}
+	
+
 }

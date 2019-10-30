@@ -65,7 +65,8 @@ public class RefValuePanel extends UIDialog implements nc.ui.pub.bill.BillEditLi
 
 	private CircularlyAccessibleValueObject[] ss = null;
 	private JPanel ivjUIDialogContentPane = null;
-	private String selectedstr;
+	private String selectedCNstr;
+	private String selectedENstr;
 	private Integer testnum;
 	private String[] strs;
 	private String beforesample;
@@ -104,12 +105,20 @@ public class RefValuePanel extends UIDialog implements nc.ui.pub.bill.BillEditLi
 		this.testnum = testnum;
 	}
 
-	public String getSelectedstr() {
-		return selectedstr;
+	public String getSelectedCNstr() {
+		return selectedCNstr;
 	}
 
-	public void setSelectedstr(String selectedstr) {
-		this.selectedstr = selectedstr;
+	public void setSelectedCNstr(String selectedCNstr) {
+		this.selectedCNstr = selectedCNstr;
+	}
+	
+	public String getSelectedENstr() {
+		return selectedENstr;
+	}
+
+	public void setSelectedENstr(String selectedENstr) {
+		this.selectedENstr = selectedENstr;
 	}
 
 	public String getProjectType() {
@@ -215,17 +224,8 @@ public class RefValuePanel extends UIDialog implements nc.ui.pub.bill.BillEditLi
 					return;
 				}
 				for (RefValueVO taskBodyVO : RefValueVOsAllocatVO) {
-					if (null != reportLang && reportLang.equals("1")) {
-						selectedstr = taskBodyVO.getEngname();
-					} else if (null != reportLang && reportLang.equals("2")) {
-						selectedstr = taskBodyVO.getChinaname();
-					}
-				}
-				try {
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					selectedCNstr = taskBodyVO.getChinaname();
+					selectedENstr = taskBodyVO.getEngname();
 				}
 			}
 			dispose();

@@ -15,6 +15,7 @@ import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
 import nc.ui.pub.qcco.task.utils.WriteBackLimsUtils;
+import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mediator.WriteBackMediator;
 import nc.ui.qcco.task.utils.FormulaUtilsBack;
 import nc.ui.querytemplate.querytree.IQueryScheme;
@@ -277,6 +278,27 @@ private BaseDAO dao = null;
 			}
 		});
 		Set<String> updateSqlSet = new HashSet<>();
+		CommonUtils utils = new CommonUtils();
+		//计算型的pk
+		String typeOfcal = (String) getDao().executeQuery("select pk_result_type from nc_result_type where NC_RESULT_NAMECN like '计算型%'", new ColumnProcessor());
+		//查询单位
+		String unitsql = "select PK_TESTCONDITIONITEM_BACK,comp.UNITS from qc_task_s s "
+				+" inner join QC_TASK_B b on b.PK_TASK_B = s.PK_TASK_B "
+				+" inner join qc_task_h h on (h.PK_TASK_H = b.PK_TASK_H and h.PK_TASK_H in ("+pkInsql+")) "
+				+" left join nc_component_table comp on comp.PK_COMPONENT_TABLE = s.PK_TESTCONDITIONITEM_BACK "
+				+" where s.dr = 0 ";
+		@SuppressWarnings("unchecked")
+		Map<String,String> pk2unitMap = (Map<String,String>)getDao().executeQuery(unitsql, new ResultSetProcessor() {
+			private static final long serialVersionUID = 8524580285943265689L;
+			Map<String,String> rsMap = new HashMap<>();
+			@Override
+			public Object handleResultSet(ResultSet rs) throws SQLException {
+				while(rs.next()){
+					rsMap.put(rs.getString(1), rs.getString(2));
+				}
+				return rsMap;
+			}
+		});
 		//更新数据库和vo
 		for(AggTaskHVO aggvo : aggvos){
 			if(aggvo!=null&&aggvo.getChildren(TaskBVO.class)!=null
@@ -294,15 +316,32 @@ private BaseDAO dao = null;
 												svo.getPk_testconditionitem().replaceAll(" ", ""));
 									if(rsMap.containsKey(key)){
 										//计算持续时间
-										double calResult = 0;
+										double calResultDouble = 0;
+										String resultReal = null;
 										try{
-											calResult = FormulaUtilsBack.calFormula(key,rsMap.get(key));
+											calResultDouble = FormulaUtilsBack.calFormula(key,rsMap.get(key));
 										}catch(Exception e){
-											calResult = 0.0d;
+											calResultDouble = 0.0d;
 											Logger.info(e);
 										}
-										svo.setTextvalue(String.valueOf(calResult));
-										String updateSql = "update qc_task_s set textvalue = '"+String.valueOf(calResult)
+										//计算型,转换成小时单位 根据测试条件项的主键,查询测试条件的原始单位
+										if(svo.getPk_valuetype()!=null && typeOfcal!=null && svo.getPk_valuetype().equals(typeOfcal)){
+											String unit = pk2unitMap.get(svo.getPk_testconditionitem_back());
+											resultReal = String.valueOf(utils.changeTime2H(String.valueOf(calResultDouble), unit));
+										}else{
+											resultReal = String.valueOf(calResultDouble);
+										}
+										svo.setTextvalue(String.valueOf(resultReal));
+										svo.setUnit("h");
+										svo.setFormatted_entry(String.valueOf(resultReal));
+										String updateSql = "update qc_task_s set textvalue = '"+String.valueOf(resultReal)
+												+"' where pk_task_s = '"+svo.getPk_task_s()+"'";
+										updateSqlSet.add(updateSql);
+										
+										updateSql = "update qc_task_s set unit = 'h' where pk_task_s = '"+svo.getPk_task_s()+"'";
+										updateSqlSet.add(updateSql);
+										
+										updateSql = "update qc_task_s set formatted_entry = '"+String.valueOf(resultReal)
 												+"' where pk_task_s = '"+svo.getPk_task_s()+"'";
 										updateSqlSet.add(updateSql);
 									}

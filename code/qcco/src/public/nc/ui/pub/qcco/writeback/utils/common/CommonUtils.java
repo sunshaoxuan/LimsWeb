@@ -883,7 +883,7 @@ public class CommonUtils {
 	}
 	/**
 	 * 通过component中的list获取listKey
-	 * @param FIXME 
+	 * @param  
 	 * @return
 	 * @throws DAOException 
 	 */
@@ -916,40 +916,51 @@ public class CommonUtils {
 	public Integer getTestTime(ISuperVO iSuperVO) throws BusinessException {
 		if(iSuperVO!=null && iSuperVO.getAttributeValue("pk_task_b")!=null){
 			//查询孙表持续时间
-			TaskSVO svo = 
-					(TaskSVO) baseDao.executeQuery(
-					"select * from qc_task_s where dr = 0 and pk_testconditionitem = '持续时间' and  pk_task_b = '"
-					+String.valueOf(iSuperVO.getAttributeValue("pk_task_b"))+"'", 
-					new BeanProcessor(TaskSVO.class));
-			if(svo!=null && svo.getAttributeValue("textvalue")!=null){
+			String textvalue = 
+					(String) baseDao.executeQuery(
+					"select textvalue from qc_task_s where dr = 0 and pk_testconditionitem in ('持续时间','Duration','duration') and  pk_task_b = '"
+					+String.valueOf(iSuperVO.getAttributeValue("pk_task_b"))+"' and rownum = 1 ", 
+					new ColumnProcessor());
+			if(textvalue!=null){
 				Double time = null;
 				try{
-					time = Double.parseDouble(String.valueOf(svo.getAttributeValue("textvalue")));
+					time = Double.parseDouble(String.valueOf(textvalue));
 				}catch(Exception e){
-					throw new BusinessException("持续时间转换失败:"+String.valueOf(svo.getAttributeValue("textvalue")));
+					throw new BusinessException("持续时间转换失败:"+String.valueOf(textvalue));
 				}
-				if(svo.getAttributeValue("unit")!=null){
-					String unit = String.valueOf(svo.getAttributeValue("unit"));
-					if("HOURS".equalsIgnoreCase(unit)){
-						return (int)Math.ceil(time);
-					}else if("MINUTES".equalsIgnoreCase(unit)){
-						return (int)Math.ceil(time/60);
-					}else if("SECONDS".equalsIgnoreCase(unit)){
-						return (int)Math.ceil(time/60/60);
-					}else if("MS".equalsIgnoreCase(unit)){
-						return (int)Math.ceil(time/60/60/1000);
-					}else if("US".equalsIgnoreCase(unit)){
-						return (int)Math.ceil(time/60/60/1000/1000);
-					}else if("DAYS".equalsIgnoreCase(unit)){
-						return (int)Math.ceil(time*24);
-					}else{
-						throw new BusinessException("未识别的时间单位:"+unit);
-					}
-				}
+				//NC中已经进行时间转换,所以回写的时候不需要再转换 tank 2019年10月28日21:36:24
 				return (int)Math.ceil(time);
 			}
 		}
 		return 0;
+	}
+	
+	public int changeTime2H(String timeStr,String unit){
+		Double time = null;
+		try{
+			time = Double.parseDouble(timeStr);
+		}catch(Exception e){
+			Logger.error("持续时间转换失败:"+timeStr);
+		}
+		if(unit!=null){
+			unit = unit.replaceAll(" ", "");
+			if("HOURS".equalsIgnoreCase(unit)||"h".equalsIgnoreCase(unit)){
+				return (int)Math.ceil(time);
+			}else if("MINUTES".equalsIgnoreCase(unit)||"min".equalsIgnoreCase(unit)){
+				return (int)Math.ceil(time/60);
+			}else if("SECONDS".equalsIgnoreCase(unit)||"s".equalsIgnoreCase(unit)){
+				return (int)Math.ceil(time/60/60);
+			}else if("MS".equalsIgnoreCase(unit)||"ms".equalsIgnoreCase(unit)){
+				return (int)Math.ceil(time/60/60/1000);
+			}else if("US".equalsIgnoreCase(unit)||"μs".equalsIgnoreCase(unit)){
+				return (int)Math.ceil(time/60/60/1000/1000);
+			}else if("DAYS".equalsIgnoreCase(unit)||"days".equalsIgnoreCase(unit)){
+				return (int)Math.ceil(time*24);
+			}else{
+				Logger.error("未识别的时间单位:"+unit);
+			}
+		}
+		return (int)Math.ceil(time);
 	}
 	
     /**

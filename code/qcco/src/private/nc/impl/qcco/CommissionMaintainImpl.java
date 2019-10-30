@@ -1,22 +1,29 @@
 package nc.impl.qcco;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
+import nc.bs.dao.DAOException;
+import nc.bs.framework.common.InvocationInfoProxy;
 import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceCommissionPubServiceImpl;
 import nc.itf.qcco.ICommissionMaintain;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.pub.beans.constenum.IConstEnum;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionCVO;
@@ -183,7 +190,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 
 	/*
 	 * @Override public void delete(AggCommissionHVO[] clientFullVOs,
-	 * AggCommissionHVO[] originBills) throws BusinessException { // TODO
+	 * AggCommissionHVO[] originBills) throws BusinessException { 
 	 * Auto-generated method stub
 	 * 
 	 * }
@@ -477,5 +484,109 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 		}
 
 	}
+
+	
+	/**
+	 * 正式报告驳回 FIXME 测试
+	 * @param parentVO
+	 * @param txtMessage
+	 * @throws DAOException 
+	 */
+	@Override
+	public void officialReject(CommissionHVO parentVO, String txtMessage) throws DAOException {
+		if (parentVO == null || parentVO.getBillno() == null 
+				|| parentVO.getReportformat() == null) {
+			return;
+		}
+		String reportFormat = parentVO.getReportformat();
+		String sql = "select PK_REPORT_TYPE,RP_REPORT_NAME  from NC_REPORT_TYPE";
+		@SuppressWarnings("unchecked")
+		Map<String,String> pk2UnitNameMap = 
+				(Map<String,String>)getDao().executeQuery(sql, new ResultSetProcessor() {
+
+			private static final long serialVersionUID = -7409984761901560761L;
+			private Map<String,String> rsMap = new HashMap<>();
+			@Override
+			public Object handleResultSet(ResultSet rs) throws SQLException {
+				while(rs.next()){
+					rsMap.put(rs.getString(1), rs.getString(2));
+				}
+				return rsMap;
+			}
+		});
+		
+		txtMessage = (txtMessage==null?"":txtMessage);
+		String reportFormatName = pk2UnitNameMap.get(reportFormat);
+		if(reportFormatName==null){
+			return ;
+		}
+		if(reportFormatName.equals("单项")){
+			//单项驳回
+			sql = "update C_PROJ_TASK set RPT_AUTHORIZED_BY = null,RPT_AUTHORIZED_ON = null,RPT_AUTHORIZED = 'F', "
+				+" RPT_REJECT_COMMENT_C = '"+txtMessage+"' where project = '"+parentVO.getBillno()+"' ";
+			getDao().executeUpdate(sql);
+			
+			sql = "update PROJECT set C_RPT_AUTHORIZED = 'F',C_ALLTASK_COA_AUTHORIZED = 'F' "
+			+" ,C_INVOICE_CREATED = 'F', C_INVOICE_CREATED_ON = null,C_INVOICE_CREATED_BY = null "
+			+" where name = '"+parentVO.getBillno()+"' ";
+				getDao().executeUpdate(sql);
+			
+		}else if(reportFormatName.equals("成套")){
+			//成套驳回
+			sql = "update PROJECT set C_RPT_AUTHORIZED_BY = null,C_RPT_AUTHORIZED_ON = null,C_RPT_AUTHORIZED = 'F', "
+					+" C_ALLTASK_COA_AUTHORIZED = 'F',C_RPT_REJECT_COMMENT_C = '"+txtMessage+"' "
+					+" ,C_INVOICE_CREATED = 'F', C_INVOICE_CREATED_ON = null, C_INVOICE_CREATED_BY = null "
+					+" where name = '"+parentVO.getBillno()+"'";
+			
+			getDao().executeUpdate(sql);
+		}
+
+	}
+	
+	
+	/**
+	 * 收费单确认
+	 * @param parentVO
+	 * @throws DAOException 
+	 */
+	@Override
+	public void payDemandComfirtm(CommissionHVO parentVO) throws DAOException {
+		if (parentVO == null || parentVO.getBillno() == null) {
+			return;
+		}
+		String sql = " update project set C_INVOICE_verifyed = 'T', " 
+				+ " C_INVOICE_verifyed_on = " + "to_timestamp('"
+				+ new UFDateTime().toStdString() + "','yyyy-mm-dd hh24:mi:ss.ff')" + ", " 
+				+ " C_INVOICE_verifyed_by = '"
+				+ InvocationInfoProxy.getInstance().getUserCode() + "' " 
+				+ " WHERE NAME = '" + parentVO.getBillno() + "' ";
+		getDao().executeUpdate(sql);
+	}
+	
+	
+	
+	/**
+	 * 报价单确认
+	 * @param commissionHVO
+	 * @throws DAOException 
+	 */
+	@Override
+	public void quotationConfirtm(CommissionHVO commissionHVO) throws DAOException {
+		if(commissionHVO==null || commissionHVO.getBillno() == null){
+			return;
+		}
+		String sql = " update project set c_quotes_verifyed = 'T', "
+       +" c_quotes_verifyed_on = "+"to_timestamp('"+ new UFDateTime().toStdString() +"','yyyy-mm-dd hh24:mi:ss.ff')"+" , " 
+       +" c_quotes_verifyed_by = '"+InvocationInfoProxy.getInstance().getUserCode()+"' "
+       +" WHERE NAME = '"+commissionHVO.getBillno()+"' ";
+		getDao().executeUpdate(sql);
+	}
+	
+	
+	
+	
+	
+	
+	
 
 }

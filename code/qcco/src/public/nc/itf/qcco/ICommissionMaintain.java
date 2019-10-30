@@ -3,10 +3,12 @@ package nc.itf.qcco;
 import java.util.Map;
 import java.util.Set;
 
+import nc.bs.dao.DAOException;
 import nc.ui.pub.beans.constenum.IConstEnum;
 import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.pub.BusinessException;
 import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.qcco.commission.CommissionHVO;
 
 public interface ICommissionMaintain {
 
@@ -41,5 +43,28 @@ public interface ICommissionMaintain {
 	public AggCommissionHVO[] update(AggCommissionHVO[] vos) throws BusinessException;
 	
 	public IConstEnum[] getRefName(IConstEnum[] o,Map<String,Map<String,String>> refNamePkMap,Map<String,Object[]> realPksMap) throws BusinessException ;
+
+	/**
+	 * 正式报告驳回
+	 * @param parentVO
+	 * @param txtMessage
+	 */
+	public void officialReject(CommissionHVO parentVO, String txtMessage) throws DAOException;
+	
+	/**
+	 * 收费单确认
+	 * @param parentVO
+	 */
+	public void payDemandComfirtm(CommissionHVO parentVO) throws DAOException;
+	/**
+	 * 报价单确认
+	 * @param commissionHVO
+	 */
+	public void quotationConfirtm(CommissionHVO commissionHVO) throws DAOException;
+	
+	
+	
+	
+	
 
 }

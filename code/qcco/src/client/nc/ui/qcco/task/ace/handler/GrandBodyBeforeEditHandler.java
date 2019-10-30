@@ -12,12 +12,14 @@ import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.pub.beans.MessageDialog;
+import nc.ui.pub.beans.UITextAreaScrollPane;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyBeforeEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.qcco.commission.refmodel.ValueTypeRefModel;
 import nc.ui.qcco.task.view.RefValuePanel;
+import nc.ui.qcco.task.view.TextDialog;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.qcco.commission.refmodel.SampleGroupRefModel;
 import nc.vo.pub.BusinessException;
@@ -72,6 +74,16 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 				e.setReturnValue(false);
 				return;
 			}
+			//弹出文本框 
+			//MessageDialog.showInputDlg(e.getBillCardPanel(), "输入框", "文本值", "1111");
+			//MessageDialog.showInputDlg(e.getBillCardPanel(), 2, "输入框", "文本值", "222", 4000);
+			//MessageDialog.show
+			Object value = e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue");
+			String initStr = value==null?null:String.valueOf(value);
+			TextDialog textDialog = new TextDialog(e.getContext(),"文本值",initStr);
+			textDialog.showModal();
+			String bigStr = textDialog.getTextPane().getText();
+			e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
 			// 如果参照已经有值,那么文本不能输入
 			/*
 			 * String pk_refvalue =
@@ -99,8 +111,10 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 				try {
 					RefValuePanel refValuePanel = new RefValuePanel(pk_commission_h, pk_list_table);
 					if (refValuePanel.showModal() == 1) {
-						String strvalue = refValuePanel.getSelectedstr();
-						e.getBillCardPanel().setBodyValueAt(strvalue, e.getRow(), "pk_refvalue", "pk_task_s");
+						String CNvalue = refValuePanel.getSelectedCNstr();
+						String ENvalue = refValuePanel.getSelectedENstr();
+						e.getBillCardPanel().setBodyValueAt(CNvalue, e.getRow(), "pk_refvalue", "pk_task_s");
+						e.getBillCardPanel().setBodyValueAt(ENvalue, e.getRow(), "englishdescription", "pk_task_s");
 						e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus", "pk_task_s");
 
 					}

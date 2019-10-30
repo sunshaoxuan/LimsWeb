@@ -24,10 +24,14 @@ public class MainBillList extends ShowUpableBillListView {
 
 		if (event.getType().equals("Multi_Selection_Changed")) {
 			RowSelectionOperationInfo rowInfo = (RowSelectionOperationInfo) event.getContextObject();
-			AggCommissionHVO aggvo = (AggCommissionHVO) rowInfo.getRowDatas()[0];
-			int row = rowInfo.getRowIndexes()[0];
+			Object[] objs = rowInfo.getRowDatas();
+			if(objs!=null && objs.length > 0){
+				AggCommissionHVO aggvo = (AggCommissionHVO) rowInfo.getRowDatas()[0];
+				int row = rowInfo.getRowIndexes()[0];
 
-			refreshListHeadBodyDefRefs(aggvo, row);
+				refreshListHeadBodyDefRefs(aggvo, row);
+			}
+			
 		} else if (event.getType().equals("Selection_Changed")) {
 			MainSubBillModel billModel = (MainSubBillModel) event.getSource();
 			AggCommissionHVO aggvo = (AggCommissionHVO) billModel.getSelectedData();

@@ -328,7 +328,7 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 		} else {
 			setResult(ID_NO);
 		}
-		setInputValue(null);
+		setInputValue(getUITextField_Input().getText());
 		close();
 		return;
 	}

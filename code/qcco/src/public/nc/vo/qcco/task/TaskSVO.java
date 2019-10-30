@@ -29,6 +29,10 @@ public class TaskSVO extends SuperVO {
 	 */
 	public String pk_testconditionitem;
 	/**
+	 * œyÔ‡—l¼þí—_Ö÷¼ü
+	 */
+	public String pk_testconditionitem_back;
+	/**
 	 *  î‘B
 	 */
 	public String conditionstatus;
@@ -101,6 +105,14 @@ public class TaskSVO extends SuperVO {
 
 	public void setDr(Integer dr) {
 		Dr = dr;
+	}
+
+	public String getPk_testconditionitem_back() {
+		return pk_testconditionitem_back;
+	}
+
+	public void setPk_testconditionitem_back(String pk_testconditionitem_back) {
+		this.pk_testconditionitem_back = pk_testconditionitem_back;
 	}
 
 	/**
