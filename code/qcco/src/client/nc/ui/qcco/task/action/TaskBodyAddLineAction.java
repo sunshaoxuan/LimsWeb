@@ -307,7 +307,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								}
 							} else if (refValue.getKey().equals("units")) {
 								this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(map.get("units"), row, "unit", "pk_task_s");
+										.setBodyValueAt(map.get("units")==null?"NONE":map.get("units"), row, "unit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_defvalue_value")) {
 								this.getGrandCard()
 										.getBillCardPanel()
@@ -503,7 +503,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 
 							} else if (refValue.getKey().equals("units")) {
 								this.getGrandCard().getBillCardPanel()
-										.setBodyValueAt(StringUtils.trim(map.get("units")), row, "unit", "pk_task_s");
+										.setBodyValueAt(StringUtils.trim(map.get("units")==null?"NONE":map.get("units")), row, "unit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_defvalue_value")) {
 								this.getGrandCard()
 										.getBillCardPanel()

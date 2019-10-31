@@ -32,7 +32,7 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 			} else {
 				e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
 			}
-			String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
+			//String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
 			/*if(valuetype!=null && valuetype.equals("计算型")){
 				//转化成小时
 				String value = (String)e.getValue();
@@ -81,6 +81,7 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 			} else {
 				e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
 			}
+			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "formatted_entry");
 		} else if("instrument".equals(e.getKey())){
 			if(e.getValue()!=null && !"".equals(e.getValue())){
 				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_instrument");

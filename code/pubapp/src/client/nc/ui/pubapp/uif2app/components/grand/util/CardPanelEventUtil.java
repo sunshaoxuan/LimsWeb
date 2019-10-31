@@ -117,9 +117,9 @@ public class CardPanelEventUtil {
 		int lastrow = event.getOldRow();
 		BillCardPanel mainBillCardPanel = ((BillForm) mainGrandPanel.getMainPanel()).getBillCardPanel();
 		int currentRow = event.getRow();
-		if (-1 == lastrow && 0 == currentRow) {
+		/*if (-1 == lastrow && 0 == currentRow) {
 			return;
-		}
+		}*/
 		if (currentRow >= 0) {
 			String currentbodyTabCode = mainBillCardPanel.getCurrentBodyTableCode();
 			MainGrandRelationShip relationShip = mainGrandPanel.getMaingrandrelationship();

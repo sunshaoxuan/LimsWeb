@@ -182,23 +182,10 @@ public abstract class AceTaskPubServiceImpl {
 					}
 				}
 			}
-			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
-			String pk_task_b = null;
-			for (IVOMeta vo : fullGrandVOs.keySet()) {
-				// fullGrandVOs.get(vo);
-				for (ISuperVO voss : fullGrandVOs.get(vo)) {
-					pk_task_b = voss.getAttributeValue("pk_task_b") == null ? null : String.valueOf(voss
-							.getAttributeValue("pk_task_b"));
-				}
-			}
+			//fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
+		
 
-			if (pk_task_b != null) {
-
-				this.persistent(fullGrandVOs, originGrandVOs);
-
-				AceTaskUpdateBP bp = new AceTaskUpdateBP();
-				AggTaskHVO[] retBills = bp.update(fullBills, originBills);
-			} else {
+			
 
 				AceTaskUpdateBP bp = new AceTaskUpdateBP();
 				AggTaskHVO[] retBills = bp.update(fullBills, originBills);
@@ -233,7 +220,7 @@ public abstract class AceTaskPubServiceImpl {
 
 				}
 				this.persistent(fullGrandVOs, originGrandVOs);
-			}
+			
 
 			return aggvos;
 		} catch (Exception e) {

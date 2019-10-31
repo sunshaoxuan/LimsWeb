@@ -262,15 +262,7 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 			UFDateTime modifyTime = taskHvo.getModifiedtime() == null ? creatTime : taskHvo.getModifiedtime();
 			firstTestList.get(i).setAttributeValue("changed_on", "to_timestamp('" + modifyTime + "','yyyy-mm-dd hh24:mi:ss.ff')");
 
-			String resultAnalysis = taskBvo.getPk_testresultname();
-			String analysis = null;
-			if(resultAnalysis.length() > 2){
-				if(resultAnalysis.substring(resultAnalysis.length()-2).equals("_A")){
-					analysis = resultAnalysis.substring(0, resultAnalysis.length()-2);
-				}else{
-					analysis = resultAnalysis.substring(0, resultAnalysis.length()-1);
-				}
-			}
+			String analysis = taskBvo.getStandardclause();
 			// 表体测试结果名称
 			firstTestList.get(i).setAttributeValue("analysis", analysis);
 

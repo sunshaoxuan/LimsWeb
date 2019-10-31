@@ -67,10 +67,13 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 			 * e.setReturnValue(true); return; } else { e.setReturnValue(false);
 			 * return; } }
 			 */
-
+			
+			String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
+			valuetype = (valuetype==null?"":valuetype);
 			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null : (Integer) e
 					.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
-			if (valueways == null||2 == valueways) {
+			//如果值类型是'用户允许输入',那么文本可以输入
+			if ((valueways == null||2 == valueways)&&(!valuetype.equals("列表允许用户输入"))) {
 				e.setReturnValue(false);
 				return;
 			}
@@ -84,6 +87,18 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 			textDialog.showModal();
 			String bigStr = textDialog.getTextPane().getText();
 			e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
+			initStr = (initStr==null?"":initStr);
+			if (bigStr != null && !initStr.equals(bigStr) ) {
+				e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+			} else {
+				e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
+			}
+			e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
+			if(valuetype.equals("列表允许用户输入")){
+				//清空参照信息
+				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_refvalue", "pk_task_s");
+				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "englishdescription", "pk_task_s");
+			}
 			// 如果参照已经有值,那么文本不能输入
 			/*
 			 * String pk_refvalue =
@@ -116,7 +131,12 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 						e.getBillCardPanel().setBodyValueAt(CNvalue, e.getRow(), "pk_refvalue", "pk_task_s");
 						e.getBillCardPanel().setBodyValueAt(ENvalue, e.getRow(), "englishdescription", "pk_task_s");
 						e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus", "pk_task_s");
-
+						e.getBillCardPanel().setBodyValueAt(CNvalue, e.getRow(), "formatted_entry", "pk_task_s");
+						//如果是用户可输入,还要清空文本值
+						String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
+						if(valuetype!=null && valuetype.equals("列表允许用户输入")){
+							e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "textvalue", "pk_task_s");
+						}
 					}
 				} catch (DAOException e1) {
 					e1.printStackTrace();
