@@ -44,77 +44,52 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 	public void handleAppEvent(CardBodyBeforeEditEvent e) {
 		String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 		if ("textvalue".equals(e.getKey())) {
-			/*
-			 * Integer valueways =
-			 * e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") ==
-			 * null ? null : (Integer)
-			 * e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
-			 * String pk_result_type = (String)
-			 * e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_valuetype");
-			 * String typeCode = ""; if (!StringUtils.isEmpty(pk_result_type)) {
-			 * Vector refValue = new
-			 * ValueTypeRefModel().matchPkData(pk_result_type); if (refValue !=
-			 * null) { typeCode = (String) ((Vector) refValue.get(0)).get(0); }
-			 * } if (null == valueways) {
-			 * MessageDialog.showErrorDlg(e.getContext().getEntranceUI(), "错误",
-			 * "取值方式不能为空。"); e.setReturnValue(true); return;
-			 * 
-			 * } else if (valueways == 1) { e.setReturnValue(true); return; }
-			 * else if (valueways == 2) { if (!StringUtils.isEmpty(typeCode) &&
-			 * typeCode.trim().equals("4")) { e.setReturnValue(true); return; }
-			 * else { e.setReturnValue(false); return; } } else { if
-			 * (!StringUtils.isEmpty(typeCode) && typeCode.trim().equals("2")) {
-			 * e.setReturnValue(true); return; } else { e.setReturnValue(false);
-			 * return; } }
-			 */
-			
+			//值类型
 			String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
 			valuetype = (valuetype==null?"":valuetype);
 			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null : (Integer) e
 					.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
-			//如果值类型是'用户允许输入',那么文本可以输入
+			//如果值类型是'用户允许输入',或者取值方式为文本,那么文本值可以输入
 			if ((valueways == null||2 == valueways)&&(!valuetype.equals("列表允许用户输入"))) {
 				e.setReturnValue(false);
 				return;
 			}
+			
 			//弹出文本框 
-			//MessageDialog.showInputDlg(e.getBillCardPanel(), "输入框", "文本值", "1111");
-			//MessageDialog.showInputDlg(e.getBillCardPanel(), 2, "输入框", "文本值", "222", 4000);
-			//MessageDialog.show
 			Object value = e.getBillCardPanel().getBodyValueAt(e.getRow(), "textvalue");
+			if(value==null && valuetype.equals("列表允许用户输入")){
+				value = e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_refvalue");
+			}
 			String initStr = value==null?null:String.valueOf(value);
 			TextDialog textDialog = new TextDialog(e.getContext(),"文本值",initStr);
-			textDialog.showModal();
+			int state = textDialog.showModal();
+			if(state == 2){
+				e.setReturnValue(false);
+				return;
+			}
 			String bigStr = textDialog.getTextPane().getText();
-			e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
+			
 			initStr = (initStr==null?"":initStr);
-			if (bigStr != null && !initStr.equals(bigStr) ) {
-				e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
-			} else {
-				e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
-			}
-			e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
-			if(valuetype.equals("列表允许用户输入")){
-				//清空参照信息
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_refvalue", "pk_task_s");
-				e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "englishdescription", "pk_task_s");
-			}
-			// 如果参照已经有值,那么文本不能输入
-			/*
-			 * String pk_refvalue =
-			 * (String)e.getBillCardPanel().getBodyValueAt(e.getRow(),
-			 * "pk_refvalue"); if(pk_refvalue==null || "".equals(pk_refvalue)){
-			 * e.setReturnValue(true); }else{ e.setReturnValue(false); }
-			 */
-		} else if ("pk_refvalue".equals(e.getKey())) {
-			// 如果文本已经有值,那么参照不能输入
-			/*
-			 * String textvalue =
-			 * (String)e.getBillCardPanel().getBodyValueAt(e.getRow(),
-			 * "textvalue"); if(textvalue!=null && !"".equals(textvalue)){
-			 * e.setReturnValue(false); return; }
-			 */
 
+			if(valuetype.equals("列表允许用户输入")){
+				if(!initStr.equals(bigStr)){
+					//清空参照信息
+					e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_refvalue", "pk_task_s");
+					e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "englishdescription", "pk_task_s");
+					e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+					e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
+					e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
+				}
+			}else{
+				if (bigStr != null && !initStr.equals(bigStr) ) {
+					e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+				} else {
+					e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
+				}
+				e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
+				e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
+			}
+		} else if ("pk_refvalue".equals(e.getKey())) {
 			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null : (Integer) e
 					.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways");
 			if (null == valueways) {
@@ -178,7 +153,6 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 				BillItem item = (BillItem) e.getSource();
 				((SampleGroupRefModel) ((UIRefPane) item.getComponent()).getRefModel()).setGroupWhere(groupWhere);
 			}
-			// e.getBillCardPanel().getHeadItem(item)
 		} else if ("component".equals(e.getKey())) {
 			// 手工输入参照值,需要进行过滤
 			String anaName = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "analysisname");

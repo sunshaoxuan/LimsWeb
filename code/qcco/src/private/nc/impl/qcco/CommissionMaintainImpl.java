@@ -29,6 +29,7 @@ import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionCVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.commission.CommissionRVO;
+import nc.vo.qcco.qccommission.DocStates;
 
 public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implements ICommissionMaintain {
 
@@ -487,7 +488,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 
 	
 	/**
-	 * 正式报告驳回 FIXME 测试
+	 * 正式报告驳回
 	 * @param parentVO
 	 * @param txtMessage
 	 * @throws DAOException 
@@ -550,7 +551,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 	 * @throws DAOException 
 	 */
 	@Override
-	public void payDemandComfirtm(CommissionHVO parentVO) throws DAOException {
+	public void payDemandComfirtm(CommissionHVO parentVO) throws BusinessException {
 		if (parentVO == null || parentVO.getBillno() == null) {
 			return;
 		}
@@ -561,6 +562,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 				+ InvocationInfoProxy.getInstance().getUserCode() + "' " 
 				+ " WHERE NAME = '" + parentVO.getBillno() + "' ";
 		getDao().executeUpdate(sql);
+		changeStatues(parentVO.getPk_commission_h(),DocStates.REPORT_CONFIRMED.toIntValue());
 	}
 	
 	
@@ -571,7 +573,7 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 	 * @throws DAOException 
 	 */
 	@Override
-	public void quotationConfirtm(CommissionHVO commissionHVO) throws DAOException {
+	public void quotationConfirtm(CommissionHVO commissionHVO) throws BusinessException {
 		if(commissionHVO==null || commissionHVO.getBillno() == null){
 			return;
 		}
@@ -580,10 +582,27 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
        +" c_quotes_verifyed_by = '"+InvocationInfoProxy.getInstance().getUserCode()+"' "
        +" WHERE NAME = '"+commissionHVO.getBillno()+"' ";
 		getDao().executeUpdate(sql);
+		changeStatues(commissionHVO.getPk_commission_h(),DocStates.SAMPLE_RECEIVED.toIntValue());
 	}
 	
 	
-	
+	private void changeStatues(String pk_commission_h, int intValue) throws BusinessException {
+		if(pk_commission_h!=null){
+			getDao().executeUpdate("update qc_commission_h set docstatus = "+intValue+" where pk_commission_h = '"+pk_commission_h+"'");
+		}
+	}
+	/**
+	 * 满意度评价
+	 * @throws BusinessException 
+	 */
+	@Override
+	public void satisfactComfirtm(CommissionHVO parentVO) throws BusinessException {
+		if(parentVO==null || parentVO.getBillno() == null){
+			return;
+		}
+		changeStatues(parentVO.getPk_commission_h(),DocStates.END_PROCESS.toIntValue());
+		
+	}
 	
 	
 	

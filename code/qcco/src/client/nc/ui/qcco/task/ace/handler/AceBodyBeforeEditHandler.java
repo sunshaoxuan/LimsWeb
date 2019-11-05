@@ -269,7 +269,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 			strSQL += "         WHERE ";
 			strSQL += "             PK_BASPROD_STRUCT = c.pk_structuretype) ";
 			// strSQL += " AND p.nc_stage = c.PRODUCTSTAGE ";
-			strSQL += " ORDER BY g.NC_SAMPLE_NAME, p.DEF1;";
+			strSQL += " ORDER BY cast( p.DEF1 as integer) ";
 
 			IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 			List<Map<String, Object>> refList = (List<Map<String, Object>>) iUAPQueryBS.executeQuery(strSQL,

@@ -22,6 +22,7 @@ import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionRVO;
+import nc.vo.qcco.qccommission.DocStates;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskHVO;
@@ -94,16 +95,40 @@ private BaseDAO dao = null;
 		return super.pubquerybills(queryScheme);
 	}
 
+	/**
+	 * 提交
+	 */
 	@Override
 	public AggTaskHVO[] save(AggTaskHVO[] clientFullVOs,
 			AggTaskHVO[] originBills) throws BusinessException {
-		return super.pubsendapprovebills(clientFullVOs, originBills);
+		AggTaskHVO[] rtn = super.pubsendapprovebills(clientFullVOs, originBills);
+		if(rtn!=null && rtn.length > 0){
+			for(AggTaskHVO aggvo : rtn){
+				//修改委托单状态
+				changeStatues(aggvo.getParentVO().getPk_commission_h(),DocStates.CLIENT_APPR.toIntValue());
+			}
+		}
+		return rtn;
+	}
+	
+	private void changeStatues(String pk_commission_h, int intValue) throws DAOException {
+		if(pk_commission_h!=null){
+			getDao().executeUpdate("update qc_commission_h set docstatus = "+intValue+" where pk_commission_h = '"+pk_commission_h+"'");
+		}
 	}
 
+	
 	@Override
 	public AggTaskHVO[] unsave(AggTaskHVO[] clientFullVOs,
 			AggTaskHVO[] originBills) throws BusinessException {
-		return super.pubunsendapprovebills(clientFullVOs, originBills);
+		AggTaskHVO[] rtn = super.pubunsendapprovebills(clientFullVOs, originBills);
+		if(rtn!=null && rtn.length > 0){
+			for(AggTaskHVO aggvo : rtn){
+				//修改委托单状态
+				changeStatues(aggvo.getParentVO().getPk_commission_h(),DocStates.COMISSION_CREATE.toIntValue());
+			}
+		}
+		return rtn;
 	}
 
 	@Override
@@ -113,8 +138,26 @@ private BaseDAO dao = null;
 		AggTaskHVO[] rtnVO = super.pubapprovebills(clientFullVOs, originBills);
 		if(clientFullVOs!=null && clientFullVOs.length > 0){
 			for(AggTaskHVO aggvo:clientFullVOs){
+				if(aggvo!=null){
+					//委托单:
+					String statusStr = (String)getDao().executeQuery("select docstatus from qc_commission_h where pk_commission_h = '"
+							+aggvo.getParentVO().getPk_commission_h()+"'",  new ColumnProcessor());
+					statusStr = (statusStr==null?"0":statusStr);
+					int status = Integer.parseInt(statusStr);
+					if(status == DocStates.CLIENT_APPR.toIntValue()){
+						//第一次审核:
+						changeStatues(aggvo.getParentVO().getPk_commission_h(),DocStates.TECH_APPR.toIntValue());
+					}else if(status == DocStates.TECH_APPR.toIntValue()){
+						//第二次审核:
+						changeStatues(aggvo.getParentVO().getPk_commission_h(),DocStates.QUOTATION_GENERATION.toIntValue());
+					}
+					
+					
+				}
 				if(aggvo!=null && aggvo.getParentVO()!=null && 1 == aggvo.getParentVO().getApprovestatus()){
 					writeBackLims(aggvo);
+					//已经审完了
+					changeStatues(aggvo.getParentVO().getPk_commission_h(),DocStates.QUOTATION_GENERATION.toIntValue());
 				}
 			}
 		}
@@ -129,6 +172,24 @@ private BaseDAO dao = null;
 		if(clientFullVOs!=null && clientFullVOs.length > 0){
 			for(AggTaskHVO aggvo:clientFullVOs){
 				unWriteBackLims(aggvo);
+				if(aggvo!=null){
+					//委托单:
+					//委托单:
+					String statusStr = (String)getDao().executeQuery("select docstatus from qc_commission_h where pk_commission_h = '"
+							+aggvo.getParentVO().getPk_commission_h()+"'",  new ColumnProcessor());
+					statusStr = (statusStr==null?"0":statusStr);
+					int status = Integer.parseInt(statusStr);
+					
+					if(status == DocStates.CLIENT_APPR.toIntValue()){
+						//第一次已经审核:
+						changeStatues(aggvo.getParentVO().getPk_commission_h(),DocStates.COMISSION_CREATE.toIntValue());
+					}else if(status == DocStates.QUOTATION_GENERATION.toIntValue()){
+						//第二次已经审核:
+						changeStatues(aggvo.getParentVO().getPk_commission_h(),DocStates.TECH_APPR.toIntValue());
+					}
+					
+					
+				}
 			}
 		}
 		return rtn;

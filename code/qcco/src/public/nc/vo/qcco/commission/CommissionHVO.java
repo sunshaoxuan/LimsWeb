@@ -213,6 +213,11 @@ public class CommissionHVO extends SuperVO {
      * 項目號
      */
     public String itemnumber;
+    
+    /**
+     * 狀態
+     */
+    private String docstatus;
 
     /**
      *自定义项1
@@ -378,8 +383,18 @@ public class CommissionHVO extends SuperVO {
      * 時間戳
      */
     public UFDateTime ts;
+    
+    
 
-    /**
+    public String getDocstatus() {
+		return docstatus;
+	}
+
+	public void setDocstatus(String docstatus) {
+		this.docstatus = docstatus;
+	}
+
+	/**
      * 屬性 pk_commission_h的Getter方法.屬性名：主表主鍵 創建日期:2019/2/25
      *
      * @return java.lang.String

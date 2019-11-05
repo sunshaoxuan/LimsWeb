@@ -5,14 +5,18 @@ import java.awt.event.ActionEvent;
 import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
+import nc.itf.pubapp.pub.smart.IBillQueryService;
 import nc.itf.qcco.ICommissionMaintain;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.ui.ml.NCLangRes;
 import nc.ui.pub.beans.MessageDialog;
+import nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite;
 import nc.ui.qcco.commission.ace.view.ConfirmDialog;
 import nc.ui.uif2.NCAction;
 import nc.ui.uif2.UIState;
 import nc.ui.uif2.model.AbstractAppModel;
+import nc.vo.pub.AggregatedValueObject;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
@@ -48,6 +52,17 @@ public class OfficialReportAction extends NCAction {
 	public void setModel(AbstractAppModel model) {
 		this.model = model;
 		this.model.addAppEventListener(this);
+	}
+	private ListGrandPanelComposite listView = null;
+	
+	
+	
+	public ListGrandPanelComposite getListView() {
+		return listView;
+	}
+
+	public void setListView(ListGrandPanelComposite listView) {
+		this.listView = listView;
 	}
 
 	@Override
@@ -89,8 +104,26 @@ public class OfficialReportAction extends NCAction {
 		}
 	}
 
-	private void confirtm(CommissionHVO parentVO,String txtMessage) throws DAOException {
+	private void confirtm(CommissionHVO parentVO,String txtMessage) throws BusinessException {
 		NCLocator.getInstance().lookup(ICommissionMaintain.class).officialReject(parentVO,txtMessage);
+		if(listView.getMainPanel().isShowing()){
+			//ÁÐ±íÌ¬
+			listView.getDataManager().refresh();
+		}else{
+			//¿¨Æ¬Ì¬
+			AbstractBill oldVO = (AbstractBill)getModel().getSelectedData();
+	        String pk = oldVO.getParentVO().getPrimaryKey();
+	        IBillQueryService billQuery = (IBillQueryService)NCLocator.getInstance().lookup(IBillQueryService.class);
+	        
+	        AggregatedValueObject newVO = billQuery.querySingleBillByPk(oldVO.getClass(), pk);
+	        
+	        if (newVO == null)
+	        {
+	          throw new BusinessException(NCLangRes.getInstance().getStrByID("uif2", "RefreshSingleAction-000000"));
+	        }
+	        
+	        model.directlyUpdate(newVO);
+		}
 	}
 
 	protected boolean isActionEnable() {

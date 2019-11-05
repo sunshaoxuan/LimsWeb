@@ -106,6 +106,27 @@ public abstract class AceTaskPubServiceImpl {
 			AggTaskHVO[] fullBills = transTool.getClientFullInfoBill();
 			AggTaskHVO[] originBills = transTool.getOriginBills();
 
+			//tank 合并的时候,补上孙表数据
+			if(vos!=null && vos.length > 0 && fullBills !=null && fullBills.length > 0){
+				for(int i = 0 ;i<vos.length ;i++){
+					AggTaskHVO fullagg = fullBills[i];
+					ISuperVO[] fullbvos = fullagg.getChildren(TaskBVO.class);
+					
+					AggTaskHVO sourceagg = vos[i];
+					ISuperVO[] sourcebvo = sourceagg.getChildren(TaskBVO.class);
+					
+					if(fullbvos!=null && fullbvos.length > 0){
+						for(int j=0;j<fullbvos.length;j++){
+							((TaskBVO)fullbvos[j]).setPk_task_s(((TaskBVO)sourcebvo[j]).getPk_task_s());
+							((TaskBVO)fullbvos[j]).setPk_task_r(((TaskBVO)sourcebvo[j]).getPk_task_r());
+						}
+					}
+					
+					
+					
+				}
+			}
+			
 			// 孙VO的修改
 			// nc.impl.pubapp.pattern.data.vo.template.UpdateBPTemplate
 
@@ -182,8 +203,7 @@ public abstract class AceTaskPubServiceImpl {
 					}
 				}
 			}
-			//fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
-		
+			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
 
 			
 

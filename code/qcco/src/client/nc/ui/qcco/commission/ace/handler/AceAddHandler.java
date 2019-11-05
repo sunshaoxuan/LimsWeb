@@ -8,14 +8,17 @@ import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapProcessor;
+import nc.ui.pub.beans.UIComboBox;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillCardPanel;
+import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.billform.AddEvent;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFLiteralDate;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
+import nc.vo.qcco.qccommission.DocStates;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -80,7 +83,17 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 		panel.setHeadItem("contract", psnName);
 		panel.setHeadItem("email", psnEmail);
 		panel.setHeadItem("teleno", psnPhone);
-
+		BillItem item = panel.getHeadItem("docstatus");
+		if(item!=null){
+			UIComboBox u = (UIComboBox)panel.getHeadItem("docstatus").getComponent();
+			if(u!=null){
+				u.setSelectedIndex(DocStates.COMISSION_CREATE.toIntValue());
+			}
+			
+		}
+		
+		
+		
 		UIRefPane pane = (UIRefPane) panel.getHeadItem("codeprefix").getComponent();
 		String name = pane.getRefModel().getRefNameValue();
 		SimpleDateFormat dt = new SimpleDateFormat("yyMMdd");

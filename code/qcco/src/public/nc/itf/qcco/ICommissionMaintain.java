@@ -49,18 +49,23 @@ public interface ICommissionMaintain {
 	 * @param parentVO
 	 * @param txtMessage
 	 */
-	public void officialReject(CommissionHVO parentVO, String txtMessage) throws DAOException;
+	public void officialReject(CommissionHVO parentVO, String txtMessage) throws BusinessException;
 	
 	/**
 	 * 收费单确认
 	 * @param parentVO
 	 */
-	public void payDemandComfirtm(CommissionHVO parentVO) throws DAOException;
+	public void payDemandComfirtm(CommissionHVO parentVO) throws BusinessException;
 	/**
 	 * 报价单确认
 	 * @param commissionHVO
 	 */
-	public void quotationConfirtm(CommissionHVO commissionHVO) throws DAOException;
+	public void quotationConfirtm(CommissionHVO commissionHVO) throws BusinessException;
+	/**
+	 * 满意度评价
+	 * @param parentVO
+	 */
+	public void satisfactComfirtm(CommissionHVO parentVO) throws BusinessException;
 	
 	
 	

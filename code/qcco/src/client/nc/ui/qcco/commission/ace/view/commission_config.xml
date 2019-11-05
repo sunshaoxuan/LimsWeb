@@ -758,18 +758,22 @@
 	<!-- 报价单按钮 -->
 	<bean id="quotationAction" class="nc.ui.qcco.commission.action.QuotationAction">
 		<property name="model" ref="bmModel" />
+		<property name="listView" ref="MainGrandlistView" />
 	</bean>
 	<!-- 收费单按钮 -->
 	<bean id="payDemandAction" class="nc.ui.qcco.commission.action.PayDemandAction">
 		<property name="model" ref="bmModel" />
+		<property name="listView" ref="MainGrandlistView" />
 	</bean>
 	<!-- 正式报告按钮 -->
 	<bean id="officialReportAction" class="nc.ui.qcco.commission.action.OfficialReportAction">
 		<property name="model" ref="bmModel" />
+		<property name="listView" ref="MainGrandlistView" />
 	</bean>
 	<!-- 满意度评价按钮 -->
 	<bean id="satisfactionAction" class="nc.ui.qcco.commission.action.SatisfactionAction">
 		<property name="model" ref="bmModel" />
+		<property name="listView" ref="MainGrandlistView" />
 	</bean>
 	<!-- 预览按钮组 -->
 	<bean id="previewActionGroup" class="nc.funcnode.ui.action.GroupAction">

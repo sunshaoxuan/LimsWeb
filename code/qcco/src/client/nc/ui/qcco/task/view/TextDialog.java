@@ -1,6 +1,7 @@
 package nc.ui.qcco.task.view;
 
 import java.awt.Dimension;
+import java.awt.event.FocusEvent;
 
 import javax.swing.JComponent;
 
@@ -24,6 +25,11 @@ public class TextDialog extends HrDialog {
 		//this.context = context;
 		setSize(600, 400);
 		getTextPane().setText(initStr);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+            	getTextPane().requestFocus();
+            }
+        });
 	}
 
 
@@ -47,6 +53,7 @@ public class TextDialog extends HrDialog {
 			Dimension d = new Dimension(500, 350);
 			textPane.setSize(d);
 			textPane.setPreferredSize(d);
+			textPane.requestFocusInWindow();
 		}
 		return this.textPane;
 	}

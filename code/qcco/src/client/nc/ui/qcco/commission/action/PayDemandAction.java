@@ -5,20 +5,25 @@ import java.awt.event.ActionEvent;
 import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
+import nc.itf.pubapp.pub.smart.IBillQueryService;
 import nc.itf.qcco.ICommissionMaintain;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.ui.ml.NCLangRes;
 import nc.ui.pub.beans.MessageDialog;
+import nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite;
 import nc.ui.qcco.commission.ace.view.ConfirmDialog;
 import nc.ui.uif2.NCAction;
 import nc.ui.uif2.UIState;
 import nc.ui.uif2.model.AbstractAppModel;
+import nc.vo.pub.AggregatedValueObject;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.SuperVO;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionHVO;
+import nc.vo.qcco.qccommission.DocStates;
 
 public class PayDemandAction extends NCAction {
 
@@ -49,6 +54,17 @@ public class PayDemandAction extends NCAction {
 	public void setModel(AbstractAppModel model) {
 		this.model = model;
 		this.model.addAppEventListener(this);
+	}
+	private ListGrandPanelComposite listView = null;
+	
+	
+	
+	public ListGrandPanelComposite getListView() {
+		return listView;
+	}
+
+	public void setListView(ListGrandPanelComposite listView) {
+		this.listView = listView;
 	}
 
 	@Override
@@ -91,8 +107,26 @@ public class PayDemandAction extends NCAction {
 		}
 	}
 
-	private void confirtm(CommissionHVO parentVO) throws DAOException {
+	private void confirtm(CommissionHVO parentVO) throws BusinessException {
 		NCLocator.getInstance().lookup(ICommissionMaintain.class).payDemandComfirtm(parentVO);
+		if(listView.getMainPanel().isShowing()){
+			//列表态
+			listView.getDataManager().refresh();
+		}else{
+			//卡片态
+			AbstractBill oldVO = (AbstractBill)getModel().getSelectedData();
+	        String pk = oldVO.getParentVO().getPrimaryKey();
+	        IBillQueryService billQuery = (IBillQueryService)NCLocator.getInstance().lookup(IBillQueryService.class);
+	        
+	        AggregatedValueObject newVO = billQuery.querySingleBillByPk(oldVO.getClass(), pk);
+	        
+	        if (newVO == null)
+	        {
+	          throw new BusinessException(NCLangRes.getInstance().getStrByID("uif2", "RefreshSingleAction-000000"));
+	        }
+	        
+	        model.directlyUpdate(newVO);
+		}
 	}
 
 	protected boolean isActionEnable() {
@@ -102,6 +136,13 @@ public class PayDemandAction extends NCAction {
 		}
 		SuperVO hvo = (SuperVO) aggVO.getParentVO();
 		if (hvo == null) {
+			return false;
+		}
+		//状态要为"计费单生成"
+		String statusStr = ((CommissionHVO) hvo).getDocstatus();
+		statusStr = (statusStr == null ? "0" : statusStr);
+		int status = Integer.parseInt(statusStr);
+		if (status != DocStates.GENERATE_BILLING.toIntValue()) {
 			return false;
 		}
 		// 没回写的单据,不能使用此按钮
