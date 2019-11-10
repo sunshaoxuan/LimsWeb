@@ -1,6 +1,7 @@
 package nc.ui.qcco.task.action;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -224,24 +225,6 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 					IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 					Map<String,String> typePk2NameMap = new HashMap<>();
 					try {
-						/*typePk2NameMap = 
-								(Map<String,String>)bs.executeQuery("select nc_result_namecn, pk_result_type  from nc_result_type ", 
-										new ResultSetProcessor() {
-							
-							*//**
-							 * 
-							 *//*
-							private static final long serialVersionUID = -6591534122732286076L;
-							Map<String,String> map = new HashMap<>();
-							@Override
-							public Object handleResultSet(ResultSet rs) throws SQLException {
-								while(rs.next()){
-									map.put(rs.getString(2)==null?null:rs.getString(2).replaceAll(" ", ""), 
-											rs.getString(1)==null?null:rs.getString(1).replaceAll(" ", ""));
-								}
-								return map;
-							}
-						});*/
 						List<Map<String,String>> rsList = 
 								(List<Map<String,String>>)bs.executeQuery("select nc_result_namecn, pk_result_type  from nc_result_type ",new MapListProcessor());
 						if(rsList!=null && rsList.size() > 0){
@@ -257,9 +240,18 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 						TaskBVO bvo = (TaskBVO)superVO;
 						if(bvo!=null && bvo.getPk_task_s()!=null && bvo.getPk_task_s().length > 0){
 							TaskSVO[] svos =  bvo.getPk_task_s();
+							List<TaskSVO> tempList = new ArrayList<>();
 							for(TaskSVO svo : svos){
 								if(svo!=null){
-									
+									if(svo.getIsoptional()!=null && svo.getIsoptional().booleanValue()){
+										//勾选了"是否可选"的数据，如果文本值和参照值都为空，不保存这条数据
+										boolean isValueNull = (svo.getTextvalue()==null ||svo.getTextvalue().equals(""))
+												&&(svo.getPk_refvalue()==null || svo.getPk_refvalue().equals(""));
+										if(isValueNull){
+											continue;
+										}
+									}
+									tempList.add(svo);
 									if(svo.getIsoptional()==null || !(svo.getIsoptional().booleanValue())){
 										if("duration".equals(svo.getPk_testconditionitem())
 												|| "持续时间".equals(svo.getPk_testconditionitem())
@@ -295,6 +287,7 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 									}
 								}
 							}
+							bvo.setPk_task_s(tempList.toArray(new TaskSVO[0]));
 						}
 					}
 				}

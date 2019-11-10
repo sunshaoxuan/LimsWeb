@@ -491,10 +491,10 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 	 * 正式报告驳回
 	 * @param parentVO
 	 * @param txtMessage
-	 * @throws DAOException 
+	 * @throws BusinessException 
 	 */
 	@Override
-	public void officialReject(CommissionHVO parentVO, String txtMessage) throws DAOException {
+	public void officialReject(CommissionHVO parentVO, String txtMessage) throws BusinessException {
 		if (parentVO == null || parentVO.getBillno() == null 
 				|| parentVO.getReportformat() == null) {
 			return;
@@ -541,7 +541,21 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 			
 			getDao().executeUpdate(sql);
 		}
-
+		changeStatues(parentVO.getPk_commission_h(),DocStates.GENERATE_BILLING.toIntValue());
+	}
+	/**
+	 * 正式报告确认
+	 * @param parentVO
+	 * @param txtMessage
+	 * @throws BusinessException 
+	 */
+	@Override
+	public void officialComfirm(CommissionHVO parentVO, String txtMessage) throws BusinessException {
+		if (parentVO == null || parentVO.getBillno() == null 
+				|| parentVO.getReportformat() == null) {
+			return;
+		}
+		changeStatues(parentVO.getPk_commission_h(),DocStates.SATISFACTION_EVALUATION.toIntValue());
 	}
 	
 	

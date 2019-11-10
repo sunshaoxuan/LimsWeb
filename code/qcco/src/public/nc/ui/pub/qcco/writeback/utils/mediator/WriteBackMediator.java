@@ -60,8 +60,8 @@ public class WriteBackMediator {
 			//result表
 			ResultWriteBackProcessor resultProcessor = new ResultWriteBackProcessor();
 			resultProcessor.setUtils(utils);
-			//审批信息表
-			ApprovalInfoWriteBackProcessor approvalProcessor = new ApprovalInfoWriteBackProcessor();
+			//审批信息表-子表+主表
+			IFirstWriteBackProcessor approvalProcessor = new ApprovalInfoWriteBackProcessor();
 			approvalProcessor.setUtils(utils);
 			
 			
@@ -88,7 +88,7 @@ public class WriteBackMediator {
 			testProcessor.processFirst(data);
 			// result表第一次回写
 			resultProcessor.processFirst(data);
-			// 审批表信息回写
+			// 审批表信息(主子表)回写
 			approvalProcessor.processFirst(data);
 			
 			// sample第二次回写

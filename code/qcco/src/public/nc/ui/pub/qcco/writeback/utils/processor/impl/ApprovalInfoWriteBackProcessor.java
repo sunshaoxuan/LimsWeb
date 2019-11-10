@@ -14,6 +14,7 @@ import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ApprovalInfo;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.ApprovalMain;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
 import nc.vo.pf.worknote.WorkNoteVO;
@@ -50,6 +51,8 @@ public class ApprovalInfoWriteBackProcessor implements IFirstWriteBackProcessor 
 		//审批备注
 		String note1 = null;
 		String note2 = null;
+		//发送时间
+		String sendtime1 = null;
 		if(flowList!=null && flowList.size() >0){
 			flowCode1 = (String)bs.executeQuery("select user_code from sm_user where cuserid = '"+flowList.get(0).getCheckman()+"'", 
 					new ColumnProcessor());
@@ -57,6 +60,7 @@ public class ApprovalInfoWriteBackProcessor implements IFirstWriteBackProcessor 
 			flowName1 = (String)bs.executeQuery("select user_name from sm_user where cuserid = '"+flowList.get(0).getCheckman()+"'", 
 					new ColumnProcessor());
 			note1 = flowList.get(0).getChecknote();
+			sendtime1 = "to_timestamp('"+flowList.get(0).getSenddate().toStdString()+"','yyyy-mm-dd hh24:mi:ss.ff')";
 		}
 		if(flowList!=null && flowList.size() >1){
 			flowCode2 = (String)bs.executeQuery("select user_code from sm_user where cuserid = '"+flowList.get(1).getCheckman()+"'", 
@@ -66,8 +70,24 @@ public class ApprovalInfoWriteBackProcessor implements IFirstWriteBackProcessor 
 					new ColumnProcessor());
 			note2 = flowList.get(1).getChecknote();
 		}
+		//审批信息-主表
+		ApprovalMain appMain = new ApprovalMain();
+		//id 自增
+		appMain.setAttributeValue("APPROVAL_ID", utils.getPrePk("approval_id", "approval", 1).get(0));
+		//提交审批时间
+		appMain.setAttributeValue("APPROVAL_START", sendtime1);
+		//审批完成时间
+		appMain.setAttributeValue("APPROVAL_COMPLETE", flowTime1);
+		//委托单号
+		appMain.setAttributeValue("RECORD_KEY", processData.getAggCommissionHVO().getParentVO().getBillno());
 		
-		//第一条客户主管
+		appMain.setAttributeValue("RECORD_VERSION", 0);
+		appMain.setAttributeValue("APPROVAL_ROUTING", "HF");
+		appMain.setAttributeValue("APPROVAL_GROUP", "PROJECT");
+		appMain.setAttributeValue("APPROVAL_STATUS", "X");
+		appMain.setAttributeValue("TABLE_NAME", "PROJECT");
+		
+		//子表:第一条客户主管
 		ApprovalInfo first = new ApprovalInfo();
 		//取委托单中project.approval_id  
 		first.setAttributeValue("approval_id", processData.getProject().getAttributeValue("approval_id"));
@@ -107,7 +127,7 @@ public class ApprovalInfoWriteBackProcessor implements IFirstWriteBackProcessor 
 		approvalList.add(first);
 		
 		
-		//第二条 技术主管
+		//子表:第二条 技术主管
 		ApprovalInfo sec = new ApprovalInfo();
 		//取委托单中project.approval_id  
 		sec.setAttributeValue("approval_id", processData.getProject().getAttributeValue("approval_id"));
@@ -155,6 +175,7 @@ public class ApprovalInfoWriteBackProcessor implements IFirstWriteBackProcessor 
 		sec.setAttributeValue("approval_comment", note2);
 		approvalList.add(sec);
 		processData.setApprovalList(approvalList);
+		processData.setApprovalMain(appMain);
 	}
 
 	/**

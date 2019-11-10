@@ -61,33 +61,33 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 				value = e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_refvalue");
 			}
 			String initStr = value==null?null:String.valueOf(value);
-			TextDialog textDialog = new TextDialog(e.getContext(),"文本值",initStr);
-			int state = textDialog.showModal();
-			if(state == 2){
-				e.setReturnValue(false);
-				return;
-			}
-			String bigStr = textDialog.getTextPane().getText();
-			
-			initStr = (initStr==null?"":initStr);
-
-			if(valuetype.equals("列表允许用户输入")){
-				if(!initStr.equals(bigStr)){
-					//清空参照信息
-					e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_refvalue", "pk_task_s");
-					e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "englishdescription", "pk_task_s");
-					e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+			if(e.getHitCount()==2){
+				TextDialog textDialog = new TextDialog(e.getContext(),"文本值",initStr);
+				int state = textDialog.showModal();
+				if(state == 2){
+					e.setReturnValue(false);
+					return;
+				}
+				String bigStr = textDialog.getTextPane().getText();
+				initStr = (initStr==null?"":initStr);
+				if(valuetype.equals("列表允许用户输入")){
+					if(!initStr.equals(bigStr)){
+						//清空参照信息
+						e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_refvalue", "pk_task_s");
+						e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "englishdescription", "pk_task_s");
+						e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+						e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
+						e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
+					}
+				}else{
+					if (bigStr != null && !initStr.equals(bigStr) ) {
+						e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+					} else {
+						e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
+					}
 					e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
 					e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
 				}
-			}else{
-				if (bigStr != null && !initStr.equals(bigStr) ) {
-					e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
-				} else {
-					e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
-				}
-				e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
-				e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
 			}
 		} else if ("pk_refvalue".equals(e.getKey())) {
 			Integer valueways = e.getBillCardPanel().getBodyValueAt(e.getRow(), "valueways") == null ? null : (Integer) e

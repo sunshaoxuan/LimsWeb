@@ -11,6 +11,7 @@ import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
+import nc.ui.qcco.task.view.TextDialog;
 import nc.vo.pub.BusinessException;
 
 public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEditEvent> {
@@ -27,26 +28,31 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 	public void handleAppEvent(CardBodyAfterEditEvent e) {
 		String pk_commission_h = getMainBillForm().getBillCardPanel().getHeadItem("pk_commission_h").getValue();
 		if ("textvalue".equals(e.getKey())) {
-			if (e.getValue() != null) {
-				e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
-			} else {
-				e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
-			}
-			//String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
-			/*if(valuetype!=null && valuetype.equals("计算型")){
-				//转化成小时
-				String value = (String)e.getValue();
-				String unit = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "unit");
-				CommonUtils utils = new CommonUtils();
-				int valueInt = utils.changeTime2H(value,unit);
-				
-				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "textvalue");
-				e.getBillCardPanel().setBodyValueAt("h", e.getRow(), "unit");
-				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "formatted_entry");
+			//值类型
+			String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");
+			//原始值
+			String initStr = e.getOldValue()==null?"":e.getOldValue().toString();
+			//新值
+			String bigStr = e.getValue() == null?"":e.getValue().toString();
+			if(valuetype.equals("列表允许用户输入")){
+				if(!initStr.equals(bigStr)){
+					//清空参照信息
+					e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "pk_refvalue", "pk_task_s");
+					e.getBillCardPanel().setBodyValueAt(null, e.getRow(), "englishdescription", "pk_task_s");
+					e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+					e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
+					e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
+				}
 			}else{
-				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "formatted_entry");
-			}*/
-			e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "formatted_entry");
+				if (bigStr != null && !initStr.equals(bigStr) ) {
+					e.getBillCardPanel().setBodyValueAt("已修改", e.getRow(), "conditionstatus");
+				} else {
+					e.getBillCardPanel().setBodyValueAt("未录入", e.getRow(), "conditionstatus");
+				}
+				e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "formatted_entry");
+				e.getBillCardPanel().setBodyValueAt(bigStr, e.getRow(), "textvalue");
+			}
+
 		} else if ("unit".equals(e.getKey())) {
 			//转化成小时
 			/*String valuetype = (String)e.getBillCardPanel().getBodyValueAt(e.getRow(), "valuetype");

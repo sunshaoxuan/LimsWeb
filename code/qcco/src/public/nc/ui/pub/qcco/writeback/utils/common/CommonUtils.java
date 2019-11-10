@@ -651,13 +651,19 @@ public class CommonUtils {
 			}
 			rs.addAll(VOToInserSQL(temp, "result",SecWriteBackStaticMaping.RESULT_STATIC_MAP));
 		}
-		// 审批信息
+		// 审批信息-子表
 		if (processData.getApprovalList() != null && processData.getApprovalList().size() > 0) {
 			List<SuperVO> temp = new ArrayList<>();
 			for (ApprovalInfo approval : processData.getApprovalList()) {
 				temp.add(approval);
 			}
 			rs.addAll(VOToInserSQL(temp, "approval_details", null));
+		}
+		// 审批信息-主表
+		if (processData.getApprovalMain() != null) {
+			List<SuperVO> temp = new ArrayList<>();
+			temp.add(processData.getApprovalMain());
+			rs.addAll(VOToInserSQL(temp, "approval", null));
 		}
 		
 		
@@ -775,6 +781,8 @@ public class CommonUtils {
 		TIME_COLUMN_SET.add("date_assigned");
 		TIME_COLUMN_SET.add("date_approval_due");
 		TIME_COLUMN_SET.add("date_approved");
+		TIME_COLUMN_SET.add("approval_start");
+		TIME_COLUMN_SET.add("approval_complete");
 		
 		return TIME_COLUMN_SET;
 	}

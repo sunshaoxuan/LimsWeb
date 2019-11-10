@@ -65,7 +65,10 @@ public class WriteBackProcessData {
 	//key:一个task对应一个test 顺序和任务单子表任务顺序一致
 	private List<Test> firstTestList;
 	
-	//LIMS 审批信息
+	//LIMS 审批信息-主表
+	private ApprovalMain approvalMain;
+	
+	//LIMS 审批信息-子表
 	private List<ApprovalInfo> approvalList;
 	
 	//LIMS第二次回写test
@@ -370,6 +373,15 @@ public class WriteBackProcessData {
 		this.sampleIdTaskMap = sampleIdTaskMap;
 	}
 
+	public ApprovalMain getApprovalMain() {
+		return approvalMain;
+	}
+
+	public void setApprovalMain(ApprovalMain approvalMain) {
+		this.approvalMain = approvalMain;
+	}
+
+	
 	
 	
 

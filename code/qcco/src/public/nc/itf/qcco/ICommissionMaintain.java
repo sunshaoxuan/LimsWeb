@@ -50,6 +50,12 @@ public interface ICommissionMaintain {
 	 * @param txtMessage
 	 */
 	public void officialReject(CommissionHVO parentVO, String txtMessage) throws BusinessException;
+	/**
+	 * 正式报告确认
+	 * @param parentVO
+	 * @param txtMessage
+	 */
+	public void officialComfirm(CommissionHVO parentVO, String txtMessage) throws BusinessException;
 	
 	/**
 	 * 收费单确认

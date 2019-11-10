@@ -23,6 +23,7 @@ import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionHVO;
+import nc.vo.qcco.qccommission.DocStates;
 
 public class OfficialReportAction extends NCAction {
 
@@ -85,13 +86,17 @@ public class OfficialReportAction extends NCAction {
 
 			int rtnID = (Integer) value[0];
 			String txtMessage = (String) value[1];
-
+			AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
 			if (rtnID == ConfirmDialog.ID_CONFIRM) {
-
-			} else if (rtnID == ConfirmDialog.ID_REJECT) {
-				AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
 				try{
 					confirtm(aggvo.getParentVO(),txtMessage);
+					MessageDialog.showHintDlg(getModel().getContext().getEntranceUI(), "消息", "确认成功!");
+				}catch (Exception ex) {
+					MessageDialog.showErrorDlg(getModel().getContext().getEntranceUI(), "错误", ex.getMessage());
+				}
+			} else if (rtnID == ConfirmDialog.ID_REJECT) {
+				try{
+					reject(aggvo.getParentVO(),txtMessage);
 					MessageDialog.showHintDlg(getModel().getContext().getEntranceUI(), "消息", "驳回成功!");
 				}catch (Exception ex) {
 					MessageDialog.showErrorDlg(getModel().getContext().getEntranceUI(), "错误", ex.getMessage());
@@ -105,6 +110,27 @@ public class OfficialReportAction extends NCAction {
 	}
 
 	private void confirtm(CommissionHVO parentVO,String txtMessage) throws BusinessException {
+		NCLocator.getInstance().lookup(ICommissionMaintain.class).officialComfirm(parentVO,txtMessage);
+		if(listView.getMainPanel().isShowing()){
+			//列表态
+			listView.getDataManager().refresh();
+		}else{
+			//卡片态
+			AbstractBill oldVO = (AbstractBill)getModel().getSelectedData();
+	        String pk = oldVO.getParentVO().getPrimaryKey();
+	        IBillQueryService billQuery = (IBillQueryService)NCLocator.getInstance().lookup(IBillQueryService.class);
+	        
+	        AggregatedValueObject newVO = billQuery.querySingleBillByPk(oldVO.getClass(), pk);
+	        
+	        if (newVO == null)
+	        {
+	          throw new BusinessException(NCLangRes.getInstance().getStrByID("uif2", "RefreshSingleAction-000000"));
+	        }
+	        
+	        model.directlyUpdate(newVO);
+		}
+	}
+	private void reject(CommissionHVO parentVO,String txtMessage) throws BusinessException {
 		NCLocator.getInstance().lookup(ICommissionMaintain.class).officialReject(parentVO,txtMessage);
 		if(listView.getMainPanel().isShowing()){
 			//列表态
@@ -133,6 +159,13 @@ public class OfficialReportAction extends NCAction {
 		}
 		SuperVO hvo = (SuperVO) aggVO.getParentVO();
 		if (hvo == null) {
+			return false;
+		}
+		// 状态要为"报告待确认"
+		String statusStr = ((CommissionHVO) hvo).getDocstatus();
+		statusStr = (statusStr == null ? "0" : statusStr);
+		int status = Integer.parseInt(statusStr);
+		if (status != DocStates.REPORT_CONFIRMED.toIntValue()) {
 			return false;
 		}
 		// 没回写的单据,不能使用此按钮
