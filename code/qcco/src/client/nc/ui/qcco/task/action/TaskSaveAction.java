@@ -30,6 +30,7 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
+import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskSVO;
@@ -185,7 +186,13 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 	    new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
 
 	    getModel().setUiState(UIState.NOT_EDIT);
-	    getMainGrandModel().directlyUpdate(clientVOs[0]);
+	    List<AggTaskHVO> clientVOsList = new ArrayList();
+		for (IBill bill : clientVOs) {
+			if (bill instanceof AggTaskHVO) {
+				clientVOsList.add((AggTaskHVO) bill);
+			}
+		}
+	    getMainGrandModel().getMainModel().initModel(clientVOsList.toArray(new AggTaskHVO[0]));;
 	}
 
 	protected void showSuccessInfo() {

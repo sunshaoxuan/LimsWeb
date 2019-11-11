@@ -1,14 +1,18 @@
 package nc.impl.pub.ace;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
+import nc.bs.dao.BaseDAO;
+import nc.bs.dao.DAOException;
+import nc.bs.framework.common.InvocationInfoProxy;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.qcco.task.ace.bp.AceTaskApproveBP;
 import nc.bs.qcco.task.ace.bp.AceTaskDeleteBP;
@@ -17,11 +21,13 @@ import nc.bs.qcco.task.ace.bp.AceTaskSendApproveBP;
 import nc.bs.qcco.task.ace.bp.AceTaskUnApproveBP;
 import nc.bs.qcco.task.ace.bp.AceTaskUnSendApproveBP;
 import nc.bs.qcco.task.ace.bp.AceTaskUpdateBP;
+import nc.hr.utils.InSQLCreator;
 import nc.impl.pubapp.pattern.data.bill.BillLazyQuery;
 import nc.impl.pubapp.pattern.data.bill.tool.BillTransferTool;
 import nc.impl.pubapp.pattern.data.vo.VODelete;
 import nc.impl.pubapp.pattern.data.vo.VOInsert;
 import nc.impl.pubapp.pattern.data.vo.VOUpdate;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.md.persist.framework.IMDPersistenceQueryService;
 import nc.md.persist.framework.IMDPersistenceService;
 import nc.ui.querytemplate.querytree.IQueryScheme;
@@ -30,16 +36,26 @@ import nc.vo.pub.ISuperVO;
 import nc.vo.pub.IVOMeta;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
+import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
+import nc.vo.qcco.task.TaskHVO;
 import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskSVO;
 
 public abstract class AceTaskPubServiceImpl {
 	IMDPersistenceService persist = NCLocator.getInstance().lookup(IMDPersistenceService.class);
 	IMDPersistenceQueryService query = NCLocator.getInstance().lookup(IMDPersistenceQueryService.class);
+	private BaseDAO dao = null;
 
+	public BaseDAO getDao() {
+		if (dao == null) {
+			dao = new BaseDAO();
+		}
+		return dao;
+	}
 	// 新增
 	public AggTaskHVO[] pubinsertBills(AggTaskHVO[] clientFullVOs, AggTaskHVO[] originBills) throws BusinessException {
 		try {
@@ -101,152 +117,162 @@ public abstract class AceTaskPubServiceImpl {
 
 	// 修改
 	public AggTaskHVO[] pubupdateBills(AggTaskHVO[] vos) throws BusinessException {
-		try {
-			BillTransferTool<AggTaskHVO> transTool = new BillTransferTool<AggTaskHVO>((AggTaskHVO[]) vos);
-			AggTaskHVO[] fullBills = transTool.getClientFullInfoBill();
-			AggTaskHVO[] originBills = transTool.getOriginBills();
-
-			//tank 合并的时候,补上孙表数据
-			if(vos!=null && vos.length > 0 && fullBills !=null && fullBills.length > 0){
-				for(int i = 0 ;i<vos.length ;i++){
-					AggTaskHVO fullagg = fullBills[i];
-					ISuperVO[] fullbvos = fullagg.getChildren(TaskBVO.class);
-					
-					AggTaskHVO sourceagg = vos[i];
-					ISuperVO[] sourcebvo = sourceagg.getChildren(TaskBVO.class);
-					
-					if(fullbvos!=null && fullbvos.length > 0){
-						for(int j=0;j<fullbvos.length;j++){
-							((TaskBVO)fullbvos[j]).setPk_task_s(((TaskBVO)sourcebvo[j]).getPk_task_s());
-							((TaskBVO)fullbvos[j]).setPk_task_r(((TaskBVO)sourcebvo[j]).getPk_task_r());
-						}
-					}
-					
-					
-					
-				}
-			}
-			
-			// 孙VO的修改
-			// nc.impl.pubapp.pattern.data.vo.template.UpdateBPTemplate
-
-			AggTaskHVO[] aggvos = (AggTaskHVO[]) vos;
-			String[] tableCodes = originBills[0].getTableCodes();
-
-			Map<IVOMeta, List<ISuperVO>> fullGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
-			Map<IVOMeta, List<ISuperVO>> originGrandVOs = new HashMap<IVOMeta, List<ISuperVO>>();
-			for (String tableCode : tableCodes) {
-				SuperVO[] originChildrens = (SuperVO[]) originBills[0].getTableVO(tableCode);
-				for (SuperVO childVO : originChildrens) {
-					// 将当前页签下的当前子的所有孙都查询出来了,并赋值给originBills中的孙。
-					if (tableCode.equals("pk_task_b")) {
-						String originChildPK = ((TaskBVO) childVO).getPrimaryKey();
-						Collection originRVOs = query.queryBillOfVOByCond(TaskRVO.class, "pk_task_b = '"
-								+ originChildPK + "'", false);
-						Collection originSVOs = query.queryBillOfVOByCond(TaskSVO.class, "pk_task_b = '"
-								+ originChildPK + "' and dr = 0", false);
-						if (originRVOs != null && originRVOs.size() != 0) {
-							TaskRVO[] originGrandvos = (TaskRVO[]) originRVOs.toArray(new TaskRVO[originRVOs.size()]);
-							((TaskBVO) childVO).setPk_task_r(originGrandvos);
-							IVOMeta meta = ((SuperVO) (originRVOs.iterator().next())).getMetaData();
-							if (originGrandVOs.get(meta) == null) {
-								originGrandVOs.put(meta, (List<ISuperVO>) originRVOs);
-							} else {
-								originGrandVOs.get(meta).addAll(originRVOs);
-							}
-						}
-						if (originSVOs != null && originSVOs.size() != 0) {
-							TaskSVO[] originGrandvos = (TaskSVO[]) originSVOs.toArray(new TaskSVO[originSVOs.size()]);
-							((TaskBVO) childVO).setPk_task_s(originGrandvos);
-							IVOMeta meta = ((SuperVO) (originSVOs.iterator().next())).getMetaData();
-							if (originGrandVOs.get(meta) == null) {
-								originGrandVOs.put(meta, (List<ISuperVO>) originSVOs);
-							} else {
-								originGrandVOs.get(meta).addAll(originSVOs);
-							}
-						}
-					}
-				}
-
-				SuperVO[] currentChildrens = (SuperVO[]) aggvos[0].getTableVO(tableCode);
-				if (currentChildrens != null) {
-					for (SuperVO childVO : currentChildrens) {
-						if (tableCode.equals("pk_task_b")) {
-							ISuperVO[] currentGrandvos = (TaskRVO[]) ((TaskBVO) childVO).getPk_task_r();
-							for (int i = 0; currentGrandvos != null && i < currentGrandvos.length; i++) {
-								((TaskRVO) currentGrandvos[i]).setPk_task_b(childVO.getPrimaryKey());
-							}
-							if (currentGrandvos != null && currentGrandvos.length != 0) {
-								IVOMeta meta = ((SuperVO) (currentGrandvos[0])).getMetaData();
-								List arrayList = new ArrayList(Arrays.asList(currentGrandvos));
-								if (fullGrandVOs.get(meta) == null) {
-									fullGrandVOs.put(meta, arrayList);
-								} else {
-									fullGrandVOs.get(meta).addAll(arrayList);
-								}
-							}
-							// 样品表
-							ISuperVO[] currentGrandsvos = (TaskSVO[]) ((TaskBVO) childVO).getPk_task_s();
-							for (int i = 0; currentGrandsvos != null && i < currentGrandsvos.length; i++) {
-								((TaskSVO) currentGrandsvos[i]).setPk_task_b((childVO.getPrimaryKey()));
-							}
-							if (currentGrandsvos != null && currentGrandsvos.length != 0) {
-								IVOMeta meta = ((SuperVO) (currentGrandsvos[0])).getMetaData();
-								List arrayList = new ArrayList(Arrays.asList(currentGrandsvos));
-								if (fullGrandVOs.get(meta) == null) {
-									fullGrandVOs.put(meta, arrayList);
-								} else {
-									fullGrandVOs.get(meta).addAll(arrayList);
-								}
-							}
-						}
-					}
-				}
-			}
-			fullGrandVOs = this.getFullGrandVOs(fullGrandVOs, originGrandVOs);
-
-			
-
-				AceTaskUpdateBP bp = new AceTaskUpdateBP();
-				AggTaskHVO[] retBills = bp.update(fullBills, originBills);
-				List<ISuperVO> lists = new ArrayList<>();
-				List<ISuperVO> listr = new ArrayList<>();
-				for (int i = 0; i < retBills.length; i++) {
-					TaskBVO[] childrenVO = (TaskBVO[]) (retBills[i].getChildrenVO());
-					for (TaskBVO childrenVOs : childrenVO) {
-						TaskSVO[] taskSVO = childrenVOs.getPk_task_s();
-						if (null != taskSVO && taskSVO.length > 0) {
-							for (TaskSVO taskSVO2 : taskSVO) {
-								taskSVO2.setPk_task_b(childrenVOs.getPk_task_b());
-								lists.add(taskSVO2);
-							}
-						}
-						TaskRVO[] taskRVO = childrenVOs.getPk_task_r();
-						if (null != taskRVO && taskRVO.length > 0) {
-							for (TaskRVO taskRVO2 : taskRVO) {
-								taskRVO2.setPk_task_b(childrenVOs.getPk_task_b());
-								listr.add(taskRVO2);
-							}
-						}
-					}
-
-				}
-				for (IVOMeta vo : fullGrandVOs.keySet()) {
-					if (vo.getEntityName().equals("qcco.task_s")) {
-						fullGrandVOs.put(vo, lists);
-					} else {
-						fullGrandVOs.put(vo, listr);
-					}
-
-				}
-				this.persistent(fullGrandVOs, originGrandVOs);
-			
-
-			return aggvos;
-		} catch (Exception e) {
-			ExceptionUtils.marsh(e);
+		AggTaskHVO[] vosClone = vos.clone();
+		// 删除原vo
+		deleteOldVO(vos);
+		AggTaskHVO[] vosNew = deal2New(vosClone);
+		//创建时间
+		List<UFDateTime> createTimeList = new ArrayList<>();
+		for(AggTaskHVO aggTask : vos){
+			createTimeList.add(aggTask.getParentVO().getCreationtime());
 		}
-		return null;
+		List<String> createtorList = new ArrayList<>();
+		for(AggTaskHVO aggTask : vos){
+			createtorList.add(aggTask.getParentVO().getCreator());
+		}
+		// 处理审计信息-前
+		dealPubBefore(vosNew);
+		AggTaskHVO[] rtnVO = pubinsertBills(vosNew, null);
+		// 处理审计信息-后
+		dealPubAfter(rtnVO, createTimeList,createtorList);
+		return rtnVO;
+	}
+	private void dealPubBefore(AggTaskHVO[] vosNew) throws DAOException {
+		if (null == vosNew) {
+			return;
+		}
+		for (int i = 0; i < vosNew.length; i++) {
+			if (vosNew[i] != null) {
+				TaskHVO newVO = vosNew[i].getParentVO();
+				if (newVO != null) {
+					UFDateTime ts = new UFDateTime();
+					newVO.setTs(ts);
+					newVO.setModifiedtime(ts);
+					newVO.setModifier(InvocationInfoProxy.getInstance().getUserId());
+					newVO.setLastmaketime(ts);
+				}
+			}
+		}
+	}
+	
+	private void dealPubAfter(AggTaskHVO[] vosNew, List<UFDateTime> createTimeList,List<String> createtorList) throws DAOException {
+		if (null == vosNew) {
+			return;
+		}
+		for (int i = 0; i < vosNew.length; i++) {
+			if (vosNew[i] != null && createTimeList.get(i) != null&&createtorList.get(i) != null) {
+				TaskHVO newVO = vosNew[i].getParentVO();
+
+				newVO.setCreationtime(createTimeList.get(i));
+				newVO.setCreator(createtorList.get(i));
+				getDao().executeUpdate(
+						"update qc_task_h set creationtime = '" + createTimeList.get(i) + "' where billno = '" + newVO.getBillno() + "'");
+				getDao().executeUpdate(
+						"update qc_task_h set creator = '" + createtorList.get(i) + "' where billno = '" + newVO.getBillno() + "'");
+
+			}
+		}
+	}
+	/**
+	 * 包装成一个新数据
+	 * 
+	 * @param Bills
+	 * @throws DAOException
+	 */
+	private AggTaskHVO[] deal2New(AggTaskHVO[] Bills) throws DAOException {
+		if (Bills != null) {
+			for (AggTaskHVO aggvo : Bills) {
+				if (aggvo != null && aggvo.getChildren(TaskBVO.class) != null && aggvo.getParentVO() != null) {
+					aggvo.getParentVO().setTs(null);
+					aggvo.getParentVO().setPk_task_h(null);
+					aggvo.getParentVO().setStatus(2);
+					//aggvo.getParentVO().setCreator(null);
+					//aggvo.getParentVO().setCreationtime(null);
+					aggvo.getParentVO().setModifiedtime(null);
+					aggvo.getParentVO().setModifier(null);
+					TaskBVO[] bvos = (TaskBVO[]) (aggvo.getChildren(TaskBVO.class));
+					List<TaskBVO> bvoList = new ArrayList<>();
+					for (TaskBVO bvo : bvos) {
+						if (bvo != null) {
+							if(3==bvo.getStatus()){
+								continue;
+							}
+							bvo.setPk_task_h(null);
+							bvo.setPk_task_b(null);
+							bvo.setTs(null);
+							bvo.setStatus(2);
+							if (bvo.getPk_task_r() != null) {
+								List<TaskRVO> tempList = new ArrayList<>();
+								for (TaskRVO rvo : bvo.getPk_task_r()) {
+									if (rvo != null) {
+										if(3==rvo.getStatus()){
+											continue;
+										}
+										rvo.setPk_task_b(null);
+										rvo.setPk_task_r(null);
+										rvo.setTs(null);
+										rvo.setStatus(2);
+										tempList.add(rvo);
+									}
+								}
+								bvo.setPk_task_r(tempList.toArray(new TaskRVO[0]));
+							}
+							if (bvo.getPk_task_s() != null) {
+								List<TaskSVO> tempList = new ArrayList<>();
+								for (TaskSVO svo : bvo.getPk_task_s()) {
+									if (svo != null) {
+										if(3==svo.getStatus()){
+											continue;
+										}
+										svo.setPk_task_b(null);
+										svo.setPk_task_s(null);
+										svo.setTs(null);
+										svo.setStatus(2);
+										tempList.add(svo);
+									}
+								}
+								bvo.setPk_task_s(tempList.toArray(new TaskSVO[0]));
+							}
+						}
+						bvoList.add(bvo);
+					}
+					aggvo.setChildren(TaskBVO.class, bvoList.toArray(new TaskBVO[0]));
+				}
+			}
+		}
+		return Bills;
+	}
+	
+	/**
+	 * delete
+	 * 
+	 * @param vos
+	 * @throws BusinessException
+	 */
+	private void deleteOldVO(AggTaskHVO[] vos) throws BusinessException {
+		Set<String> deletePks = new HashSet<>();
+		for (AggTaskHVO vo : vos) {
+			deletePks.add(vo.getPrimaryKey());
+		}
+		// 子表删除
+		getDao().deleteByPKs(TaskHVO.class, deletePks.toArray(new String[0]));
+
+		InSQLCreator insql = new InSQLCreator();
+		String deletePksInSQL = insql.getInSQL(deletePks.toArray(new String[0]));
+		// 子表切换
+		getDao().executeUpdate("update qc_task_b set dr = 0 where PK_task_h in (" + deletePksInSQL + ")");
+		// 孙表切换
+		getDao().executeUpdate(
+				"update qc_task_r set dr = 0 where pk_task_r in ( "
+						+ " select pk_task_r from qc_task_r r "
+						+ " left join qc_task_b b on b.PK_task_b = r.PK_task_b "
+						+ " where b.PK_task_h in(" + deletePksInSQL + ") ) ");
+		getDao().executeUpdate(
+				"update qc_task_s set dr = 0 where pk_task_s in ( "
+						+ " select pk_task_s from qc_task_s r "
+						+ " left join qc_task_b b on b.PK_task_b = r.PK_task_b "
+						+ " where b.PK_task_h in(" + deletePksInSQL + ") ) ");
+
 	}
 
 	// 参考 BillUpdate.persistent方法

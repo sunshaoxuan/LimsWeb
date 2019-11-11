@@ -12,6 +12,7 @@ import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
+import nc.bs.framework.common.InvocationInfoProxy;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.qcco.commission.ace.bp.AceCommissionApproveBP;
 import nc.bs.qcco.commission.ace.bp.AceCommissionDeleteBP;
@@ -42,6 +43,9 @@ import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionCVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.commission.CommissionRVO;
+import nc.vo.qcco.task.AggTaskHVO;
+import nc.vo.qcco.task.TaskHVO;
+import nc.vo.qcco.task.TaskSVO;
 
 public abstract class AceCommissionPubServiceImpl {
 	IMDPersistenceService persist = NCLocator.getInstance().lookup(IMDPersistenceService.class);
@@ -173,9 +177,59 @@ public abstract class AceCommissionPubServiceImpl {
 		// 删除原vo
 		deleteOldVO(vos);
 		AggCommissionHVO[] vosNew = deal2New(vosClone);
-		// 处理审计信息
-		dealPub(vosNew, vos);
-		return pubinsertBills(vosNew, null);
+		// 创建时间
+		List<UFDateTime> createTimeList = new ArrayList<>();
+		for (AggCommissionHVO aggTask : vos) {
+			createTimeList.add(aggTask.getParentVO().getCreationtime());
+		}
+		List<String> createtorList = new ArrayList<>();
+		for (AggCommissionHVO aggTask : vos) {
+			createtorList.add(aggTask.getParentVO().getCreator());
+		}
+		// 处理审计信息-前
+		dealPubBefore(vosNew);
+		AggCommissionHVO[] rtnVO = pubinsertBills(vosNew, null);
+		// 处理审计信息-后
+		dealPubAfter(rtnVO, createTimeList, createtorList);
+		return rtnVO;
+	}
+	
+	private void dealPubBefore(AggCommissionHVO[] vosNew) throws DAOException {
+		if (null == vosNew) {
+			return;
+		}
+		for (int i = 0; i < vosNew.length; i++) {
+			if (vosNew[i] != null) {
+				CommissionHVO newVO = vosNew[i].getParentVO();
+				if (newVO != null) {
+					UFDateTime ts = new UFDateTime();
+					newVO.setTs(ts);
+					newVO.setModifiedtime(ts);
+					newVO.setModifier(InvocationInfoProxy.getInstance().getUserId());
+					newVO.setLastmaketime(ts);
+				}
+			}
+		}
+	}
+	
+	private void dealPubAfter(AggCommissionHVO[] vosNew, List<UFDateTime> createTimeList,List<String> createtorList) throws DAOException {
+		if (null == vosNew) {
+			return;
+		}
+		for (int i = 0; i < vosNew.length; i++) {
+			if (vosNew[i] != null && createTimeList.get(i) != null) {
+				CommissionHVO newVO = vosNew[i].getParentVO();
+
+				newVO.setCreationtime(createTimeList.get(i));
+				newVO.setCreator(createtorList.get(i));
+				getDao().executeUpdate(
+						"update qc_commission_h set creationtime = '" + createTimeList.get(i) + "' where billno = '" + newVO.getBillno() + "'");
+				getDao().executeUpdate(
+						"update qc_commission_h set creator = '" + (createtorList.get(i)==null?InvocationInfoProxy.getInstance().getUserId():createtorList.get(i))
+								+ "' where billno = '" + newVO.getBillno() + "'");
+
+			}
+		}
 	}
 
 	/**
@@ -205,26 +259,7 @@ public abstract class AceCommissionPubServiceImpl {
 
 	}
 
-	private void dealPub(AggCommissionHVO[] vosNew, AggCommissionHVO[] vosOld) {
-		if (null == vosNew || null == vosOld) {
-			return;
-		}
-		for (int i = 0; i < vosNew.length; i++) {
-			if (vosNew[i] != null && vosOld[i] != null) {
-				CommissionHVO newVO = vosNew[i].getParentVO();
-				CommissionHVO oldVO = vosOld[i].getParentVO();
-				if (newVO != null && oldVO != null) {
-					UFDateTime ts = new UFDateTime();
-					newVO.setTs(ts);
-					newVO.setCreationtime(oldVO.getCreationtime());
-					newVO.setCreator(oldVO.getCreator());
-					newVO.setModifiedtime(ts);
-					newVO.setModifier(oldVO.getModifier());
-					newVO.setLastmaketime(ts);
-				}
-			}
-		}
-	}
+	
 
 	/**
 	 * 包装成一个新数据
@@ -239,10 +274,10 @@ public abstract class AceCommissionPubServiceImpl {
 					aggvo.getParentVO().setTs(null);
 					aggvo.getParentVO().setPk_commission_h(null);
 					aggvo.getParentVO().setStatus(2);
-					aggvo.getParentVO().setCreator(null);
-					aggvo.getParentVO().setCreationtime(null);
+					//aggvo.getParentVO().setCreator(null);
+					//aggvo.getParentVO().setCreationtime(null);
 					aggvo.getParentVO().setModifiedtime(null);
-					// aggvo.getParentVO().setModifier(null);
+					aggvo.getParentVO().setModifier(null);
 					CommissionBVO[] bvos = (CommissionBVO[]) (aggvo.getChildren(CommissionBVO.class));
 					List<CommissionBVO> bvoList = new ArrayList<>();
 					for (CommissionBVO bvo : bvos) {
@@ -255,14 +290,20 @@ public abstract class AceCommissionPubServiceImpl {
 							bvo.setTs(null);
 							bvo.setStatus(2);
 							if (bvo.getPk_commission_r() != null) {
+								List<CommissionRVO> tempList = new ArrayList<>();
 								for (CommissionRVO rvo : bvo.getPk_commission_r()) {
 									if (rvo != null) {
+										if(3==rvo.getStatus()){
+											continue;
+										}
 										rvo.setPk_commission_b(null);
 										rvo.setPk_commission_r(null);
 										rvo.setTs(null);
 										rvo.setStatus(2);
+										tempList.add(rvo);
 									}
 								}
+								bvo.setPk_commission_r(tempList.toArray(new CommissionRVO[0]));
 							}
 						}
 						bvoList.add(bvo);
