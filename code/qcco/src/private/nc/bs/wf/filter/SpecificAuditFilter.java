@@ -1,5 +1,6 @@
 package nc.bs.wf.filter;
 
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.HashSet;
 
@@ -13,11 +14,13 @@ import nc.vo.sm.UserVO;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -43,13 +46,13 @@ public class SpecificAuditFilter implements IParticipantFilter {
 		// 用当前用户Code从OA取用户档案，从中获取直接上级ID
 		String requestUrl = queryServiceByCode.replace("{agentSecret}", accessSecret).replace("{sysCode}", appCode)
 				.replace("{accessToken}", getAccessToken(tokenSeed));
-		String condition = "{\"code\":\"1001136\",\"typeFlag\":\"1\"}";
+		String condition = "{\"code\":\"" + uservo.getUser_code_q() + "\",\"typeFlag\":\"1\"}";
 		JsonObject jObject = executeQuery(requestUrl, condition);
 
 		checkError(jObject);
 
-		JsonElement eleList_Hr = jObject.get("list_hr");
-		JsonObject userJObject = eleList_Hr.getAsJsonObject();
+		JsonArray arrList_Hr = jObject.get("list_hr").getAsJsonArray();
+		JsonObject userJObject = arrList_Hr.get(0).getAsJsonObject();
 		JsonElement eleManager = userJObject.get("managerid");
 		String manageID = eleManager.getAsString();
 
@@ -65,8 +68,8 @@ public class SpecificAuditFilter implements IParticipantFilter {
 
 		checkError(jObject);
 
-		eleList_Hr = jObject.get("list_hr");
-		userJObject = eleList_Hr.getAsJsonObject();
+		arrList_Hr = jObject.get("list_hr").getAsJsonArray();
+		userJObject = arrList_Hr.get(0).getAsJsonObject();
 		eleManager = userJObject.get("workcode");
 		String manageCode = eleManager.getAsString();
 
@@ -81,7 +84,7 @@ public class SpecificAuditFilter implements IParticipantFilter {
 		return rtn;
 	}
 
-	private void checkError(JsonObject jObject) throws BusinessException {
+	public static void checkError(JsonObject jObject) throws BusinessException {
 		JsonElement eleErrCode = jObject.get("errcode");
 		String errCode = eleErrCode.getAsString();
 
@@ -91,7 +94,7 @@ public class SpecificAuditFilter implements IParticipantFilter {
 		}
 	}
 
-	private String getAccessToken(String tokenSeed) throws BusinessException {
+	public static String getAccessToken(String tokenSeed) throws BusinessException {
 		UFLiteralDate today = new UFLiteralDate();
 		String cyear = today.toString().substring(0, 4);
 		String cmonth = today.toString().substring(5, 7);
@@ -132,11 +135,16 @@ public class SpecificAuditFilter implements IParticipantFilter {
 		}
 	}
 
-	private JsonObject executeQuery(String requestUrl, String jsonCondition) throws BusinessException {
+	public static JsonObject executeQuery(String requestUrl, String jsonCondition) throws BusinessException {
 		JsonObject object;
-		DefaultHttpClient httpclient = new DefaultHttpClient();
-		HttpPost post = new HttpPost(requestUrl);
+		HttpClient httpclient = new DefaultHttpClient();
 		try {
+			String host = requestUrl.replace("http://", "").substring(0,
+					requestUrl.replace("http://", "").indexOf('/') + 1);
+			String url = "http://" + host
+					+ URLEncoder.encode(requestUrl.replace("http://", "").replace(host, ""), "UTF-8");
+			HttpPost post = new HttpPost(requestUrl.replace("^", "%5E"));
+			post.setHeader("Content-Type", "application/json");
 			StringEntity s = new StringEntity(jsonCondition.replace("\\", ""));
 			s.setContentEncoding("UTF-8");
 			s.setContentType("application/json");// 发送json数据需要设置contentType
