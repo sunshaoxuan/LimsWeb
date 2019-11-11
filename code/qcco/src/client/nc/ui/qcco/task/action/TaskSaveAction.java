@@ -244,9 +244,12 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 							for(TaskSVO svo : svos){
 								if(svo!=null){
 									if(svo.getIsoptional()!=null && svo.getIsoptional().booleanValue()){
-										//勾选了"是否可选"的数据，如果文本值和参照值都为空，不保存这条数据
+										String typeName = typePk2NameMap.get(svo.getPk_valuetype()==null?"":svo.getPk_valuetype());
+										typeName = (typeName==null?"":typeName);
+										//勾选了"是否可选"的数据，如果文本值和参照值都为空，不保存这条数据,(不为计算型)
 										boolean isValueNull = (svo.getTextvalue()==null ||svo.getTextvalue().equals(""))
-												&&(svo.getPk_refvalue()==null || svo.getPk_refvalue().equals(""));
+												&&(svo.getPk_refvalue()==null || svo.getPk_refvalue().equals(""))
+												&&(!typeName.equals("计算型"));
 										if(isValueNull){
 											continue;
 										}
