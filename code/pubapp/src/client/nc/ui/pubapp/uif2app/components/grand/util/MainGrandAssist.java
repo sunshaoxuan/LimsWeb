@@ -256,6 +256,8 @@ public class MainGrandAssist {
 			if("nc.vo.qcco.commission.CommissionBVO".equals(className)){
 				pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "uniqueid");
 				//mainbillform.getBillCardPanel().getBodyValueAt(currentRow, "uniqueid")
+			}else if("nc.vo.qcco.task.TaskBVO".equals(className)){
+				pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "uniquekey");
 			}else{
 				pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(currentRow, "precolumn");
 			}
@@ -580,6 +582,8 @@ public class MainGrandAssist {
 			if (last_pk_body == null) {
 				if("nc.vo.qcco.commission.CommissionBVO".equals(className)){
 					last_pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(lastrow, "uniqueid");
+				}else if("nc.vo.qcco.task.TaskBVO".equals(className)){
+					last_pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(lastrow, "uniquekey");
 				}else{
 					last_pk_body = (String) mainbillform.getBillCardPanel().getBillModel().getValueAt(lastrow, "precolumn");
 				}
