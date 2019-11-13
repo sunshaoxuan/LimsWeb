@@ -317,13 +317,13 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 								this.getGrandCard()
 										.getBillCardPanel()
 										.setBodyValueAt(
-												new UFDouble(map.get("minimum") == null ? "0" : map.get("minimum")),
+												(map.get("minimum") == null ? null : new UFDouble(map.get("minimum"))),
 												row, "min_limit", "pk_task_s");
 							} else if (refValue.getKey().equals("maximum")) {
 								this.getGrandCard()
 										.getBillCardPanel()
 										.setBodyValueAt(
-												new UFDouble(map.get("maximum") == null ? "0" : map.get("maximum")),
+												(map.get("maximum") == null ? null :new UFDouble(map.get("maximum"))),
 												row, "max_limit", "pk_task_s");
 							} else if (refValue.getKey().equals("c_en_default_value")) {
 								this.getGrandCard()

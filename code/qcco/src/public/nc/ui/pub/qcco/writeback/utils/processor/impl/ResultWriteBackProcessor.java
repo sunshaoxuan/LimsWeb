@@ -390,7 +390,8 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 				}
 				
 			}
-					
+			//Ó¢ÎÄÃû:
+			allResultList.get(i).setAttributeValue("attribute_1", srcDataList.get(i).getAttributeValue("englishdescription"));
 //			allResultList.get(i).setAttributeValue("test", "test");
 			
 //			allResultList.get(i).setAttributeValue("places", 1);
