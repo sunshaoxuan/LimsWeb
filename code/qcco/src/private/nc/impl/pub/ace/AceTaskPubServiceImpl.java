@@ -169,6 +169,11 @@ public abstract class AceTaskPubServiceImpl {
 						"update qc_task_h set creationtime = '" + createTimeList.get(i) + "' where billno = '" + newVO.getBillno() + "'");
 				getDao().executeUpdate(
 						"update qc_task_h set creator = '" + createtorList.get(i) + "' where billno = '" + newVO.getBillno() + "'");
+				//tank 
+				getDao().executeUpdate(
+						"update qc_task_h set billid = '" + newVO.getPk_task_h() + "' where billno = '" + newVO.getBillno() + "'");
+				getDao().executeUpdate(
+						"update qc_task_h set billversionpk = '" + newVO.getPk_task_h() + "' where billno = '" + newVO.getBillno() + "'");
 
 			}
 		}

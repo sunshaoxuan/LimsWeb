@@ -43,13 +43,13 @@ public class WriteBackMediator {
 			IFirstWriteBackProcessor sampleGroupProcessor = new SampleGroupWriteBackProcessor();
 			sampleGroupProcessor.setUtils(utils);
 			//实验前参数
-			IFirstWriteBackProcessor paraAProcessor = new ParaAWriteBackProcessor();
+			ParaAWriteBackProcessor paraAProcessor = new ParaAWriteBackProcessor();
 			paraAProcessor.setUtils(utils);
 			//任务行
 			IFirstWriteBackProcessor taskProcessor = new TaskWriteBackProcessor();
 			taskProcessor.setUtils(utils);
 			//试验后参数
-			IFirstWriteBackProcessor paraBProcessor = new ParaBWriteBackProcessor();
+			ParaBWriteBackProcessor paraBProcessor = new ParaBWriteBackProcessor();
 			paraBProcessor.setUtils(utils);
 			//sample表
 			SampleWriteBackProcessor sampleProcessor = new SampleWriteBackProcessor();
@@ -97,6 +97,10 @@ public class WriteBackMediator {
 			testProcessor.processSec(data);
 			// result第二次回写
 			resultProcessor.processSec(data);
+			//试验前参数二次回写
+			paraAProcessor.processSec(data);
+			//实验后参数二次回写
+			paraBProcessor.processSec(data);
 			
 			
 			

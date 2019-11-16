@@ -1,6 +1,7 @@
 package nc.ui.pub.qcco.writeback.utils.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -1100,6 +1101,27 @@ public class CommonUtils {
         	
         	return 0;
         }
+        /**
+         * 根据第二次回写的sampleid 查找第二次回写的sample
+         * @param attributeValue
+         */
+		public Sample getSampleBySample(String attributeValue) {
+			Map<String, List<Sample>> id2Sampe = processData.getSecSampleListMap();
+			if(id2Sampe!=null && id2Sampe.size() > 0){
+				Collection<List<Sample>> allSampleList = id2Sampe.values();
+				for(List<Sample> sampleList : allSampleList){
+					if(sampleList!=null&&sampleList.size() > 0){
+						for(Sample sample : sampleList){
+							if(sample!=null && sample.getAttributeValue("sample_number")!=null && String.valueOf(sample.getAttributeValue("sample_number")).equals(attributeValue)){
+								return sample;
+							}
+						}
+					}
+				}
+			}
+			
+			return null;
+		}
 	
 /*    public SuperVO writeStaticField(SuperVO vo ,Map<String, String> staticMaping){
     	

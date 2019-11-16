@@ -16,11 +16,16 @@ import nc.jdbc.framework.processor.MapListProcessor;
 import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.Result;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.Sample;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.Test;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pub.qcco.writeback.utils.mapping.FirstWriteBackStaticMaping;
 import nc.ui.pub.qcco.writeback.utils.processor.IFirstWriteBackProcessor;
+import nc.ui.pub.qcco.writeback.utils.processor.ISecWriteBackProcessor;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
+import nc.vo.pub.lang.UFDateTime;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionRVO;
@@ -31,7 +36,7 @@ import nc.vo.qcco.commission.CommissionRVO;
  * @author 91967
  * 
  */
-public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
+public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor,ISecWriteBackProcessor {
 
 	private CommonUtils utils;
 
@@ -44,6 +49,132 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor {
 	public void processFirst(WriteBackProcessData data) throws BusinessException {
 		process(data);
 	}
+	
+	@Override
+	public void processSec(WriteBackProcessData data) throws BusinessException {
+		processSecond(data);
+	}
+	/**
+	 * 二次回写,从PRODUCT_SPEC 到result
+	 * @param data
+	 * @throws BusinessException 
+	 */
+	private void processSecond(WriteBackProcessData processData) throws BusinessException {
+		List<Test> testSecList = processData.getSecTestList();
+		processData.getSecSampleListMap();
+		if(testSecList!=null && testSecList.size() > 0){
+			List<Result> secResultList = new ArrayList<>();
+			IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+			for(Test test : testSecList){
+				//对应的sample
+				Sample sample = utils.getSampleBySample(String.valueOf(test.getAttributeValue("sample_number")));
+				if(sample!=null && sample.getAttributeValue("product")!=null && sample.getAttributeValue("product_grade")!=null
+						&& sample.getAttributeValue("sampling_point")!=null){
+					//企业标准
+					String product = sample.getAttributeValue("product").toString();
+					//规格号
+					String product_grade = sample.getAttributeValue("product_grade").toString();
+					//结构类型
+					String sampling_point = sample.getAttributeValue("sampling_point").toString();
+					String sql = "SELECT "
+							+" c.result_type com_result_type, "
+							+" c.list_key com_list_key, "
+							+" c.reportable com_reportable, "
+							+" c.optional com_optional, "
+							+" c.displayed com_displayed, "
+							+" c.t_short_name com_t_short_name, "
+							+" c.has_attributes com_has_attributes, "
+							+" spec.* "
+							+" FROM "
+							+" PRODUCT_SPEC spec "
+							+" left join COMPONENT c on  c.analysis = '继电器企标初始参数' and c.name = spec.component "
+							+" WHERE "
+							+" spec.product='"+product+"' "
+							+" AND spec.sampling_point='"+sampling_point+"' "
+							+" AND spec.grade='"+product_grade+"' "
+							+" AND spec.analysis='继电器企标初始参数' ";
+					@SuppressWarnings("unchecked")
+					List<Map<String,Object>> rsMap = (List<Map<String,Object>>)bs.executeQuery(sql, new MapListProcessor());
+					//写入时间
+					String writeTimeStr = new UFDateTime().toStdString();
+					if(rsMap!=null && rsMap.size() > 0){
+						for(Map<String,Object> rs : rsMap){
+							Result result = new Result();
+							//sample_number
+							result.setAttributeValue("sample_number", String.valueOf(test.getAttributeValue("sample_number")));
+							//test id 
+							result.setAttributeValue("test_number", test.getAttributeValue("test_number"));
+							//result id
+							result.setAttributeValue("result_number", processData.getMaxResult()+1);
+							processData.setMaxResult(processData.getMaxResult()+1);
+							//
+							result.setAttributeValue("reported_name", test.getAttributeValue("reported_name"));
+							
+							//component
+							result.setAttributeValue("result_type", rs.get("com_result_type"));
+							result.setAttributeValue("list_key", rs.get("com_list_key"));
+							result.setAttributeValue("reportable", rs.get("com_reportable"));
+							result.setAttributeValue("optional", rs.get("com_optional"));
+							result.setAttributeValue("has_attributes", rs.get("com_has_attributes"));
+							result.setAttributeValue("displayed", rs.get("com_displayed"));
+							result.setAttributeValue("t_short_name", rs.get("com_t_short_name"));
+
+							//PRODUCT_SPEC 字段
+							result.setAttributeValue("order_number", rs.get("order_number"));
+							result.setAttributeValue("analysis", rs.get("analysis"));
+							result.setAttributeValue("name", rs.get("component"));
+							result.setAttributeValue("minimum", rs.get("min_value"));
+							result.setAttributeValue("maximum", rs.get("max_value"));
+							result.setAttributeValue("units", rs.get("units"));
+							result.setAttributeValue("round", rs.get("round"));
+							result.setAttributeValue("places", rs.get("places"));
+							//附件: XXX
+							result.setAttributeValue("db_file", null);
+							//写入时间
+							result.setAttributeValue("changed_on", "to_timestamp('"+ writeTimeStr +"','yyyy-mm-dd hh24:mi:ss.ff')");
+							
+							//一些静态字段
+							result.setAttributeValue("replicate_count", 0);
+							result.setAttributeValue("status", "N");
+							result.setAttributeValue("old_status", "N");
+							result.setAttributeValue("modified_result", "F");
+							result.setAttributeValue("allow_out", "T");
+							result.setAttributeValue("in_spec", "T");
+							result.setAttributeValue("uses_instrument", "F");
+							result.setAttributeValue("uses_codes", "F");
+							result.setAttributeValue("in_cal", "T");
+							result.setAttributeValue("auto_calc", "T");
+							result.setAttributeValue("allow_cancel", "F");
+							result.setAttributeValue("link_size", 0);
+							result.setAttributeValue("code_entered", "F");
+							result.setAttributeValue("std_reag_sample", 0);
+							result.setAttributeValue("factor_value", 0);
+							result.setAttributeValue("in_control", "T");
+							result.setAttributeValue("spec_override", "F");
+							result.setAttributeValue("places_2", 0);
+							result.setAttributeValue("reported_result", "F");
+							result.setAttributeValue("reported_rslt_rev", 0);
+							result.setAttributeValue("reported_rslt_oos", "F");
+							result.setAttributeValue("t_accredited", "T");
+							result.setAttributeValue("trans_num", 0.00);
+							secResultList.add(result);
+						}
+					}
+				}
+			}
+			
+			
+			List<Result> secRsList = processData.getSecResultList();
+			if(secRsList==null){
+				secRsList = new ArrayList<>();
+			}
+			if(secResultList!=null){
+				secRsList.addAll(secResultList);
+			}
+			processData.setSecResultList(secRsList);
+		}
+	}
+
 
 	/**
 	 * 获取Insert语句片断

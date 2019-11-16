@@ -25,6 +25,7 @@ import nc.ui.qcco.commission.refmodel.SampleGroupRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
+import nc.ui.uif2.UIState;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -61,7 +62,8 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 				value = e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_refvalue");
 			}
 			String initStr = value==null?null:String.valueOf(value);
-			if(e.getHitCount()==2){
+			if(e.getHitCount()==2 && getMainBillForm().getModel().getUiState()!=null 
+					&& (UIState.NOT_EDIT!=getMainBillForm().getModel().getUiState())){
 				TextDialog textDialog = new TextDialog(e.getContext(),"ÎÄ±¾Öµ",initStr);
 				int state = textDialog.showModal();
 				if(state == 2){

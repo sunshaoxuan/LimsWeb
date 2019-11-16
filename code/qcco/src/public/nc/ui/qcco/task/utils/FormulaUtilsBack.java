@@ -2,6 +2,7 @@ package nc.ui.qcco.task.utils;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import nc.vo.pub.BusinessException;
 
@@ -19,6 +20,10 @@ public class FormulaUtilsBack {
 					if (formula != null) {
 						// 公式解析 返回(1+2)/3 的形式
 						formula = analysisFormula(formula,map);
+						//如果表达式已经全是数字,可以直接返回
+						if(isInteger(formula)){
+							return Integer.parseInt(formula);
+						}
 						// 公式计算
 						Double rs = CalculatorBack.calculateRex(formula);
 						if(rs==null){
@@ -51,6 +56,10 @@ public class FormulaUtilsBack {
 		if (returnIndex + 6 <= formula.length()) {
 			String resultStr = formula.substring(returnIndex + 6);
 			formula = formula.replaceAll("return" + resultStr, "").replaceAll("RETURN" + resultStr, "");
+			//是否直接返回
+			if(formula!=null && formula.equals("")){
+				return resultStr;
+			}
 			// 判断公式中是否有结果计算
 			if (formula.contains(resultStr + "=")) {
 				int rsIndex = formula.indexOf(resultStr + "=");
@@ -63,5 +72,9 @@ public class FormulaUtilsBack {
 			}
 		}
 		return null;
+	}
+	public static boolean isInteger(String str) {  
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");  
+        return pattern.matcher(str).matches();  
 	}
 }

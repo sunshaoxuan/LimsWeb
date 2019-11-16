@@ -193,7 +193,15 @@ public class ResultWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 					}
 					}
 				}
-			processData.setSecResultList(secResultList);
+			
+			List<Result> secRsList = processData.getSecResultList();
+			if(secRsList==null){
+				secRsList = new ArrayList<>();
+			}
+			if(secResultList!=null){
+				secRsList.addAll(secResultList);
+			}
+			processData.setSecResultList(secRsList);
 		}
 	}
 
