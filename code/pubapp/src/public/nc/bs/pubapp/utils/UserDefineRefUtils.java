@@ -1,6 +1,5 @@
 package nc.bs.pubapp.utils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -17,27 +16,26 @@ import nc.ui.pub.beans.constenum.IConstEnum;
 import nc.ui.pub.bill.BillData;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.view.BillForm;
-import nc.ui.qcco.commission.refmodel.AnalyseComponentRefModel;
+import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
 import nc.ui.uif2.editor.BillListView;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.SuperVO;
-import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskHVO;
-import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
+
 import org.apache.commons.lang.StringUtils;
 
-
 public class UserDefineRefUtils {
-	private static TwoQueuesCacheMap<String,String> cacheMap4TestAfter = new TwoQueuesCacheMap<>();
-	private static TwoQueuesCacheMap<String,String> cacheMap4TestBefore = new TwoQueuesCacheMap<>();
+	private static TwoQueuesCacheMap<String, String> cacheMap4TestAfter = new TwoQueuesCacheMap<>();
+	private static TwoQueuesCacheMap<String, String> cacheMap4TestBefore = new TwoQueuesCacheMap<>();
 	private static TaskAnalyseComponentRefModel taskAnalyseComponentRefModel = new TaskAnalyseComponentRefModel();
+
 	public static void refreshBillCardHeadDefRefs(AbstractBill aggvo, BillForm billForm, int selectedRow) {
 		for (BillItem item : billForm.getBillCardPanel().getHeadItems()) {
 			if (!StringUtils.isEmpty(item.getRefType()) && item.getRefType().contains("<")) {
@@ -69,7 +67,8 @@ public class UserDefineRefUtils {
 						fullBodyVO = (SuperVO) realBody;
 						break;
 					}
-					if (bodyVO.getAttributeValue("uniqueid") != null && bodyVO.getAttributeValue("uniqueid").equals(realBody.getAttributeValue("uniqueid"))) {
+					if (bodyVO.getAttributeValue("uniqueid") != null
+							&& bodyVO.getAttributeValue("uniqueid").equals(realBody.getAttributeValue("uniqueid"))) {
 						fullBodyVO = (SuperVO) realBody;
 						break;
 					}
@@ -105,14 +104,17 @@ public class UserDefineRefUtils {
 			}
 		}
 	}
+
 	/**
 	 * 只刷新一行子表
+	 * 
 	 * @param fullBodyVO
 	 * @param billForm
 	 * @param tabCode
 	 * @param bodyVOClass
 	 */
-	public static void refreshBillCardBodyDefRefs4SingleRow(SuperVO fullBodyVO,int row, BillForm billForm, String tabCode) {
+	public static void refreshBillCardBodyDefRefs4SingleRow(SuperVO fullBodyVO, int row, BillForm billForm,
+			String tabCode) {
 		if (fullBodyVO != null) {
 			for (BillItem item : billForm.getBillCardPanel().getBillModel(tabCode).getBodyItems()) {
 				if (!StringUtils.isEmpty(item.getRefType()) && item.getRefType().contains("<")) {
@@ -123,21 +125,22 @@ public class UserDefineRefUtils {
 						if (pkItem != null) {
 							fullBodyVO.setAttributeValue(itemKey, fullBodyVO.getAttributeValue("contacttype"));
 						}
-						UserDefineRefUtils.refreshItemRefValue(fullBodyVO, billForm.getBillCardPanel().getBillTable(tabCode), row, item,
-								true);
+						UserDefineRefUtils.refreshItemRefValue(fullBodyVO,
+								billForm.getBillCardPanel().getBillTable(tabCode), row, item, true);
 					} else {
-						BillItem pkItem = billForm.getBillCardPanel().getBillModel(tabCode).getItemByKey("pk_" + itemKey);
+						BillItem pkItem = billForm.getBillCardPanel().getBillModel(tabCode)
+								.getItemByKey("pk_" + itemKey);
 
 						if (pkItem != null) {
 							fullBodyVO.setAttributeValue(itemKey, fullBodyVO.getAttributeValue("pk_" + itemKey));
 						}
-						UserDefineRefUtils.refreshItemRefValue(fullBodyVO, billForm.getBillCardPanel().getBillTable(tabCode), row, item,
-								true);
+						UserDefineRefUtils.refreshItemRefValue(fullBodyVO,
+								billForm.getBillCardPanel().getBillTable(tabCode), row, item, true);
 					}
 				}
 			}
 		}
-		
+
 	}
 
 	public static void refreshBillCardGrandDefRefs(BillForm grandBillForm, String tabCode, List<Object> grandVOList) {
@@ -164,7 +167,7 @@ public class UserDefineRefUtils {
 					}
 				} else {
 					// 因为任务单的孙表都无primaryKey，因此走以下方法，如影响其他功能，则可，单独判断测试条件和试验后参数孙表。
-					if(i<grandVOList.size()){
+					if (i < grandVOList.size()) {
 						SuperVO superVO = (SuperVO) grandVOList.get(i);
 						for (BillItem billItem : grandBillForm.getBillCardPanel().getBillModel().getBodyItems()) {
 
@@ -174,11 +177,11 @@ public class UserDefineRefUtils {
 							if (pkItem != null) {
 								superVO.setAttributeValue(itemKey, superVO.getAttributeValue("pk_" + itemKey));
 							}
-							UserDefineRefUtils.refreshItemRefValue(superVO,
-									grandBillForm.getBillCardPanel().getBillTable(tabCode), i, billItem, true);
+							UserDefineRefUtils.refreshItemRefValue(superVO, grandBillForm.getBillCardPanel()
+									.getBillTable(tabCode), i, billItem, true);
 						}
 					}
-					
+
 				}
 			} catch (BusinessException e) {
 				Logger.error(e.getMessage());
@@ -230,11 +233,11 @@ public class UserDefineRefUtils {
 							billItem, true);
 				}
 				// 因为任务单的孙表都无primaryKey，因此走以下方法，如影响其他功能，则可，单独判断测试条件和试验后参数孙表。
-				if(null == superVO){
+				if (null == superVO) {
 					superVO = (SuperVO) grandVOList.get(i);
 					for (BillItem billItem : grandListView.getBillListPanel().getBodyBillModel().getBodyItems()) {
-						UserDefineRefUtils.refreshItemRefValue(superVO, grandListView.getBillListPanel().getBodyTable(), i,
-								billItem, true);
+						UserDefineRefUtils.refreshItemRefValue(superVO,
+								grandListView.getBillListPanel().getBodyTable(), i, billItem, true);
 					}
 				}
 			} catch (BusinessException e) {
@@ -259,18 +262,20 @@ public class UserDefineRefUtils {
 			if (rowItem.getComponent() instanceof UIRefPane) {
 				UIRefPane pane = (UIRefPane) rowItem.getComponent();
 				AbstractRefModel refModel = pane.getRefModel();
-				
+
 				if (refModel != null && vo.getAttributeValue(rowItem.getKey()) != null) {
-					if((rowItem.getKey().equals("component")||rowItem.getKey().equals("pk_component"))&& refModel.getTableName().equals(taskAnalyseComponentRefModel.getTableName())){
-						refreshTestAfterValue(vo,uiTable,row,rowItem,onlyDisplayItem);
-					}else if((rowItem.getKey().equals("component")||rowItem.getKey().equals("pk_component"))&& refModel.getTableName().equals("NC_TEST_INIT")){
-						refreshTestBeforeValue(vo,uiTable,row,rowItem,onlyDisplayItem);
-					}else{
+					if ((rowItem.getKey().equals("component") || rowItem.getKey().equals("pk_component"))
+							&& refModel.getTableName().equals(taskAnalyseComponentRefModel.getTableName())) {
+						refreshTestAfterValue(vo, uiTable, row, rowItem, onlyDisplayItem);
+					} else if ((rowItem.getKey().equals("component") || rowItem.getKey().equals("pk_component"))
+							&& refModel.getTableName().equals("NC_TEST_INIT")) {
+						refreshTestBeforeValue(vo, uiTable, row, rowItem, onlyDisplayItem);
+					} else {
 						Vector refvls = refModel.matchData(refModel.getPkFieldCode(),
 								(String) vo.getAttributeValue(rowItem.getKey()));
-						if (null == refvls){
+						if (null == refvls) {
 							try {
-								AbstractRefModel newModel = (AbstractRefModel)refModel.getClass().newInstance();
+								AbstractRefModel newModel = (AbstractRefModel) refModel.getClass().newInstance();
 								refvls = newModel.matchData(refModel.getPkFieldCode(),
 										(String) vo.getAttributeValue(rowItem.getKey()));
 							} catch (InstantiationException e) {
@@ -278,7 +283,7 @@ public class UserDefineRefUtils {
 							} catch (IllegalAccessException e) {
 								ExceptionUtils.wrappException(e);
 							}
-							
+
 						}
 						if (null != refvls) {
 							IConstEnum val = new DefaultConstEnum(((Vector) refvls.get(0)).get(0),
@@ -290,12 +295,13 @@ public class UserDefineRefUtils {
 							}
 						}
 					}
-					
+
 				}
-				
+
 			}
 		}
 	}
+
 	private static void refreshTestBeforeValue(SuperVO vo, UITable uiTable, int row, BillItem rowItem,
 			boolean onlyDisplayItem) {
 		// 单独查询pk_component的参照
@@ -310,8 +316,8 @@ public class UserDefineRefUtils {
 				val = cacheMap4TestBefore.get(pk_component);
 			} else {
 				List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS.executeQuery(
-							"select test_init_name from nc_test_init  where pk_test_init = '"
-								+ pk_component + "' ", new MapListProcessor());
+						"select test_init_name from nc_test_init  where pk_test_init = '" + pk_component + "' ",
+						new MapListProcessor());
 				for (Map<String, Object> map : custlist) {
 					val = map.get("test_init_name") == null ? null : map.get("test_init_name").toString();
 					cacheMap4TestBefore.put(pk_component, val);
@@ -328,43 +334,44 @@ public class UserDefineRefUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private static void refreshTestAfterValue(SuperVO vo, UITable uiTable, int row, BillItem rowItem,
-			boolean onlyDisplayItem){
+			boolean onlyDisplayItem) {
 
-		//单独查询pk_component的参照
+		// 单独查询pk_component的参照
 		String pk_component = (String) vo.getAttributeValue(rowItem.getKey());
 		if (pk_component == null) {
-			return ;
+			return;
 		}
 		IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 		try {
-			String val=null;
-			if(cacheMap4TestAfter.containsKey(pk_component)){
+			String val = null;
+			if (cacheMap4TestAfter.containsKey(pk_component)) {
 				val = cacheMap4TestAfter.get(pk_component);
-			}else{
-				List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS
-						.executeQuery(
-								"select name from "+taskAnalyseComponentRefModel.getTableName()+" where pk_ref = '"+pk_component+"'", new MapListProcessor());
+			} else {
+				List<Map<String, Object>> custlist = (List<Map<String, Object>>) iUAPQueryBS.executeQuery(
+						"select name from " + taskAnalyseComponentRefModel.getTableName() + " where pk_ref = '"
+								+ pk_component + "'", new MapListProcessor());
 				for (Map<String, Object> map : custlist) {
-					val = map.get("name")==null?null:map.get("name").toString();
+					val = map.get("name") == null ? null : map.get("name").toString();
 					cacheMap4TestAfter.put(pk_component, val);
 				}
 			}
-			
+
 			for (int col = 0; col < uiTable.getColumnCount(); col++) {
 				if (uiTable.getColumnName(col).equals(rowItem.getName())) {
 					uiTable.setValueAt(val, row, col);
 				}
 			}
-		
+
 		} catch (BusinessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * 设置孙表的审计信息(是的你没看错,审计信息确实很奇葩的到了孙表上) TODO 动态设置审计信息 (反射) 500年后吧
 	 * 
