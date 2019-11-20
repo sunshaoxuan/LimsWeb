@@ -21,6 +21,7 @@ import nc.jdbc.framework.processor.MapProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ApprovalInfo;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjLoginSample;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaA;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.ParaB;
@@ -666,9 +667,23 @@ public class CommonUtils {
 			temp.add(processData.getApprovalMain());
 			rs.addAll(VOToInserSQL(temp, "approval", null));
 		}
+		// test实验前
+		if (processData.getTestParaAListMap() != null && processData.getTestParaAListMap().size() > 0) {
+			List<SuperVO> temp = new ArrayList<>();
+			for (List<Test> testList : processData.getTestParaAListMap().values()) {
+				temp.addAll(testList);
+			}
+			rs.addAll(VOToInserSQL(temp, "test", null));
+		}
+		// test实验后
+		if (processData.getTestParaBListMap() != null && processData.getTestParaBListMap().size() > 0) {
+			List<SuperVO> temp = new ArrayList<>();
+			for (List<Test> testList : processData.getTestParaBListMap().values()) {
+				temp.addAll(testList);
+			}
+			rs.addAll(VOToInserSQL(temp, "test", null));
+		}
 		
-		
-
 		return rs;
 	}
 	
@@ -1120,6 +1135,22 @@ public class CommonUtils {
 				}
 			}
 			
+			return null;
+		}
+		/**
+		 * 根据group(A,B,C)获取对应的sampleGroup
+		 * @param attributeValue
+		 * @return
+		 */
+		public CProjLoginSample getSampleGroupByGroup(String groupStr) {
+			List<CProjLoginSample> sampleGroupList = processData.getLoginSampleList();
+			if(sampleGroupList!=null){
+				for(CProjLoginSample sampleGroup : sampleGroupList){
+					if(String.valueOf(sampleGroup.getAttributeValue("sample_group")).equals(groupStr)){
+						return sampleGroup;
+					}
+				}
+			}
 			return null;
 		}
 	

@@ -81,7 +81,14 @@ public class WriteBackProcessData {
 	
 	//LIMS第二次回写Result 
 	//result第二次回写时,以test二次写入为标准,去查询测试结果的分项
-	private List<Result> secResultList;  
+	private List<Result> secResultList; 
+	
+	//写到test表的实验前参数 <第二次写入的sample_number,<对应的实验前参数list>> 
+	private Map<Integer,List<Test>> testParaAListMap;
+	
+	//写到test表的实验后参数 <第二次写入的test_number,<对应的实验后参数list>>
+	private Map<Integer,List<Test>> testParaBListMap;
+	
 
 	
 	//三张表的主键最大值
@@ -379,6 +386,22 @@ public class WriteBackProcessData {
 
 	public void setApprovalMain(ApprovalMain approvalMain) {
 		this.approvalMain = approvalMain;
+	}
+
+	public Map<Integer,List<Test>> getTestParaAListMap() {
+		return testParaAListMap;
+	}
+
+	public void setTestParaAListMap(Map<Integer,List<Test>> testParaAListMap) {
+		this.testParaAListMap = testParaAListMap;
+	}
+
+	public Map<Integer,List<Test>> getTestParaBListMap() {
+		return testParaBListMap;
+	}
+
+	public void setTestParaBListMap(Map<Integer,List<Test>> testParaBListMap) {
+		this.testParaBListMap = testParaBListMap;
 	}
 
 	

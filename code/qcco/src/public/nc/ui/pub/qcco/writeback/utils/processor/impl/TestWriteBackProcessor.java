@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import nc.bs.dao.DAOException;
+import nc.bs.framework.common.NCLocator;
+import nc.itf.uap.IUAPQueryBS;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
+import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjLoginSample;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.CProjTask;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Sample;
 import nc.ui.pub.qcco.writeback.utils.LIMSVO.Test;
@@ -49,14 +54,11 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 	 * test 二次回写
 	 * 
 	 * @param data
-	 * @throws DAOException
+	 * @throws BusinessException 
 	 */
-	private void processSecond(WriteBackProcessData processData) throws DAOException {
+	private void processSecond(WriteBackProcessData processData) throws BusinessException {
 		// LIMS Data
 		List<Sample> allSampleList = processData.getAllSecSampleList();
-		//所有样品对应的task
-		
-		
 		// 需要回写的LIMS
 		// test第二次回写,task每分配一个样品就产生一个test
 		List<Test> secTestList = new ArrayList<>();
@@ -69,8 +71,21 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 		
 		
 		if (allSampleList != null && allSampleList.size() > 0) {
+			Map<String,Object> sampleCacheMap = new HashMap<>();
 			for (int i = 0; i < allSampleList.size(); i++) {
-				List<CProjTask> taskList = processData.getTaskFromSampleSec(allSampleList.get(i));
+				//第二次回写的sample
+				Sample sample = allSampleList.get(i);
+				if(sample==null){
+					continue;
+				}
+				//查找对应的sample_group
+				CProjLoginSample sampleGroup = 
+						(CProjLoginSample)utils.getSampleGroupByGroup((String)sample.getAttributeValue("c_sample_group"));
+				List<CProjTask> taskList = processData.getTaskFromSampleSec(sample);
+				//回写实验前后参数
+				if(sampleGroup!=null && sampleGroup.getAttributeValue("product_stage")!=null){
+					writeBackParaA(sampleGroup,sample,processData,sampleCacheMap,taskList);
+				}
 				int labCount = 1;
 				if(taskList!=null && taskList.size() > 0){
 					if(taskList.size() > 1){
@@ -85,7 +100,7 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 						
 						// TEST.SAMPLE_NUMBER
 						// 取sample表二次插入的sample_number，一个任务有多少只样品，便有多少行
-						test.setAttributeValue("sample_number", Integer.parseInt(String.valueOf(allSampleList.get(i).getAttributeValue("sample_number"))));
+						test.setAttributeValue("sample_number", Integer.parseInt(String.valueOf(sample.getAttributeValue("sample_number"))));
 
 						// TEST.STATUS I
 						test.setAttributeValue("status", "I");
@@ -106,7 +121,7 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 						// TEST.LAB  测试小组名称
 						test.setAttributeValue("lab", utils.getLabFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
 						if(1 == labCount){
-							allSampleList.get(i).setAttributeValue("lab", utils.getLabFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
+							sample.setAttributeValue("lab", utils.getLabFromAnalysisName(String.valueOf(task.getAttributeValue("analysis"))));
 							labCount++;
 						}
 						
@@ -199,13 +214,349 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 						
 						
 						secTestList.add(test);
+						writeBackParaB(test,sample,sampleGroup,processData,sampleCacheMap);
 					}
 				}
 			}
 			processData.setSecTestList(secTestList);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param sampleGroup
+	 * @param sample
+	 * @param processData
+	 * @param sampleCacheMap
+	 *            <sample_number::缓存名,缓存值>
+	 * @param taskList
+	 * @throws BusinessException 
+	 */
+	private void writeBackParaA(CProjLoginSample sampleGroup, Sample sample, WriteBackProcessData processData,
+			Map<String, Object> sampleCacheMap, List<CProjTask> taskList) throws BusinessException {
+		// <第二次写入的sample_number,<对应的实验前参数list>>
+		Map<Integer, List<Test>> rsMap = new HashMap<>();
+		// 拆分温度字段
+		String[] stages = String.valueOf(sampleGroup.getAttributeValue("product_stage")).split(",");
+		//二级分类
+		String c_prod_type_c1 = String.valueOf(processData.getProject().getAttributeValue("c_prod_type_c1"));
+		//description
+		String description = String.valueOf(sampleGroup.getAttributeValue("product_series"));
+		//production_spec
+		String production_spec = String.valueOf(sampleGroup.getAttributeValue("production_spec"));
+		//product_standard
+		String product_standard = String.valueOf(sampleGroup.getAttributeValue("product_standard"));
+		// ORDER_NUMBER
+		int orderNum = (taskList == null ? 1 : taskList.size() + 1);
+		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+		String analysisSql = "SELECT DISTINCT pgs.ANALYSIS analysis_name "
+				+" FROM product p,  product_grade pg, prod_grade_STAGE pgs "
+				+" WHERE p.c_prod_type_c1 LIKE '"+c_prod_type_c1+"' "
+				+" AND p.description = '"+description+"' "
+				+" AND pg.sampling_point = '"+production_spec+"' "
+				+" AND p.active = 'T' "
+				+" AND removed = 'F' "
+				+" AND pgs.order_number = 1 "
+				+" AND p.name = pg.product "
+				+" AND pgs.product = p.name "
+				+" AND pgs.sampling_point = pg.sampling_point "
+				+" AND pgs.GRADE = pg.grade "
+				+" AND pgs.product = '"+product_standard+"' ";
+		
+		//ANALYSIS
+		String analysis = (String)bs.executeQuery(analysisSql, new ColumnProcessor());
+		//analysis_method
+		String analysis_method = (String)bs.executeQuery(
+				"select t_analysis_method from analysis where name = '"+String.valueOf(analysis)+"'", 
+				new ColumnProcessor());
+		String common_name = (String)bs.executeQuery(
+				"select common_name from analysis where name = '"+String.valueOf(analysis)+"'", 
+				new ColumnProcessor());
+		//REPLICATE_COUNT
+		int replicate_count = 1;
+		//回写时间
+		String time = "to_timestamp('" + new UFDateTime().toStdString() + "','yyyy-mm-dd hh24:mi:ss.ff')";
+				
+		if (stages != null && stages.length > 0) {
+			for (String stage : stages) {
+				Test test = new Test();
+				test.setAttributeValue("reported_name", stage);
+				test.setAttributeValue("c_condition", stage);
+				//
+				test.setAttributeValue("sample_number", sample.getAttributeValue("sample_number"));
+				// TEST.TEST_NUMBER 根据sample_number主键自增
+				test.setAttributeValue("test_number", processData.getMaxTestPK() + 1);
+				test.setAttributeValue("original_test", processData.getMaxTestPK() + 1);
+				
+				processData.setMaxTestPK(processData.getMaxTestPK() + 1);
+				// orderNum
+				test.setAttributeValue("order_number", orderNum++);
+				//ANALYSIS
+				test.setAttributeValue("analysis", analysis);
+				//
+				test.setAttributeValue("replicate_count", replicate_count++);
+				test.setAttributeValue("parent_test", 0);
+				//回写时间
+				test.setAttributeValue("changed_on", time);
+				test.setAttributeValue("t_date_enabled", time);
+				//t_method
+				test.setAttributeValue("t_analysis_method", analysis_method);
+				//common_name
+				test.setAttributeValue("common_name", common_name);
+				// 静态字段
+				test.setAttributeValue("version", 1);
+				test.setAttributeValue("analysis_count", 0);
+				test.setAttributeValue("group_name", "DEFAULT");
+				test.setAttributeValue("status", "U");
+				test.setAttributeValue("old_status", "I");
+				test.setAttributeValue("batch_parent_test", 0);
+				test.setAttributeValue("batch_sibling_test", 0);
+				test.setAttributeValue("prep", "F");
+				test.setAttributeValue("replicate_test", "T");
+				test.setAttributeValue("test_priority", 0);
+				test.setAttributeValue("in_spec", "T");
+				test.setAttributeValue("in_cal", "T");
+				test.setAttributeValue("test_location", "DEFAULT");
+				test.setAttributeValue("lab", "01产品实验室");
+				test.setAttributeValue("resolve_reqd", "F");
+				test.setAttributeValue("stage", "NONE");
+				test.setAttributeValue("PRIMARY_IN_SPEC", "T");
+				test.setAttributeValue("in_control", "T");
+				test.setAttributeValue("re_tested", "F");
+				test.setAttributeValue("modified_results", "F");
+				test.setAttributeValue("aliquoted_to", 0);
+				test.setAttributeValue("on_worksheet", "F");
+				test.setAttributeValue("display_results", "T");
+				test.setAttributeValue("aliquot_group", "DEFAULT");
+				test.setAttributeValue("split_replicates", "F");
+				test.setAttributeValue("cross_sample", "F");
+				test.setAttributeValue("released", "F");
+				test.setAttributeValue("double_entry", "F");
+				test.setAttributeValue("child_out_spec", "F");
+				test.setAttributeValue("charge_entry", 0);
+				test.setAttributeValue("signed", "F");
+				test.setAttributeValue("batch_original_test", 0);
+				test.setAttributeValue("test_sequence_no", 0);
+				test.setAttributeValue("invoice_number", 0);
+				test.setAttributeValue("cntrct_qte_item_no", 0);
+				test.setAttributeValue("reported_rslt_oos", "F");
+				test.setAttributeValue("double_blind", "F");
+				test.setAttributeValue("pre_invoice_number", 0);
+				test.setAttributeValue("t_charge_group", 0);
+				test.setAttributeValue("t_container_group", "TYPE_2");
+				test.setAttributeValue("t_needs_location", "F");
+				test.setAttributeValue("t_prep_test", 0);
+				test.setAttributeValue("t_qc_reference", 0);
+				test.setAttributeValue("t_report_header", "NON_REPORT");
+				test.setAttributeValue("t_turnaround_actua", 0);
+				test.setAttributeValue("t_turnaround_charg", 0);
+				test.setAttributeValue("t_turnaround_met", "F");
+				test.setAttributeValue("c_task_seq_num", 0);
+				test.setAttributeValue("trans_num", 0);
+				test.setAttributeValue("c_if_arranged", "F");
+				test.setAttributeValue("c_arrange_seq_num", 0);
+				test.setAttributeValue("c_apply_review", "F");
+				test.setAttributeValue("c_arrange_type", "C类");
+				test.setAttributeValue("c_task_status", 0);
+				test.setAttributeValue("c_test_cycle", 0);
+				test.setAttributeValue("c_failure_cycle", 0);
+				test.setAttributeValue("c_base_para_temp", "T");
+				test.setAttributeValue("c_test_type", "试验前参数");
 
+				// 回写
+				List<Test> testList = rsMap.get((Integer) sample.getAttributeValue("sample_number"));
+				if (testList == null) {
+					testList = new ArrayList<>();
+				}
+				testList.add(test);
+				rsMap.put((Integer) sample.getAttributeValue("sample_number"), testList);
+			}
+		}
+		// orderNum缓存
+		sampleCacheMap.put(String.valueOf(sample.getAttributeValue("sample_number")) + "::orderNum", orderNum);
+		//set回写数据
+		Map<Integer, List<Test>> rbMap = processData.getTestParaAListMap();
+		if (rbMap == null) {
+			rbMap = new HashMap<>();
+		}
+		Set<Integer> sampleSet = rsMap.keySet();
+		for (Integer sample_number : sampleSet) {
+			List<Test> dateList = rbMap.get(sample_number);
+			if (dateList == null) {
+				dateList = new ArrayList<>();
+			}
+			dateList.addAll(rsMap.get(sample_number) == null ? new ArrayList<Test>() : rsMap.get(sample_number));
+			rbMap.put(sample_number, dateList);
+		}
+		processData.setTestParaAListMap(rbMap);
+	}
+
+	/**
+	 * 
+	 * @param testSource
+	 * @param sample
+	 * @param sampleGroup
+	 * @param processData
+	 * @param sampleCacheMap
+	 *            <sample_number::缓存名,缓存值>
+	 * @throws BusinessException 
+	 */
+	private void writeBackParaB(Test testSource, Sample sample, CProjLoginSample sampleGroup, WriteBackProcessData processData,
+			Map<String, Object> sampleCacheMap) throws BusinessException {
+		// <第二次写入的test_number,<对应的实验后参数list>>
+		Map<Integer, List<Test>> rsMap = new HashMap<>();
+		// orderNum
+		int orderNum = sampleCacheMap.get(String.valueOf(sample.getAttributeValue("sample_number")) + "::orderNum") == null ? 1 : Integer
+				.parseInt(sampleCacheMap.get(String.valueOf(sample.getAttributeValue("sample_number")) + "::orderNum").toString());
+		// 拆分温度字段
+		String[] stages = String.valueOf(sampleGroup.getAttributeValue("product_stage")).split(",");
+		// 二级分类
+		String c_prod_type_c1 = String.valueOf(processData.getProject().getAttributeValue("c_prod_type_c1"));
+		// description
+		String description = String.valueOf(sampleGroup.getAttributeValue("product_series"));
+		// production_spec
+		String production_spec = String.valueOf(sampleGroup.getAttributeValue("production_spec"));
+		// product_standard
+		String product_standard = String.valueOf(sampleGroup.getAttributeValue("product_standard"));
+		// ORDER_NUMBER
+		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+		String analysisSql = "SELECT DISTINCT pgs.ANALYSIS analysis_name "
+						+" FROM product p,  product_grade pg, prod_grade_STAGE pgs "
+						+" WHERE p.c_prod_type_c1 LIKE '"+c_prod_type_c1+"' "
+						+" AND p.description = '"+description+"' "
+						+" AND pg.sampling_point = '"+production_spec+"' "
+						+" AND p.active = 'T' "
+						+" AND removed = 'F' "
+						+" AND pgs.order_number = 2 "
+						+" AND p.name = pg.product "
+						+" AND pgs.product = p.name "
+						+" AND pgs.sampling_point = pg.sampling_point "
+						+" AND pgs.GRADE = pg.grade "
+						+" AND pgs.product = '"+product_standard+"' ";
+				
+		//ANALYSIS
+		String analysis = (String)bs.executeQuery(analysisSql, new ColumnProcessor());
+		//analysis_method
+		String analysis_method = (String) bs.executeQuery(
+				"select t_analysis_method from analysis where name = '" + String.valueOf(analysis) + "'", new ColumnProcessor());
+		String common_name = (String)bs.executeQuery(
+				"select common_name from analysis where name = '"+String.valueOf(analysis)+"'", 
+				new ColumnProcessor());
+		//REPLICATE_COUNT
+		int replicate_count = 1;
+		//回写时间
+		String time = "to_timestamp('" + new UFDateTime().toStdString() + "','yyyy-mm-dd hh24:mi:ss.ff')";
+		if (stages != null && stages.length > 0) {
+			for (String stage : stages) {
+				Test test = new Test();
+				test.setAttributeValue("reported_name", stage);
+				test.setAttributeValue("c_condition", stage);
+				//
+				test.setAttributeValue("sample_number", sample.getAttributeValue("sample_number"));
+				// TEST.TEST_NUMBER 根据sample_number主键自增
+				test.setAttributeValue("test_number", processData.getMaxTestPK() + 1);
+				processData.setMaxTestPK(processData.getMaxTestPK() + 1);
+				// orderNum
+				test.setAttributeValue("order_number", orderNum++);
+				//ANALYSIS
+				test.setAttributeValue("analysis", analysis);
+				test.setAttributeValue("replicate_count", replicate_count++);
+				test.setAttributeValue("parent_test", testSource.getAttributeValue("test_number"));
+				test.setAttributeValue("original_test", testSource.getAttributeValue("test_number"));
+				//回写时间
+				test.setAttributeValue("changed_on", time);
+				test.setAttributeValue("t_date_enabled", time);
+				//t_method
+				test.setAttributeValue("t_analysis_method", analysis_method);
+				//common_name
+				test.setAttributeValue("common_name", common_name);
+				// 静态字段
+				test.setAttributeValue("version", 1);
+				test.setAttributeValue("analysis_count", 0);
+				test.setAttributeValue("group_name", "DEFAULT");
+				test.setAttributeValue("status", "U");
+				test.setAttributeValue("old_status", "I");
+				test.setAttributeValue("batch_parent_test", 0);
+				test.setAttributeValue("batch_sibling_test", 0);
+				test.setAttributeValue("prep", "F");
+				test.setAttributeValue("replicate_test", "T");
+				test.setAttributeValue("test_priority", 0);
+				test.setAttributeValue("in_spec", "T");
+				test.setAttributeValue("in_cal", "T");
+				test.setAttributeValue("test_location", "DEFAULT");
+				test.setAttributeValue("lab", "01产品实验室");
+				test.setAttributeValue("resolve_reqd", "F");
+				test.setAttributeValue("stage", "NONE");
+				test.setAttributeValue("PRIMARY_IN_SPEC", "T");
+				test.setAttributeValue("in_control", "T");
+				test.setAttributeValue("re_tested", "F");
+				test.setAttributeValue("modified_results", "F");
+				test.setAttributeValue("aliquoted_to", 0);
+				test.setAttributeValue("on_worksheet", "F");
+				test.setAttributeValue("display_results", "T");
+				test.setAttributeValue("aliquot_group", "DEFAULT");
+				test.setAttributeValue("split_replicates", "F");
+				test.setAttributeValue("cross_sample", "F");
+				test.setAttributeValue("released", "F");
+				test.setAttributeValue("double_entry", "F");
+				test.setAttributeValue("child_out_spec", "F");
+				test.setAttributeValue("charge_entry", 0);
+				test.setAttributeValue("signed", "F");
+				test.setAttributeValue("batch_original_test", 0);
+				test.setAttributeValue("test_sequence_no", 0);
+				test.setAttributeValue("invoice_number", 0);
+				test.setAttributeValue("cntrct_qte_item_no", 0);
+				test.setAttributeValue("reported_rslt_oos", "F");
+				test.setAttributeValue("double_blind", "F");
+				test.setAttributeValue("pre_invoice_number", 0);
+				test.setAttributeValue("t_charge_group", 0);
+				test.setAttributeValue("t_container_group", "TYPE_2");
+				test.setAttributeValue("t_needs_location", "F");
+				test.setAttributeValue("t_prep_test", 0);
+				test.setAttributeValue("t_qc_reference", 0);
+				test.setAttributeValue("t_report_header", "NON_REPORT");
+				test.setAttributeValue("t_turnaround_actua", 0);
+				test.setAttributeValue("t_turnaround_charg", 0);
+				test.setAttributeValue("t_turnaround_met", "F");
+				test.setAttributeValue("c_task_seq_num", 0);
+				test.setAttributeValue("trans_num", 0);
+				test.setAttributeValue("c_if_arranged", "F");
+				test.setAttributeValue("c_arrange_seq_num", 0);
+				test.setAttributeValue("c_apply_review", "F");
+				test.setAttributeValue("c_arrange_type", "C类");
+				test.setAttributeValue("c_task_status", 0);
+				test.setAttributeValue("c_test_cycle", 0);
+				test.setAttributeValue("c_failure_cycle", 0);
+				test.setAttributeValue("c_base_para_temp", "T");
+				test.setAttributeValue("c_test_type", "试验后参数");
+
+				// 回写
+				List<Test> testList = rsMap.get((Integer) testSource.getAttributeValue("test_number"));
+				if (testList == null) {
+					testList = new ArrayList<>();
+				}
+				testList.add(test);
+				rsMap.put((Integer) testSource.getAttributeValue("test_number"), testList);
+			}
+		}
+		// orderNum缓存
+		sampleCacheMap.put(String.valueOf(sample.getAttributeValue("sample_number")) + "::orderNum", orderNum);
+		//set回写数据
+		Map<Integer, List<Test>> rbMap =  processData.getTestParaBListMap();
+		if(rbMap==null){
+			rbMap = new HashMap<>();
+		}
+		Set<Integer> testSet = rsMap.keySet();
+		for(Integer test_number : testSet){
+			List<Test> dateList = rbMap.get(test_number);
+			if(dateList==null){
+				dateList= new ArrayList<>();
+			}
+			dateList.addAll(rsMap.get(test_number)==null?new ArrayList<Test>():rsMap.get(test_number));
+			rbMap.put(test_number, dateList);
+		}
+		processData.setTestParaBListMap(rbMap);
+	}
 	/**
 	 * 第一次回写Test表
 	 * 
