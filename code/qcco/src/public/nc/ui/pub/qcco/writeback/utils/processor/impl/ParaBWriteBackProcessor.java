@@ -93,6 +93,16 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor,ISecWri
 					List<Map<String,Object>> rsMap = (List<Map<String,Object>>)bs.executeQuery(sql, new MapListProcessor());
 					//写入时间
 					String writeTimeStr = new UFDateTime().toStdString();
+					//对应的test实验前参数
+					Map<Integer, List<Test>> testParaBMap = processData.getTestParaBListMap();
+					Test testParaB = null;
+					if(testParaBMap!=null){
+						List<Test> testParaBList = 
+								testParaBMap.get(Integer.parseInt(String.valueOf(test.getAttributeValue("test_number"))));
+						if(testParaBList!=null && testParaBList.size() > 0){
+							testParaB = testParaBList.get(0);
+						}
+					}
 					if(rsMap!=null && rsMap.size() > 0){
 						for(Map<String,Object> rs : rsMap){
 							Result result = new Result();
@@ -104,7 +114,7 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor,ISecWri
 							result.setAttributeValue("result_number", processData.getMaxResult()+1);
 							processData.setMaxResult(processData.getMaxResult()+1);
 							//
-							result.setAttributeValue("reported_name", test.getAttributeValue("reported_name"));
+							result.setAttributeValue("reported_name", rs.get("component"));
 							
 							//component
 							result.setAttributeValue("result_type", rs.get("com_result_type"));
@@ -117,7 +127,7 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor,ISecWri
 
 							//PRODUCT_SPEC 字段
 							result.setAttributeValue("order_number", rs.get("order_number"));
-							result.setAttributeValue("analysis", rs.get("analysis"));
+							result.setAttributeValue("analysis", testParaB.getAttributeValue("analysis"));
 							result.setAttributeValue("name", rs.get("component"));
 							result.setAttributeValue("minimum", rs.get("min_value"));
 							result.setAttributeValue("maximum", rs.get("max_value"));
