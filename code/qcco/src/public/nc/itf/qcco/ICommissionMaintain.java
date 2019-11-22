@@ -73,7 +73,14 @@ public interface ICommissionMaintain {
 	 */
 	public void satisfactComfirtm(CommissionHVO parentVO) throws BusinessException;
 	
-	
+	/**
+	 * 委托单是否可以编辑
+	 * 任务单已经提交,不能编辑
+	 * @param 
+	 * @return
+	 * @throws DAOException 
+	 */
+	boolean isEditAble(String pk_commission_h);
 	
 	
 	

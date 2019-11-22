@@ -2,6 +2,9 @@ package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
 
+import nc.bs.framework.common.NCLocator;
+import nc.itf.qcco.ICommissionMaintain;
+import nc.itf.uap.IUAPQueryBS;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
@@ -56,6 +59,21 @@ public class ChangeAction extends EditAction {
 						.getComponent()).setPK(hvo.getPk_lastcategory());
 			}
 		}
+	}
+
+	@Override
+	protected boolean isActionEnable() {
+		// 任务单已经提交不能修改
+		if (getModel().getSelectedData() != null) {
+			AggCommissionHVO aggvo = (AggCommissionHVO) getModel().getSelectedData();
+			if (aggvo.getPrimaryKey() != null) {
+				ICommissionMaintain service = NCLocator.getInstance().lookup(ICommissionMaintain.class);
+				if (!service.isEditAble(aggvo.getPrimaryKey())) {
+					return false;
+				}
+			}
+		}
+		return super.isActionEnable();
 	}
 
 }

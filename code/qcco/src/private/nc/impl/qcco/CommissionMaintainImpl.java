@@ -16,6 +16,7 @@ import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceCommissionPubServiceImpl;
 import nc.itf.qcco.ICommissionMaintain;
+import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
 import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.pub.beans.constenum.IConstEnum;
@@ -24,6 +25,7 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.lang.UFDateTime;
+import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionCVO;
@@ -616,6 +618,23 @@ public class CommissionMaintainImpl extends AceCommissionPubServiceImpl implemen
 		}
 		changeStatues(parentVO.getPk_commission_h(),DocStates.END_PROCESS.toIntValue());
 		
+	}
+
+	@Override
+	public boolean isEditAble(String pk_commission_h)  {
+		//查询对应任务单的状态
+		Integer status = null;
+		try {
+			status = (Integer)getDao().executeQuery("select approvestatus  from QC_TASK_H where PK_COMMISSION_H = '"
+						+pk_commission_h +"' and dr = 0", new ColumnProcessor());
+		} catch (DAOException e) {
+			ExceptionUtils.wrappException(e);
+		}
+		//如果已经提交,则不能修改
+		if(status!=null && (status==1 ||status==2 ||status==3)){
+			return false;
+		}
+		return true;
 	}
 	
 	

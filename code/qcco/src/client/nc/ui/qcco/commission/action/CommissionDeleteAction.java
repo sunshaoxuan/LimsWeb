@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 import java.net.URL;
 
 import nc.bap.portal.page.dialog.Dialog;
+import nc.bs.framework.common.NCLocator;
 import nc.bs.uif2.IActionCode;
+import nc.itf.qcco.ICommissionMaintain;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pubapp.pub.task.ISingleBillService;
 import nc.ui.pubapp.uif2app.components.grand.model.MainGrandModel;
@@ -92,6 +94,13 @@ public class CommissionDeleteAction extends
 		SuperVO hvo = (SuperVO) aggVO.getParentVO();
 		if (hvo == null) {
 			return false;
+		}
+		// 任务单已经提交不能修改
+		if (hvo.getPrimaryKey() != null) {
+			ICommissionMaintain service = NCLocator.getInstance().lookup(ICommissionMaintain.class);
+			if (!service.isEditAble(hvo.getPrimaryKey())) {
+				return false;
+			}
 		}
 		return getModel().getUiState() == UIState.NOT_EDIT;
 	}

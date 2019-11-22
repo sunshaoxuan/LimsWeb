@@ -2,12 +2,15 @@ package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
 
+import nc.bs.framework.common.NCLocator;
+import nc.itf.qcco.ICommissionMaintain;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pubapp.uif2app.components.grand.CardGrandPanelComposite;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.commission.model.MainSubBillModel;
+import nc.ui.uif2.UIState;
 import nc.ui.uif2.actions.EditAction;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.commission.CommissionHVO;
@@ -29,7 +32,13 @@ public class CommissionEditAction extends EditAction {
 
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
-		super.doAction(e);
+		try{
+			super.doAction(e);
+		}catch(Exception ex){
+			getModel().setUiState(UIState.NOT_EDIT);
+			throw ex;
+		}
+		
 
 		// 非变更状态
 		((MainSubBillModel) this.getModel()).setChangeStatus(false);
@@ -59,5 +68,19 @@ public class CommissionEditAction extends EditAction {
 		}
 
 	}
-
+	@Override
+	protected boolean isActionEnable() {
+		// 任务单已经提交不能修改
+		if (getModel().getSelectedData() != null) {
+			AggCommissionHVO aggvo = (AggCommissionHVO) getModel().getSelectedData();
+			if (aggvo.getPrimaryKey() != null) {
+				ICommissionMaintain service = NCLocator.getInstance().lookup(ICommissionMaintain.class);
+				if (!service.isEditAble(aggvo.getPrimaryKey())) {
+					return false;
+				}
+			}
+		}
+		return super.isActionEnable();
+	}
+	
 }

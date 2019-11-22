@@ -128,9 +128,9 @@ public class TaskWriteBackProcessor implements IFirstWriteBackProcessor {
 				
 				//approve info
 				taskList.get(i).setAttributeValue("changed_by", rs.get("changed_by"));
-				taskList.get(i).setAttributeValue("changed_on","to_timestamp('"+rs.get("changed_on")+"','yyyy-mm-dd hh24:mi:ss.ff')");
+				taskList.get(i).setAttributeValue("changed_on",rs.get("changed_on")==null?null:"to_timestamp('"+rs.get("changed_on")+"','yyyy-mm-dd hh24:mi:ss.ff')");
 				taskList.get(i).setAttributeValue("c_submit_by", rs.get("c_submit_by"));
-				taskList.get(i).setAttributeValue("c_submit_date", "to_timestamp('"+rs.get("c_submit_date")+"','yyyy-mm-dd hh24:mi:ss.ff') ");
+				taskList.get(i).setAttributeValue("c_submit_date",rs.get("c_submit_date")==null?null: "to_timestamp('"+rs.get("c_submit_date")+"','yyyy-mm-dd hh24:mi:ss.ff') ");
 				
 				//–¥À¿µƒ÷µ 
 				taskList.get(i).setAttributeValue("c_next_person", "¡ı∑Ô1002472/1002742/1002768/1002824/1002487");
