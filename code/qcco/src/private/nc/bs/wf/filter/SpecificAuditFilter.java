@@ -2,6 +2,7 @@ package nc.bs.wf.filter;
 
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.Collection;
 import java.util.HashSet;
 
 import nc.bs.dao.BaseDAO;
@@ -28,6 +29,7 @@ import com.google.gson.JsonParser;
 public class SpecificAuditFilter implements IParticipantFilter {
 	private BaseDAO baseDao;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public HashSet<String> filterUsers(ParticipantFilterContext pfc) throws BusinessException {
 		String pk_org = pfc.getTask().getPk_org();
@@ -63,7 +65,7 @@ public class SpecificAuditFilter implements IParticipantFilter {
 		// 使用直接上级ID，从OA取上级用户档案，从中获取直接上级Code
 		requestUrl = queryServiceByID.replace("{agentSecret}", accessSecret).replace("{sysCode}", appCode)
 				.replace("{accessToken}", getAccessToken(tokenSeed));
-		condition = "{\"id\":\"" + manageID + "\"";
+		condition = "{\"id\":\"" + manageID + "\"}";
 		jObject = executeQuery(requestUrl, condition);
 
 		checkError(jObject);
@@ -73,13 +75,14 @@ public class SpecificAuditFilter implements IParticipantFilter {
 		eleManager = userJObject.get("workcode");
 		String manageCode = eleManager.getAsString();
 
-		UserVO manageVO = (UserVO) this.getBaseDao().retrieveByClause(UserVO.class, "user_code='" + manageCode + "'");
-		if (manageVO == null) {
+		Collection<UserVO> manageVO = (Collection<UserVO>) this.getBaseDao().retrieveByClause(UserVO.class,
+				"user_code_q='" + manageCode + "'");
+		if (manageVO == null || manageVO.size() == 0) {
 			throw new BusinessException("未找到员工 [manageCode] 的操作员档案。");
 		}
 
 		HashSet<String> rtn = new HashSet<String>();
-		rtn.add(manageVO.getCuserid());
+		rtn.add(manageVO.toArray(new UserVO[0])[0].getCuserid());
 
 		return rtn;
 	}
