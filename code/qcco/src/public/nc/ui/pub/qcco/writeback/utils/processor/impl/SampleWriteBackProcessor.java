@@ -70,7 +70,11 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 		int originalPK = utils.getPrePk("original_sample", "sample", 1).get(0)-1;
 		
 		//时间前缀
-		String timeStr = new UFLiteralDate().toStdString().replaceAll("-", "").substring(2);
+		String timeStr = new UFLiteralDate().toStdString().replaceAll("-", "").substring(2,4);
+		//project
+		String project = String.valueOf(processData.getProject().getAttributeValue("name"));
+		//test_id 
+		String textIdPre = timeStr+project.split("-")[2];
 		
 		//需要回写的LIMS数据 组数*每组数量
 		Map<String,List<Sample>> secSampleListMap = new HashMap<>();
@@ -148,7 +152,7 @@ public class SampleWriteBackProcessor implements IFirstWriteBackProcessor, ISecW
 						sample.setAttributeValue("template", "HF-MAIN");
 						//SAMPLE.TEXT_ID	此处有两种生成方式：此次为第二种写入方式，写入值为“2位年月日-”+样品编号
 
-						sample.setAttributeValue("text_id", timeStr+"-"+group+""+j);
+						sample.setAttributeValue("text_id", textIdPre+"-"+group+""+j);
 						//SAMPLE.TRANS_NUM	主键式自增 ,每组第一只样品为0
 						if(1!=j){
 							sample.setAttributeValue("trans_num", ++transNumPK);
