@@ -71,16 +71,11 @@ public class PayDemandAction extends NCAction {
 	public void doAction(ActionEvent paramActionEvent) throws Exception {
 		try {
 			// 查询
-			IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
-			String url = (String) iUAPQueryBS.executeQuery(
-					"select vdef1 from report_path where nc_report_type = 'COST'", new ColumnProcessor());
-			if (null == url) {
-				url = "http://404";
-			} else {
-				AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
-				url = url.replace("%REPORT_NAME%", aggvo.getParentVO().getBillno());
-				url = url.replace("%REPORT_NO%", aggvo.getParentVO().getBillno());
-			}
+			String url = "\\\\lims_app.hongfa.cn\\lims_coa_sharemenu$\\Invoice\\%REPORT_NO%-INVOICE.pdf";
+			
+			AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
+			url = url.replace("%REPORT_NO%", aggvo.getParentVO().getBillno());
+			
 
 			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
 					ConfirmDialog.CONFIRM_REJECT_PREVIEW, "收费单预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
@@ -89,7 +84,6 @@ public class PayDemandAction extends NCAction {
 			String txtMessage = (String) value[1];
 
 			if (rtnID == ConfirmDialog.ID_CONFIRM) {
-				AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
 				try{
 					confirtm(aggvo.getParentVO());
 					MessageDialog.showHintDlg(getModel().getContext().getEntranceUI(), "消息", "确认成功!");

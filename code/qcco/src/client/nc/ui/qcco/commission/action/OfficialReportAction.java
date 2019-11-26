@@ -69,16 +69,15 @@ public class OfficialReportAction extends NCAction {
 	@Override
 	public void doAction(ActionEvent paramActionEvent) throws Exception {
 		try {
+			AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
+			String billno = aggvo.getParentVO().getBillno();
 			// 查询
 			IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
 			String url = (String) iUAPQueryBS.executeQuery(
-					"select vdef1 from report_path where nc_report_name = '正式报告'", new ColumnProcessor());
+					" select r.report_file_name from reports r where r.report_number = "
+					+ " (select project.c_rpt_report_number from project where name = '"+billno+"')", new ColumnProcessor());
 			if (null == url) {
 				url = "http://404";
-			} else {
-				AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
-				url = url.replace("%REPORT_NAME%", aggvo.getParentVO().getBillno());
-				url = url.replace("%REPORT_NO%", aggvo.getParentVO().getBillno());
 			}
 
 			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
@@ -86,7 +85,6 @@ public class OfficialReportAction extends NCAction {
 
 			int rtnID = (Integer) value[0];
 			String txtMessage = (String) value[1];
-			AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
 			if (rtnID == ConfirmDialog.ID_CONFIRM) {
 				try{
 					confirtm(aggvo.getParentVO(),txtMessage);

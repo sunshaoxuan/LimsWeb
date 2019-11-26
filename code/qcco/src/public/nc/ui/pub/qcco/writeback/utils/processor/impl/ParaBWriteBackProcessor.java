@@ -118,7 +118,9 @@ public class ParaBWriteBackProcessor implements IFirstWriteBackProcessor,ISecWri
 								+" c.c_contact_type LIKE '%, "+c_contact_type+"' "
 								+" OR  c.c_contact_type LIKE '"+c_contact_type+",%' "
 								+" OR  c.c_contact_type LIKE '%, "+c_contact_type+",%' "
-								+" OR  c.c_contact_type = '"+c_contact_type+"') "
+								+" OR  c.c_contact_type = '"+c_contact_type+"'"
+							    +" OR  spec.component = 'ÎÂ¶È' "
+							    +" OR  spec.component = 'Êª¶È') "
 								+" and stage in ("+stageInsql+")";
 						@SuppressWarnings("unchecked")
 						List<Map<String,Object>> rsMap = (List<Map<String,Object>>)bs.executeQuery(sql, new MapListProcessor());
