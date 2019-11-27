@@ -87,9 +87,9 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor,ISecWri
 						//对应的test实验前参数
 						Map<String,String> stageMap= new HashMap<>();
 						String analysis = null;
+						List<Test> testParaAList = null;
 						if(testParaAMap!=null){
-							List<Test> testParaAList = 
-									testParaAMap.get(Integer.parseInt(String.valueOf(sample.getAttributeValue("sample_number"))));
+							testParaAList= testParaAMap.get(Integer.parseInt(String.valueOf(sample.getAttributeValue("sample_number"))));
 							
 							if(testParaAList!=null && testParaAList.size() > 0){
 								//取analysis
@@ -101,7 +101,7 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor,ISecWri
 								}
 							}
 						}
-						if(stageMap!=null && stageMap.size() > 0){
+						if(stageMap!=null && stageMap.size() > 0 && testParaAList!=null && testParaAList.size() > 0) {
 							String stageInsql = insql.getInSQL(stageMap.keySet().toArray(new String[0]));
 							String sql = "SELECT "
 									+" c.result_type com_result_type, "
@@ -134,69 +134,75 @@ public class ParaAWriteBackProcessor implements IFirstWriteBackProcessor,ISecWri
 							String writeTimeStr = new UFDateTime().toStdString();
 							
 							 processData.getTestParaAListMap();
-							if(rsMap!=null && rsMap.size() > 0){
-								for(Map<String,Object> rs : rsMap){
-									Result result = new Result();
-									//sample_number
-									result.setAttributeValue("sample_number", String.valueOf(sample.getAttributeValue("sample_number")));
-									//test id 
-									//result.setAttributeValue("test_number", test.getAttributeValue("test_number"));
-									//mod tank 2019年11月25日17:15:05 改成test里相同analysis的实验前/后参数的test_number
-									result.setAttributeValue("test_number", stageMap.get(String.valueOf(rs.get("stage"))));
-									//result id
-									result.setAttributeValue("result_number", processData.getMaxResult()+1);
-									processData.setMaxResult(processData.getMaxResult()+1);
-									//
-									result.setAttributeValue("reported_name", rs.get("component"));
-									
-									//component
-									result.setAttributeValue("result_type", rs.get("com_result_type"));
-									result.setAttributeValue("list_key", rs.get("com_list_key"));
-									result.setAttributeValue("reportable", rs.get("com_reportable"));
-									result.setAttributeValue("optional", rs.get("com_optional"));
-									result.setAttributeValue("has_attributes", rs.get("com_has_attributes"));
-									result.setAttributeValue("displayed", rs.get("com_displayed"));
-									result.setAttributeValue("t_short_name", rs.get("com_t_short_name"));
+							if (rsMap != null && rsMap.size() > 0) {
+								for (Map<String, Object> rs : rsMap) {
+									for (Test testParaa : testParaAList) {
+										Result result = new Result();
+										// sample_number
+										result.setAttributeValue("sample_number", String.valueOf(sample.getAttributeValue("sample_number")));
+										// test id
+										// result.setAttributeValue("test_number",
+										// test.getAttributeValue("test_number"));
+										// mod tank 2019年11月25日17:15:05
+										// 改成test里相同analysis的实验前/后参数的test_number
+										result.setAttributeValue("test_number", testParaa.getAttributeValue("test_number"));
+										// result id
+										result.setAttributeValue("result_number", processData.getMaxResult() + 1);
+										processData.setMaxResult(processData.getMaxResult() + 1);
+										//
+										result.setAttributeValue("reported_name", rs.get("component"));
 
-									//PRODUCT_SPEC 字段
-									result.setAttributeValue("order_number", rs.get("order_number"));
-									result.setAttributeValue("analysis", analysis);
-									result.setAttributeValue("name", rs.get("component"));
-									result.setAttributeValue("minimum", rs.get("min_value"));
-									result.setAttributeValue("maximum", rs.get("max_value"));
-									result.setAttributeValue("units", rs.get("units"));
-									result.setAttributeValue("round", rs.get("round"));
-									result.setAttributeValue("places", rs.get("places"));
-									//附件: null
-									result.setAttributeValue("db_file", null);
-									//写入时间
-									result.setAttributeValue("changed_on", "to_timestamp('"+ writeTimeStr +"','yyyy-mm-dd hh24:mi:ss.ff')");
-									
-									//一些静态字段
-									result.setAttributeValue("replicate_count", 0);
-									result.setAttributeValue("status", "N");
-									result.setAttributeValue("old_status", "N");
-									result.setAttributeValue("modified_result", "F");
-									result.setAttributeValue("allow_out", "T");
-									result.setAttributeValue("in_spec", "T");
-									result.setAttributeValue("uses_instrument", "F");
-									result.setAttributeValue("uses_codes", "F");
-									result.setAttributeValue("in_cal", "T");
-									result.setAttributeValue("auto_calc", "T");
-									result.setAttributeValue("allow_cancel", "F");
-									result.setAttributeValue("link_size", 0);
-									result.setAttributeValue("code_entered", "F");
-									result.setAttributeValue("std_reag_sample", 0);
-									result.setAttributeValue("factor_value", 0);
-									result.setAttributeValue("in_control", "T");
-									result.setAttributeValue("spec_override", "F");
-									result.setAttributeValue("places_2", 0);
-									result.setAttributeValue("reported_result", "F");
-									result.setAttributeValue("reported_rslt_rev", 0);
-									result.setAttributeValue("reported_rslt_oos", "F");
-									result.setAttributeValue("t_accredited", "T");
-									result.setAttributeValue("trans_num", 0.00);
-									secResultList.add(result);
+										// component
+										result.setAttributeValue("result_type", rs.get("com_result_type"));
+										result.setAttributeValue("list_key", rs.get("com_list_key"));
+										result.setAttributeValue("reportable", rs.get("com_reportable"));
+										result.setAttributeValue("optional", rs.get("com_optional"));
+										result.setAttributeValue("has_attributes", rs.get("com_has_attributes"));
+										result.setAttributeValue("displayed", rs.get("com_displayed"));
+										result.setAttributeValue("t_short_name", rs.get("com_t_short_name"));
+
+										// PRODUCT_SPEC 字段
+										result.setAttributeValue("order_number", rs.get("order_number"));
+										result.setAttributeValue("analysis", analysis);
+										result.setAttributeValue("name", rs.get("component"));
+										result.setAttributeValue("minimum", rs.get("min_value"));
+										result.setAttributeValue("maximum", rs.get("max_value"));
+										result.setAttributeValue("units", rs.get("units"));
+										result.setAttributeValue("round", rs.get("round"));
+										result.setAttributeValue("places", rs.get("places"));
+										// 附件: null
+										result.setAttributeValue("db_file", null);
+										// 写入时间
+										result.setAttributeValue("changed_on", "to_timestamp('" + writeTimeStr
+												+ "','yyyy-mm-dd hh24:mi:ss.ff')");
+
+										// 一些静态字段
+										result.setAttributeValue("replicate_count", 0);
+										result.setAttributeValue("status", "N");
+										result.setAttributeValue("old_status", "N");
+										result.setAttributeValue("modified_result", "F");
+										result.setAttributeValue("allow_out", "T");
+										result.setAttributeValue("in_spec", "T");
+										result.setAttributeValue("uses_instrument", "F");
+										result.setAttributeValue("uses_codes", "F");
+										result.setAttributeValue("in_cal", "T");
+										result.setAttributeValue("auto_calc", "T");
+										result.setAttributeValue("allow_cancel", "F");
+										result.setAttributeValue("link_size", 0);
+										result.setAttributeValue("code_entered", "F");
+										result.setAttributeValue("std_reag_sample", 0);
+										result.setAttributeValue("factor_value", 0);
+										result.setAttributeValue("in_control", "T");
+										result.setAttributeValue("spec_override", "F");
+										result.setAttributeValue("places_2", 0);
+										result.setAttributeValue("reported_result", "F");
+										result.setAttributeValue("reported_rslt_rev", 0);
+										result.setAttributeValue("reported_rslt_oos", "F");
+										result.setAttributeValue("t_accredited", "T");
+										result.setAttributeValue("trans_num", 0.00);
+										secResultList.add(result);
+
+									}
 								}
 							}
 						}
