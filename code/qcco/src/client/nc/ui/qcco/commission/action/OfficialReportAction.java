@@ -2,7 +2,6 @@ package nc.ui.qcco.commission.action;
 
 import java.awt.event.ActionEvent;
 
-import nc.bs.dao.DAOException;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.itf.pubapp.pub.smart.IBillQueryService;
@@ -13,6 +12,7 @@ import nc.ui.ml.NCLangRes;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pubapp.uif2app.components.grand.ListGrandPanelComposite;
 import nc.ui.qcco.commission.ace.view.ConfirmDialog;
+import nc.ui.qcco.commission.ace.view.TaskBodyPanel;
 import nc.ui.uif2.NCAction;
 import nc.ui.uif2.UIState;
 import nc.ui.uif2.model.AbstractAppModel;
@@ -69,20 +69,28 @@ public class OfficialReportAction extends NCAction {
 	@Override
 	public void doAction(ActionEvent paramActionEvent) throws Exception {
 		try {
-			AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
-			String billno = aggvo.getParentVO().getBillno();
 			// 查询
 			IUAPQueryBS iUAPQueryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(IUAPQueryBS.class.getName());
+			AggCommissionHVO aggvo = (AggCommissionHVO) this.getModel().getSelectedData();
+			String reportformat = aggvo.getParentVO().getReportformat();
+			//查询报告类型
+			String reportName = (String) iUAPQueryBS.executeQuery(
+					" select RP_REPORT_CODE from NC_REPORT_TYPE "
+					+ " WHERE ISENABLE = 1 and PK_REPORT_TYPE = '"+reportformat+"'", new ColumnProcessor());
+			if(reportName!=null && reportName.replaceAll(" ", "").equals("3")){
+				ConfirmDialog.urlChoosePanel = new TaskBodyPanel(aggvo.getPrimaryKey());
+			}
+			String billno = aggvo.getParentVO().getBillno();
+			
 			String url = (String) iUAPQueryBS.executeQuery(
 					" select r.report_file_name from reports r where r.report_number = "
 					+ " (select project.c_rpt_report_number from project where name = '"+billno+"')", new ColumnProcessor());
 			if (null == url) {
 				url = "http://404";
 			}
-
 			Object[] value = (Object[]) ConfirmDialog.showInputDlg(this.getModel().getContext().getEntranceUI(),
 					ConfirmDialog.CONFIRM_REJECT_PREVIEW, "正式报告预览", "请输入意见", "", 200, 0, ConfirmDialog.TEXT_STR, url);
-
+			ConfirmDialog.urlChoosePanel = null;
 			int rtnID = (Integer) value[0];
 			String txtMessage = (String) value[1];
 			if (rtnID == ConfirmDialog.ID_CONFIRM) {

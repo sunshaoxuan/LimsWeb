@@ -43,6 +43,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.util.Set;
 
 import nc.bs.logging.Logger;
 import nc.ui.ml.NCLangRes;
@@ -63,6 +64,11 @@ import nc.uitheme.ui.ThemeResourceCenter;
 
 public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.event.KeyListener,
 		java.awt.event.ItemListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1059964896682866708L;
 
 	private nc.ui.pub.beans.UIButton ivjUIButton1 = null;
 
@@ -195,6 +201,9 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 			"themeres/dialog/dialogResConf", "dialogContentPane.backgroundColor");
 
 	private static String strURL = "";
+	
+	public static TaskBodyPanel urlChoosePanel = null;
+	
 
 	public void setFocusButton(int nbutton) {
 		focusbutton = nbutton;
@@ -335,7 +344,16 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 
 	private void btn3_ActionPerformed() {
 		if (m_nType == CONFIRM_REJECT_PREVIEW || m_nType == CONFIRM_PREVIEW) {
-			WebBrowser.open(strURL, getTitle());
+			if(urlChoosePanel!=null){
+				if(urlChoosePanel.showModal()==1){
+					;
+				}else{
+					return ;
+				}
+			}else{
+				WebBrowser.open(strURL, getTitle());
+			}
+			
 		} else {
 			setResult(ID_CANCEL);
 			setInputValue(null);
@@ -750,6 +768,11 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 			try {
 				// zsb update:
 				ivjUIPanel_Buttons = new nc.ui.pub.beans.UIPanel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = -8555340372138760844L;
+
 					public void paint(java.awt.Graphics g) {
 						super.paint(g);
 						// 最上面画一个黑线
@@ -2242,6 +2265,7 @@ public class ConfirmDialog extends nc.ui.pub.beans.UIDialog implements java.awt.
 				button);
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Object showSelectBox(Container parent, int type, int icon, String title, String message,
 			Object[] allValue, int maximumRowCount) {
 		// 显示消息
