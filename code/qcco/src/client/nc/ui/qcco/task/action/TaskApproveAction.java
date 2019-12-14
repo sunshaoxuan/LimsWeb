@@ -1,48 +1,48 @@
 package nc.ui.qcco.task.action;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
-import nc.bs.uif2.LockFailedException;
-import nc.bs.uif2.VersionConflictException;
-import nc.ui.hr.caculate.view.BannerTimerDialog;
+import nc.bs.logging.Logger;
+import nc.ui.pub.beans.MessageDialog;
+import nc.ui.pub.beans.progress.IProgressMonitor;
+import nc.ui.pub.beans.progress.NCProgresses;
 import nc.ui.pubapp.uif2app.actions.pflow.ApproveScriptAction;
-import nc.vo.pub.BusinessException;
 
 public class TaskApproveAction extends ApproveScriptAction {
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6806890916145681621L;
+
 	@Override
 	public void doAction(final ActionEvent e) throws Exception {
-		super.doAction(e);
-		/*new SwingWorker() {
-			BannerTimerDialog dialog = new BannerTimerDialog(null);
-			String error = null;
+		//super.doAction(e);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				IProgressMonitor progressMonitor = NCProgresses
+						.createDialogProgressMonitor(TaskApproveAction.this
+								.getModel().getContext().getEntranceUI());
 
-			protected Boolean doInBackground() throws Exception {
+				progressMonitor.beginTask("审批中..", -1);
+				progressMonitor.setProcessInfo("数据回写中,请稍后..."); // 数据导入中,请稍后......
 				try {
-					dialog.setStartText("正在审批及回写数据中... ");
-					dialog.start();
-					super.doAction(e);
-
-
-				} catch (LockFailedException le) {
-					error = le.getMessage();
-				} catch (VersionConflictException le) {
-					throw new BusinessException(le.getBusiObject()
-							.toString(), le);
-				} catch (Exception ex) {
-					error = ex.getMessage();
+					TaskApproveAction.super.doAction(e);
+					MessageDialog.showHintDlg(TaskApproveAction.this
+							.getModel().getContext().getEntranceUI(), null, "审批通过,回写成功!"); // 数据导入成功！
+				} catch (Exception e) {
+					Logger.error(e);
+					MessageDialog.showErrorDlg(
+							TaskApproveAction.this
+							.getModel().getContext().getEntranceUI(), null,
+							e.getMessage());
 				} finally {
-					dialog.end();
+					progressMonitor.done();
 				}
-				return Boolean.TRUE;
 			}
-		}.execute();*/
+		}).start();
 		
 	}
 }
