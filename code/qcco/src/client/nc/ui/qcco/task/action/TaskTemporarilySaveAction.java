@@ -2,6 +2,8 @@ package nc.ui.qcco.task.action;
 
 import java.awt.Event;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.KeyStroke;
@@ -153,9 +155,15 @@ public class TaskTemporarilySaveAction extends DifferentVOSaveAction {
 		}
 		
 		new GCClientBillCombinServer<IBill>().combine(clientVOs, afterUpdateVOs);
-
+		//更新时，按插入逻辑，生成新的pk
 		getModel().setUiState(UIState.NOT_EDIT);
-		getMainGrandModel().directlyUpdate(clientVOs[0]);
+	    List<AggTaskHVO> clientVOsList = new ArrayList<>();
+		for (IBill bill : clientVOs) {
+			if (bill instanceof AggTaskHVO) {
+				clientVOsList.add((AggTaskHVO) bill);
+			}
+		}
+	    getMainGrandModel().getMainModel().initModel(clientVOsList.toArray(new AggTaskHVO[0]));;
 	}
 
 	protected void showSuccessInfo() {
