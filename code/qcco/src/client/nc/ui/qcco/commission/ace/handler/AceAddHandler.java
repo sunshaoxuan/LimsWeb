@@ -1,6 +1,5 @@
 package nc.ui.qcco.commission.ace.handler;
 
-import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import nc.bs.framework.common.InvocationInfoProxy;
@@ -14,8 +13,8 @@ import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.billform.AddEvent;
+import nc.ui.qcco.utils.CommisionUtils;
 import nc.vo.pub.BusinessException;
-import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFLiteralDate;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.qcco.qccommission.DocStates;
@@ -36,7 +35,7 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 		IUAPQueryBS query = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 		String defaultType = null;
 		String pk_prefix = null;
-		String maxcode = null;
+		
 		String pk_psndoc = null;
 		String pk_psnorg = null;
 		String pk_dept = null;
@@ -91,22 +90,9 @@ public class AceAddHandler implements IAppEventHandler<AddEvent> {
 			}
 			
 		}
-		
-		
-		
 		UIRefPane pane = (UIRefPane) panel.getHeadItem("codeprefix").getComponent();
 		String name = pane.getRefModel().getRefNameValue();
-		SimpleDateFormat dt = new SimpleDateFormat("yyMMdd");
-		String seed = name + "-" + dt.format(new UFDate().toDate()) + "-";
-
-		try {
-			maxcode = (String) query.executeQuery(
-					"select max(billno) from qc_commission_h where billno like 'A-______-____' and billno not like 'A-______-9999' and dr = 0",
-					new ColumnProcessor());
-		} catch (BusinessException ex) {
-			ExceptionUtils.wrappBusinessException(ex.getMessage());
-		}
-		maxcode = maxcode == null || maxcode.equals("") ? "0000" : maxcode.substring(maxcode.length() - 4);
-		panel.setHeadItem("billno", seed + String.format("%04d", Integer.valueOf(maxcode) + 1));
+		
+		panel.setHeadItem("billno", new CommisionUtils().getCommissionPreCode(name));
 	}
 }

@@ -1,6 +1,7 @@
 package nc.bs.qcco.commission.ace.bp;
 
 import nc.bs.qcco.commission.plugin.bpplugin.CommissionPluginPoint;
+import nc.bs.qcco.commission.rule.CommissionInsertBeforeRule;
 import nc.impl.pubapp.pattern.rule.IRule;
 import nc.impl.pubapp.pattern.rule.processer.AroundProcesser;
 import nc.util.mmf.framework.gc.GCInsertBPTemplate;
@@ -56,6 +57,9 @@ public class AceCommissionInsertBP {
 		// TODO 新增前规则
 		IRule<AggCommissionHVO> rule = null;
 		rule = new nc.bs.pubapp.pub.rule.FillInsertDataRule();
+		processer.addBeforeRule(rule);
+		//code 检查前规则 tank 2020年3月10日 18:22:43
+		rule = new CommissionInsertBeforeRule();
 		processer.addBeforeRule(rule);
 		// rule = new nc.bs.pubapp.pub.rule.CreateBillCodeRule();
 		// ((nc.bs.pubapp.pub.rule.CreateBillCodeRule)
