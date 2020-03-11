@@ -34,7 +34,8 @@ public class CommissionInsertBeforeRule implements IRule<AggCommissionHVO>{
 			
 			for(AggCommissionHVO aggvo: aggvos){
 				String billno = aggvo.getParentVO().getBillno();
-				String sql = "select count(*) from qc_commission_h where billno = '"+billno+"'";
+				String sql = "select count(*) from qc_commission_h where billno = '"+billno+"' and dr = 0 "
+						+(aggvo.getParentVO().getPk_commission_h()==null?"":" and pk_commission_h = '"+aggvo.getParentVO().getPk_commission_h()+"'");
 				Integer count = (Integer)query.executeQuery(sql, new ColumnProcessor());
 				if(billno ==null || billno.equals("") || count > 0){
 					sql = "select distinct NC_SAFE_NAME from NC_PROJ_PREFIX where 11 = 11 and ( PK_SAFE_TYPE = '"
