@@ -212,10 +212,17 @@ public class ListGrandPanelComposite extends GrandPanelComposite {
 					this.getListCardSplitPane().setDividerLocation(0.7);
 				} else {
 					// 非比例值时
-					this.getListCardSplitPane().setDividerLocation((int) getCurrentLocation());
+					//mod 客户要求,孙表每次都需要展开 tank 2020年3月17日 21:41:59
+					setCurrentLocation(0.7f);
+					this.getListCardSplitPane().setDividerLocation(getCurrentLocation());
 				}
 			}
+			
+			this.getListCardSplitPane().setDividerLocation(0.7);
 			this.setNeedToRepaint(false);
+			getModel().setMainGrandListEnumState(MainGrandStatusTypeEnum.list_main_show_grand_show);
+			getModel().grandListExpend();
+			//mod end 客户要求,孙表每次都需要展开 tank 2020年3月17日 21:41:59
 		}
 	}
 

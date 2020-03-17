@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nc.bs.framework.common.NCLocator;
+import nc.desktop.ui.WorkbenchEnvironment;
 import nc.itf.pubapp.uif2app.components.grand.IGrandAggVosQueryService;
 import nc.itf.qcco.ITaskMaintain;
 import nc.ui.pubapp.uif2app.actions.IDataOperationService;
@@ -13,6 +14,7 @@ import nc.ui.querytemplate.querytree.IQueryScheme;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
+import nc.vo.pubapp.query2.sql.process.QuerySchemeProcessor;
 import nc.vo.qcco.task.AggTaskHVO;
 
 /**
@@ -27,11 +29,24 @@ public class AceTaskMaintainProxy extends AbstractGrandQueryService implements I
 		// ICommissionMaintain query = NCLocator.getInstance().lookup(
 		// ICommissionMaintain.class);
 		// return query.query(queryScheme);
+		//单据过滤
+		filter(queryScheme);
 		IGrandAggVosQueryService query = NCLocator.getInstance().lookup(IGrandAggVosQueryService.class);
 		Map<String, CircularlyAccessibleValueObject> relationShip = super.getGrandTabAndVOMap();
 		AggTaskHVO[] result = (AggTaskHVO[]) query.query(queryScheme, null,
 				(HashMap<String, CircularlyAccessibleValueObject>) relationShip, AggTaskHVO.class);
 		return result;
+	}
+	/**
+	 * tank
+	 * 客户希望每个人只能看到自身参与发起和审批的单据 
+	 * @param queryScheme
+	 */
+	private void filter(IQueryScheme queryScheme) {
+		QuerySchemeProcessor qry = new QuerySchemeProcessor(queryScheme);
+		String pk_user = WorkbenchEnvironment.getInstance().getLoginUser().getPrimaryKey();
+		qry.appendWhere(" and (creator='"+pk_user+"' or "
+				+ " pk_task_h in (select distinct billversionpk from pub_workflownote where checkman = '"+pk_user+"')) ");
 	}
 
 	@Override

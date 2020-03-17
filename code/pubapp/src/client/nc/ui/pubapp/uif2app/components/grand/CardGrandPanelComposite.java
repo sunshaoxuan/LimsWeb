@@ -305,6 +305,10 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 		if (this.getGrandPanel() != null && grandComposite != null && isNeedToRepaint()) {
 			paintGrandList();
 			this.setNeedToRepaint(false);
+			//客户要求,孙表每次都需要展开 tank 2020年3月17日 21:41:59
+			getModel().setMainGrandCardEnumState(MainGrandStatusTypeEnum.card_main_head_hide_grand_show);
+			getModel().grandCardExpend();
+			//mod end 客户要求,孙表每次都需要展开 tank 2020年3月17日 21:41:59
 		}
 	}
 
@@ -325,9 +329,14 @@ public class CardGrandPanelComposite extends GrandPanelComposite {
 			} else {
 				if (getCurrentLocation() > 1) {
 					// 非比例值时
-					this.getListCardSplitPane().setDividerLocation((int) getCurrentLocation());
+					//客户要求,孙表每次都需要展开 tank 2020年3月17日 21:41:59
+					setCurrentLocation(0.7f);
+					//mod end
+					this.getListCardSplitPane().setDividerLocation(getCurrentLocation());
+					
 				} else {
 					// 比例值时
+					//客户要求,孙表每次都需要展开 tank 2020年3月17日 21:41:59
 					this.getListCardSplitPane().setDividerLocation(getCurrentLocation());
 				}
 			}
