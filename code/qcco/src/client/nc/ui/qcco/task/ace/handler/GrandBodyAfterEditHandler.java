@@ -1,6 +1,7 @@
 package nc.ui.qcco.task.ace.handler;
 
 import nc.bs.framework.common.NCLocator;
+import nc.bs.pubapp.utils.UserDefineRefUtils;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.beans.UIRefPane;
@@ -13,6 +14,8 @@ import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
 import nc.ui.qcco.task.view.TextDialog;
 import nc.vo.pub.BusinessException;
+import nc.vo.qcco.commission.CommissionBVO;
+import nc.vo.qcco.task.TaskRVO;
 
 public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEditEvent> {
 	private BillForm mainBillForm;//
@@ -78,8 +81,9 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 				e.getBillCardPanel().setBodyValueAt(valueInt, e.getRow(), "formatted_entry");
 				e.getBillCardPanel().setBodyValueAt("h", e.getRow(), "unit");
 			}*/
-			if(e.getValue()!=null && !"".equals(e.getValue())){
-				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_valuetype");
+			if (e.getOldValue() != null && e.getValue() == null) {
+				fixEmpty(e);
+				return;
 			}
 		} else if ("refvalue".equals(e.getKey())) {
 			if (e.getValue() != null) {
@@ -149,6 +153,17 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 		}
 
 	}
-	
+	/**
+	 * fix 修改后为空的问题
+	 * 
+	 * @return
+	 */
+	private void fixEmpty(CardBodyAfterEditEvent e) {
+		TaskRVO grandVO = new TaskRVO();
+		grandVO.setAttributeValue(e.getKey(), e.getOldValue());
+		UserDefineRefUtils.refreshItemRefValue(grandVO, e.getBillCardPanel().getBodyPanel().getTable(), e.getRow(), e
+				.getBillCardPanel().getBodyItem(e.getKey()), true);
+
+	}
 
 }

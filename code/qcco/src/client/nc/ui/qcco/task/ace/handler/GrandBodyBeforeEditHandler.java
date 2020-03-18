@@ -11,6 +11,7 @@ import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.jdbc.framework.processor.MapListProcessor;
+import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.beans.UITextAreaScrollPane;
 import nc.ui.pub.bill.BillItem;
@@ -33,6 +34,7 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 
 	private BillForm mainBillForm;//
 
+	
 	public BillForm getMainBillForm() {
 		return mainBillForm;
 	}
@@ -162,6 +164,25 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 			((TaskAnalyseComponentRefModel) ((UIRefPane) item.getComponent()).getRefModel()).setAnalysisName(anaName);
 
 		}
+		BillItem bitem = (BillItem) e.getSource();
+		fixValueLost(bitem,e);
 		e.setReturnValue(true);
+	}
+	
+	public void fixValueLost(BillItem bitem,CardBodyBeforeEditEvent e){
+		if(bitem!=null && bitem.getComponent() instanceof UIRefPane){
+			AbstractRefModel refModel = ((UIRefPane) bitem.getComponent()).getRefModel();
+			if(refModel!=null){
+				String pk_value = (String) e.getBillCardPanel().getBodyValueAt(e.getRow(), "pk_"+e.getKey());
+				if(pk_value!=null){
+					Vector vector = refModel.matchPkData(pk_value);
+					refModel.setSelectedData(vector);
+					refModel.setSelectedDataAndConvertData(vector);
+				}
+				
+			}
+			
+		}
+		
 	}
 }
