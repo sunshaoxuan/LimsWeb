@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
+import nc.itf.qcco.ITaskMaintain;
 import nc.itf.uap.IUAPQueryBS;
 import nc.ui.pub.qcco.writeback.utils.WriteBackProcessData;
 import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
@@ -29,7 +30,7 @@ public class WriteBackMediator {
 	
 	
 	
-	public List<String> getLIMSSQL(String pk_commission_h) throws BusinessException {
+	synchronized public List<String> getLIMSSQL(String pk_commission_h) throws BusinessException {
 		List<String> rsList = new ArrayList<>();
 		
 		if(!StringUtils.isEmpty(pk_commission_h)){
@@ -105,6 +106,8 @@ public class WriteBackMediator {
 			
 			
 			rsList.addAll(utils.toLIMSSQL());
+			
+			
 		}
 		//XXX : for test
 		if(rsList!=null && rsList.size() > 0){
@@ -118,7 +121,9 @@ public class WriteBackMediator {
 		/*if(rsList.size() > 0) {
 			throw new  BusinessException("test");
 		}*/
+		
 		return rsList;
+		
 		
 	}
 	
