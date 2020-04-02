@@ -25,6 +25,7 @@ import nc.ui.pubapp.uif2app.view.ShowUpableBillForm;
 import nc.ui.qcco.commission.refmodel.ProductSerialRefModel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFBoolean;
+import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.commission.CommissionBVO;
 
 import org.apache.commons.lang.StringUtils;
@@ -367,6 +368,21 @@ public class AceBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEd
 					this.getGrandCard().getBillCardPanel().setBodyValueAt(aValue.getValue(), row, "component");
 				}
 				// e.getBillCardPanel().getBodyValueAt(row, "qc_commission_b");
+				//如果最小值大于最大值，那么制空最大值 2020年4月2日23:18:10
+				Object maxObj = this.getGrandCard().getBillCardPanel().getBodyValueAt( row, "stdmaxvalue");
+				Object mixObj = this.getGrandCard().getBillCardPanel().getBodyValueAt( row, "stdminvalue");
+
+				try{
+					double maxValue = new UFDouble(String.valueOf(maxObj)).toDouble();
+					double minValue = new UFDouble(String.valueOf(mixObj)).toDouble();
+					if(maxValue < minValue){
+						this.getGrandCard().getBillCardPanel()
+						.setBodyValueAt(null, row, "stdmaxvalue");
+					}
+				}catch(Exception exc){
+					Logger.error(exc.getMessage());
+				}
+				//mod end 
 			}
 		}
 	}

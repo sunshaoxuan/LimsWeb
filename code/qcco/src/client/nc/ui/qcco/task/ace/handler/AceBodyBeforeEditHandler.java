@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import nc.bs.framework.common.NCLocator;
+import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
@@ -36,6 +37,7 @@ import nc.ui.qcco.task.utils.StringOrderUtils;
 import nc.ui.qcco.task.view.SampleAllocationPanel;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFBoolean;
+import nc.vo.pub.lang.UFDouble;
 import nc.vo.qcco.commission.CommissionRVO;
 
 import org.apache.commons.lang.StringUtils;
@@ -283,6 +285,7 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 				this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").delLine(rows);
 			}
 			if (refList != null && refList.size() > 0) {
+				
 				for (Map<String, Object> refRow : refList) {
 
 					this.getGrandCard().getBillCardPanel().getBodyPanel("pk_task_r").addLine();
@@ -362,7 +365,23 @@ public class AceBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefore
 					this.getGrandCard().getBillCardPanel()
 							.setBodyValueAt(UFBoolean.TRUE, row, "judgeflag", "pk_task_r");
 					this.getGrandCard().getBillCardPanel().setBodyValueAt(UFBoolean.TRUE, row, "testflag", "pk_task_r");
+					//如果最小值大于最大值，那么制空最大值 2020年4月2日23:18:10
+					Object maxObj = this.getGrandCard().getBillCardPanel().getBodyValueAt( row, "stdmaxvalue");
+					Object mixObj = this.getGrandCard().getBillCardPanel().getBodyValueAt( row, "stdminvalue");
+
+					try{
+						double maxValue = new UFDouble(String.valueOf(maxObj)).toDouble();
+						double minValue = new UFDouble(String.valueOf(mixObj)).toDouble();
+						if(maxValue < minValue){
+							this.getGrandCard().getBillCardPanel()
+							.setBodyValueAt(null, row, "stdmaxvalue", "pk_task_r");
+						}
+					}catch(Exception exc){
+						Logger.error(exc.getMessage());
+					}
+					//mod end 
 				}
+				
 			}
 
 		} catch (BusinessException ex) {
