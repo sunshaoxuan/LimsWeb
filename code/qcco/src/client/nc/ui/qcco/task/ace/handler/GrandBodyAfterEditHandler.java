@@ -6,15 +6,11 @@ import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
 import nc.ui.pub.beans.UIRefPane;
 import nc.ui.pub.bill.BillCellEditor;
-import nc.ui.pub.bill.BillItem;
-import nc.ui.pub.qcco.writeback.utils.common.CommonUtils;
 import nc.ui.pubapp.uif2app.event.IAppEventHandler;
 import nc.ui.pubapp.uif2app.event.card.CardBodyAfterEditEvent;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.qcco.task.refmodel.TaskAnalyseComponentRefModel;
-import nc.ui.qcco.task.view.TextDialog;
 import nc.vo.pub.BusinessException;
-import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.task.TaskRVO;
 
 public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfterEditEvent> {
@@ -84,6 +80,9 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 			if (e.getOldValue() != null && e.getValue() == null) {
 				fixEmpty(e);
 				return;
+			}
+			if(e.getValue()!=null && !"".equals(e.getValue())){
+				e.getBillCardPanel().setBodyValueAt(e.getValue(), e.getRow(), "pk_valuetype");
 			}
 		} else if ("refvalue".equals(e.getKey())) {
 			if (e.getValue() != null) {
