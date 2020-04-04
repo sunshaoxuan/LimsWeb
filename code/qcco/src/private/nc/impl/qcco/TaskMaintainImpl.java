@@ -48,31 +48,7 @@ private BaseDAO dao = null;
 		}
 		return dao;
 	}
-	
-	public void updatelimsflag(String pk,String tableName){
-		int i = -1;
-		try {
-			//Integer newIcr = (Integer)getDao().executeQuery("select value+1 from increments i where  (upper(i.type) = upper('"+ tableName +"')) or (upper(i.name) = upper('"+ tableName +"') and (upper(i.type) = upper('KEY_NUM') or upper(i.type) = upper('table') ))",new ColumnProcessor());
-			Integer newIcr = (Integer)getDao().executeQuery("select max("+ pk +") from " + tableName,new ColumnProcessor());
-			i = getDao().executeUpdate("update increments i set i.value="+ newIcr + " where (upper(i.type) = upper('"+ tableName +"')) or (upper(i.name) = upper('"+ tableName +"') and (upper(i.type) = upper('KEY_NUM') or upper(i.type) = upper('table') ))");
-		} catch (DAOException e) {
-			// TODO 自动生成的 catch 块
-			e.printStackTrace();
-		}
-		//return i;
-	}
-	
-	
-	@Override
-	public void cleanTaskTempSaveTaskid(String taskid) {
-		// TODO 自动生成的方法存根
-		int i = -1;
-		try{
-			i = getDao().executeUpdate("delete from qc_task_b b where b.taskcode like '" + taskid + "%'");
-		}catch(DAOException e){
-			e.printStackTrace();
-		}
-	}
+
 
 	/*@Override
 	public void delete(AggTaskHVO[] clientFullVOs,
