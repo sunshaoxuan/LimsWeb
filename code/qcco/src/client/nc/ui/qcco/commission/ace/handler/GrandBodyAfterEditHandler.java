@@ -28,6 +28,8 @@ public class GrandBodyAfterEditHandler implements IAppEventHandler<CardBodyAfter
 			e.getBillCardPanel().setBodyValueAt(value, e.getRow(), "pk_samplegroup");
 		} else if ("component".equals(e.getKey())) {
 			e.getBillCardPanel().setBodyValueAt(value, e.getRow(), "pk_component");
+		}else if ("valuetype".equals(e.getKey())) {
+			e.getBillCardPanel().setBodyValueAt(value, e.getRow(), "pk_valuetype");
 		}
 		//e.getBillCardPanel().getBodyValueAt(0, "pk_commission_b");
 	}

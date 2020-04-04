@@ -42,7 +42,7 @@ public class GrandBodyBeforeEditHandler implements IAppEventHandler<CardBodyBefo
 			//客户那估计模板乱了,上两个
 			UFBoolean ifAuto = (UFBoolean) e.getBillCardPanel().getBodyValueAt(e.getRow(), "isAutoGeneration");
 			UFBoolean ifautu = (UFBoolean) e.getBillCardPanel().getBodyValueAt(e.getRow(), "isautogeneration");
-			if ((ifAuto != null && !ifAuto.booleanValue())||(ifautu != null && !ifAuto.booleanValue())) {
+			if ((ifAuto != null && !ifAuto.booleanValue())||(ifautu != null && !ifautu.booleanValue())) {
 				refModel.setPk_ncEnstardCode(pk_enterprisestandard);
 			} else {
 				refModel.setPk_ncEnstardCode(null);

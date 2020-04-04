@@ -85,8 +85,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 									this.getCardPanel().getRowCount() - 1, "pk_testresultname");
 							super.getCardPanel().setBodyValueAt(pklists.get(i).getTestresultshortname(),
 									this.getCardPanel().getRowCount() - 1, "testresultshortname");
-							super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
-									this.getCardPanel().getRowCount() - 1, "runorder");
+							super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount() * 10,
+									this.getCardPanel().getRowCount() - 1 , "runorder");
+							//System.out.println(this.getCardPanel().getRowCount());
 							String uuid = UUID.randomUUID().toString();
 							uuid = uuid.replace("-", "");
 							super.getCardPanel().setBodyValueAt(uuid, this.getCardPanel().getRowCount() - 1,
@@ -113,8 +114,9 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 							this.getCardPanel().getRowCount() - 1, "pk_testresultname");
 					super.getCardPanel().setBodyValueAt(pklists.get(0).getTestresultshortname(),
 							this.getCardPanel().getRowCount() - 1, "testresultshortname");
-					super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount(),
+					super.getCardPanel().setBodyValueAt(super.getCardPanel().getRowCount() * 10,
 							this.getCardPanel().getRowCount() - 1, "runorder");
+					//System.out.println(this.getCardPanel().getRowCount());
 					String uuid = UUID.randomUUID().toString();
 					uuid = uuid.replace("-", "");
 					super.getCardPanel().setBodyValueAt(uuid, this.getCardPanel().getRowCount() - 1, "uniquekey");
@@ -272,6 +274,19 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 				}
 
 			} else {
+				
+				//�жϰ汾
+				String versionSql = "";
+				//select  distinct c.version from NC_COMPONENT_table c where c.analysis in (select distinct nal.nc_test_condition from nc_analysis_list nal, nc_task_addunion nta where nal.nc_analysis_name = nta.nc_task_addname and pk_task_addunion = 'A224C955106C6B50E053')
+				String sql = "select  distinct c.version from NC_COMPONENT_table c where c.analysis in (select distinct nal.nc_test_condition from nc_analysis_list nal, nc_task_addunion nta where nal.nc_analysis_name = nta.nc_task_addname and pk_task_addunion = '"+ taskHBodyVO.getUnique() +"')";
+				
+				Object o = iUAPQueryBS.executeQuery(sql,new ColumnProcessor());
+				if( o == null ){
+					versionSql = " order by cast(NC_TESTLIST_COMP.result_order_no as integer) " ;
+				}else{
+					versionSql = " and NC_COMPONENT_table.Version = (select max(c.version) from NC_COMPONENT_table c where c.ANALYSIS = NC_COMPONENT_table.ANALYSIS) order by cast(NC_TESTLIST_COMP.result_order_no as integer)";
+				}
+				
 				List<Map<String, String>> custlists = (List<Map<String, String>>) iUAPQueryBS
 						.executeQuery(
 								"select DISTINCT nc_component_table.pk_component_table,NC_TESTLIST_COMP.result_order_no, trim(analysis.name) as ananame,trim(NC_COMPONENT_table.nc_component_name) as nc_component_name,trim(NC_RESULT_TYPE.nc_result_code) as nc_result_code,  NC_TESTLIST_COMP.pk_list_table, NC_TESTLIST_COMP.NC_TESTCOMP_NAME,NC_TESTLIST_COMP.OPTIONAL,NC_TESTLIST_COMP.REPORTABLE,"
@@ -290,7 +305,7 @@ public class TaskBodyAddLineAction extends BodyAddLineAction {
 										+ "' )) AND NC_TESTLIST_NAME = (select DISTINCT TRIM(NC_TESTLIST_NAME) NC_TESTLIST_NAME "
 										+ " from nc_task_addunion where pk_task_addunion='"
 										+ taskHBodyVO.getUnique()
-										+ "' ) order by cast(NC_TESTLIST_COMP.result_order_no as integer)",
+										+ "' )  " + versionSql,
 								new MapListProcessor());
 				if (custlists != null && custlists.size() > 0) {
 					

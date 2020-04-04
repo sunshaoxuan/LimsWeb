@@ -114,13 +114,19 @@ public class WriteBackMediator {
 			Logger.error("LIMS SQL WRITE BACK start:"+new UFDateTime().toStdString()+"--------------------------------");
 			for(String sql : rsList){
 				Logger.error(sql);
+				Logger.debug(sql);
+			}
+			ITaskMaintain taskMaintain = NCLocator.getInstance().lookup(ITaskMaintain.class);
+			String updateLimsValue[][] = {{"RESULT_NUMBER","RESULT"},{"TEST_NUMBER","TEST"},{"SAMPLE_NUMBER","SAMPLE"},{"SEQ_NUM","C_PROJ_PARA_A"},{"SEQ_NUM","C_PROJ_TASK_PARA_B"},{"SEQ_NUM","C_PROJ_LOGIN_SAMPLE"},{"SEQ_NUM","C_PROJ_TASK"},{"APPROVAL_ID","APPROVAL"}};
+			for(int i=0;i<updateLimsValue.length;i++){
+				taskMaintain.updatelimsflag(updateLimsValue[i][0],updateLimsValue[i][1]);
 			}
 			Logger.error("LIMS SQL WRITE BACK end:"+new UFDateTime().toStdString()+"--------------------------------");
 		}
 		
-		/*if(rsList.size() > 0) {
+		if(rsList.size() > 0) {
 			throw new  BusinessException("test");
-		}*/
+		}
 		
 		return rsList;
 		

@@ -185,10 +185,14 @@
 				<!-- 提供了一组默认实现 -->
 				<bean class="nc.ui.qcco.commission.action.SelectAllLineAction" />
 				<bean class="nc.ui.qcco.commission.action.SelectNoneLineAction" />
-				<bean class="nc.ui.pubapp.uif2app.components.grand.action.GrandBodyAddLineAction" >
+				<bean class="nc.ui.qcco.commission.action.GrandAddLineAction" >
 					<property name="mainForm" ref="billForm" />
 				</bean>
-				<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />
+				<!--<bean class="nc.ui.pubapp.uif2app.actions.BodyInsertLineAction" />-->
+				<!-- 提供了一组默认实现 -->
+				<bean class="nc.ui.qcco.commission.action.GrandInsertLineAction">
+					<constructor-arg ref="billForm" />
+				</bean>
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyDelLineAction" />
 				<bean class="nc.ui.pubapp.uif2app.actions.BodyCopyLineAction" />
 				<!-- <bean class="nc.ui.pubapp.uif2app.actions.BodyPasteLineAction" >

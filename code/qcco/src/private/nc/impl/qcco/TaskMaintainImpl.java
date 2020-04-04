@@ -11,6 +11,7 @@ import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
+import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.hr.utils.InSQLCreator;
 import nc.impl.pub.ace.AceTaskPubServiceImpl;
@@ -47,6 +48,32 @@ private BaseDAO dao = null;
 		}
 		return dao;
 	}
+	
+	public void updatelimsflag(String pk,String tableName){
+		int i = -1;
+		try {
+			//Integer newIcr = (Integer)getDao().executeQuery("select value+1 from increments i where  (upper(i.type) = upper('"+ tableName +"')) or (upper(i.name) = upper('"+ tableName +"') and (upper(i.type) = upper('KEY_NUM') or upper(i.type) = upper('table') ))",new ColumnProcessor());
+			Integer newIcr = (Integer)getDao().executeQuery("select max("+ pk +") from " + tableName,new ColumnProcessor());
+			i = getDao().executeUpdate("update increments i set i.value="+ newIcr + " where (upper(i.type) = upper('"+ tableName +"')) or (upper(i.name) = upper('"+ tableName +"') and (upper(i.type) = upper('KEY_NUM') or upper(i.type) = upper('table') ))");
+		} catch (DAOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		//return i;
+	}
+	
+	
+	@Override
+	public void cleanTaskTempSaveTaskid(String taskid) {
+		// TODO 自动生成的方法存根
+		int i = -1;
+		try{
+			i = getDao().executeUpdate("delete from qc_task_b b where b.taskcode like '" + taskid + "%'");
+		}catch(DAOException e){
+			e.printStackTrace();
+		}
+	}
+
 	/*@Override
 	public void delete(AggTaskHVO[] clientFullVOs,
 			AggTaskHVO[] originBills) throws BusinessException {
@@ -203,6 +230,7 @@ private BaseDAO dao = null;
 				commissionPkSet.add(hvo.getPrimaryKey());
 			}
 			InSQLCreator insql = new InSQLCreator();
+			
 	        String pkInSQL = insql.getInSQL(commissionPkSet.toArray(new String[0]));
 	        String delHSql = " update qc_task_h set dr = 1 "
 	        		+" where pk_commission_h in ("+pkInSQL+") ";
@@ -227,6 +255,7 @@ private BaseDAO dao = null;
 	        		+" where pk_commission_h in ("+pkInSQL+") "
 	        		+" ))";
 	        getDao().executeUpdate(delSSql);
+	        
 		}
 
 	}
@@ -265,6 +294,7 @@ private BaseDAO dao = null;
 		String pk_commission_h = aggvo.getParentVO().getPk_commission_h();
 		String unApproveSql = new WriteBackMediator().getLIMSCancelSQL(pk_commission_h);
 		getDao().executeUpdate(unApproveSql);
+		getDao().executeUpdate("delete from project p where p.name ='" + aggvo.getParentVO().getBillno() + "'");
 	}
 	
 	@Override
@@ -385,21 +415,21 @@ private BaseDAO dao = null;
 											calResultDouble = 0.0d;
 											Logger.info(e);
 										}
+										String updateSql = null;
 										//计算型,转换成小时单位 根据测试条件项的主键,查询测试条件的原始单位
 										if(svo.getPk_valuetype()!=null && typeOfcal!=null && svo.getPk_valuetype().equals(typeOfcal)){
 											String unit = pk2unitMap.get(svo.getPk_testconditionitem_back());
 											resultReal = String.valueOf(utils.changeTime2H(String.valueOf(calResultDouble), unit));
+											svo.setUnit("h");
+											updateSql = "update qc_task_s set unit = 'h' where pk_task_s = '"+svo.getPk_task_s()+"'";
+											updateSqlSet.add(updateSql);
 										}else{
 											resultReal = String.valueOf(calResultDouble);
 										}
 										svo.setTextvalue(String.valueOf(resultReal));
-										svo.setUnit("h");
 										svo.setFormatted_entry(String.valueOf(resultReal));
-										String updateSql = "update qc_task_s set textvalue = '"+String.valueOf(resultReal)
+										updateSql = "update qc_task_s set textvalue = '"+String.valueOf(resultReal)
 												+"' where pk_task_s = '"+svo.getPk_task_s()+"'";
-										updateSqlSet.add(updateSql);
-										
-										updateSql = "update qc_task_s set unit = 'h' where pk_task_s = '"+svo.getPk_task_s()+"'";
 										updateSqlSet.add(updateSql);
 										
 										updateSql = "update qc_task_s set formatted_entry = '"+String.valueOf(resultReal)
