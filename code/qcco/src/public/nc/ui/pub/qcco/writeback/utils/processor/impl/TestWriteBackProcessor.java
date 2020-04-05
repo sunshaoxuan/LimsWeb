@@ -22,8 +22,11 @@ import nc.ui.pub.qcco.writeback.utils.processor.ISecWriteBackProcessor;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.lang.UFDateTime;
+import nc.vo.qcco.commission.CommissionBVO;
+import nc.vo.qcco.commission.CommissionRVO;
 import nc.vo.qcco.task.TaskBVO;
 import nc.vo.qcco.task.TaskHVO;
+import nc.vo.qcco.task.TaskRVO;
 
 /**
  * test第一次和第二次回写
@@ -239,17 +242,17 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 		// 拆分温度字段
 		String[] stages = String.valueOf(sampleGroup.getAttributeValue("product_stage")).split(",");
 		//二级分类
-		String c_prod_type_c1 = String.valueOf(processData.getProject().getAttributeValue("c_prod_type_c1"));
+		/*String c_prod_type_c1 = String.valueOf(processData.getProject().getAttributeValue("c_prod_type_c1"));
 		//description
 		String description = String.valueOf(sampleGroup.getAttributeValue("product_series"));
 		//production_spec
 		String production_spec = String.valueOf(sampleGroup.getAttributeValue("production_spec"));
 		//product_standard
-		String product_standard = String.valueOf(sampleGroup.getAttributeValue("product_standard"));
+		String product_standard = String.valueOf(sampleGroup.getAttributeValue("product_standard"));*/
 		// ORDER_NUMBER
 		int orderNum = (taskList == null ? 1 : taskList.size() + 1);
 		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-		String analysisSql = "SELECT DISTINCT pgs.ANALYSIS analysis_name "
+		/*String analysisSql = "SELECT DISTINCT pgs.ANALYSIS analysis_name "
 				+" FROM product p,  product_grade pg, prod_grade_STAGE pgs "
 				+" WHERE p.c_prod_type_c1 LIKE '"+c_prod_type_c1+"' "
 				+" AND p.description = '"+description+"' "
@@ -261,10 +264,18 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 				+" AND pgs.product = p.name "
 				+" AND pgs.sampling_point = pg.sampling_point "
 				+" AND pgs.GRADE = pg.grade "
-				+" AND pgs.product = '"+product_standard+"' ";
+				+" AND pgs.product = '"+product_standard+"' ";*/
 		
-		//ANALYSIS
-		String analysis = (String)bs.executeQuery(analysisSql, new ColumnProcessor());
+		//ANALYSIS mod 改为直接从孙表获取 2020年4月5日14:40:2
+		String analysis = null;
+		ISuperVO[] bvos = processData.getAggCommissionHVO().getChildren(CommissionBVO.class);
+		if(bvos!=null && bvos.length > 0){
+			CommissionRVO[] rvos = ((CommissionBVO)processData.getAggCommissionHVO().getChildren(CommissionBVO.class)[0]).getPk_commission_r();
+			if(rvos!=null && rvos.length > 0){
+				analysis = rvos[0].getAnalysisname();
+			}
+		}
+		
 		//analysis_method
 		String analysis_method = (String)bs.executeQuery(
 				"select t_analysis_method from analysis where name = '"+String.valueOf(analysis)+"'", 
@@ -411,16 +422,16 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 		// 拆分温度字段
 		String[] stages = String.valueOf(sampleGroup.getAttributeValue("product_stage")).split(",");
 		// 二级分类
-		String c_prod_type_c1 = String.valueOf(processData.getProject().getAttributeValue("c_prod_type_c1"));
+		/*String c_prod_type_c1 = String.valueOf(processData.getProject().getAttributeValue("c_prod_type_c1"));
 		// description
 		String description = String.valueOf(sampleGroup.getAttributeValue("product_series"));
 		// production_spec
 		String production_spec = String.valueOf(sampleGroup.getAttributeValue("production_spec"));
 		// product_standard
-		String product_standard = String.valueOf(sampleGroup.getAttributeValue("product_standard"));
+		String product_standard = String.valueOf(sampleGroup.getAttributeValue("product_standard"));*/
 		// ORDER_NUMBER
 		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
-		String analysisSql = "SELECT DISTINCT pgs.ANALYSIS analysis_name "
+		/*String analysisSql = "SELECT DISTINCT pgs.ANALYSIS analysis_name "
 						+" FROM product p,  product_grade pg, prod_grade_STAGE pgs "
 						+" WHERE p.c_prod_type_c1 LIKE '"+c_prod_type_c1+"' "
 						+" AND p.description = '"+description+"' "
@@ -432,10 +443,17 @@ public class TestWriteBackProcessor implements IFirstWriteBackProcessor, ISecWri
 						+" AND pgs.product = p.name "
 						+" AND pgs.sampling_point = pg.sampling_point "
 						+" AND pgs.GRADE = pg.grade "
-						+" AND pgs.product = '"+product_standard+"' ";
+						+" AND pgs.product = '"+product_standard+"' ";*/
 				
-		//ANALYSIS
-		String analysis = (String)bs.executeQuery(analysisSql, new ColumnProcessor());
+		//ANALYSIS mod 从孙表直接取
+		String analysis = null;
+		ISuperVO[] bvos = processData.getAggTaskHVO().getChildren(TaskBVO.class);
+		if(bvos!=null && bvos.length > 0){
+			TaskRVO[] rvos = ((TaskBVO)processData.getAggTaskHVO().getChildren(TaskBVO.class)[0]).getPk_task_r();
+			if(rvos!=null && rvos.length > 0){
+				analysis = rvos[0].getAnalysisname();
+			}
+		}
 		//analysis_method
 		String analysis_method = (String) bs.executeQuery(
 				"select t_analysis_method from analysis where name = '" + String.valueOf(analysis) + "'", new ColumnProcessor());

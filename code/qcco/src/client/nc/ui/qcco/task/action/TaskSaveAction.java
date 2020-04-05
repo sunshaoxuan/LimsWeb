@@ -11,6 +11,7 @@ import nc.bs.uif2.BusinessExceptionAdapter;
 import nc.bs.uif2.IActionCode;
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
+import nc.impl.qcco.TaskMaintainImpl;
 import nc.itf.qcco.ITaskMaintain;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.MapListProcessor;
@@ -27,12 +28,14 @@ import nc.util.mmpub.dpub.gc.GCClientBillCombinServer;
 import nc.util.mmpub.dpub.gc.GCClientBillToServer;
 import nc.util.mmpub.dpub.gc.GCPseudoColUtil;
 import nc.vo.pub.BusinessException;
+import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskBVO;
+import nc.vo.qcco.task.TaskRVO;
 import nc.vo.qcco.task.TaskSVO;
 
 public class TaskSaveAction extends DifferentVOSaveAction {
@@ -90,6 +93,8 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
 		
+		
+		
 		this.billFormEditor.getBillCardPanel().stopEditing();
 		AggTaskHVO agghvo = (AggTaskHVO)this.getBillForm().getValue();
 		AggTaskHVO origanVO= (AggTaskHVO)getModel().getSelectedData();
@@ -116,7 +121,7 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 		showSuccessInfo();
 	}
 	
-	
+
 	
 
 	@Override
@@ -131,12 +136,14 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 
 	    IBill[] afterUpdateVOs = null;
 
-
+	    
 
 	    if (getService() == null) {
 	      throw new BusinessException("service不能为空。");
 	    }
 	    afterUpdateVOs = getService().insert(lightVOs);
+	    
+
 
 		// tank 更新单据状态 2019年9月9日14:45:32
 		if (afterUpdateVOs != null && afterUpdateVOs.length > 0) {
@@ -168,13 +175,15 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 
 	    IBill[] afterUpdateVOs = null;
 
-
+	    
 
 	    if (getService() == null) {
 	      throw new BusinessException("service不能为空。");
 	    }
 	    afterUpdateVOs = getService().update(lightVOs);
 
+
+	    
 		// tank 更新单据状态 2019年9月9日14:45:32
 		if (afterUpdateVOs != null && afterUpdateVOs.length > 0) {
 			for (IBill bill : afterUpdateVOs) {
@@ -218,7 +227,7 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 			}
 		}
 	}
-	
+
 
 	@SuppressWarnings("unchecked")
 	private void validateGrand(Object value) throws BusinessExceptionAdapter{
@@ -282,10 +291,19 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 										String typeName = typePk2NameMap.get(svo.getPk_valuetype());
 										if("数值".equals(typeName)||"计算型".equals(typeName)){
 											try{
-												Double.parseDouble(svo.getTextvalue().toString());
+												if(svo.getTextvalue()!=null){
+													Double.parseDouble(svo.getTextvalue().toString());
+												}
+												if(svo.getMax_limit()!=null){
+													Double.parseDouble(svo.getMax_limit().toString());
+												}
+												if(svo.getMin_limit()!=null){
+													Double.parseDouble(svo.getMin_limit().toString());
+												}
+												
 											}catch(Exception e){
 												throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],测试条件项:["+svo.getPk_testconditionitem()
-														+"],必须为数字!"));
+														+"],文本值或最大（小）值必须为数字!"));
 											}
 										}
 									}
@@ -294,6 +312,29 @@ public class TaskSaveAction extends DifferentVOSaveAction {
 											&& svo.getPk_refvalue()!=null && !"".equals(svo.getPk_refvalue())){
 										throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],测试条件项:["+svo.getPk_testconditionitem()
 												+"],参照和文本不能同时有值!"));
+									}
+								}
+							}
+							TaskRVO[] rvos =  bvo.getPk_task_r();
+							for(TaskRVO rvo : rvos){
+								if(rvo!=null){
+									//计算型值和数值型值,只能为数字
+									if( rvo.getPk_valuetype()!=null && typePk2NameMap.get(rvo.getPk_valuetype())!=null){
+										String typeName = typePk2NameMap.get(rvo.getPk_valuetype());
+										if("数值".equals(typeName)||"计算型".equals(typeName)){
+											try{
+												if(rvo.getStdmaxvalue()!=null){
+													Double.parseDouble(rvo.getStdmaxvalue().toString());
+												}
+												if(rvo.getStdminvalue()!=null){
+													Double.parseDouble(rvo.getStdminvalue().toString());
+												}
+												
+											}catch(Exception e){
+												throw new BusinessExceptionAdapter(new BusinessException("任务:["+bvo.getTestitem()+"],参数数项:["+rvo.getAttributeValue("component")
+														+"],最大（小）值必须为数字!"));
+											}
+										}
 									}
 								}
 							}

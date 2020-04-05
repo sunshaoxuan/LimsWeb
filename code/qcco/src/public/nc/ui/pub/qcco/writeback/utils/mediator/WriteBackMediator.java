@@ -21,18 +21,18 @@ import nc.vo.pub.lang.UFLiteralDate;
 import nc.vo.qcco.commission.CommissionHVO;
 
 public class WriteBackMediator {
-
+	
 	public String getLIMSCancelSQL(String pk_commission_h) throws BusinessException{
 		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 		CommissionHVO hvo = (CommissionHVO)bs.retrieveByPK(CommissionHVO.class, pk_commission_h);
 		return "update project set C_NC_TO_LIMS = 'F' where name = '"+hvo.getBillno()+"'";
 	}
-
-
-
+	
+	
+	
 	synchronized public List<String> getLIMSSQL(String pk_commission_h) throws BusinessException {
 		List<String> rsList = new ArrayList<>();
-
+		
 		if(!StringUtils.isEmpty(pk_commission_h)){
 			CommonUtils utils = new CommonUtils();
 			WriteBackProcessData data = new WriteBackProcessData(pk_commission_h);
@@ -64,15 +64,15 @@ public class WriteBackMediator {
 			//审批信息表-子表+主表
 			IFirstWriteBackProcessor approvalProcessor = new ApprovalInfoWriteBackProcessor();
 			approvalProcessor.setUtils(utils);
-
-
+			
+			
 			//静态资源初始化 -- 这两句话不能删除,虽然没有任何引用,是用于static代码块初始化
 			@SuppressWarnings("unused")
 			FirstWriteBackStaticMaping fm = new FirstWriteBackStaticMaping();
 			@SuppressWarnings("unused")
 			SecWriteBackStaticMaping sm = new SecWriteBackStaticMaping();
-
-
+			
+			
 			//委托单主表回写
 			projectProcessor.processFirst(data);
 			// 样品组回写
@@ -91,7 +91,7 @@ public class WriteBackMediator {
 			resultProcessor.processFirst(data);
 			// 审批表信息(主子表)回写
 			approvalProcessor.processFirst(data);
-
+			
 			// sample第二次回写
 			sampleProcessor.processSec(data);
 			// test第二次回写
@@ -102,12 +102,12 @@ public class WriteBackMediator {
 			paraAProcessor.processSec(data);
 			//实验后参数二次回写
 			paraBProcessor.processSec(data);
-
-
-
+			
+			
+			
 			rsList.addAll(utils.toLIMSSQL());
-
-
+			
+			
 		}
 		//XXX : for test
 		if(rsList!=null && rsList.size() > 0){
@@ -117,34 +117,34 @@ public class WriteBackMediator {
 			}
 			Logger.error("LIMS SQL WRITE BACK end:"+new UFDateTime().toStdString()+"--------------------------------");
 		}
-
+		
 		/*if(rsList.size() > 0) {
 			throw new  BusinessException("test");
 		}*/
-
+		
 		return rsList;
-
-
+		
+		
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
