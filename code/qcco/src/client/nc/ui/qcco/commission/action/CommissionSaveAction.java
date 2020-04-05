@@ -19,6 +19,7 @@ import nc.bs.uif2.validation.ValidationException;
 import nc.itf.qcco.ITaskMaintain;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.ColumnProcessor;
+import nc.jdbc.framework.processor.MapListProcessor;
 import nc.ui.bd.ref.AbstractRefModel;
 import nc.ui.pub.beans.MessageDialog;
 import nc.ui.pub.bill.BillCardPanel;
@@ -36,6 +37,7 @@ import nc.ui.qcco.commission.refmodel.RatainHandleRefModel;
 import nc.ui.qcco.commission.refmodel.SafeTypeRefModel;
 import nc.ui.qcco.commission.refmodel.TestRequirementRefModel;
 import nc.ui.qcco.commission.refmodel.TestTypeRefModel;
+import nc.ui.qcco.utils.CommisionUtils;
 import nc.ui.uap.sf.SFClientUtil;
 import nc.ui.uif2.IShowMsgConstant;
 import nc.ui.uif2.ShowStatusBarMsgUtil;
@@ -48,10 +50,13 @@ import nc.vo.pub.BusinessException;
 import nc.vo.pub.ISuperVO;
 import nc.vo.pub.VOStatus;
 import nc.vo.pub.lang.UFDateTime;
+import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.qcco.commission.AggCommissionHVO;
+import nc.vo.qcco.commission.CommissionBVO;
 import nc.vo.qcco.commission.CommissionCVO;
 import nc.vo.qcco.commission.CommissionHVO;
+import nc.vo.qcco.commission.CommissionRVO;
 import nc.vo.qcco.task.AggTaskHVO;
 import nc.vo.qcco.task.TaskHVO;
 
@@ -99,6 +104,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 	public void doAction(ActionEvent e) throws Exception {
 		this.billFormEditor.getBillCardPanel().stopEditing();
 		AggCommissionHVO agghvo = (AggCommissionHVO) this.getBillForm().getValue();
+		
 		if (null == agghvo) {
 			return;
 		}
@@ -503,10 +509,65 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 		if (validationService != null) {
 			try {
 				validationService.validate(value);
+				//校验类型
+				validateValueType(value);
 			} catch (ValidationException e) {
 				throw new BusinessExceptionAdapter(e);
 			}
 		}
+	}
+	/**
+	 * 校验类型
+	 * @param value
+	 */
+	private void validateValueType(Object value) {
+		if(value==null){
+			return ;
+		}
+		//值类型
+		IUAPQueryBS bs = NCLocator.getInstance().lookup(IUAPQueryBS.class);
+		Map<String,String> typePk2NameMap = new HashMap<>();
+		try {
+			List<Map<String,String>> rsList = 
+					(List<Map<String,String>>)bs.executeQuery("select nc_result_namecn, pk_result_type  from nc_result_type ",new MapListProcessor());
+			if(rsList!=null && rsList.size() > 0){
+				for(Map<String,String> map : rsList){
+					typePk2NameMap.put(map.get("pk_result_type"), 
+							map.get("nc_result_namecn")==null?null:map.get("nc_result_namecn").replaceAll(" ", ""));
+				}
+			}
+		} catch (BusinessException e) {
+			ExceptionUtils.wrappException(e);
+		}
+		if(value instanceof AggCommissionHVO){
+			AggCommissionHVO aggvo = (AggCommissionHVO)value;
+			ISuperVO[] bvos = aggvo.getChildren(CommissionBVO.class);
+			if(bvos!=null && bvos.length > 0){
+				for(ISuperVO bvo : bvos){
+					CommissionBVO cbvo = (CommissionBVO)bvo;
+					CommissionRVO[] rvos = cbvo.getPk_commission_r();
+					if(rvos!=null && rvos.length > 0){
+						for(CommissionRVO rvo : rvos){
+							if(rvo.getPk_valuetype()!=null && typePk2NameMap.get(rvo.getPk_valuetype())!=null){
+								String typeName = typePk2NameMap.get(rvo.getPk_valuetype());
+								if("数值".equals(typeName)||"计算型".equals(typeName)){
+									try{
+										Double.parseDouble(rvo.getStdmaxvalue().toString());
+										Double.parseDouble(rvo.getStdminvalue().toString());
+									}catch(Exception e){
+										
+										throw new BusinessExceptionAdapter(new BusinessException("样品行:["+cbvo.getRowno()+"],参数行:["+rvo.getRowno()
+												+"],最大（小）值必须为数字!"));
+									}
+								}
+							}
+							
+						}
+					}
+				}
+			}
+		}
+		
 	}
 
 	private void changeTemplet(String typeName, BillCardPanel billCardPanel) {
