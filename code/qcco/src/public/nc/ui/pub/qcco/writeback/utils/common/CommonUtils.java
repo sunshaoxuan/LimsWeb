@@ -122,6 +122,7 @@ public class CommonUtils {
                     rs.add(startNum + i);
                 }
             }
+            
         }
         return rs;
     }
@@ -147,6 +148,7 @@ public class CommonUtils {
                 }
             }
         }
+        
         return rs;
     }
 
@@ -178,6 +180,7 @@ public class CommonUtils {
                 }
             }
         }
+        
         return rs;
     }
 	
@@ -923,7 +926,7 @@ public class CommonUtils {
 	public Map<String, Object> getCompoentByAnalysisAndName(String analysis, String name) throws DAOException {
 		if(analysis!=null){
 			if(analysisNameToTestComponent.containsKey(analysis+"::"+name)){
-				return analysisNameToTestComponent.get(analysis+"::"+name);
+				return analysisNameToTestComponent.get(analysis+"::"+name)==null?new HashMap<String, Object>():analysisNameToTestComponent.get(analysis+"::"+name);
 			}else{
 				String sql = "select COMPONENT.* from COMPONENT "
 						+" left join ANALYSIS analysis on analysis.name = component.analysis  "
