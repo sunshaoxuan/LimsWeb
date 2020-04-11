@@ -550,7 +550,7 @@ public class CommissionSaveAction extends DifferentVOSaveAction {
 						for(CommissionRVO rvo : rvos){
 							if(rvo.getPk_valuetype()!=null && typePk2NameMap.get(rvo.getPk_valuetype())!=null){
 								String typeName = typePk2NameMap.get(rvo.getPk_valuetype());
-								if("数值".equals(typeName)||"计算型".equals(typeName)){
+								if(rvo.getStdmaxvalue()!=null && ("数值".equals(typeName)||"计算型".equals(typeName))){
 									try{
 										Double.parseDouble(rvo.getStdmaxvalue().toString());
 										Double.parseDouble(rvo.getStdminvalue().toString());
