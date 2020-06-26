@@ -1,0 +1,512 @@
+declare routineName
+routineName = "C_VWF_NCUSTOMER_MAIN_TAB3_CLICK"
+
+' ====================================================================================
+' Abstract:
+'        
+'
+' Inputs:
+'   Context:
+'        
+'   Variables (inc global):
+'        
+' Outputs:
+'   Context:
+'        
+'   Variables:
+'        
+'
+' Change History:
+' Date				By					Reason
+' 17-Feb-2017		egbert.ge		Initial_version
+' 26-Aug-2017       sheny			确认报告注释了验证满意度
+' ====================================================================================
+
+projectName = vwselectedrowvalue
+IF (IsEmpty(projectName)) THEN 
+	RETURN 
+ENDIF 
+'Breakpoint(aReason) 
+IF (vwelementname = "LABEL1") THEN 
+	'Breakpoint(aReason) 
+	setLableArray[1] = "当前模式：不显示测试数据及并行运行数据，点击切换"
+	setLableArray[2] = "当前模式：显示测试数据及并行运行数据，点击切换"
+	IF (setlable = setLableArray[1]) THEN 
+		status  = SetGlobalVariable("globalCondition", setLableArray[2]) 
+	ELSE 
+		status  = SetGlobalVariable("globalCondition", setLableArray[1]) 
+	ENDIF 
+	status = RefreshVisualWorkflow(, ) 
+ENDIF 
+
+if (vwselectedrowindex  = "1" ) then
+	'点击第一列打开 project
+
+	templateName = select project.templte
+				where name = projectName
+				order by name
+	status = OpenProjectManager(templateName, projectName)
+ELSEIF (vwselectedrowindex  = "11") then
+	msgString = "委托单号：" + projectName  + "<br>"
+	qry = "SELECT approval_group, max(approval_id) from APPROVAL WHERE RECORD_KEY = '" + projectName + "' group by approval_group"
+	status = ClearArray("reason")
+	status = SQL(qry,"reason") 
+	qry1 = "SELECT CANCELED_REASON,approval_group,APPROVAL_start from APPROVAL WHERE APPROVAL_ID = '" + reason[1,2] + "'"
+	'Breakpoint(aReason) 
+	status = ClearArray("reason1") 
+	status = SQL(qry1,"reason1") 
+	'Breakpoint(aReason) 
+	msgString = msgString + "驳回原因：" +reason1[1,1] + "<br>" + "驳回人：" + reason1[1,2]  + "<br>" + "驳回时间：" + reason1[1,3] 
+	MsgboxHtml(msgString) 
+ELSEIF (vwselectedrowindex  = "2" ) then
+	'点击第二列预览委托单PDF
+	
+	' 		projectName = select project.name
+	Filedir = GetConstant("C_REVIEW_ORDER_REPORT_DIR")
+
+	IF (IsEmpty(Filedir)) THEN 
+		MsgBox("报告生成路径错误，请联系系统管理员") 
+		RETURN 
+	ENDIF  
+	part = Right(Filedir,1) 
+	IF (part <> "\") THEN 
+		Filedir = Filedir & "\"
+	ENDIF 
+
+	fileName = Filedir & projectName & ".pdf"	
+	status = FileExists(fileName) 
+	IF (status) THEN 
+		title = "委托单已经存在是否重新生成"
+		answer = PromptForYesNo(title)
+		IF (answer = "No") THEN 
+			status = ShellCommand(fileName, , , )
+			RETURN 
+		ENDIF 
+	ENDIF 
+
+	status = FileKill(fileName, )
+
+	reportName = "C_PROJECTREVIEW"
+	argArray[1] = "PROJECT.NAME" 
+	valArray[1] = projectName
+	status = OpenProgressDialog("报告","报告生成中，请稍等...","F","F")
+	status = RunReport(reportName,argArray,valArray,fileName,,,1) 
+
+	status = CloseProgressDialog()
+	status = ShellCommand(fileName, , , )
+
+	RETURN 
+
+ELSEIF (vwselectedrowindex = "5") THEN
+	'查看报价单
+	status = ClearArray("Listarray")
+	IF (vwselectedrowcolumnvalue = "查看") THEN
+		selectedAction = "查看"
+	ELSE
+		Listarray[1] = "查看"
+		Listarray[2] = "确认"
+		selectedAction = SelectFromArray(Listarray, "")
+	ENDIF
+
+	IF (selectedAction = "查看") then
+		' 		Breakpoint(aReason)
+		' 		projectName = parametervalue
+		IF (IsEmpty(projectName)) THEN
+			RETURN
+		ENDIF
+		Filedir = GetConstant("C_REVIEW_QUOTES_REPORT_DIR")
+		IF (IsEmpty(Filedir)) THEN
+			MsgBox("报价单路径错误，请联系系统管理员")
+			RETURN
+		ENDIF
+		part = Right(Filedir,1)
+		IF (part <> "\") THEN
+			Filedir = Filedir & "\"
+		ENDIF
+
+		fileName = Filedir & projectName & ".pdf"	
+		status = FileExists(fileName)
+		IF (status) THEN
+			status = ShellCommand(fileName, , , )
+		ELSE
+			MsgBox("报价单未找到，请联系项目主管重新生成。")
+			RETURN
+		ENDIF
+	ELSEIF (selectedAction = "确认") then
+		' 		Breakpoint(aReason)
+		title = "是否确认报价单？"
+		answer = PromptForYesNo(title)
+		' 	Breakpoint(aReason)
+		IF (answer = "Yes") THEN
+			nowDatetime = DateTime()
+			timeStamp = OdbcDateTimeStamp(nowDatetime)
+			updateQry = "update project set c_quotes_verifyed = 'T' ,c_quotes_verifyed_on = "+timeStamp+",c_quotes_verifyed_by = '"+ USER +"'"
+			updateQry = updateQry +" WHERE NAME = '"+ projectName +"' "
+			status = sql(updateQry)
+			status = sql("COMMIT")		
+			'报价单确认日志
+			'计算有几个任务
+			taskCountSql = "select seq_num from c_proj_task where project = '" + ProjectName + "'"
+			status = ClearArray("taskSeqArr") 
+			status = SQL(taskCountSql, "taskSeqarr") 
+			'下一操作人
+			'操作时间：查出样品管理员
+			status = ClearArray("sampleAdminArr") 
+			sampleAdminSql = " select user_name from user_role where user_role like 'R_SAMPLE%' and primary_role = 'T' "
+			status = SQL(sampleAdminSql, "sampleAdminArr") 
+			sampleAdmin = ""
+			FOR i = 1 TO UBound(sampleAdminArr, 1)  STEP 1 
+				sampleAdmin = sampleAdmin + sampleAdminArr[i,1]
+				IF (i > 1 AND i < UBound(sampleAdminArr, 1) ) THEN 
+					sampleAdmin = sampleAdmin + "/"
+				ENDIF 
+			NEXT 
+			'循环写入日志
+			FOR i = 1 TO UBound(taskSeqarr, 1)  STEP 1
+				'操作人
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_QUOTESIGNATURE_BY", USER, "T") 
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_QUOTESIGNATURE_DATE", DateTime(), "T") 
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_NEXT_PERSON", sampleAdmin , "T") 
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_CURRENT_PROCESS", "样品接收" , "T") 
+			NEXT 
+			status = RefreshVisualWorkflow()
+		ENDIF
+	ELSE
+		RETURN
+	ENDIF	
+
+ELSEIF  (vwselectedrowindex = "8") THEN
+	'查看或者下载最终报告
+	'Breakpoint(aReason) 
+	status = ClearArray("Listarray")
+	IF (vwselectedrowcolumnvalue = "下载报告") THEN		
+		selectedAction = "查看"
+	ELSEIF (vwselectedrowcolumnvalue = "查看&驳回") THEN
+		Listarray[1] = "查看"
+		Listarray[2] = "驳回"
+		selectedAction = SelectFromArray(Listarray, "")
+	ELSE 
+		RETURN 
+	ENDIF 
+	' 	Breakpoint(aReason) 
+
+
+	IF (isempty(selectedAction)) THEN 
+		RETURN 
+	ENDIF 
+	' 	destination = PromptForDirectory("请选择存放目录")
+	' 	IF (dialogCanceled) THEN 
+	' 		RETURN 
+	' 	ENDIF 
+	' 	MsgBox(selectedAction) 
+	ProjectCOAFormat = select project.C_COA_FORMAT
+				where name = projectName 
+				order by name
+	Breakpoint(aReason) 
+	IF (selectedAction = "查看") THEN
+		IF (ProjectCOAFormat = "成套") THEN
+			'成套报告的查看
+			' 		MsgBox("需要打开Project中的C_REPORT_NUMBER") 
+			projectReportNumber = select project.c_rpt_report_number
+						where name = projectName 
+						order by name
+			IF (IsEmpty(projectReportNumber)) THEN 
+				MsgBox("报告文件丢失，请联系实验室重新生成") 
+				RETURN 
+			ENDIF 
+			reportDir = select reports.report_file_name
+						where report_number = projectReportNumber
+						order by report_number 
+			
+			IF (NotEmpty(reportDir)) THEN 
+				
+				status = ShellCommand(reportDir, , , )
+			ELSE 
+				MsgBox("报告文件丢失，请联系实验室重新生成")
+				RETURN 
+			ENDIF 
+
+		ELSEIF (ProjectCOAFormat = "单项") THEN 
+			status = ClearArray("TaskReportArray")
+			status = ClearArray("selectionArrayName") 
+			title = "请选择单项报告"
+			headerArray[1] = "任务ID"
+			headerArray[2] = "任务名称"	
+			headerArray[3] = "任务名称"
+			headerArray[4] = "报告结论"
+			QRY = "SELECT TASK_ID,ANALYSIS,task_reported_name,conclusion,seq_num,report_number from C_PROJ_TASK "
+			QRY = QRY & " WHERE PROJECT = '"+ projectName  +"' and rpt_authorized = 'T' order by order_number"
+			status = sql(qry,"TaskReportArray")
+			numSelections = MultiColumnSelectFromArray(TaskReportArray, title, "selectionArrayName", headerArray)
+
+			IF (numSelections > 1) THEN
+				MsgBox("请选择单个任务查看报告") 
+				RETURN 
+			ENDIF 
+
+			FOR i = 1 to numSelections
+				taskReportNumber = selectionArrayName[i,6]
+				taskID = selectionArrayName[i,1]
+								reportDir = select reports.report_file_name
+											where report_number = taskReportNumber
+											order by report_number 
+				' 				Breakpoint(aReason) 
+				' 				report_qry = "select reports.report_file_name from reports where report_number = " + taskReportNumber 
+				' 				status = ClearArray("report_array") 
+				' 				status = SQL(report_qry, "report_array") 
+				' 				reportDir = report_array[1,1]
+				' 				status = FileExists(reportDir) 
+				IF (status) THEN
+					' 					destinationFileName = destination & "\" & taskID & ".pdf"
+					' 					status = FileCopy(reportDir, destinationFileName) 
+					status = ShellCommand(reportDir, , , )
+
+				ELSE 
+					MsgBox("报告文件丢失，请联系实验室重新生成")
+					RETURN 
+				ENDIF 			
+			NEXT 
+
+		ELSE 
+		ENDIF 
+		
+	ELSEIF (selectedAction = "驳回") THEN
+		IF (ProjectCOAFormat = "成套") THEN
+			'成套报告的查看
+			' 		MsgBox("需要打开Project中的C_REPORT_NUMBER")
+			title = "请输入退回意见"			
+			ans = PromptForLongText(title, , 500) 
+			IF (IsEmpty(ans)) then
+				MsgBox("请输入退回原因") 
+				RETURN 
+			ENDIF 
+			ans = Replace(ans, CHR(39)  , "‘") 
+			ans = Replace(ans, CHR(34)  , "“") 
+			
+			title = "是否确定将委托单：" & projectName  & "的成套报告退回" & chr(10) & chr(13)
+			title = title & "退回原因为：" & ans
+			answer = PromptForYesNo(title)
+			IF (answer = "No") then
+				RETURN 
+			ENDIF 	
+			' 			T.C_INVOICE_CREATED, T.C_INVOICE_CREATED_ON, T.C_INVOICE_CREATED_BY
+			updateProjQry = "update PROJECT set C_RPT_AUTHORIZED_BY = null,C_RPT_AUTHORIZED_ON = null,C_RPT_AUTHORIZED = 'F',"
+			updateProjQry = updateProjQry + "C_ALLTASK_COA_AUTHORIZED = 'F',C_RPT_REJECT_COMMENT_C = '"+ ans +"' "
+			updateProjQry = updateProjQry + " ,C_INVOICE_CREATED = 'F', C_INVOICE_CREATED_ON = null, C_INVOICE_CREATED_BY = null "
+			updateProjQry = updateProjQry + " where name = '"+ projectName  +"'"		
+			status = sql(updateProjQry)
+			status = sql("COMMIT")
+
+
+		ELSEIF (ProjectCOAFormat = "单项") THEN 
+			status = ClearArray("TaskReportArray")
+			status = ClearArray("selectionArrayName") 
+			title = "请选择单项报告"
+			headerArray[1] = "任务ID"
+			headerArray[2] = "任务名称"	
+			headerArray[3] = "任务名称"
+			headerArray[4] = "报告结论"
+			QRY = "SELECT TASK_ID,ANALYSIS,task_reported_name,conclusion,seq_num,report_number from C_PROJ_TASK WHERE PROJECT = '"+ projectName  +"'"
+			QRY = QRY & " and RPT_AUTHORIZED = 'T' order by order_number"
+			status = sql(qry,"TaskReportArray")
+			numSelections = MultiColumnSelectFromArray(TaskReportArray, title, "selectionArrayName", headerArray)
+			IF (numSelections = 0) THEN
+				RETURN 
+			ENDIF 
+			title = "请输入退回意见"			
+			ans = PromptForLongText(title, , 500) 
+			IF (IsEmpty(ans)) then
+				MsgBox("请输入退回原因") 
+				RETURN 
+			ENDIF 
+			
+			ans = Replace(ans, CHR(39)  , "‘") 
+			ans = Replace(ans, CHR(34)  , "“") 
+			
+			rejectTaskTitle = "是否确定将任务单：" & chr(10) & chr(13)
+			FOR i = 1 to numSelections
+				taskID = selectionArrayName[i,1]
+				rejectTaskTitle = rejectTaskTitle & taskID & chr(10) & chr(13) 		
+			NEXT 
+			
+			rejectTaskTitle = rejectTaskTitle & "退回原因为：" & ans
+			answer = PromptForYesNo(rejectTaskTitle)
+			IF (answer = "No") then
+				RETURN 
+			ENDIF
+			
+			'获取需要退回的任务SEQ Num字符串
+			status = ClearArray("RejectTaskSeqNumArray") 
+			status = ArrayConvertToSingleDim(selectionArrayName, "RejectTaskSeqNumArray", 5)
+			RejectTaskSeqNumString = ArrayToCSVString(RejectTaskSeqNumArray, ",")
+			RejectTaskSeqNumString = "(" & RejectTaskSeqNumString & ")"
+
+			updateTaskQry = "update C_PROJ_TASK set RPT_AUTHORIZED_BY = null,RPT_AUTHORIZED_ON = null,RPT_AUTHORIZED = 'F'"
+			updateTaskQry = updateTaskQry + ",RPT_REJECT_COMMENT_C = '"+ ans +"' where SEQ_NUM IN "+ RejectTaskSeqNumString +""		
+			status = sql(updateTaskQry)
+			status = sql("COMMIT")
+			
+			updateProjQry = "update PROJECT set C_RPT_AUTHORIZED = 'F',C_ALLTASK_COA_AUTHORIZED = 'F'"
+			updateProjQry = updateProjQry + " ,C_INVOICE_CREATED = 'F', C_INVOICE_CREATED_ON = null,C_INVOICE_CREATED_BY = null "
+			updateProjQry = updateProjQry + " where name = '"+ projectName  +"'"		
+			status = sql(updateProjQry)
+			status = sql("COMMIT")
+			
+			status = RefreshVisualWorkflow(, ) 
+		ELSE 
+		ENDIF 
+	ELSE 		
+	ENDIF 
+	
+ELSEIF  (vwselectedrowindex = "7") THEN
+	'点击第6列，进行满意度评价
+	' 	Breakpoint(aReason) 
+	answerSet = select answer_set.ENTRY_CODE
+				where object_id = projectName
+				order by object_id
+	IF (IsEmpty(answerSet)) THEN 
+		questionSet = "COA_EVALUATION"
+		objectClass = "PROJECT"
+		objectId = projectName
+		commitFlag = "T"
+		answerSet = CreateAnswerSet(questionSet, objectClass, objectId, commitFlag)
+	ENDIF 
+	' status = AnswerQuestions(1)
+	status = OpenQuestionsWindow(answerSet)
+
+ELSEIF  (vwselectedrowindex = "6") THEN
+	'点击第7列 查看收费单
+	status = ClearArray("Listarray")
+	IF (vwselectedrowcolumnvalue = "查看") THEN
+		selectedAction = "查看"
+	ELSE
+		Listarray[1] = "查看"
+		Listarray[2] = "确认"
+		selectedAction = SelectFromArray(Listarray, "")
+	ENDIF
+
+	IF (selectedAction = "查看") then
+		' 		Breakpoint(aReason)
+		' 		projectName = parametervalue
+		IF (IsEmpty(projectName)) THEN
+			RETURN
+		ENDIF
+		Filedir = GetConstant("C_REVIEW_INVOICE_REPORT_DIR")
+		IF (IsEmpty(Filedir)) THEN
+			MsgBox("计费单路径错误，请联系系统管理员")
+			RETURN
+		ENDIF
+		part = Right(Filedir,1)
+		IF (part <> "\") THEN
+			Filedir = Filedir & "\"
+		ENDIF
+
+		fileName = Filedir & projectName & "-INVOICE.pdf"	
+		status = FileExists(fileName)
+		IF (status) THEN
+			status = ShellCommand(fileName, , , )
+		ELSE
+			MsgBox("计费单未找到，请联系项目主管重新生成。")
+			RETURN
+		ENDIF
+	ELSEIF (selectedAction = "确认") then
+ 
+		' 		projectName = parametervalue
+		title = "是否确认计费单？"
+		answer = PromptForYesNo(title)
+
+		IF (answer = "Yes") THEN 
+			' 2018-1-2计费确认出错，注释
+						evaluationComplate = select answer_set.status
+									where object_id = projectName
+									and object_class = "PROJECT"
+									order by object_id	
+			'sheny 2017-8-26
+						IF (evaluationComplate <> "C") then
+							MsgBox("委托单没有评价不能确认计费单，请重新确认") 
+							RETURN 				
+						ENDIF 
+						AnswerID = select answer_set.entry_code
+
+			nowDatetime = DateTime()
+			timeStamp = OdbcDateTimeStamp(nowDatetime)
+			updateQry = "update project set C_INVOICE_verifyed = 'T' ,C_INVOICE_verifyed_on = "+timeStamp+",C_INVOICE_verifyed_by = '"+ USER +"'"
+			updateQry = updateQry +" WHERE NAME = '"+ projectName +"' "
+			status = sql(updateQry)
+			status = sql("COMMIT")		
+			updateQry = "update answer_set set locked_flag = 'T' where  entry_code = "+ AnswerID +""
+			status = sql(updateQry)
+			status = sql("COMMIT")	
+			'计算有几个任务
+			taskCountSql = "select seq_num from c_proj_task where project = '" + ProjectName + "'"
+			status = ClearArray("taskSeqArr") 
+			status = SQL(taskCountSql, "taskSeqarr") 
+			'循环写入日志
+			FOR i = 1 TO UBound(taskSeqarr, 1)  STEP 1
+				'操作人
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_QUOTESIGNATURE_BY", USER, "T") 
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_QUOTESIGNATURE_DATE", DateTime(), "T") 
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_NEXT_PERSON", "NULL" , "T") 
+				status = UpdateProjectItemFld(ProjectName, "C_PROJ_TASK", ExtractNumber(taskSeqArr[i,1]), "C_CURRENT_PROCESS", "流程结束" , "T") 
+			NEXT 
+			status = RefreshVisualWorkflow()
+		ENDIF
+	ELSE
+		RETURN
+	ENDIF
+
+
+
+ELSEIF  (vwselectedrowindex = "10") THEN
+	'点击第10列 查看任务进度
+	'Breakpoint(aReason) 
+	qry1 = " select product_series from   c_proj_login_sample where project='"+projectName+"' and sample_group='A'"
+	status = ClearArray("projSericesArr")
+	status = SQL(qry1,"projSericesArr") 
+	projSerices = projSericesArr[1,1]
+	'Breakpoint(aReason) 
+	qry = "  select  task_id,task_reported_name,'"+projSerices+"','任务状态','详细查看',assigned_sample_display,seq_num from c_proj_task  where project = '"+projectName+ "' "
+	status = ClearArray("LtaskArray")
+	status = sql(qry,"LtaskArray")
+	'Breakpoint(aReason) 
+		
+	status = ClearArray("returnArray") 
+	x = UBound(LtaskArray, 1) 
+	j = 1
+	FOR i = 1 TO x 
+		arrtaskId = LtaskArray[i,1]
+		arrtaskName = LtaskArray[i,2]
+		arrtaskSerices = LtaskArray[i,3]
+		
+		arrtaskPlan = LtaskArray[i,5]
+		arrtaskSample = LtaskArray[i,6]
+		arrtaskSeqnum = LtaskArray[i,7]
+		QRY3 = "select  process_name from C_PROCESS where  "
+		QRY3 = QRY3 +" TASK_SEQ_NUM ="+arrtaskSeqnum+" and process_order in (select max(process_order) " 
+		QRY3 = QRY3 +"  from  C_PROCESS where TASK_SEQ_NUM ="+arrtaskSeqnum+")"
+		status = ClearArray("taskStatus") 
+		'status = SQL(QRY3, "taskStatus") 
+		arrtaskStatus = taskStatus[1,1]
+		arrtaskStatus = "单据联查"
+		IF (IsEmpty(arrtaskStatus)) THEN 
+			arrtaskStatus = ""
+		ENDIF 
+		returnArray[j,1] = arrtaskId
+		returnArray[j,2] = arrtaskName
+		returnArray[j,3] = arrtaskSerices
+		returnArray[j,4] = arrtaskStatus
+		returnArray[j,5] = arrtaskPlan
+		returnArray[j,6] = arrtaskSample
+		returnArray[j,7] = arrtaskSeqnum
+		j = j + 1			
+	NEXT 
+	'Breakpoint(aReason) 
+	status  = SetGlobalVariable(keyTaskArray,returnArray)
+	status = RefreshVisualWorkflow( )
+	
+
+ELSE
+	RETURN
+ENDIF
+RETURN
+
