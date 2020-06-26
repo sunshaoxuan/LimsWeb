@@ -1,0 +1,90 @@
+--一级产品分类
+create table nc_first_type 
+(
+   pk_first_type      CHAR(20 CHAR)        not null,
+   PROD_TYPE            VARCHAR2(20),
+   nc_first_code      CHAR(50 CHAR),
+   nc_first_name      CHAR(200 CHAR),
+   is_enable          SMALLINT,
+   constraint PK_NC_FIRST_TYPE primary key (pk_first_type)
+);
+
+alter table nc_first_type
+   add constraint FK_NC_FIRST_REFERENCE_C_PROD_T foreign key (PROD_TYPE)
+      references LIMS_DATA.C_PROD_TYPE (PROD_TYPE);
+--
+Insert into nc_first_type
+select substr(SYS_GUID(),1,20),c.prod_type,RANK() over(order by c.prod_type asc) ncode,c.description,1
+from c_prod_type c 
+
+--二级产品分类
+create table nc_second_type 
+(
+   pk_second_type     CHAR(20 CHAR)        not null,
+   PROD_TYPE            VARCHAR2(50),
+   NAME                 VARCHAR2(50),
+   pk_first_type      CHAR(20 CHAR),
+   nc_second_code     CHAR(50 CHAR),
+   nc_second_name     CHAR(200 CHAR),
+   is_enable          SMALLINT,
+   nc_descript        CHAR(200 CHAR),
+   constraint PK_NC_SECOND_TYPE primary key (pk_second_type)
+);
+
+alter table nc_second_type
+   add constraint FK_NC_SECON_REFERENCE_C_PROD_T foreign key (PROD_TYPE, NAME)
+      references LIMS_DATA.C_PROD_TYPE_C1 (PROD_TYPE, NAME);
+
+alter table nc_second_type
+   add constraint FK_NC_SECON_REFERENCE_NC_FIRST foreign key (pk_first_type)
+      references nc_first_type (pk_first_type);
+--
+Insert into nc_second_type
+select substr(SYS_GUID(),1,20),c1.prod_type,c1.name,
+cft.pk_first_type,RANK() over(order by c1.name asc),c1.name,1,c1.description
+from c_prod_type c,c_prod_type_c1 c1,nc_first_type cft
+where c1.prod_type = c.prod_type and cft.prod_type = c.prod_type
+-----------------------------------------------------------------------------------------------------------
+--三级分类
+
+create table nc_third_type 
+(
+   pk_third_type      CHAR(20 CHAR)        not null,
+   PROD_TYPE            VARCHAR2(50),
+   C_PROD_TYPE_C1       VARCHAR2(50),
+   P_NAME               VARCHAR2(50),
+   pk_first_type      CHAR(20 CHAR),
+   pk_second_type     CHAR(20 CHAR),
+   nc_third_code      CHAR(50 CHAR),
+   nc_third_name      CHAR(200 CHAR),
+   is_enable          SMALLINT,
+   nc_descript        CHAR(200 CHAR),
+   constraint PK_NC_THIRD_TYPE primary key (pk_third_type)
+);
+
+alter table nc_third_type
+   add constraint FK_NC_THIRD_REFERENCE_C_PROD_T foreign key (PROD_TYPE, C_PROD_TYPE_C1, P_NAME)
+      references LIMS_DATA.C_PROD_TYPE_C2 (PROD_TYPE, C_PROD_TYPE_C1, P_NAME);
+
+alter table nc_third_type
+   add constraint FK_NC_THIRD_REFERENCE_NC_FIRST foreign key (pk_first_type)
+      references nc_first_type (pk_first_type);
+
+alter table nc_third_type
+   add constraint FK_NC_THIRD_REFERENCE_NC_SECON foreign key (pk_second_type)
+      references nc_second_type (pk_second_type);
+--------------
+Insert into nc_third_type
+select substr(SYS_GUID(),1,20),c2.prod_type,c2.c_prod_type_c1,c2.p_name,nft.pk_first_type,nst.pk_second_type,
+RANK() over(order by c2.p_name asc),c2.p_name,1,c2.description
+from C_PROD_TYPE c,C_PROD_TYPE_C1 c1,C_PROD_TYPE_C2 c2,nc_first_type nft,nc_second_type nst
+where c.prod_type = c1.prod_type 
+and   c1.name = c2.c_prod_type_c1 
+and   c.prod_type = c2.prod_type
+and   nft.prod_type = nst.prod_type
+and   nst.name = c2.c_prod_type_c1 
+and   nft.prod_type = c2.prod_type;
+
+
+
+

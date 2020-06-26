@@ -1,0 +1,60 @@
+-- 试验前参数详单
+create table NC_TEST_INIT
+(
+  pk_test_init        CHAR(20 CHAR) not null,
+  pk_result_type      CHAR(20 CHAR),
+  pk_units_type       CHAR(20 CHAR),
+  test_init_code      CHAR(50 CHAR),
+  test_init_name      CHAR(200 CHAR),
+  nc_enstard          NVARCHAR2(100),
+  nc_entry            NUMBER(10),
+  nc_analysis_name    VARCHAR2(50 CHAR),
+  nc_analysis_version NUMBER(10),
+  nc_analysis_type    VARCHAR2(1 CHAR),
+  nc_spec_rule        VARCHAR2(50 CHAR),
+  nc_min_value        VARCHAR2(53 CHAR),
+  nc_max_value        VARCHAR2(53 CHAR),
+  nc_text_value       VARCHAR2(256 CHAR),
+  nc_stage            VARCHAR2(20 CHAR),
+  nc_sample_point     VARCHAR2(20 CHAR),
+  nc_contact_type     VARCHAR2(254),
+  nc_coil_type        VARCHAR2(100),
+  nc_coil_current     VARCHAR2(100),
+  def1                VARCHAR2(256),
+  def2                VARCHAR2(256),
+  def3                VARCHAR2(256),
+  def4                VARCHAR2(256),
+  def5                VARCHAR2(256)
+)
+tablespace NNC_DATA01
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table NC_TEST_INIT
+  add constraint PK_NC_TEST_INIT primary key (PK_TEST_INIT)
+  using index 
+  tablespace NNC_DATA01
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table NC_TEST_INIT
+  add constraint FK_NC_TEST__REFERENCE_NC_RESUL foreign key (PK_RESULT_TYPE)
+  references NC_RESULT_TYPE (PK_RESULT_TYPE);
+alter table NC_TEST_INIT
+  add constraint FK_NC_TEST__REFERENCE_NC_UNITS foreign key (PK_UNITS_TYPE)
+  references NC_UNITS_TYPE (PK_UNITS_TYPE);

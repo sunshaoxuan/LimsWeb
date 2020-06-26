@@ -1,0 +1,1 @@
+任务的联查表在lims中为c_proj_task表，具体字段参见建表语句中的字段注释,从C_SUBMIT_BY开始。
